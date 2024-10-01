@@ -1,0 +1,137 @@
+body,html {
+margin: 0;
+font-family:Verdana, Geneva, sans-serif;
+font-size:14pt;
+font-style:normal;
+font-weight:normal;
+line-height:normal;
+color:rgb(0,0,0,1);
+}
+
+table,td {
+border: 0px solid black
+}
+
+table.schedule {
+border: 0px solid black;
+max-width:800px; 
+margin-left:auto; 
+margin-right:auto
+}
+
+td.schedule {
+border: 1px solid black;
+width:75%;
+padding:3% 5% 3% 5%;
+}
+
+td.time {
+border: 1px solid black;
+width:25%;
+padding:3% 3% 3% 3%;
+}
+
+table.abstracts {
+
+}
+
+p.abstracts{
+text-align:left;
+}
+
+tr.abstracts {
+padding-bottom:20px;
+}
+
+tr,td {
+padding:0;
+}
+
+td.info {
+white-space:nonwrap;
+text-align:center;
+color:white;
+font-weight:bold;
+font-size:16pt;
+padding: 50px 80px 50px 80px;
+width:100%;
+}
+
+td.info-org {
+white-space:nonwrap;
+text-align:center;
+color:white;
+font-weight:bold;
+font-size:16pt;
+padding: 80px 80px 80px 80px;
+width:100%;
+}
+
+td.about {
+white-space:nonwrap;
+text-align:center;
+padding:30px 80px 0px 80px;
+}
+
+td.about-org {
+text-align:center;
+padding:50px 10% 0px 10%;
+}
+
+td.last {
+width:100%;
+}
+
+table {
+width:100%;
+border-spacing:0;
+border-collapse:collapse;
+}
+
+table.navigation {
+background-color:rgba(0,0,0,.4);
+}
+
+table.head {
+background:linear-gradient(rgba(0,0,0,.3),rgba(0,0,0,.3)), url("/Workshop-2025-Madison/static/hex_cropped.png");
+background-size:cover;
+}
+
+td.head {
+padding: 15px 20px 15px 20px;
+text-align:center; 
+}
+
+a.navigation {
+color:white;
+text-decoration:none; 
+font-weight:bold;
+white-space:nowrap;
+}
+
+td.head:hover {
+background-color:rgba(0,0,0,.45);
+}
+
+img.headshot {
+width:auto;
+height:auto;
+border-radius:8px;
+}
+
+hr.gold {
+width:100%;
+height:35px;
+background-color:rgba(220,175,55,1);
+border:none;
+margin:0;
+}
+
+img.cv {
+border:1px solid #ddd; 
+border-radius:4px; 
+}
+
+img.cv:hover {
+box-shadow: 0 0 2px 1px rgba(0,0,0,.2);
+}
