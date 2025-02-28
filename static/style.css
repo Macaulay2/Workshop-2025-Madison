@@ -12,23 +12,30 @@ table,td {
 border: 0px solid black
 }
 
+
 table.schedule {
-border: 0px solid black;
-max-width:800px; 
+border: 1px solid black;
 margin-left:auto; 
 margin-right:auto
 }
 
 td.schedule {
 border: 1px solid black;
-width:75%;
-padding:3% 5% 3% 5%;
+width:15%;
+padding:2% 1% 2% 1%;
 }
+
+
+th.schedule {
+border: 1px solid black;
+width:auto;
+padding:2% 1% 2% 1%;
+}
+
 
 td.time {
 border: 1px solid black;
-width:25%;
-padding:3% 3% 3% 3%;
+padding:2% 1% 2% 1%;
 }
 
 table.abstracts {
