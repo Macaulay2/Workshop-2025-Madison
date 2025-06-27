@@ -7,9 +7,12 @@ newPackage(
         {Name=>"Thomas Brazelton",
             Email=>"brazelton@math.harvard.edu",
             HomePage=>"https://tbrazel.github.io/"},
-        {Name=>"Add your name",
-            Email=>"Add your email",
-            HomePage=>"Add your website"}
+        {Name=>"Ben Spitz",
+            Email=>"benspitz@virginia.edu",
+            HomePage=>"https://benspitz.com/"},
+        {Name=>"Add Yourself",
+            Email=>"email",
+            HomePage=>"url"}
     },
     Headline=>"for working with Mackey functors for cyclic groups of prime order",
     PackageImports=>{},
