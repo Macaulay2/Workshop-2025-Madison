@@ -22,7 +22,7 @@
 --load "tests/example.m2"
 --capture get "tests/example.m2"
 
-needsPackage("CpMackeyFunctors",Reload => true)
+installPackage("CpMackeyFunctors", Verbose => true)
 
 -- The following lines automatically run every file in the "tests" directory.
 -- If you wish, you can change testDir to any other directory.
