@@ -17,5 +17,27 @@ newPackage(
     Headline=>"for working with Mackey functors for cyclic groups of prime order",
     PackageImports=>{},
     PackageExports=>{},
+    AuxiliaryFiles => true,
     DebuggingMode=>true
 )
+
+export{
+    -- CpMackeyFunctors
+    "CpMackeyFunctor",
+    "isWellDefinedCpMackeyFunctor",
+    "makeCpMackeyFunctor",
+    "Underlying",
+    "Fixed",
+    "Res",
+    "Tr",
+    "Conj"
+}
+
+load "./CpMackeyFunctors/Code/MackeyFunctor.m2"
+
+
+----------------------------
+----------------------------
+-- Testing
+----------------------------
+----------------------------
