@@ -26,6 +26,7 @@ export{
     "CpMackeyFunctor",
     "isWellDefinedCpMackeyFunctor",
     "makeCpMackeyFunctor",
+    "primeorder",
     "Underlying",
     "Fixed",
     "Res",
