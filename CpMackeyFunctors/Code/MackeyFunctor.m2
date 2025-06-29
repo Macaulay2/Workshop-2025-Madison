@@ -1,10 +1,17 @@
 CpMackeyFunctor = new Type of HashTable
 CpMackeyFunctor.synonym = "Cp Mackey Functor"
 
+-- Check if a Mackey functor is a well-defined
 isWellDefinedCpMackeyFunctor = method()
 isWellDefinedCpMackeyFunctor CpMackeyFunctor := Boolean => M ->  (
+    ------------------------
+    -- General type-checking
+    ------------------------
+    
+    -- Ensure all the keys in the hash table defining a Mackey functor are indeed defined
     if not (M#?primeorder and M#?Res and M#?Tr and M#?Conj and M#?Underlying and M#?Fixed) then return false;
 
+    -- Check that the input p is actually a prime number
     if not (class M.primeorder === ZZ and isPrime(M.primeorder)) then return false;
     
     -- Check fixed and underlying modules are Z-modules
@@ -23,11 +30,15 @@ isWellDefinedCpMackeyFunctor CpMackeyFunctor := Boolean => M ->  (
     if not source(M.Conj) == M.Underlying then return false;
     if not target(M.Conj) == M.Underlying then return false;
 
+    ---------
+    -- Axioms
+    ---------
+
     -- Axiom 1: Conj is an automorphism of order dividing p
     if not isIsomorphism(M.Conj) then return false;
     if not matrixPower(M.Conj, M.primeorder) == id_(M.Underlying) then return false;
 
-    -- TODO: check all other axioms
+    -- Axiom 2: ... TODO
     return true
 )
 
@@ -41,8 +52,8 @@ makeCpMackeyFunctor = method()
 makeCpMackeyFunctor(ZZ,Matrix,Matrix,Matrix) := CpMackeyFunctor => (p,R,T,C) ->(
     M := new CpMackeyFunctor from {
         symbol primeorder => p,
-        symbol Underlying => source T,
-        symbol Fixed => target T,
+        symbol Underlying => source T,          -- extract the underlying module from the transfer homomorphism
+        symbol Fixed => target T,               -- extract the fixed module from the transfer homomorphism
         symbol Res => R,
         symbol Tr => T,
         symbol Conj => C,
