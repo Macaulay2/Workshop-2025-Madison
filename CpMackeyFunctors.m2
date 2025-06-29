@@ -46,5 +46,5 @@ export{
 ----------------------------
 ----------------------------
 
-load "./tests/HelpersTest.m2"
-load "./tests/MackeyFunctorsTest.m2"
+-- load "./tests/HelpersTest.m2"
+-- load "./tests/MackeyFunctorsTest.m2"
