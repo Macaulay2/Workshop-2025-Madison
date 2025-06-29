@@ -34,8 +34,8 @@ export{
     "Conj"
 }
 
+load "./CpMackeyFunctors/Code/Helpers.m2"
 load "./CpMackeyFunctors/Code/MackeyFunctor.m2"
-
 
 ----------------------------
 ----------------------------

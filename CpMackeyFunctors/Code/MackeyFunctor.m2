@@ -23,6 +23,10 @@ isWellDefinedCpMackeyFunctor CpMackeyFunctor := Boolean => M ->  (
     if not source(M.Conj) == M.Underlying then return false;
     if not target(M.Conj) == M.Underlying then return false;
 
+    -- Axiom 1: Conj is an automorphism of order dividing p
+    if not isIsomorphism(M.Conj) then return false;
+    if not inducedMap(M.Underlying, M.Underlying, matrixPower(M.Conj, M.primeorder)) == inducedMap(M.Underlying, M.Underlying) then return false;
+
     -- TODO: check all other axioms
     return true
 )
