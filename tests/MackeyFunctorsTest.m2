@@ -5,7 +5,7 @@ R:=matrix({});
 C:=R;
 T:=R;
 M:=makeCpMackeyFunctor(7,R,T,C)
-assert(isWellDefinedCpMackeyFunctor M)
+assert(isWellDefinedCpMackeyFunctor M);
 
 -- Test if constant F_2 is a C_2-Mackey functor
 U:=cokernel(matrix({{2}}));
@@ -32,3 +32,8 @@ R:=inducedMap(U,F,matrix({{1}}));
 T:=inducedMap(F,U,matrix({{0}}));
 M:=makeCpMackeyFunctor(3,R,T,C);
 assert(isWellDefinedCpMackeyFunctor M);
+assert(getUnderlyingModule M == U);
+assert(getFixedModule M == F);
+assert(getRestriction M == R);
+assert(getTransfer M == T);
+assert(getConjugation M == C);

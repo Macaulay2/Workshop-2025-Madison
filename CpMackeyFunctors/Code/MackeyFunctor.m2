@@ -67,4 +67,39 @@ makeCpMackeyFunctor(ZZ,Matrix,Matrix,Matrix) := CpMackeyFunctor => (p,R,T,C) ->(
 	)
 )
 
--- todo: test this still works when the first input is an Array
+-- todo: verify that this still works when the first input is an Array
+
+
+-------------------------
+-- Recovering cached data
+-------------------------
+
+getPrimeOrder = method()
+getPrimeOrder CpMackeyFunctor := Module => M ->(
+    M.primeorder
+)
+
+getUnderlyingModule = method()
+getUnderlyingModule CpMackeyFunctor := Module => M ->(
+    M.Underlying
+)
+
+getFixedModule = method()
+getFixedModule CpMackeyFunctor := Module => M ->(
+    M.Fixed
+)
+
+getRestriction = method()
+getRestriction CpMackeyFunctor := Module => M ->(
+    M.Res
+)
+
+getTransfer = method()
+getTransfer CpMackeyFunctor := Module => M ->(
+    M.Tr
+)
+
+getConjugation = method()
+getConjugation CpMackeyFunctor := Module => M ->(
+    M.Conj
+)

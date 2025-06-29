@@ -36,7 +36,13 @@ export{
     "Fixed",
     "Res",
     "Tr",
-    "Conj"
+    "Conj",
+    "getPrimeOrder",
+    "getUnderlyingModule",
+    "getFixedModule",
+    "getRestriction",
+    "getTransfer",
+    "getConjugation"
 }
 
 
