@@ -23,3 +23,12 @@ R:=inducedMap(U,F,matrix({{1,0},{0,1}}));
 T:=inducedMap(F,U,matrix({{0,1},{0,0}}));
 M:=makeCpMackeyFunctor(2,R,T,C);
 assert(isWellDefinedCpMackeyFunctor M);
+
+-- Test if FP of C_7 with *2 is a C_3-Mackey functor
+U:=cokernel(matrix({{7}}));
+C:=inducedMap(U,U,matrix({{2}}));
+F:=kernel(C - id_U);
+R:=inducedMap(U,F,matrix({{1}}));
+T:=inducedMap(F,U,matrix({{0}}));
+M:=makeCpMackeyFunctor(3,R,T,C);
+assert(isWellDefinedCpMackeyFunctor M);
