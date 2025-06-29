@@ -1,16 +1,11 @@
 needsPackage "CpMackeyFunctors"
 
 -- Test if the Zero Mackey functor can be constructed and is well-defined
-
-TEST ///
 R:=matrix({});
 C:=R;
 T:=R;
 M:=makeCpMackeyFunctor(7,R,T,C)
 assert(isWellDefinedCpMackeyFunctor M)
-///
-
-TEST ///
 
 -- Test if constant F_2 is a C_2-Mackey functor
 U:=cokernel(matrix({{2}}));
@@ -19,8 +14,6 @@ T:=inducedMap(U,U,matrix({{0}}));
 C:=inducedMap(U,U);
 M:=makeCpMackeyFunctor(2,R,T,C);
 assert(isWellDefinedCpMackeyFunctor M);
-
-///
 
 -- -- Test if F_4 Galois is a C_2-Mackey functor
 -- U:=cokernel(matrix(ZZ,{{2,0},{0,2}}));

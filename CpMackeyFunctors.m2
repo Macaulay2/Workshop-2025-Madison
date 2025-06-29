@@ -21,11 +21,6 @@ newPackage(
     DebuggingMode=>true
 )
 
-load "./CpMackeyFunctors/Code/Helpers.m2"
--- helper commands are internal only, and not exported
-
--- Code for the CpMackeyFunctor type
-load "./CpMackeyFunctors/Code/MackeyFunctor.m2"
 export{
     -- CpMackeyFunctors
     "CpMackeyFunctor",
@@ -39,12 +34,11 @@ export{
     "Conj"
 }
 
+load "./CpMackeyFunctors/Code/Helpers.m2"
+load "./CpMackeyFunctors/Code/MackeyFunctor.m2"
 
 ----------------------------
 ----------------------------
 -- Testing
 ----------------------------
 ----------------------------
-
-load "./tests/HelpersTest.m2"
-load "./tests/MackeyFunctorsTest.m2"
