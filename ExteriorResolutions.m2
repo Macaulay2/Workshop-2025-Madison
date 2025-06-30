@@ -85,15 +85,38 @@ beginDocumentation()
 --------------------------------------------------
 
 doc ///
+Node
    Key 
       ExteriorResolutions
    Headline 
       Package that implements homological constructions over the exterior algebra
+--   Description
+--      Text
+--   SeeAlso
+--   References
+--      Text
+Node
+   Key
+       priddyComplex
+       (priddyComplex, Matrix, Ring)
+   Headline
+       computes the Priddy complex of several elements of an exterior algebra
+   Usage
+       priddyComplex(m, S)
+   Inputs
+       m:Matrix
+	   consisting of a single row and with entries in an exterior algebra
+       S:Ring
+   Outputs
+       :Complex
    Description
-      Text
-   SeeAlso
-   References
-       Text
+       Example
+	   S = QQ[x_0,x_1]
+	   E = QQ[e_0,e_1, SkewCommutative=>true]
+	   m = matrix{{e_0, e_0*e_1}}
+	   C = priddyComplex(m, S, LengthLimit=>3)
+	   C.dd
+	   prune HH C
 ///
 
 
@@ -180,3 +203,14 @@ end--
 restart
 
 needsPackage "ExteriorResolutions"
+installPackage "ExteriorResolutions"
+viewHelp "ExteriorResolutions"
+
+S = QQ[x_0,x_1]
+E = QQ[e_0,e_1,  SkewCommutative=>true]
+
+m = matrix{{e_0^10, e_0*e_1}}
+
+C = priddyComplex(m, S, LengthLimit=>3)
+C.dd
+prune HH C
