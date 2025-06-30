@@ -13,8 +13,8 @@ document{
         "Given two Mackey functors M and N the set of Mackey functors homomorphisms from N to M forms an abelian group under pointwise addition.",
     },
     EXAMPLE lines///
-    M = makeBurnsideMackeyFunctor(2)
-    N = makeUnderlyingFreeMackeyFunctor(2)
+    M = makeBurnsideMackeyFunctor(2);
+    N = makeUnderlyingFreeMackeyFunctor(2);
     Hom(M,N)
     ///
 }
