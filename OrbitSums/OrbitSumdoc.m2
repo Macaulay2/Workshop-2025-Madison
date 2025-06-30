@@ -28,8 +28,7 @@ document {
 }
 
 document {
-    Key
-        ListSpInd
+    Key => ListSpInd}
     Headline => "List the special monomials that are related to a degree.",
     Usage
         ListSpInd(n,d)
@@ -130,7 +129,7 @@ document {
         a list of orbit sums of special monomials.
   Description
    Text
-    This function computes the orbit sums of a list of special monomials of degree d in n variables under the action of a permutation group G.
+      This function computes the orbit sums of a list of special monomials of degree d in n variables under the action of a permutation group G.
    Example
 
 }
