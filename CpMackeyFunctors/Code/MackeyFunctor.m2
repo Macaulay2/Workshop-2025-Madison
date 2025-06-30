@@ -6,7 +6,7 @@ protect symbol Tr
 protect symbol Conj
 
 CpMackeyFunctor = new Type of HashTable
-CpMackeyFunctor.synonym = "Cp Mackey Functor"
+CpMackeyFunctor.synonym = "C_p Mackey Functor"
 
 -- Check if a Mackey functor is well-defined
 -- This overloads the isWellDefined method to apply to CpMackeyFunctors
