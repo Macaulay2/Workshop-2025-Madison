@@ -73,6 +73,8 @@ export{
     "FixedMap"
 }
 
+load "./CpMackeyFunctors/Code/HomGroup.m2"
+
 beginDocumentation()
 
 document{
@@ -87,7 +89,6 @@ undocumented{
     }
 
 load "./CpMackeyFunctors/Documentation/ConstructorsDoc.m2"
-load "./CpMackeyFunctors/Code/HomGroup.m2"
 
 
 ----------------------------
