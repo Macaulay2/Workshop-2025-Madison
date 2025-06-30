@@ -66,7 +66,9 @@ export{
     -- Homomorphisms
     "MackeyFunctorHomomorphism",
     "isWellDefinedCpMackeyFunctorHomomorphism",
-    "makeMackeyFunctorHomomorphism"
+    "makeMackeyFunctorHomomorphism",
+    "UnderlyingMap",
+    "FixedMap"
 }
 
 
