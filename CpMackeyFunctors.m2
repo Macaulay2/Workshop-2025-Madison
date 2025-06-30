@@ -55,11 +55,11 @@ export{
 
 load "./CpMackeyFunctors/Code/Constructors.m2"
 export{
-    "BurnsideMackeyFunctor",
-    "FixedFreeMackeyFunctor",
-    "UnderlyingFreeMackeyFunctor",
-    "ComplexRepresentationMackeyFunctor",
-    "RealRepresentationMackeyFunctor",
+    "makeBurnsideMackeyFunctor",
+    "makeFixedFreeMackeyFunctor",
+    "makeUnderlyingFreeMackeyFunctor",
+    "makeComplexRepresentationMackeyFunctor",
+    "makeRealRepresentationMackeyFunctor",
     "makeZeroMackeyFunctor",
     "makeFixedPointMackeyFunctor"
 }

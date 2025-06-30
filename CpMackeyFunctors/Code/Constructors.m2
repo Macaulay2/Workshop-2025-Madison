@@ -2,8 +2,8 @@
 -- Constructors for common Mackey functors
 ------------------------------------------
 
-BurnsideMackeyFunctor = method()
-BurnsideMackeyFunctor(ZZ) := CpMackeyFunctor => (p) -> (
+makeBurnsideMackeyFunctor = method()
+makeBurnsideMackeyFunctor(ZZ) := CpMackeyFunctor => (p) -> (
     C := matrix{{1}};
     T := matrix{{0},{1}};
     R := matrix{{1,p}};
@@ -11,10 +11,10 @@ BurnsideMackeyFunctor(ZZ) := CpMackeyFunctor => (p) -> (
     return makeCpMackeyFunctor(p,R,T,C);
 )
 
-FixedFreeMackeyFunctor = BurnsideMackeyFunctor
+makeFixedFreeMackeyFunctor = makeBurnsideMackeyFunctor
 
-UnderlyingFreeMackeyFunctor = method()
-UnderlyingFreeMackeyFunctor(ZZ) := CpMackeyFunctor => (p) -> (
+makeUnderlyingFreeMackeyFunctor = method()
+makeUnderlyingFreeMackeyFunctor(ZZ) := CpMackeyFunctor => (p) -> (
     I := mutableMatrix id_(ZZ^p);                                    --declare identity matrix
     C := matrix(rowPermute(I,0,({p-1}|(toList (0..p-2)))));
     T := matrix({for i to p-1 list 1});
@@ -23,8 +23,8 @@ UnderlyingFreeMackeyFunctor(ZZ) := CpMackeyFunctor => (p) -> (
     return makeCpMackeyFunctor(p,R,T,C);
 )
 
-ComplexRepresentationMackeyFunctor = method()
-ComplexRepresentationMackeyFunctor(ZZ) := CpMackeyFunctor => (p) -> (
+makeComplexRepresentationMackeyFunctor = method()
+makeComplexRepresentationMackeyFunctor(ZZ) := CpMackeyFunctor => (p) -> (
     C := matrix {{1}};
     T := matrix (for i to p-1 list {1});
     R := matrix {for i to p-1 list 1};
@@ -32,10 +32,10 @@ ComplexRepresentationMackeyFunctor(ZZ) := CpMackeyFunctor => (p) -> (
     return makeCpMackeyFunctor(p,R,T,C);
 )
 
-RealRepresentationMackeyFunctor = method()
-RealRepresentationMackeyFunctor(ZZ) := CpMackeyFunctor => (p) -> (
+makeRealRepresentationMackeyFunctor = method()
+makeRealRepresentationMackeyFunctor(ZZ) := CpMackeyFunctor => (p) -> (
     if p < 3 then (
-        return ComplexRepresentationMackeyFunctor p
+        return makeComplexRepresentationMackeyFunctor p
     ) 
     else (
         C := matrix {{1}};

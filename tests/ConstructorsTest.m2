@@ -1,12 +1,13 @@
 needsPackage "CpMackeyFunctors"
 
 -- Test constructors
-assert(isWellDefined (BurnsideMackeyFunctor 17));
-assert(isWellDefined (FixedFreeMackeyFunctor 19));
-assert(isWellDefined (UnderlyingFreeMackeyFunctor 23));
-assert(isWellDefined (ComplexRepresentationMackeyFunctor 29));
-assert(isWellDefined (RealRepresentationMackeyFunctor 2));
-assert(isWellDefined (RealRepresentationMackeyFunctor 7));
+assert(isWellDefined makeBurnsideMackeyFunctor(17));
+assert(isWellDefined makeFixedFreeMackeyFunctor(19));
+assert(isWellDefined makeUnderlyingFreeMackeyFunctor(23));
+
+assert(isWellDefined makeComplexRepresentationMackeyFunctor(29));
+assert(isWellDefined makeRealRepresentationMackeyFunctor(2));
+assert(isWellDefined makeRealRepresentationMackeyFunctor(47));
 
 assert(isWellDefined makeZeroMackeyFunctor(3));
 
