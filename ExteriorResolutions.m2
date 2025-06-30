@@ -35,6 +35,7 @@ export {
 injectiveResolution = method(Options => options freeResolution);
 injectiveResolution(Module) := Complex => opts -> (M) -> (
     E := ring M;
+    n := numgens E;
     if not isSkewCommutative E then error "Expected underlying ring to be skew commutative";
     P := Hom(freeResolution(Hom(M,E), opts),E);
     P.cache.Module = M;
@@ -47,7 +48,7 @@ coaugmentationMap Complex := ComplexMap =>
     (cacheValue symbol coaugmentationMap)(C -> (
             if not C.cache.?Module then error "expected an injective resolution";
             M := C.cache.Module;
-            map(C, complex M, i -> if i === 0 then map(C_0, M, generators M))
+            map(C, complex M, i -> if i === 0 then map(C_0, M, generators M // generators C_0))
             )
         )
 
@@ -104,14 +105,39 @@ needsPackage "ExteriorResolutions"
 TEST /// 
     E = ZZ/101[e_0..e_3,SkewCommutative => true]
     Res = injectiveResolution(E^1, LengthLimit => 4)
-    assert(I == complex E)
+    assert(Res == complex E)
     assert isWellDefined Res
-
-    injectiveResolution(ZZ^2)
+    f = coaugmentationMap Res
+    assert isWellDefined f
+    assert isQuasiIsomorphism f
 
     I = ideal vars E
     k = E^1/I
     P = injectiveResolution(k, LengthLimit => 10)
+    P_0
+    gens P_0
+    prune ker dd^P_0 == k
+    gens k
+    assert isWellDefined P
+    f = coaugmentationMap P
+    assert isWellDefined f
+    assert isQuasiIsomorphism f
+    assert isComplexMorphism f
+    assert isCommutative f
+    degree f
+    prune ker dd^P_0
+
+    g = map(Hom(k,E),Hom(P_0,E),1)
+    h = Hom(g,E^1)
+    prune source h == k
+    target h == P_0
+    ambient source h
+    ambient k
+    Hom(Hom(k,E),E)
+    
+    dd^P_0*f_0
+    f_0
+    dd^P_0
 
     S = ZZ/101[x_0..x_3]
     for i to 10 list hilbertFunction(i,S)
