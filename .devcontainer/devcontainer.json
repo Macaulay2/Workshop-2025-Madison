@@ -6,11 +6,15 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "intisar.macaulay2-codespace"
+        "intisar.macaulay2-codespace",
+        "ritwickdey.LiveServer"
       ],
       "settings": {
         "macaulay2.executablePath": "/usr/bin/M2"
       }
     }
+  },
+  "env": {
+    "BROWSER": "npx live-server "
   }
 }

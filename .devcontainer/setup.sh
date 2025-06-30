@@ -25,3 +25,6 @@ sudo DEBIAN_FRONTEND=noninteractive apt install -y macaulay2
 # Adding aliases so that it's easier to call m2 via the terminal, whether bash or zshrc 
 echo "alias m2='M2'" >> ~/.bashrc
 echo "alias m2='M2'" >> ~/.zshrc
+
+# Adding live-server extension support 
+npm install -g live-server
