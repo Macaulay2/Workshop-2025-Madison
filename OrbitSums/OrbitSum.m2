@@ -99,7 +99,7 @@ orbSum = (f,G,n) ->( -- Intakes a monomial f, a group action G, and the number o
     I:= (exponents f)_0; -- Gets a list of the exponents of f.
     v:= transpose matrix{I}; -- Takes a transpose of matrix made by the list of exponents.
     g:=0;
-    S = G*v; -- This takes the group action over the exponents.
+    S := G*v; -- This takes the group action over the exponents.
     for i from 0 to (#(S)-1) do(  
         g = g + vectorToMonomial(vector(S)_i,R); --This extracts the exponent permuted by the group action and assigns it to a variable.
     );

@@ -8,7 +8,7 @@
 
 beginDocumentation()
 
-document {
+///document {
  Node
   Key => {PermutationGroup}
   Headline => "a package to deal with permutation groups and orbit sums",
@@ -132,4 +132,4 @@ document {
       This function computes the orbit sums of a list of special monomials of degree d in n variables under the action of a permutation group G.
    Example
 
-}
+}///
