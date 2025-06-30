@@ -88,29 +88,30 @@ document {
    Text
     This function computes the orbit sum of a monomial f under the action of a permutation group G.
    Example
-}
+}///
 
 document {
-  Key => {orbSumList}
-  Headline => "Computes the orbit sums of a list of monomials.",
-  Usage
-    orbSumList(G,n,d)
-  Inputs
-    G: Group
-         a permutation group
-    n: Number
-        the number of variables in the polynomial ring
-    d: Number
-        the degree of the polynomial ring
-  Outputs
-    L: List
-        a list of orbit sums of special monomials.
-  Description
-   Text
-      This function computes the orbit sums of a list of special monomials of degree d in n variables under the action of a permutation group G.
-   Example
+  Key => {orbSumList, (orbSumList, OrbitSum)},
 
-}///
+  Headline => "Computes the orbit sums of a list of monomials.",
+
+  Usage => "orbSumList(G,n,d)",
+
+  Inputs =>{
+    "G"=> Group => "a permutation group",
+    "n"=> Number => "the number of variables in the polynomial ring",
+    "d" => Number => "the degree of the polynomial ring",
+  },
+
+  Outputs =>{
+    List => "a list of orbit sums of special monomials."
+  },
+
+  PARA {
+    "This function computes the orbit sums of a list of special monomials of degree d in n variables under the action of a permutation group G."
+    },
+  "This function is provided by the package ", TO InvariantRing,".",
+}
 
 document {
   Key => {shuffMon},

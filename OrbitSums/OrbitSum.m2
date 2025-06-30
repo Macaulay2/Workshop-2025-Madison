@@ -31,7 +31,6 @@ export {"ListSpInd",
         "shuffMon",
 	    "orbSum",
         "orbSumList"
-
 }
 
 --We need a previous package
@@ -85,7 +84,7 @@ ListSpMon=(n,d)->(
 )
 
 --Test for Special Indexes and Monomials
-print ListSpInd(6,4)
+ListSpInd(6,4)
 ListSpMon(2,6)
 ListSpMon(4,1)
 ListSpMon(4,6)
