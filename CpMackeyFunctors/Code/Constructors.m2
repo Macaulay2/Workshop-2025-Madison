@@ -11,6 +11,8 @@ BurnsideMackeyFunctor(ZZ) := CpMackeyFunctor => (p) -> (
     return makeCpMackeyFunctor(p,R,T,C);
 )
 
+FixedFreeMackeyFunctor = BurnsideMackeyFunctor
+
 UnderlyingFreeMackeyFunctor = method()
 UnderlyingFreeMackeyFunctor(ZZ) := CpMackeyFunctor => (p) -> (
     I := mutableMatrix id_(ZZ^p);                                    --declare identity matrix
