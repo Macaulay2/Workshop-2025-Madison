@@ -26,16 +26,16 @@ isWellDefinedCpMackeyFunctor CpMackeyFunctor := Boolean => M -> (
     if not (ring M.Fixed === ZZ and ring M.Underlying === ZZ) then (print "-- objects are not abelian groups"; return false);
 
     -- Check source and target of restriction are correct
-    if not source(M.Res) == M.Fixed then (print "the source of res should be the fixed module"; return false);
-    if not target(M.Res) == M.Underlying then (print "the target of res should be the underlying module"; return false);
+    if not source(M.Res) == M.Fixed then (print " -- the source of res should be the fixed module"; return false);
+    if not target(M.Res) == M.Underlying then (print " -- the target of res should be the underlying module"; return false);
 
     -- Check source and target of transfer are correct
-    if not source(M.Tr) == M.Underlying then (print "the source of tr should be the underlying module"; return false);
-    if not target(M.Tr) == M.Fixed then (print "the target of tr should be the fixed module"; return false);
+    if not source(M.Tr) == M.Underlying then (print " -- the source of tr should be the underlying module"; return false);
+    if not target(M.Tr) == M.Fixed then (print " -- the target of tr should be the fixed module"; return false);
     
     -- Check source and target of conjugation are correct
-    if not source(M.Conj) == M.Underlying then (print "the source of conj should be the underlying module"; return false);
-    if not target(M.Conj) == M.Underlying then (print "the target of conj should be the underlying module"; return false);
+    if not source(M.Conj) == M.Underlying then (print " -- the source of conj should be the underlying module"; return false);
+    if not target(M.Conj) == M.Underlying then (print " -- the target of conj should be the underlying module"; return false);
 
     ---------
     -- Axioms
