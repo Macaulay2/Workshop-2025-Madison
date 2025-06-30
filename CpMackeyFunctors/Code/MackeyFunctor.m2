@@ -45,8 +45,9 @@ isWellDefinedCpMackeyFunctor CpMackeyFunctor := Boolean => M ->  (
     if not (M.Conj * M.Res == M.Res and M.Tr * M.Conj == M.Tr) then return false;
 
     -- Axiom 4: res * tr = sum of all conjugates (item 5 in overleaf)
-    if not (M.Res * M.Tr == sum for i to M.PrimeOrder list M.Conj^i) then return false;
+    if not (M.Res * M.Tr == sum for i to M.PrimeOrder-1 list M.Conj^i) then return false;
 
+    true
 )
 
 protect symbol PrimeOrder
