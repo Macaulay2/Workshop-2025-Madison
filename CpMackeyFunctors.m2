@@ -89,7 +89,7 @@ undocumented{
     }
 
 load "./CpMackeyFunctors/Documentation/ConstructorsDoc.m2"
-
+load "./CpMackeyFunctors/Documentation/HomGroupDoc.m2"
 
 ----------------------------
 ----------------------------

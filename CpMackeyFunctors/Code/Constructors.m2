@@ -69,3 +69,5 @@ makeOrbitMackeyFunctor (ZZ,Matrix) := CpMackeyFunctor => (p,C) -> (
     T := inducedMap(cokernel m, source m);
     return makeCpMackeyFunctor(p,R,T,C)
 )
+
+
