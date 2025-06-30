@@ -68,6 +68,8 @@ export{
     --UnstableGrothendieckWittClasses.m2
     "makeGWuClass",
     "isWellDefinedGWu", -- Leave exported for now
+    "getScalar",
+    "addGWu",
     
     --BuildingForms.m2
     "makeDiagonalForm",
