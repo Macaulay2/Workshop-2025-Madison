@@ -19,13 +19,13 @@ isWellDefinedCpMackeyFunctorHomomorphism MackeyFunctorHomomorphism := Boolean =>
     if not (source F.FixedMap == getFixedModule F.Domain and target F.FixedMap == getFixedModule F.Codomain) then return false;
 
     -- Check commutes with restriction
-    if not (F.UnderlyingMap * F.Domain.Res == F.Codomain.Res * F.FixedMap) then return false;
+    if not (F.UnderlyingMap * F.Domain.Res == F.Codomain.Res * F.FixedMap) then (print " -- the given morphism does not commute with restriction"; return false);
 
     -- Check commutes with transfer
-    if not (F.FixedMap * F.Domain.Tr == F.Codomain.Tr * F.UnderlyingMap) then return false;
+    if not (F.FixedMap * F.Domain.Tr == F.Codomain.Tr * F.UnderlyingMap) then (print " -- the given morphism does not commute with transfer"; return false);
 
     -- Check commutes with conjugation
-    if not (F.UnderlyingMap * F.Domain.Conj == F.Codomain.Conj * F.UnderlyingMap) then return false;
+    if not (F.UnderlyingMap * F.Domain.Conj == F.Codomain.Conj * F.UnderlyingMap) then (print " -- the given morphism does not commute with conjugation"; return false);
 )
 
 makeMackeyFunctorHomomorphism = method()
