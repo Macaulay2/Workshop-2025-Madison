@@ -36,6 +36,9 @@ newPackage (
         {Name => "Sabrina Pauli",
         Email => "pauli@mathematik.tu-darmstadt.de",
         HomePage => "https://homepage.sabrinapauli.com/"},
+        {Name => "Ruzho Sagayaraj",
+	 Email => "ruzhomath@tamu.edu",
+	 HomePage => "https://github.com/Ruzho-S"},
         {Name => "Andrew Tawfeek",
 	 Email => "atawfeek@uw.edu",
 	 HomePage => "https://www.atawfeek.com/"}
