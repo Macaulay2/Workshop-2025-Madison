@@ -4,7 +4,7 @@ newPackage("ExteriorResolutions",
     Headline => "Injective resolutions over exterior algebras",
     Authors => {
 	{Name => "Penelope Beall",           Email => "pbeall@ucdavis.edu",	       HomePage => "https://pbeall.github.io" },
-    {Name => "Michael K. Brown",         Email => "mkb0096@auburn.edu",	       HomePage => "http://webhome.auburn.edu/~mkb0096/" },
+	{Name => "Michael K. Brown",         Email => "mkb0096@auburn.edu",	       HomePage => "http://webhome.auburn.edu/~mkb0096/" },
 	{Name => "Caitlin M. Davis",	     Email => "cmdavis22@wisc.edu",	       HomePage => "https://sites.google.com/wisc.edu/caitlindavis/home" },
 	{Name => "Andrew Karsten",	     Email => "akk0071@auburn.edu",	       HomePage => "https://www.auburn.edu/cosam/departments/math/students/grad/graduate-students.htm" },
 	{Name => "Jiaheng Li",		     Email => "henryli@gatech.edu",	       HomePage => "" },
@@ -20,7 +20,9 @@ newPackage("ExteriorResolutions",
 
 export {
     --methods
-    "injectiveResolution"
+    "injectiveResolution",
+    "priddyComplex",
+    "priddyDifferential",
     }
 
 --------------------------------------------------
@@ -38,31 +40,28 @@ injectiveResolution(Module) := Complex => opts -> (M) -> (
 
 priddyComplex = method(TypicalValue=>Complex)
 priddyComplex(Matrix) := (m) -> (
+    d0 := m;
+    d1 := syz d0;
+    d2 := syz d1;
+    d3 := syz d2;
+    
+    complex {d0, d1, d2, d3}
 	
-	
-	
-	d0 := m;
-	d1 := syz d0;
-	d2 := syz d1;
-	d3 := syz d2;
-	
-	--complex {d0, d1, d2, d3}
-	
-	complex apply(10, i -> priddyDifferential(i, m))
+--	complex apply(10, i -> priddyDifferential(i, m))
 )
 priddyComplex(List) := (l) -> (
-	priddyComplex matrix {l}
+    priddyComplex matrix {l}
 )
 
 
 priddyDifferential = method(TypicalValue=>Matrix)
 priddyDifferential(ZZ, Matrix, Ring) := (i, m, S) -> (
 	
-    monsSrc = basis(-i, S);
-	monsTgt = basis(-i+1, S);
-	
-	--src =  -- P_{-i}\
-	--tgt = 
+    monsSrc := basis(-i, S);
+    monsTgt := basis(-i+1, S);
+    
+    --src =  -- P_{-i}\
+    --tgt = 
 )
 
 
@@ -110,3 +109,20 @@ TEST ///
 ///
 
 
+end--
+
+restart
+
+needsPackage "ExteriorResolutions"
+
+S = QQ[x,y,z]
+
+P = priddyComplex({x,y,z})
+
+i = -2
+m = vars S
+
+E = QQ[e_0, e_1, SkewCommutative=>true]
+m = matrix{{e_0, e_0*e_1}}
+
+i = -1
