@@ -62,6 +62,10 @@ export{
     "getMatrix",
     "addGW",
     "multiplyGW",
+
+    --UnstableGrothendieckWittClasses.m2
+    "makeGWuClass",
+    "isWellDefinedGWu", -- Leave exported for now
     
     --BuildingForms.m2
     "makeDiagonalForm",
@@ -141,6 +145,9 @@ load "./A1Madison/Code/AnisotropicDimension.m2"
 
 -- Decomposing Grothendieck-Witt classes and symmetric bilinear forms
 load "./A1Madison/Code/Decomposition.m2"
+
+-- Unstable Grothendieck-Witt classes 
+load "./A1Madison/Code/UnstableGrothendieckWittClasses.m2"
 
 ----------------------------
 ----------------------------
