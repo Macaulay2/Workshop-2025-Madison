@@ -28,7 +28,7 @@ newPackage("OrbitSum",
 
 export {"ListSpInd",
         "ListSpMon",
-        "ShuffMon",
+        "shuffMon",
 	    "orbSum",
         "orbSumList"
 
@@ -63,7 +63,7 @@ ListSpInd=(n,d)->( --intakes the number of variables n and the degree d.
 )
 
 -- Shuffle every monomial
-ShuffMon=(f,n)->( -- f is a monomial and n is the number of variables.
+shuffMon=(f,n)->( -- f is a monomial and n is the number of variables.
     R:=QQ[x_1..x_n];
     P:=(exponents f)_0; -- Takes the exponents of the monomial and makes a list.
     P= permutations P; -- Gives all permutations of the exponent list.
@@ -80,7 +80,7 @@ ListSpMon=(n,d)->(
     R:=QQ[x_1..x_n];
     SpI:=ListSpInd(n,d);
     SpMon:={};
-    for i from 0 to (#SpI - 1) do(SpMon = (SpMon| ShuffMon(vectorToMonomial( vector (SpI_i) , R  ) ,n)));  -- Takes the special index and converts it to a monomial in R of n variables.
+    for i from 0 to (#SpI - 1) do(SpMon = (SpMon| shuffMon(vectorToMonomial( vector (SpI_i) , R  ) ,n)));  -- Takes the special index and converts it to a monomial in R of n variables.
     toList set SpMon --returns the list of special monomials
 )
 

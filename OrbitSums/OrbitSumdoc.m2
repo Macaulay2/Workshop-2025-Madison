@@ -22,7 +22,7 @@ beginDocumentation()
   Subnodes
     ListSpInd
     ListSpMon
-    ShuffMon
+    shuffMon
 	orbSum
     orbSumList
 }
@@ -67,29 +67,7 @@ document {
 
 }
 
-document {
-  Key =>
-   ShuffMon
-  Headline => "Permutes monomial.",
-  Usage
-    ShuffMon(f,n)
-  Inputs
-   f: Monomial
-       a monomial in the polynomial ring
-    n: Number
-       the number of variables in the polynomial ring
-  Outputs
-    Mon: List
-         a list of monomials
-  Description
-   Text
-    This function takes a monomial and permutes all the variables of the monomial and puts all permutations in a list.
-   Example
-    R = QQ[x,y];
-    g = {x^2, x*y, y^2};
-    S = subring g;
-    numgens presentationRing S
-}
+
 
 document {
   Key => {orbSum}
@@ -133,6 +111,31 @@ document {
    Example
 
 }///
+
+document {
+  Key => {shuffMon},
+  Headline => "Permutes monomial.",
+  Usage => "shuffMon(f,n)",
+  Inputs => {
+      "f" => Monomial => {"a monomial in the polynomial ring"},
+      "n" => Number => {"the number of variables in the polynomial ring"},
+      },
+
+  Outputs => {
+      "Mon" => List => {"a list of monomials"},
+      },
+
+  PARA {
+    "This function takes a monomial and permutes all the variables of the monomial and puts all permutations in a list."
+    },
+
+   Example {
+    "R = QQ[x,y]",
+    "g = {x^2, x*y, y^2}",
+    "S = subring g",
+    "numgens presentationRing S"
+    },
+}
 
 document {
 	Key => {action, (action, RingOfInvariants)},
