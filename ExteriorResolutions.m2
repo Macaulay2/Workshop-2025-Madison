@@ -20,8 +20,7 @@ newPackage("ExteriorResolutions",
 
 export {
     --methods
-    "injRes",
-	"priddyComplex"
+    "injRes"
     }
 
 --------------------------------------------------
@@ -30,8 +29,11 @@ export {
 
 --Input: 
 --Output:
-injRes = method();
-injRes(Complex) := (C) -> (
+injectiveResolution = method(Options => options freeResolution);
+injectiveResolution(Module) := Complex => opts -> (M) -> (
+    E := ring M;
+    if not isSkewCommutative E then error "Expected underlying ring to be skew commutative";
+    Hom(freeResolution(Hom(M,E), opts),E)
 )
 
 priddyComplex = method(TypicalValue=>Complex)
@@ -84,9 +86,27 @@ doc ///
 
 
 --- TESTS
-
+-* 
+restart
+needsPackage "ExteriorResolutions"
+*-
 TEST /// 
-    (1+1 == 2) == true
+    E = ZZ/101[e_0..e_3,SkewCommutative => true]
+    Res = injectiveResolution(E^1, LengthLimit => 4)
+    assert(I == complex E)
+
+    injectiveResolution(ZZ^2)
+
+    I = ideal vars E
+    k = E^1/I
+    P = injectiveResolution(k, LengthLimit => 10)
+
+    S = ZZ/101[x_0..x_3]
+    for i to 10 list hilbertFunction(i,S)
+    assert all (11,i -> rank P_(-i) === hilbertFunction(i,S))
+    dd^P
+    
+    J = ideal(e_0*e_1, e_1*e_2)
 ///
 
 
