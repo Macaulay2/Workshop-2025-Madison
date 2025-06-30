@@ -15,8 +15,8 @@ isWellDefinedCpMackeyFunctorHomomorphism MackeyFunctorHomomorphism := Boolean =>
     if not (class F.Domain == CpMackeyFunctor and class F.Codomain == CpMackeyFunctor) then return false;
 
     -- Verify F.UnderlyingMap and F.FixedMap have the right domain and codomain
-    if not (source F.UnderlyingMap == getUnderlying F.Domain and target F.UnderlyingMap == getUnderlying F.Codomain) then return false;
-    if not (source F.FixedMap == getFixed F.Domain and target F.FixedMap == getFixed F.Codomain) then return false;
+    if not (source F.UnderlyingMap == getUnderlyingModule F.Domain and target F.UnderlyingMap == getUnderlyingModule F.Codomain) then return false;
+    if not (source F.FixedMap == getFixedModule F.Domain and target F.FixedMap == getFixedModule F.Codomain) then return false;
 
     -- Check commutes with restriction
 
