@@ -1,3 +1,10 @@
+protect symbol PrimeOrder
+protect symbol Underlying
+protect symbol Fixed
+protect symbol Res
+protect symbol Tr
+protect symbol Conj
+
 CpMackeyFunctor = new Type of HashTable
 CpMackeyFunctor.synonym = "Cp Mackey Functor"
 
@@ -48,14 +55,6 @@ isWellDefinedCpMackeyFunctor CpMackeyFunctor := Boolean => M ->  (
     if not (M.Res * M.Tr == sum for i to M.PrimeOrder list M.Conj^i) then return false;
 
 )
-
-protect symbol PrimeOrder
-protect symbol Underlying
-protect symbol Fixed
-protect symbol Res
-protect symbol Tr
-protect symbol Conj
-
 
 makeCpMackeyFunctor = method()
 -- Ordering for the input is:
