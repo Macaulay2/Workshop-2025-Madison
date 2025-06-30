@@ -3,7 +3,7 @@ document{
     Headline => "constructs the Burnside Mackey functor for the group",
     Usage => "makeBurnsideMackeyFunctor(p)",
     Inputs => {
-	ZZ => "p" => {"a prime number", TEX///$p$///},
+	ZZ => "p" => {"a prime number ", TEX///$p$///},
 	},
     Outputs => {
 	CpMackeyFunctor => {"the ", TEX///$C_p$///, "-Mackey functor ", TEX///$\underline{A}$///, "."},
@@ -19,7 +19,7 @@ document{
     makeBurnsideMackeyFunctor(5)
     ///,
     PARA{
-        "The Burnside Mackey functor represents the functor ", TEX///$\text{Mack}_{C_p} \to \text{Ab}$///, " which sends a Mackey functor", TEX///$M$///, " to its fixed point level ", TEX///$M(C_p/C_p)$///, ". In other words, we have a natural isomorphism",
+        "The Burnside Mackey functor represents the functor ", TEX///$\text{Mack}_{C_p} \to \text{Ab}$///, " which sends a Mackey functor ", TEX///$M$///, " to its fixed point level ", TEX///$M(C_p/C_p)$///, ". In other words, we have a natural isomorphism",
         TEX///$$\text{Hom}_{\text{Mack}_{C_p}}\left(\underline{A},M \right) \cong M(C_p/C_p).$$///
     }
     --SeeAlso => {"getHilbertSymbolReal", "getHasseWittInvariant"}
