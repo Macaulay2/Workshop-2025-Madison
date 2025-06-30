@@ -8,9 +8,9 @@ protect symbol Conj
 CpMackeyFunctor = new Type of HashTable
 CpMackeyFunctor.synonym = "Cp Mackey Functor"
 
--- Check if a Mackey functor is a well-defined
-isWellDefinedCpMackeyFunctor = method()
-isWellDefinedCpMackeyFunctor CpMackeyFunctor := Boolean => M -> (
+-- Check if a Mackey functor is well-defined
+-- This overloads the isWellDefined method to apply to CpMackeyFunctors
+isWellDefined CpMackeyFunctor := Boolean => M -> (
     ------------------------
     -- General type-checking
     ------------------------
@@ -46,15 +46,15 @@ isWellDefinedCpMackeyFunctor CpMackeyFunctor := Boolean => M -> (
     if not (M.Conj)^(M.PrimeOrder) == id_(M.Underlying) then (print "-- Conj is not an automorphism of order dividing p"; return false);
 
     -- Axiom 2: res and tr are homomorphisms (item 3 in overleaf)
-    if not isWellDefined M.Tr then (print " -- tr is not a homomorphism"; return false);
-    if not isWellDefined M.Res then (print " -- res is not a homomorphism"; return false);
+    if not isWellDefined M.Tr then (print "-- tr is not a homomorphism"; return false);
+    if not isWellDefined M.Res then (print "-- res is not a homomorphism"; return false);
 
     -- Axiom 3: c*res = res and tr*c = tr
-    if M.Conj * M.Res != M.Res then (print " -- c * res is not equal to res"; return false);
-    if M.Tr * M.Conj != M.Tr then (print " -- tr * c is not equal to tr"; return false);
+    if M.Conj * M.Res != M.Res then (print "-- c * res is not equal to res"; return false);
+    if M.Tr * M.Conj != M.Tr then (print "-- tr * c is not equal to tr"; return false);
 
     -- Axiom 4: res * tr = sum of all conjugates (item 5 in overleaf)
-    if not (M.Res * M.Tr == sum for i to M.PrimeOrder-1 list M.Conj^i) then (print " -- res * tr is not equal to the sum of all conjugates"; return false);
+    if not (M.Res * M.Tr == sum for i to M.PrimeOrder-1 list M.Conj^i) then (print "-- res * tr is not equal to the sum of all conjugates"; return false);
 
     true
 )
@@ -75,7 +75,7 @@ makeCpMackeyFunctor(ZZ,Matrix,Matrix,Matrix) := CpMackeyFunctor => (p,R,T,C) ->(
         symbol Conj => C,
         symbol cache => new CacheTable
         };
-    if isWellDefinedCpMackeyFunctor M then (
+    if isWellDefined M then (
         return M
     )
     else (

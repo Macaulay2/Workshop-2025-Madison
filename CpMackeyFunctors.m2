@@ -44,7 +44,6 @@ load "./CpMackeyFunctors/Code/MackeyFunctor.m2"
 export{
     -- CpMackeyFunctors
     "CpMackeyFunctor",
-    "isWellDefinedCpMackeyFunctor",
     "makeCpMackeyFunctor",
     "getPrimeOrder",
     "getUnderlyingModule",

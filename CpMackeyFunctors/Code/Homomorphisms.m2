@@ -4,8 +4,7 @@ protect symbol Codomain
 MackeyFunctorHomomorphism = new Type of HashTable
 MackeyFunctorHomomorphism.synonym = "Mackey Functor homomorphism"
 
-isWellDefinedCpMackeyFunctorHomomorphism = method()
-isWellDefinedCpMackeyFunctorHomomorphism MackeyFunctorHomomorphism := Boolean => F ->(
+isWellDefined MackeyFunctorHomomorphism := Boolean => F ->(
     -- Verify the keys are correct
     if not (F#?Domain and F#?Codomain and F#?UnderlyingMap and F#?FixedMap) then return false;
     
@@ -40,7 +39,7 @@ makeMackeyFunctorHomomorphism(CpMackeyFunctor, CpMackeyFunctor, Matrix, Matrix) 
         symbol FixedMap => g,
         symbol cache => new CacheTable
         };
-    if isWellDefinedCpMackeyFunctorHomomorphism F then (
+    if isWellDefined F then (
         return F
     )
     else (
