@@ -41,6 +41,7 @@ injectiveResolution(Module) := Complex => opts -> (M) -> (
     P
 )
 
+
 coaugmentationMap = method()
 coaugmentationMap Complex := ComplexMap => 
     (cacheValue symbol coaugmentationMap)(C -> (
@@ -50,30 +51,29 @@ coaugmentationMap Complex := ComplexMap =>
             )
         )
 
-priddyComplex = method(TypicalValue=>Complex)
-priddyComplex(Matrix) := (m) -> (
-    d0 := m;
-    d1 := syz d0;
-    d2 := syz d1;
-    d3 := syz d2;
-    
-    complex {d0, d1, d2, d3}
-	
---	complex apply(10, i -> priddyDifferential(i, m))
+priddyComplex = method(TypicalValue=>Complex, Options=>{LengthLimit=>null})
+priddyComplex(Matrix, Ring) := opts -> (m, S) -> (
+    complex hashTable apply(opts.LengthLimit, i -> -i=>priddyDifferential(-i, m, S))
 )
-priddyComplex(List) := (l) -> (
-    priddyComplex matrix {l}
-)
-
 
 priddyDifferential = method(TypicalValue=>Matrix)
 priddyDifferential(ZZ, Matrix, Ring) := (i, m, S) -> (
-	
+    E := ring m;
+    
     monsSrc := basis(-i, S);
     monsTgt := basis(-i+1, S);
+
+    expTgt := apply(first entries monsTgt, n->flatten exponents n);
     
-    --src =  -- P_{-i}\
-    --tgt = 
+    tgt := directSum apply(expTgt, n->
+	E^{sum(numcols m, i->n_i*flatten degree(m_i))});
+    
+
+    f :=  matrix table(numcols monsTgt, numcols monsSrc, (r,c)->(
+	    monsTgt_{r}//monsSrc_{c}
+    ));
+
+    map(tgt, , sub(f, m))
 )
 
 
@@ -129,9 +129,9 @@ restart
 
 needsPackage "ExteriorResolutions"
 
-S = QQ[x,y,z]
+S = QQ[x_0,x_1]
 
-P = priddyComplex({x,y,z})
+P = priddyComplex({x_0, x_0*x_1})
 
 i = -2
 m = vars S
@@ -140,4 +140,6 @@ E = QQ[e_0, e_1, SkewCommutative=>true]
 m = matrix{{e_0, e_0*e_1}}
 
 i = -1
->>>>>>> cdc0ba3a1643aedfa9e961e6cd91f3a9f250f8f4
+
+priddyDifferential(-2, m, S)
+priddyComplex(m, S, LengthLimit=>3)
