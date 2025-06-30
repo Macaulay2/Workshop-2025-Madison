@@ -30,8 +30,7 @@ isWellDefined MackeyFunctorHomomorphism := Boolean => F ->(
     true
 )
 
-makeMackeyFunctorHomomorphism = method()
-makeMackeyFunctorHomomorphism(CpMackeyFunctor, CpMackeyFunctor, Matrix, Matrix) := MackeyFunctorHomomorphism => (N,M,u,f) -> (
+map(CpMackeyFunctor, CpMackeyFunctor, Matrix, Matrix) := MackeyFunctorHomomorphism => (N,M,u,f) -> (
     F := new MackeyFunctorHomomorphism from {
         symbol Codomain => N,
         symbol Domain => M,
@@ -54,3 +53,5 @@ source(MackeyFunctorHomomorphism) := CpMackeyFunctor => F -> (
 target(MackeyFunctorHomomorphism) := CpMackeyFunctor => F -> (
     return F.Codomain
 )
+
+CpMackeyFunctor#id = X -> map(X, X, (X.Underlying)_id, (X.Fixed)_id)
