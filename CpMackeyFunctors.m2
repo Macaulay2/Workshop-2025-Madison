@@ -73,6 +73,8 @@ export{
     "FixedMap"
 }
 
+load "./CpMackeyFunctors/Code/HomGroup.m2"
+
 beginDocumentation()
 
 document{
