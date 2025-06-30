@@ -73,6 +73,21 @@ export{
     "FixedMap"
 }
 
+beginDocumentation()
+
+document{
+    Key => CpMackeyFunctors,
+    Headline => "package for working with Cp-Mackey functors",
+    PARA{
+        "This package is intended for doing", TEX ///$C_p$///, "-Mackey functor computations."
+    },
+}
+
+undocumented{
+    }
+
+load "./CpMackeyFunctors/Documentation/ConstructorsDoc.m2"
+
 
 ----------------------------
 ----------------------------
