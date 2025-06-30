@@ -85,12 +85,11 @@ ListSpMon=(n,d)->(
 )
 
 --Test for Special Indexes and Monomials
-ListSpInd(6,4)
+print ListSpInd(6,4)
 ListSpMon(2,6)
 ListSpMon(4,1)
 ListSpMon(4,6)
-ListSpMon(4,8)
-ListSpMon(7,8)
+
 
 
 --Orbit Sum for one monomial
