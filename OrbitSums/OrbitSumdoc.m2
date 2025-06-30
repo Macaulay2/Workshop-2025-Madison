@@ -1,5 +1,5 @@
 -*
-   Copyright 2023, ??????
+   Copyright 2025, ??????
     
    You may redistribute this file under the terms of the GNU General Public
    License as published by the Free Software Foundation, either version 2 of
@@ -10,7 +10,7 @@ beginDocumentation()
 
 document {
  Node
-  Key => Permutation Group
+  Key => {PermutationGroup}
   Headline
    a package to deal with permutation groups and orbit sums
   Description
