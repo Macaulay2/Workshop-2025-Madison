@@ -10,7 +10,7 @@ CpMackeyFunctor.synonym = "Cp Mackey Functor"
 
 -- Check if a Mackey functor is a well-defined
 isWellDefinedCpMackeyFunctor = method()
-isWellDefinedCpMackeyFunctor CpMackeyFunctor := Boolean => M ->  (
+isWellDefinedCpMackeyFunctor CpMackeyFunctor := Boolean => M -> (
     ------------------------
     -- General type-checking
     ------------------------

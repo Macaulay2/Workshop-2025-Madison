@@ -26,7 +26,7 @@ isWellDefinedCpMackeyFunctorHomomorphism MackeyFunctorHomomorphism := Boolean =>
 )
 
 makeMackeyFunctorHomomorphism = method()
-makeMackeyFunctorHomomorphism(CpMackeyFunctor, CpMackeyFunctor) := MackeyFunctorHomomorphism => (N,M,f,g) ->(
+makeMackeyFunctorHomomorphism(CpMackeyFunctor, CpMackeyFunctor, Matrix, Matrix) := MackeyFunctorHomomorphism => (N,M,f,g) -> (
     F := new MackeyFunctorHomomorphism from {
         symbol Codomain => N,
         symbol Domain => M,
