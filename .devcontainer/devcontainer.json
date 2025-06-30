@@ -14,7 +14,7 @@
       }
     }
   },
-  "env": {
+  "containerEnv": {
     "BROWSER": "npx live-server "
   }
 }
