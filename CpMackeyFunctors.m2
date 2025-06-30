@@ -10,6 +10,9 @@ newPackage(
         {Name=>"Ben Spitz",
             Email=>"benspitz@virginia.edu",
             HomePage=>"https://benspitz.com/"},
+        {Name=>"Michael R. Zeng",
+            Email=>"zengrf@uw.edu",
+            HomePage=>"https://sites.google.com/uw.edu/zengrf/"},
         {Name=>"Add Yourself",
             Email=>"email",
             HomePage=>"url"}
