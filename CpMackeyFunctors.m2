@@ -59,6 +59,14 @@ export{
     "BurnsideMackeyFunctor"
 }
 
+load "./CpMackeyFunctors/Code/Homomorphisms.m2"
+export{
+    -- Homomorphisms
+    "MackeyFunctorHomomorphism",
+    "isWellDefinedCpMackeyFunctorHomomorphism",
+    "makeMackeyFunctorHomomorphism"
+}
+
 
 ----------------------------
 ----------------------------
