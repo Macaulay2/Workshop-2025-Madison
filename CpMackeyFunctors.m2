@@ -42,7 +42,6 @@ load "./CpMackeyFunctors/Code/Helpers.m2"
 -- Code for the CpMackeyFunctor type
 load "./CpMackeyFunctors/Code/MackeyFunctor.m2"
 export{
-    -- CpMackeyFunctors
     "CpMackeyFunctor",
     "isWellDefinedCpMackeyFunctor",
     "makeCpMackeyFunctor",
@@ -59,6 +58,11 @@ export{
     "BurnsideMackeyFunctor"
 }
 
+-- Code for Mackey functor homomorphisms
+load "./CpMackeyFunctors/Code/Homomorphisms.m2"
+export{
+    "MackeyFunctorHomomorphism"
+}
 
 ----------------------------
 ----------------------------
