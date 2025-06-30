@@ -31,3 +31,17 @@ ComplexRepresentationMackeyFunctor(ZZ) := CpMackeyFunctor => (p) -> (
 
     return makeCpMackeyFunctor(p,R,T,C);
 )
+
+RealRepresentationMackeyFunctor = method()
+RealRepresentationMackeyFunctor(ZZ) := CpMackeyFunctor => (p) -> (
+    if p < 3 then (
+        return ComplexRepresentationMackeyFunctor p
+    ) 
+    else (
+        C := matrix {{1}};
+        T := matrix (for i to (p-1)//2 list {1});
+        R := matrix {{1} | (for i to (p-3)//2 list 2)};
+
+        return makeCpMackeyFunctor(p,R,T,C);
+    )
+)
