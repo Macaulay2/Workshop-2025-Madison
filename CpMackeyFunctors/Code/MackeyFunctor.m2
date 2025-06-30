@@ -38,8 +38,15 @@ isWellDefinedCpMackeyFunctor CpMackeyFunctor := Boolean => M ->  (
     if not isIsomorphism(M.Conj) then return false;
     if not (M.Conj)^(M.PrimeOrder) == id_(M.Underlying) then return false;
 
-    -- Axiom 2: ... TODO
-    return true
+    -- Axiom 2: res and tr are homomorphisms (item 3 in overleaf)
+    if not (isWellDefined M.Tr and isWellDefined M.Res) then return false;
+
+    -- Axiom 3: c*res = res and tr*c = tr
+    if not (M.Conj * M.Res == M.Res and M.Tr * M.Conj == M.Tr) then return false;
+
+    -- Axiom 4: res * tr = sum of all conjugates (item 5 in overleaf)
+    if not (M.Res * M.Tr == sum for i to M.PrimeOrder list M.Conj^i) then return false;
+
 )
 
 protect symbol PrimeOrder
