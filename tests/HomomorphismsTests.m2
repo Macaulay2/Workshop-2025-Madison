@@ -14,12 +14,12 @@ assert not isWellDefined (new MackeyFunctorHomomorphism from {
 
 -- verify the zero map to the zero Mackey functor is well-defined
 
--- A := BurnsideMackeyFunctor(7);
--- Z := makeZeroMackeyFunctor(7);
+A := makeBurnsideMackeyFunctor(7);
+Z := makeZeroMackeyFunctor(7);
 
--- fixedLevelMap:=map(getFixedModule(Z),getFixedModule(A),0);
--- underlyingLevelMap:=map(getUnderlyingModule(Z),getUnderlyingModule(A),0);
+fixedLevelMap:=map(getFixedModule(Z),getFixedModule(A),0);
+underlyingLevelMap:=map(getUnderlyingModule(Z),getUnderlyingModule(A),0);
 
 
--- F := map(Z,A,underlyingLevelMap,fixedLevelMap);
--- assert isWellDefined(F)
+F := map(Z,A,underlyingLevelMap,fixedLevelMap);
+assert isWellDefined(F)
