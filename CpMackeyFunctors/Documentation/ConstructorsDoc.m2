@@ -1,6 +1,6 @@
 document{
     Key => {makeBurnsideMackeyFunctor, (makeBurnsideMackeyFunctor, ZZ)},
-    Headline => "constructs the Burnside Mackey functor for the group",
+    Headline => "constructs the Burnside Mackey functor for the group C_p",
     Usage => "makeBurnsideMackeyFunctor(p)",
     Inputs => {
 	ZZ => "p" => {"a prime number ", TEX///$p$///},
