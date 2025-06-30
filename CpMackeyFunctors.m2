@@ -20,8 +20,11 @@ newPackage(
             Email=>"chandav2@msu.edu",
             HomePage=>"https://sites.google.com/view/davidchanmath"}
         {Name=>"Sasha Zotine",
-	    Email=>"sashahbc@gmail.com",
-	    HomePage=>"https://sites.google.com/view/szotine/home"},
+            Email=>"sashahbc@gmail.com",
+            HomePage=>"https://sites.google.com/view/szotine/home"},
+        {Name=>"Chase Vogeli",
+            Email=>"cpv29@cornell.edu",
+            HomePage=>"https://chasevoge.li"},
         {Name=>"Add Yourself",
             Email=>"email",
             HomePage=>"url"}
