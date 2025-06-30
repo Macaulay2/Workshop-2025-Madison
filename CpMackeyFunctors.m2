@@ -16,6 +16,9 @@ newPackage(
         {Name=>"Chenglu Wang",
             Email=>"cwang@math.harvard.edu",
             HomePage=>"url"}
+        {Name=>"David Chan",
+            Email=>"chandav2@msu.edu",
+            HomePage=>"https://sites.google.com/view/davidchanmath"}
         {Name=>"Add Yourself",
             Email=>"email",
             HomePage=>"url"}
