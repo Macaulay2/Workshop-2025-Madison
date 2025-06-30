@@ -58,7 +58,7 @@ makeCpMackeyFunctor = method()
 -- 4. Conjugation matrix
 makeCpMackeyFunctor(ZZ,Matrix,Matrix,Matrix) := CpMackeyFunctor => (p,R,T,C) ->(
     M := new CpMackeyFunctor from {
-        symbol primeorder => p,
+        symbol PrimeOrder => p,
         symbol Underlying => source T,          -- extract the underlying module from the transfer homomorphism
         symbol Fixed => target T,               -- extract the fixed module from the transfer homomorphism
         symbol Res => R,
@@ -83,7 +83,7 @@ makeCpMackeyFunctor(ZZ,Matrix,Matrix,Matrix) := CpMackeyFunctor => (p,R,T,C) ->(
 
 getPrimeOrder = method()
 getPrimeOrder CpMackeyFunctor := ZZ => M ->(
-    M.primeorder
+    M.PrimeOrder
 )
 
 getUnderlyingModule = method()
