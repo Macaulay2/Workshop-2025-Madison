@@ -10,6 +10,8 @@ newPackage (
         {Name => "Thomas Brazelton",
 	 Email => "brazelton@math.harvard.edu",
 	 HomePage => "https://tbrazel.github.io/"},
+	 {Name => "Somak Dutta",
+	 Email => "somakdutta@tamu.edu"},
         {Name => "Frenly Espino",
 	 Email => "frenly@sas.upenn.edu",
 	 HomePage => "https://www.math.upenn.edu/people/frenly-espino"},
