@@ -60,7 +60,8 @@ export{
     "UnderlyingFreeMackeyFunctor",
     "ComplexRepresentationMackeyFunctor",
     "RealRepresentationMackeyFunctor",
-    "makeZeroMackeyFunctor"
+    "makeZeroMackeyFunctor",
+    "makeFixedPointMackeyFunctor"
 }
 
 load "./CpMackeyFunctors/Code/Homomorphisms.m2"

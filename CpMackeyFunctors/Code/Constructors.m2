@@ -47,9 +47,17 @@ RealRepresentationMackeyFunctor(ZZ) := CpMackeyFunctor => (p) -> (
 )
 
 makeZeroMackeyFunctor = method()
-makeZeroMackeyFunctor (ZZ) := CpMackeyFunctor => (p) ->(
+makeZeroMackeyFunctor (ZZ) := CpMackeyFunctor => (p) -> (
     C:=matrix({});
     R:=C;
     T:=C;
+    return makeCpMackeyFunctor(p,R,T,C)
+)
+
+makeFixedPointMackeyFunctor = method()
+makeFixedPointMackeyFunctor (ZZ,Matrix) := CpMackeyFunctor => (p,C) -> (
+    m := C^0 - C; --declare the matrix 1-C
+    R := inducedMap(source m, kernel m);
+    T := inducedMap(kernel m, source m, sum (for i to p-1 list C^i));
     return makeCpMackeyFunctor(p,R,T,C)
 )
