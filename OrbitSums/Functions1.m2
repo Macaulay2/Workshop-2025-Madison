@@ -4,7 +4,7 @@ needsPackage "SRdeformations"
 -- Getting the special Monomials (modulo permutations of the variables)
 
 -- First we get the special indexes
-IsListSp = (I,n) -> (
+IsListSp = (I,n) -> ( 
     R:=QQ[x_1..x_n];
     aux := 0;
     if (length I) > n then aux = 1 else(
