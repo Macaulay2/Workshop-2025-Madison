@@ -58,7 +58,8 @@ load "./CpMackeyFunctors/Code/Constructors.m2"
 export{
     "BurnsideMackeyFunctor",
     "FixedFreeMackeyFunctor",
-    "UnderlyingFreeMackeyFunctor"
+    "UnderlyingFreeMackeyFunctor",
+    "ComplexRepresentationMackeyFunctor"
 }
 
 load "./CpMackeyFunctors/Code/Homomorphisms.m2"
