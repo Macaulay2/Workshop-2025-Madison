@@ -9,10 +9,10 @@ isWellDefinedCpMackeyFunctor CpMackeyFunctor := Boolean => M ->  (
     ------------------------
     
     -- Ensure all the keys in the hash table defining a Mackey functor are indeed defined
-    if not (M#?primeorder and M#?Res and M#?Tr and M#?Conj and M#?Underlying and M#?Fixed) then return false;
+    if not (M#?PrimeOrder and M#?Res and M#?Tr and M#?Conj and M#?Underlying and M#?Fixed) then return false;
 
     -- Check that the input p is actually a prime number
-    if not (class M.primeorder === ZZ and isPrime(M.primeorder)) then return false;
+    if not (class M.PrimeOrder === ZZ and isPrime(M.PrimeOrder)) then return false;
     
     -- Check fixed and underlying modules are Z-modules
     if not (isModule M.Fixed and isModule M.Underlying) then return false;
@@ -36,13 +36,13 @@ isWellDefinedCpMackeyFunctor CpMackeyFunctor := Boolean => M ->  (
 
     -- Axiom 1: Conj is an automorphism of order dividing p
     if not isIsomorphism(M.Conj) then return false;
-    if not matrixPower(M.Conj, M.primeorder) == id_(M.Underlying) then return false;
+    if not matrixPower(M.Conj, M.PrimeOrder) == id_(M.Underlying) then return false;
 
     -- Axiom 2: ... TODO
     return true
 )
 
-protect symbol primeorder
+protect symbol PrimeOrder
 protect symbol Underlying
 protect symbol Fixed
 protect symbol Res
