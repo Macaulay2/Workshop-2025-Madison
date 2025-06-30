@@ -24,3 +24,22 @@ document{
     }
     --SeeAlso => {"getHilbertSymbolReal", "getHasseWittInvariant"}
 }
+
+
+document{
+    Key => {makeZeroMackeyFunctor, (makeZeroMackeyFunctor, ZZ)},
+    Headline => "constructs the zero Mackey functor for the group",
+    Usage => "makeZeroMackeyFunctor(p)",
+    Inputs => {
+	ZZ => "p" => {"a prime number", TEX///$p$///},
+	},
+    Outputs => {
+	CpMackeyFunctor => {"the zero Mackey functor."},
+	},
+    PARA{
+        "Perhaps the easiest Mackey functor is the ", EM "zero Mackey functor", " which has the zero-module as both the underlying and fixed modules. This is the zero object in the abelian category of Mackey functors, and is an important object to have for homological algebra."
+    },
+    EXAMPLE lines///
+    makeZeroMackeyFunctor(2)
+    ///
+}

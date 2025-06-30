@@ -19,7 +19,5 @@ Z := makeZeroMackeyFunctor(7);
 
 fixedLevelMap:=map(getFixedModule(Z),getFixedModule(A),0);
 underlyingLevelMap:=map(getUnderlyingModule(Z),getUnderlyingModule(A),0);
-
-
 F := map(Z,A,underlyingLevelMap,fixedLevelMap);
 assert isWellDefined(F)
