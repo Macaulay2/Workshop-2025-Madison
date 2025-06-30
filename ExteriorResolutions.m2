@@ -21,7 +21,7 @@ newPackage("ExteriorResolutions",
 export {
     --methods
     "injectiveResolution",
-    "coaugmentationMap"
+    "coaugmentationMap",
     "priddyComplex",
     "priddyDifferential",
     }
@@ -121,6 +121,17 @@ TEST ///
     J = ideal(e_0*e_1, e_1*e_2)
 ///
 
+TEST ///
+    S = QQ[x_0,x_1]
+    E = QQ[e_0, e_1, SkewCommutative=>true]
+    m = matrix{{e_0, e_0*e_1}}
+    D = priddyDifferential(-2, m, S)
+    C = priddyComplex(m, S, LengthLimit=>3)
+    assert(D == map(E^{{3}, {4}, {5}, {6}},E^{{2}, {3}, {4}},{{e_0, 0, 0}, {e_0*e_1, e_0, 0}, {0, e_0*e_1, e_0}, {0, 0, e_0*e_1}}))
+    assert isWellDefined C
+    assert isHomogeneous C
+    assert(C.dd_(-2) == D)
+///
 
 
 end--
@@ -128,18 +139,3 @@ end--
 restart
 
 needsPackage "ExteriorResolutions"
-
-S = QQ[x_0,x_1]
-
-P = priddyComplex({x_0, x_0*x_1})
-
-i = -2
-m = vars S
-
-E = QQ[e_0, e_1, SkewCommutative=>true]
-m = matrix{{e_0, e_0*e_1}}
-
-i = -1
-
-priddyDifferential(-2, m, S)
-priddyComplex(m, S, LengthLimit=>3)
