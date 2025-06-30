@@ -54,6 +54,11 @@ export{
     "getConjugation"
 }
 
+load "./CpMackeyFunctors/Code/Constructors.m2"
+export{
+    "BurnsideMackeyFunctor"
+}
+
 
 ----------------------------
 ----------------------------

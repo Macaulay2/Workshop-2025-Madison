@@ -37,3 +37,6 @@ assert(getFixedModule M == F);
 assert(getRestriction M == R);
 assert(getTransfer M == T);
 assert(getConjugation M == C);
+
+-- Test constructors
+assert(isWellDefinedCpMackeyFunctor (BurnsideMackeyFunctor 17));
