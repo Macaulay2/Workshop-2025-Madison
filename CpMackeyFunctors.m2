@@ -68,8 +68,6 @@ load "./CpMackeyFunctors/Code/Homomorphisms.m2"
 export{
     -- Homomorphisms
     "MackeyFunctorHomomorphism",
-    "isWellDefinedCpMackeyFunctorHomomorphism",
-    "makeMackeyFunctorHomomorphism",
     "UnderlyingMap",
     "FixedMap"
 }

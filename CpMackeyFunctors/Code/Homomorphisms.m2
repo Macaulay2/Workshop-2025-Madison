@@ -54,4 +54,4 @@ target(MackeyFunctorHomomorphism) := CpMackeyFunctor => F -> (
     return F.Codomain
 )
 
-CpMackeyFunctor#id = X -> map(X, X, (X.Underlying)_id, (X.Fixed)_id)
+-- CpMackeyFunctor#id = X -> map(X, X, id_(X.Underlying), id_(X.Fixed))
