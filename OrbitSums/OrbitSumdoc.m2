@@ -91,6 +91,11 @@
 -- }///
 
 document {
+  Key => OrbitSum,
+  Headline => "Invariance of permutation group.",
+}
+
+document {
   Key => {"orbSumList"},
   Headline => "Computes the orbit sums of a list of monomials.",
   Usage => "orbSumList(G,n,d)",
