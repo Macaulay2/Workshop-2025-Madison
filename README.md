@@ -1,5 +1,7 @@
 # $C_p$-Mackey Functors ![status](https://github.com/Macaulay2/Workshop-2025-Madison/actions/workflows/tests.yml/badge.svg?branch=MackeyFunctors)
 
+[Math Overview](https://www.overleaf.com/read/kgqznzqyyptw#68f9c7)
+
 ## Checklist before committing
 
 1. From the main directory, run `m2 --script tests/testbot.m2` to make sure no tests are failing.
