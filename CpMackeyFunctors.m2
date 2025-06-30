@@ -18,7 +18,7 @@ newPackage(
             HomePage=>"https://chasevoge.li"},
         {Name=>"Chenglu Wang",
             Email=>"cwang@math.harvard.edu",
-            HomePage=>"url"},
+            HomePage=>""},
         {Name=>"Michael R. Zeng",
             Email=>"zengrf@uw.edu",
             HomePage=>"https://sites.google.com/uw.edu/zengrf/"},
