@@ -42,6 +42,13 @@ isWellDefinedCpMackeyFunctor CpMackeyFunctor := Boolean => M ->  (
     return true
 )
 
+protect symbol primeorder
+protect symbol Underlying
+protect symbol Fixed
+protect symbol Res
+protect symbol Tr
+protect symbol Conj
+
 
 makeCpMackeyFunctor = method()
 -- Ordering for the input is:
