@@ -56,7 +56,8 @@ export{
 
 load "./CpMackeyFunctors/Code/Constructors.m2"
 export{
-    "BurnsideMackeyFunctor"
+    "BurnsideMackeyFunctor",
+    "UnderlyingFreeMackeyFunctor"
 }
 
 load "./CpMackeyFunctors/Code/Homomorphisms.m2"
