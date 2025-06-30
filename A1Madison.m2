@@ -26,8 +26,11 @@ newPackage (
 	 Email => "jlouwsma@niagara.edu",
 	 HomePage => "https://www.joellouwsma.com/"},
         {Name => "Wern Juin Gabriel Ong",
-	 Email => "gong@bowdoin.edu",
+	 Email => "wgabrielong@uni-bonn.de",
 	 HomePage => "https://wgabrielong.github.io/"},
+        {Name => "Sabrina Pauli",
+        Email => "pauli@mathematik.tu-darmstadt.de",
+        HomePage => "https://homepage.sabrinapauli.com/"},
         {Name => "Andrew Tawfeek",
 	 Email => "atawfeek@uw.edu",
 	 HomePage => "https://www.atawfeek.com/"}
