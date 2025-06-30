@@ -15,10 +15,10 @@ newPackage(
             HomePage=>"https://sites.google.com/uw.edu/zengrf/"},
         {Name=>"Chenglu Wang",
             Email=>"cwang@math.harvard.edu",
-            HomePage=>"url"}
+            HomePage=>"url"},
         {Name=>"David Chan",
             Email=>"chandav2@msu.edu",
-            HomePage=>"https://sites.google.com/view/davidchanmath"}
+            HomePage=>"https://sites.google.com/view/davidchanmath"},
         {Name=>"Sasha Zotine",
             Email=>"sashahbc@gmail.com",
             HomePage=>"https://sites.google.com/view/szotine/home"},
