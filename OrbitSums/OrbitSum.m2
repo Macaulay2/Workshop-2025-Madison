@@ -1,22 +1,37 @@
 newPackage("Permgroups",
     Version => "0.1",
-    Date => "April 17th, 2025",
-    Authors => {
-        {Name => "...", Email => "..."}
-    }
-    Headline => "Package for permutation groups and orbit sums"
-    Keywords => {"Permutation groups"}{"orbit sums"}{"documentation"},
-    Description => "This package computes orbit sums of special monomials under the action of a 
-    permutation group. It includes functions to generate check special monomials, and compute orbit sums 
-    for special monomials. The package is designed for use in invariant theory and related fields."
+    Date => "April 18th, 2025",
+     Authors => {
+        {Name => "Lilia Alanís-López", 
+         Email => "lilia.alanislpz@tec.mx", 
+         HomePage => "https://sites.google.com/tec.mx/liliaalanislopez/"},
+	{Name => "Dalena Vien",
+         Email => "",
+	HomePage => ""},
+        {Name => "Indalecio Ruiz",
+         Email => "",
+         HomePage => ""},
+         {Name => "Francesca Gandini",
+         Email => "",
+         HomePage => ""},
+         {Name => "Summer Strom",
+         Email => "",
+         HomePage => ""}
+    },
+    Headline => "Package for permutation groups and orbit sums",
+    Keywords => {"Permutation groups","orbit sums","documentation"},
+    
     DebuggingMode => true
     )
+
+--Description => "This package computes orbit sums of special monomials under the action of a permutation group. It includes functions to generate check special monomials, and compute orbit sums for special monomials. The package is designed for use in invariant theory and related fields."
 
 export {"ListSpInd",
         "ListSpMon",
         "ShuffMon",
 	    "orbSum",
         "orbSumList"
+
 }
 
 --We need a previous package
@@ -33,11 +48,12 @@ ListSpInd=(n,d)->( --intakes the number of variables n and the degree d.
     for m from 1 to n-1 do(
         for i from 0 to (#SpI)-1 do(
             if (SpDeg_i)+(last (SpI_i))<=d then(AuxI=AuxI | { (SpI_i) | {last (SpI_i)}}; -- Checking the degree of the current and last element degrees then appending them if they are leq d.
-                                                AuxDeg=AuxDeg | { SpDeg_i+ (last (SpI_i))}; -- Appending the degree of the new element.
-                                                if (SpDeg_i)+(last (SpI_i))+1<=d then( AuxI=AuxI | { (SpI_i) | {1 +(last (SpI_i))}}; -- Checking if this is now special, then if it is not repeating the process.
-                                                                                         AuxDeg=AuxDeg | { 1+ SpDeg_i+ (last (SpI_i))}))
-                                             else(AuxI=AuxI | { sort ((SpI_i) | {0}) }; -- Extending the index.
-                                                  AuxDeg=AuxDeg | { SpDeg_i}  ));
+            AuxDeg=AuxDeg | { SpDeg_i+ (last (SpI_i))}; -- Appending the degree of the new element.
+            if (SpDeg_i)+(last (SpI_i))+1<=d then( AuxI=AuxI | { (SpI_i) | {1 +(last (SpI_i))}}; -- Checking if this is now special, then if it is not repeating the process.
+                                                        AuxDeg=AuxDeg | { 1+ SpDeg_i+ (last (SpI_i))}))
+            else(AuxI=AuxI | { sort ((SpI_i) | {0}) }; -- Extending the index.
+                AuxDeg=AuxDeg | { SpDeg_i}  )
+        );
         SpI=AuxI;
         SpDeg=AuxDeg;
         AuxI={};
@@ -45,9 +61,6 @@ ListSpInd=(n,d)->( --intakes the number of variables n and the degree d.
         ); 
     SpI  -- Returns the list of special indexes 
 )
---Test
-ListSpInd(6,4)
-
 
 -- Shuffle every monomial
 ShuffMon=(f,n)->( -- f is a monomial and n is the number of variables.
@@ -63,16 +76,21 @@ ShuffMon=(f,n)->( -- f is a monomial and n is the number of variables.
 
 --Generate, if posible, the list of special monomials
 ListSpMon=(n,d)->(
-    d=min {d,n*(n-1)/2};
+    d=min {d,n*(n-1)//2};
     R:=QQ[x_1..x_n];
-    SpI:=ListSpInd(d,n);
+    SpI:=ListSpInd(n,d);
     SpMon:={};
     for i from 0 to (#SpI - 1) do(SpMon = (SpMon| ShuffMon(vectorToMonomial( vector (SpI_i) , R  ) ,n)));  -- Takes the special index and converts it to a monomial in R of n variables.
-    SpMon --returns the list of special monomials
+    toList set SpMon --returns the list of special monomials
 )
 
---Test
+--Test for Special Indexes and Monomials
+ListSpInd(6,4)
+ListSpMon(2,6)
+ListSpMon(4,1)
 ListSpMon(4,6)
+ListSpMon(4,8)
+ListSpMon(7,8)
 
 
 --Orbit Sum for one monomial
@@ -99,8 +117,6 @@ orbSumList=(G,n,d)->( -- Intakes a group action G, the number of variables n, an
 
 beginDocumentation()
 
-load "./orbitsumsdoc.m2"
+load "./OrbitSumdoc.m2"
 
 end
-
-code determinant
