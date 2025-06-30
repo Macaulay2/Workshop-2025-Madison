@@ -19,6 +19,9 @@ newPackage(
         {Name=>"David Chan",
             Email=>"chandav2@msu.edu",
             HomePage=>"https://sites.google.com/view/davidchanmath"}
+        {Name=>"Sasha Zotine",
+	    Email=>"sashahbc@gmail.com",
+	    HomePage=>"https://sites.google.com/view/szotine/home"},
         {Name=>"Add Yourself",
             Email=>"email",
             HomePage=>"url"}
