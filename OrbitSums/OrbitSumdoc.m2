@@ -11,8 +11,7 @@ beginDocumentation()
 document {
  Node
   Key => {PermutationGroup}
-  Headline
-   a package to deal with permutation groups and orbit sums
+  Headline => "a package to deal with permutation groups and orbit sums",
   Description
    Text
      is a package to give basic ring permutations and orbit sums
@@ -31,8 +30,7 @@ document {
 document {
     Key
         ListSpInd
-    Headline
-        List the special monomials that are related to a degree.
+    Headline => "List the special monomials that are related to a degree.",
     Usage
         ListSpInd(n,d)
     Inputs
@@ -51,10 +49,8 @@ document {
 }
 
 document {
-    Key
-        ListSpMon
-    Headline
-        List the special monomials that are related to a degree.
+    Key => {ListSpMon}
+    Headline => "List the special monomials that are related to a degree.",
     Usage
         ListSpMon(n,d)
     Inputs
@@ -75,8 +71,7 @@ document {
 document {
   Key =>
    ShuffMon
-  Headline =>
-    Permutes monomial.
+  Headline => "Permutes monomial.",
   Usage
     ShuffMon(f,n)
   Inputs
@@ -98,10 +93,8 @@ document {
 }
 
 document {
-  Key
-   orbSum
-  Headline
-   Computes the orbit sum of a monomial.
+  Key => {orbSum}
+  Headline => "Computes the orbit sum of a monomial.",
   Usage
     orbSum(f,G,n)
   Inputs
@@ -121,10 +114,8 @@ document {
 }
 
 document {
-  Key
-   orbSumList
-  Headline
-    Computes the orbit sums of a list of monomials.
+  Key => {orbSumList}
+  Headline => "Computes the orbit sums of a list of monomials.",
   Usage
     orbSumList(G,n,d)
   Inputs
