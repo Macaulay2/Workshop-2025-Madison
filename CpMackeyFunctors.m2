@@ -15,7 +15,10 @@ newPackage(
             HomePage=>"https://sites.google.com/uw.edu/zengrf/"},
         {Name=>"Chenglu Wang",
             Email=>"cwang@math.harvard.edu",
-            HomePage=>"url"},
+            HomePage=>"https://sites.google.com/uw.edu/zengrf/"},    
+	{Name=>"Sasha Zotine",
+	    Email=>"sashahbc@gmail.com",
+	    HomePage=>"https://sites.google.com/view/szotine/home"},
         {Name=>"Add Yourself",
             Email=>"email",
             HomePage=>"url"}
