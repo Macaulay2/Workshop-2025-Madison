@@ -20,7 +20,7 @@ newPackage("ExteriorResolutions",
 
 export {
     --methods
-    "injRes"
+    "injectiveResolution"
     }
 
 --------------------------------------------------
