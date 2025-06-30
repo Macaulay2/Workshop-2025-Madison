@@ -92,6 +92,10 @@ undocumented{
 load "./CpMackeyFunctors/Documentation/ConstructorsDoc.m2"
 load "./CpMackeyFunctors/Documentation/HomGroupDoc.m2"
 
+
+load "./CpMackeyFunctors/Code/AbelianCategory.m2"
+
+ 
 ----------------------------
 ----------------------------
 -- Testing

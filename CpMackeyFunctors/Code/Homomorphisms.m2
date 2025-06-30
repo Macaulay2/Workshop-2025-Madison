@@ -39,8 +39,8 @@ map(CpMackeyFunctor, CpMackeyFunctor, Matrix, Matrix) := MackeyFunctorHomomorphi
     F := new MackeyFunctorHomomorphism from {
         symbol Codomain => N,
         symbol Domain => M,
-        symbol UnderlyingMap => u,
-        symbol FixedMap => f,
+        symbol UnderlyingMap => map(getUnderlyingModule(N),getUnderlyingModule(M),u),
+        symbol FixedMap =>  map(getFixedModule(N),getFixedModule(M),f),
         symbol cache => new CacheTable
         };
     if isWellDefined F then (
@@ -58,5 +58,11 @@ source(MackeyFunctorHomomorphism) := CpMackeyFunctor => F -> (
 target(MackeyFunctorHomomorphism) := CpMackeyFunctor => F -> (
     return F.Codomain
 )
+
+-*getUnderlyingMap = method();
+getUnderlyingMap(MackeyFunctorHomomorphism) := Matrix => F -> (return F.UnderlyingMap)
+
+getFixedMap = method();
+getFixedMap(MackeyFunctorHomomorphism) := Matrix => F -> (return F.FixedMap)*-
 
 CpMackeyFunctor#id = X -> map(X, X, id_(X.Underlying), id_(X.Fixed))
