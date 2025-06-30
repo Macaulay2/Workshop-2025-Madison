@@ -75,7 +75,7 @@ makeCpMackeyFunctor(ZZ,Matrix,Matrix,Matrix) := CpMackeyFunctor => (p,R,T,C) ->(
 -------------------------
 
 getPrimeOrder = method()
-getPrimeOrder CpMackeyFunctor := Module => M ->(
+getPrimeOrder CpMackeyFunctor := ZZ => M ->(
     M.primeorder
 )
 
@@ -90,16 +90,16 @@ getFixedModule CpMackeyFunctor := Module => M ->(
 )
 
 getRestriction = method()
-getRestriction CpMackeyFunctor := Module => M ->(
+getRestriction CpMackeyFunctor := Matrix => M ->(
     M.Res
 )
 
 getTransfer = method()
-getTransfer CpMackeyFunctor := Module => M ->(
+getTransfer CpMackeyFunctor := Matrix => M ->(
     M.Tr
 )
 
 getConjugation = method()
-getConjugation CpMackeyFunctor := Module => M ->(
+getConjugation CpMackeyFunctor := Matrix => M ->(
     M.Conj
 )
