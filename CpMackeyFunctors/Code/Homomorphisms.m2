@@ -31,12 +31,12 @@ isWellDefined MackeyFunctorHomomorphism := Boolean => F ->(
 )
 
 makeMackeyFunctorHomomorphism = method()
-makeMackeyFunctorHomomorphism(CpMackeyFunctor, CpMackeyFunctor, Matrix, Matrix) := MackeyFunctorHomomorphism => (N,M,f,g) -> (
+makeMackeyFunctorHomomorphism(CpMackeyFunctor, CpMackeyFunctor, Matrix, Matrix) := MackeyFunctorHomomorphism => (N,M,u,f) -> (
     F := new MackeyFunctorHomomorphism from {
         symbol Codomain => N,
         symbol Domain => M,
-        symbol UnderlyingMap => f,
-        symbol FixedMap => g,
+        symbol UnderlyingMap => u,
+        symbol FixedMap => f,
         symbol cache => new CacheTable
         };
     if isWellDefined F then (
