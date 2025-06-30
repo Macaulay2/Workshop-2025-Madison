@@ -16,7 +16,7 @@ newPackage("OrbitSum",
          HomePage => ""},
          {Name => "Summer Strom",
          Email => "",
-         HomePage => ""}
+         HomePage => ""} 
     },
     Headline => "Package for permutation groups and orbit sums",
     Keywords => {"Permutation groups","orbit sums","documentation"},
