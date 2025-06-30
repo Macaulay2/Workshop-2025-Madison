@@ -22,3 +22,12 @@ UnderlyingFreeMackeyFunctor(ZZ) := CpMackeyFunctor => (p) -> (
 
     return makeCpMackeyFunctor(p,R,T,C);
 )
+
+ComplexRepresentationMackeyFunctor = method()
+ComplexRepresentationMackeyFunctor(ZZ) := CpMackeyFunctor => (p) -> (
+    C := matrix {{1}};
+    T := matrix (for i to p-1 list {1});
+    R := matrix {for i to p-1 list 1};
+
+    return makeCpMackeyFunctor(p,R,T,C);
+)
