@@ -17,11 +17,10 @@ document{
         },
     EXAMPLE lines///                                                                         
     makeBurnsideMackeyFunctor(5)
-    ///,                  
-    PARA{EM "Citations:"},
-    UL{
-	{"[S73] J.P. Serre, ", EM "A course in arithmetic,", " Springer-Verlag, 1973."},
-	{"[MH73] Milnor and Husemoller, ", EM "Symmetric bilinear forms,", " Springer-Verlag, 1973."},
-    },
+    ///,
+    PARA{
+        "The Burnside Mackey functor represents the functor ", TEX///$\text{Mack}_{C_p} \to \text{Ab}$///, " which sends a Mackey functor", TEX///$M$///, " to its fixed point level ", TEX///$M(C_p/C_p)$///, ". In other words, we have a natural isomorphism",
+        TEX///$$\text{Hom}_{\text{Mack}_{C_p}}\left(\underline{A},M \right) \cong M(C_p/C_p).$$///
+    }
     --SeeAlso => {"getHilbertSymbolReal", "getHasseWittInvariant"}
 }
