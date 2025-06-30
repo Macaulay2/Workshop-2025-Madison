@@ -28,7 +28,7 @@ document {
 }
 
 document {
-    Key => ListSpInd}
+    Key => {ListSpInd},
     Headline => "List the special monomials that are related to a degree.",
     Usage
         ListSpInd(n,d)
