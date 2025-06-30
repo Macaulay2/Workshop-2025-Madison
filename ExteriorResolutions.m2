@@ -20,7 +20,8 @@ newPackage("ExteriorResolutions",
 
 export {
     --methods
-    "injectiveResolution"
+    "injectiveResolution",
+    "coaugmentationMap"
     }
 
 --------------------------------------------------
@@ -33,8 +34,19 @@ injectiveResolution = method(Options => options freeResolution);
 injectiveResolution(Module) := Complex => opts -> (M) -> (
     E := ring M;
     if not isSkewCommutative E then error "Expected underlying ring to be skew commutative";
-    Hom(freeResolution(Hom(M,E), opts),E)
+    P := Hom(freeResolution(Hom(M,E), opts),E);
+    P.cache.Module = M;
+    P
 )
+
+coaugmentationMap = method()
+coaugmentationMap Complex := ComplexMap => 
+    (cacheValue symbol coaugmentationMap)(C -> (
+            if not C.cache.?Module then error "expected an injective resolution";
+            M := C.cache.Module;
+            map(C, complex M, i -> if i === 0 then map(C_0, M, generators M))
+            )
+        )
 
 priddyComplex = method(TypicalValue=>Complex)
 priddyComplex(Matrix) := (m) -> (
@@ -94,6 +106,7 @@ TEST ///
     E = ZZ/101[e_0..e_3,SkewCommutative => true]
     Res = injectiveResolution(E^1, LengthLimit => 4)
     assert(I == complex E)
+    assert isWellDefined Res
 
     injectiveResolution(ZZ^2)
 
@@ -109,4 +122,6 @@ TEST ///
     J = ideal(e_0*e_1, e_1*e_2)
 ///
 
-
+needsPackage "Complexes"
+methods augmentationMap
+code 0
