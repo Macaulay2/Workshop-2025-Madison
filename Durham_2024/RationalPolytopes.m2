@@ -512,6 +512,7 @@ doc ///
       $h^*$-polynomial of $P$.
     Example
       hStar convexHull transpose matrix "-1,0; 0,-1; 1,0; 0,1"
+      hStar convexHull transpose matrix {{0,0,0},{1,0,0},{0,1,0},{1,1,3}}
     Text
       Otherwise if $P$ is a rational polytope then the behavior
       may give unexpected results because the calculation of
@@ -524,12 +525,15 @@ doc ///
       To return the denominator of the Ehrhart series, set the
       optional argument @TO ReturnDenominator@ to @TT "true"@.
       In this case, the result is a pair that forms the numerator
-      and denominator of the Ehrhart series.
+      and denominator of the Ehrhart series. Note that choice of 
+      Backend gives the same rational function up to simplification.
     Example
-      hStar(convexHull transpose matrix "0; 1/2",
+      (num1, denom1) = hStar(convexHull transpose matrix "0; 1/2",
           Backend => "Normaliz", ReturnDenominator => true)
-      hStar(convexHull transpose matrix "0; 1/2",
+      num1/denom1
+      (num2, denom2) = hStar(convexHull transpose matrix "0; 1/2",
           Backend => "M2", ReturnDenominator => true)
+      num2/denom2
   SeeAlso
     RationalPolytopes
     ehrhartSeries
@@ -609,7 +613,35 @@ doc ///
     RationalPolytopes
 ///
 
+doc ///
+  Key
+    ehrhartSeries
+  Headline
+    a method function
+  Usage
+    ES = ehrhartSeries(P, R)
+    ES = ehrhartSeries(P)
+  Inputs
+    P : Polyhedron
+      The (rational) polyhedron whose Ehrhart series we wish to know
+    R : Ring
+      A ring in at least one variable
+  Outputs
+    ES : EhrhartSeries
+      Ehrhart series in the ring R, or in frac(QQ[t]) if R not specified
+  Description
+    Text
+      Computes the Ehrhart series of the (rational) polyhedron P. Result is cached in P.
+    Example
+      P = convexHull transpose matrix {{-1,0},{0,1/2},{0,-1/2},{1,0}}
+      ehrhartSeries PS
+  SeeAlso
+    hStar
+    RationalPolytopes
+  ///
+  
 
+  
 
 -* Test section *-
 TEST /// -- (1)
