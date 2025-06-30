@@ -1,4 +1,4 @@
-newPackage("Permgroups",
+newPackage("OrbitSum",
     Version => "0.1",
     Date => "April 18th, 2025",
      Authors => {
