@@ -30,7 +30,12 @@ isWellDefined MackeyFunctorHomomorphism := Boolean => F ->(
     true
 )
 
-map(CpMackeyFunctor, CpMackeyFunctor, Matrix, Matrix) := MackeyFunctorHomomorphism => (N,M,u,f) -> (
+-- Arguments:
+-- 1. Target
+-- 2. Source
+-- 3. Underlying map
+-- 4. Fixed-point map
+map(CpMackeyFunctor, CpMackeyFunctor, Matrix, Matrix) := MackeyFunctorHomomorphism => opts -> (N,M,u,f) -> (
     F := new MackeyFunctorHomomorphism from {
         symbol Codomain => N,
         symbol Domain => M,
@@ -54,12 +59,4 @@ target(MackeyFunctorHomomorphism) := CpMackeyFunctor => F -> (
     return F.Codomain
 )
 
-getFixedMap(MackeyFunctorHomomorphism) := CpMackeyFunctor => F -> (
-    return F.FixedMap
-)
-
-getUnderlyingMap(MackeyFunctorHomomorphism) := CpMackeyFunctor => F -> (
-    return F.UnderlyingMap
-)
-
-CpMackeyFunctor#id = X -> map(X, X, (X.Underlying)_id, (X.Fixed)_id)
+CpMackeyFunctor#id = X -> map(X, X, id_(X.Underlying), id_(X.Fixed))
