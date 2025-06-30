@@ -255,7 +255,7 @@ ehrhartQPNormaliz Polyhedron := P -> (
     n := dim P;
     k := denominator P;
     latticePointCounts := for i from 0 to (n+1)*k -1 list (
-        numberOfLatticePoints := ES(0);
+        numberOfLatticePoints := sub(ES,t=>0);
         ES = (ES - numberOfLatticePoints)/t;
         numberOfLatticePoints
         );
@@ -432,31 +432,6 @@ doc ///
     A package for Ehrhart theory of rational polytopes
 ///
 
--- doc ///
---   Key
---     ehrhartConstituents
---   Headline
---     a function
---   Usage
---     p = ehrhartConstituents(P,i)
---   Inputs
---     P : Polyhedron
---     i : ZZ
---       (P,i) is a polyhedron and integer to calculate the ith polynomial piece contributing to the Ehrhart quasipolynomial for P
---   Outputs
---     p : QQ[x]
---       the ith polynomial contributing to the Ehrhart quasipolynomial of P
---   Description
---     Text
---       it calculates the ith polynomial piece contributing to the Ehrhart quasipolynomial of a polyhedron P
---     Example
---       ehrhartConstituents(convexHull transpose matrix "0,0;1/2,0;0,1/2",0)
---       ehrhartConstituents(convexHull transpose matrix "0,0;1/2,0;0,1/2",1)
--- 
---   SeeAlso
---     RationalPolytopes
--- ///
-
 
 doc ///
   Key
@@ -511,6 +486,7 @@ doc ///
       $h^*$-polynomial of $P$.
     Example
       hStarPolynomial convexHull transpose matrix "-1,0; 0,-1; 1,0; 0,1"
+      hStarPolynomial convexHull transpose matrix {{0,0,0},{1,0,0},{0,1,0},{1,1,3}}
     Text
       Otherwise if $P$ is a rational polytope then the behavior
       may give unexpected results because the calculation of
@@ -523,12 +499,15 @@ doc ///
       To return the denominator of the Ehrhart series, set the
       optional argument @TO ReturnDenominator@ to @TT "true"@.
       In this case, the result is a pair that forms the numerator
-      and denominator of the Ehrhart series.
+      and denominator of the Ehrhart series. Note that choice of 
+      Backend gives the same rational function up to simplification.
     Example
-      hStarPolynomial(convexHull transpose matrix "0; 1/2",
+      (num1, denom1) = hStarPolynomial(convexHull transpose matrix "0; 1/2",
           Backend => "Normaliz", ReturnDenominator => true)
-      hStarPolynomial(convexHull transpose matrix "0; 1/2",
+      num1/denom1
+      (num2, denom2) = hStarPolynomial(convexHull transpose matrix "0; 1/2",
           Backend => "M2", ReturnDenominator => true)
+      num2/denom2
   SeeAlso
     RationalPolytopes
     ehrhartSeries
@@ -608,24 +587,44 @@ doc ///
     RationalPolytopes
 ///
 
+doc ///
+  Key
+    ehrhartSeries
+  Headline
+    a method function
+  Usage
+    ES = ehrhartSeries(P, R)
+    ES = ehrhartSeries(P)
+  Inputs
+    P : Polyhedron
+      The (rational) polyhedron whose Ehrhart series we wish to know
+    R : Ring
+      A ring in at least one variable
+  Outputs
+    ES : RingElement
+      Ehrhart series in the ring R, or in frac(QQ[t]) if R not specified
+  Description
+    Text
+      Computes the Ehrhart series of the (rational) polyhedron P. Result is cached in P.
+    Example
+      P = convexHull transpose matrix {{-1,0},{0,1/2},{0,-1/2},{1,0}}
+      ehrhartSeries P
+  SeeAlso
+    hStarPolynomial
+    RationalPolytopes
+  ///
+  
+
+  
 
 
 -* Test section *-
 TEST /// -- (1)
 R=QQ[t]
 assert(1_R == hStarPolynomial(convexHull transpose matrix "0,0,0;1,0,0;0,1,0;0,0,1",R))
-assert(t^5+3*t^4+4*t^3+4*t^2+3*t+1 == hStarPolynomial(convexHull transpose matrix "1,0;-1,0;0,1/2;0,-1/2",R))
-assert(t+1 == hStarPolynomial(convexHull transpose matrix "0; 1/2",R))
-assert(t^5+t^3+t^2+1 == hStarPolynomial(convexHull transpose matrix "1/4; 1/2",R))
-///
-
--* Test section *-
-TEST /// -- (1)
-R=QQ[t]
-assert(1_R == hStar(convexHull transpose matrix "0,0,0;1,0,0;0,1,0;0,0,1",R))
-assert(t^5+3*t^4+4*t^3+4*t^2+3*t+1 == hStar(convexHull transpose matrix "1,0;-1,0;0,1/2;0,-1/2",R))
-assert(t+1 == hStar(convexHull transpose matrix "0; 1/2",R))
-assert(t^5+t^3+t^2+1 == hStar(convexHull transpose matrix "1/4; 1/2",R))
+assert(t^2 + 1 == hStarPolynomial(convexHull transpose matrix "1,0;-1,0;0,1/2;0,-1/2",R, Backend => "Normaliz"))
+assert(t+1 == hStarPolynomial(convexHull transpose matrix "0; 1/2",R, Backend => "M2"))
+assert(t^5+t^3+t^2+1 == hStarPolynomial(convexHull transpose matrix "1/4; 1/2",R, Backend => "M2"))
 ///
 
 
