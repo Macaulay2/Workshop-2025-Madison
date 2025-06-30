@@ -16,9 +16,9 @@ newPackage(
     )
 
 export {
-    "hStar",
-    "Ehrhart",
-    "EhrhartQP",
+    "hStarPolynomial",
+    --"ehrhartConstituents",
+    "ehrhartQP",
     "isPeriod",
     "quasiPolynomial",
     "period",
@@ -194,8 +194,8 @@ coefficientMonomial(QuasiPolynomial,ZZ) := (QP,i) -> (
 
 -* Ehrhart Polynomial part *-
 
-Ehrhart=method(TypicalValue=>RingElement)
-Ehrhart (Polyhedron,ZZ):=(P, i) -> (
+ehrhartConstituents = method(TypicalValue=>RingElement)
+ehrhartConstituents (Polyhedron,ZZ):=(P, i) -> (
     n:=dim P;
     k:=denominator P;
     R:=QQ[getSymbol "x"];
@@ -217,45 +217,45 @@ Ehrhart (Polyhedron,ZZ):=(P, i) -> (
     )
 
 
-EhrhartQP = method(
+ehrhartQP = method(
     Options => {
         Backend => "Normaliz" -- Normaliz or M2
         }
     )
 
-EhrhartQP Polyhedron := opts -> P -> (
-    if not P#cache#?"EhrhartQP" then (
+ehrhartQP Polyhedron := opts -> P -> (
+    if not P#cache#?"ehrhartQP" then (
         QP := if opts.Backend == "Normaliz" then (
-            EhrhartQPNormaliz P
+            ehrhartQPNormaliz P
             )
         else if opts.Backend == "M2" then (
-            EhrhartQPM2 P
+            ehrhartQPM2 P
             )
         else error("Unknown Backend");
         QP#cache#"OriginalPolyhedron" = P;
-        P#cache#"EhrhartQP" = QP;
+        P#cache#"ehrhartQP" = QP;
         );
-    P#cache#"EhrhartQP"
+    P#cache#"ehrhartQP"
     )
 
-EhrhartQPM2 = method()
-EhrhartQPM2 Polyhedron := P -> (
+ehrhartQPM2 = method()
+ehrhartQPM2 Polyhedron := P -> (
     k := denominator P;
-    quasiPolynomial(for i from 0 to k-1 list Ehrhart(P,i))
+    quasiPolynomial(for i from 0 to k-1 list ehrhartConstituents(P,i))
     )
 
 -- use the EhrharhtSeries of P (computed with Normaliz)
 -- to construct the Quasi-Polynomial
 
-EhrhartQPNormaliz = method()
-EhrhartQPNormaliz Polyhedron := P -> (
+ehrhartQPNormaliz = method()
+ehrhartQPNormaliz Polyhedron := P -> (
     ES := ehrhartSeries(P, Backend => "Normaliz");
     R := ring ES;
     t := R_0;
     n := dim P;
     k := denominator P;
     latticePointCounts := for i from 0 to (n+1)*k -1 list (
-        numberOfLatticePoints := ES(0);
+        numberOfLatticePoints := sub(ES,t=>0);
         ES = (ES - numberOfLatticePoints)/t;
         numberOfLatticePoints
         );
@@ -275,44 +275,44 @@ EhrhartQPNormaliz Polyhedron := P -> (
 
 
 
--- hStar currently uses M2 code to compute
+-- hStarPolynomial currently uses M2 code to compute
 -- maybe we should add a Normaliz version too
 
 -- For the M2 and Normaliz versions have different denominators - can they
 -- be uniformised?
-hStar = method(
+hStarPolynomial = method(
     Options => {
         ReturnDenominator => false, --returns a pair of polys (h, d) s.t. Ehrhart series is h/d
         Backend => "Normaliz" -- either Normaliz or M2
         })
 
-hStar(Polyhedron, Ring) := opts -> (P, R) -> (
+hStarPolynomial(Polyhedron, Ring) := opts -> (P, R) -> (
     if numgens R < 1 then error("ring must have at least one generator");
-    if not P#cache#?"EhrhartSeriesNumerator" then (
+    if not P#cache#?"ehrhartSeriesNumerator" then (
         if opts.Backend == "M2" then (
-            hStarM2(P, R);
+            hStarPolynomialM2(P, R);
             )
         else if opts.Backend == "Normaliz" then (
-            hStarNormaliz(P, R);
+            hStarPolynomialNormaliz(P, R);
             )
         else error("unknown Backend option: " | toString opts.Backend);
         );
     if opts.ReturnDenominator then (
-        P#cache#"EhrhartSeriesNumerator",
-        P#cache#"EhrhartSeriesDenominator"
+        P#cache#"ehrhartSeriesNumerator",
+        P#cache#"ehrhartSeriesDenominator"
         )
-    else P#cache#"EhrhartSeriesNumerator"
+    else P#cache#"ehrhartSeriesNumerator"
     )
 
-hStar(Polyhedron) := opts -> P -> (
-    R:=QQ[getSymbol "t"]; -- potentially redundant if hStar has already been computed
-    hStar(P, R, opts)
+hStarPolynomial(Polyhedron) := opts -> P -> (
+    R:=QQ[getSymbol "t"]; -- potentially redundant if hStarPolynomial has already been computed
+    hStarPolynomial(P, R, opts)
     )
 
--- M2 version of hStar polynomial
+-- M2 version of hStarPolynomial polynomial
 -- once computed, it updates the cache
-hStarM2 = method()
-hStarM2(Polyhedron, Ring) := (P, R) -> (
+hStarPolynomialM2 = method()
+hStarPolynomialM2(Polyhedron, Ring) := (P, R) -> (
     n:=dim P;
     dnom := lcm for i in flatten entries vertices P list denominator promote(i,QQ);
     p:=1;
@@ -320,26 +320,26 @@ hStarM2(Polyhedron, Ring) := (P, R) -> (
     for i from 1 to (n+1)*dnom do (p=p + #latticePoints(i*P) * t^i);
     r:=(1-t^dnom)^(n+1);
     f := (p*r) % t^((n+1)*dnom);
-    P#cache#"EhrhartSeriesNumerator" = f;
-    P#cache#"EhrhartSeriesDenominator" = r;
+    P#cache#"ehrhartSeriesNumerator" = f;
+    P#cache#"ehrhartSeriesDenominator" = r;
     (f, r)
     )
 
 
--- Normaliz version of hStar polynomial
+-- Normaliz version of hStarPolynomial polynomial
 -- once computed, it updates the cache
 
 -- WARNING: the denominator of the hstar might not be the usual one!
-hStarNormaliz = method()
-hStarNormaliz(Polyhedron, Ring) := (P, R) -> (
+hStarPolynomialNormaliz = method()
+hStarPolynomialNormaliz(Polyhedron, Ring) := (P, R) -> (
     t := R_0;
     C := normaliz(transpose vertices P, "polytope"); -- Maybe all of this data can be stored for later use
     numeratorCoefficients := C#"inv"#"hilbert series num";
     denominatorFactors := C#"inv"#"hilbert series denom";
     f := sum for i from 0 to #numeratorCoefficients -1 list (numeratorCoefficients#i) * t^i;
     r := product for i from 0 to #denominatorFactors -1 list 1 - t^(denominatorFactors#i);
-    P#cache#"EhrhartSeriesNumerator" = f;
-    P#cache#"EhrhartSeriesDenominator" = r;
+    P#cache#"ehrhartSeriesNumerator" = f;
+    P#cache#"ehrhartSeriesDenominator" = r;
     (f, r)
     )
 
@@ -351,15 +351,15 @@ ehrhartSeries = method(
     )
 
 ehrhartSeries(Polyhedron, Ring) := opts -> (P, R) -> (
-    if not P#cache#?"EhrhartSeries" then (
-        (h, d) := hStar(P, R, ReturnDenominator => true, Backend => opts.Backend);
+    if not P#cache#?"ehrhartSeries" then (
+        (h, d) := hStarPolynomial(P, R, ReturnDenominator => true, Backend => opts.Backend);
         R' := ring h; -- if R' =!= R then we previously constructed R' so we should ignore R
         F := frac R';
         h = h_F;
         d = d_F;
-        P#cache#"EhrhartSeries" = h/d;
+        P#cache#"ehrhartSeries" = h/d;
         );
-    P#cache#"EhrhartSeries"
+    P#cache#"ehrhartSeries"
     )
 
 ehrhartSeries Polyhedron := opts -> P -> (
@@ -432,40 +432,14 @@ doc ///
     A package for Ehrhart theory of rational polytopes
 ///
 
-doc ///
-  Key
-    Ehrhart
-   (Ehrhart,Polyhedron,ZZ)
-  Headline
-    a function
-  Usage
-    p = Ehrhart(P,i)
-  Inputs
-    P : Polyhedron
-    i : ZZ
-      (P,i) is a polyhedron and integer to calculate the ith polynomial piece contributing to the Ehrhart quasipolynomial for P
-  Outputs
-    p : QQ[x]
-      the ith polynomial contributing to the Ehrhart quasipolynomial of P
-  Description
-    Text
-      it calculates the ith polynomial piece contributing to the Ehrhart quasipolynomial of a polyhedron P
-    Example
-      Ehrhart(convexHull transpose matrix "0,0;1/2,0;0,1/2",0)
-      Ehrhart(convexHull transpose matrix "0,0;1/2,0;0,1/2",1)
-
-  SeeAlso
-    RationalPolytopes
-///
-
 
 doc ///
   Key
-    EhrhartQP
+    ehrhartQP
   Headline
     a function
   Usage
-    L = EhrhartQP(P)
+    L = ehrhartQP(P)
   Inputs
     P : Polyhedron
       the polyhedron for which we calculate the Ehrhart quasipolynomial
@@ -476,23 +450,23 @@ doc ///
     Text
       it calculates the Ehrhart quasipolynomial of polyhedron P
     Example
-      EhrhartQP(convexHull transpose matrix "0,0;1/2,0;0,1/2")
+      ehrhartQP(convexHull transpose matrix "0,0;1/2,0;0,1/2")
 ///
 
 
 
 doc ///
   Key
-    hStar
-    (hStar, Polyhedron)
-    (hStar, Polyhedron, Ring)
-    [hStar, Backend]
-    [hStar, ReturnDenominator]
+    hStarPolynomial
+    (hStarPolynomial, Polyhedron)
+    (hStarPolynomial, Polyhedron, Ring)
+    [hStarPolynomial, Backend]
+    [hStarPolynomial, ReturnDenominator]
   Headline
     the $h^*$-polynomial of a polytope
   Usage
-    hStar P
-    hStar(P,R)
+    hStarPolynomial P
+    hStarPolynomial(P,R)
   Inputs
     P : Polyhedron
       A convex polyhedron which must be compact
@@ -511,16 +485,16 @@ doc ///
       If $P$ is a lattice polytope then this function returns the
       $h^*$-polynomial of $P$.
     Example
-      hStar convexHull transpose matrix "-1,0; 0,-1; 1,0; 0,1"
-      hStar convexHull transpose matrix {{0,0,0},{1,0,0},{0,1,0},{1,1,3}}
+      hStarPolynomial convexHull transpose matrix "-1,0; 0,-1; 1,0; 0,1"
+      hStarPolynomial convexHull transpose matrix {{0,0,0},{1,0,0},{0,1,0},{1,1,3}}
     Text
       Otherwise if $P$ is a rational polytope then the behavior
       may give unexpected results because the calculation of
       the Ehrhart series (see @TO ehrhartSeries@) may use
       a denominator that is different to the expected one.
     Example
-      hStar(convexHull transpose matrix "0; 1/2", Backend => "Normaliz")
-      hStar(convexHull transpose matrix "0; 1/2", Backend => "M2")
+      hStarPolynomial(convexHull transpose matrix "0; 1/2", Backend => "Normaliz")
+      hStarPolynomial(convexHull transpose matrix "0; 1/2", Backend => "M2")
     Text
       To return the denominator of the Ehrhart series, set the
       optional argument @TO ReturnDenominator@ to @TT "true"@.
@@ -528,10 +502,10 @@ doc ///
       and denominator of the Ehrhart series. Note that choice of 
       Backend gives the same rational function up to simplification.
     Example
-      (num1, denom1) = hStar(convexHull transpose matrix "0; 1/2",
+      (num1, denom1) = hStarPolynomial(convexHull transpose matrix "0; 1/2",
           Backend => "Normaliz", ReturnDenominator => true)
       num1/denom1
-      (num2, denom2) = hStar(convexHull transpose matrix "0; 1/2",
+      (num2, denom2) = hStarPolynomial(convexHull transpose matrix "0; 1/2",
           Backend => "M2", ReturnDenominator => true)
       num2/denom2
   SeeAlso
@@ -627,38 +601,30 @@ doc ///
     R : Ring
       A ring in at least one variable
   Outputs
-    ES : EhrhartSeries
+    ES : RingElement
       Ehrhart series in the ring R, or in frac(QQ[t]) if R not specified
   Description
     Text
       Computes the Ehrhart series of the (rational) polyhedron P. Result is cached in P.
     Example
       P = convexHull transpose matrix {{-1,0},{0,1/2},{0,-1/2},{1,0}}
-      ehrhartSeries PS
+      ehrhartSeries P
   SeeAlso
-    hStar
+    hStarPolynomial
     RationalPolytopes
   ///
   
 
   
 
--* Test section *-
-TEST /// -- (1)
-R=QQ[t]
-assert(1_R == hStar(convexHull transpose matrix "0,0,0;1,0,0;0,1,0;0,0,1",R))
-assert(t^5+3*t^4+4*t^3+4*t^2+3*t+1 == hStar(convexHull transpose matrix "1,0;-1,0;0,1/2;0,-1/2",R))
-assert(t+1 == hStar(convexHull transpose matrix "0; 1/2",R))
-assert(t^5+t^3+t^2+1 == hStar(convexHull transpose matrix "1/4; 1/2",R))
-///
 
 -* Test section *-
 TEST /// -- (1)
 R=QQ[t]
-assert(1_R == hStar(convexHull transpose matrix "0,0,0;1,0,0;0,1,0;0,0,1",R))
-assert(t^5+3*t^4+4*t^3+4*t^2+3*t+1 == hStar(convexHull transpose matrix "1,0;-1,0;0,1/2;0,-1/2",R))
-assert(t+1 == hStar(convexHull transpose matrix "0; 1/2",R))
-assert(t^5+t^3+t^2+1 == hStar(convexHull transpose matrix "1/4; 1/2",R))
+assert(1_R == hStarPolynomial(convexHull transpose matrix "0,0,0;1,0,0;0,1,0;0,0,1",R))
+assert(t^2 + 1 == hStarPolynomial(convexHull transpose matrix "1,0;-1,0;0,1/2;0,-1/2",R, Backend => "Normaliz"))
+assert(t+1 == hStarPolynomial(convexHull transpose matrix "0; 1/2",R, Backend => "M2"))
+assert(t^5+t^3+t^2+1 == hStarPolynomial(convexHull transpose matrix "1/4; 1/2",R, Backend => "M2"))
 ///
 
 
@@ -693,14 +659,14 @@ end--
 -- note that the Polyhedron type is just a hashtable with a single entry: cache
 
 
--- check the definition of hStar polynomial in literature and check whether the denominator of the Ehrhart series is:
+-- check the definition of hStarPolynomial polynomial in literature and check whether the denominator of the Ehrhart series is:
 -- (1 - t^(denominator P))^(dim P)  or  (1 - t^(period P))^(dim P)
 -- Answer:
 --   in the literature, authors typically do not define a denominator / hstar polynomial for rational polytopes
 --
 
 
--- simplify the names of functions: E.g. EhrhartQP -> ehrhart (overriding the one in Polyhedra)
+-- simplify the names of functions: E.g. ehrhartQP -> Ehrhart (overriding the one in Polyhedra)
 -- or, if we don't want to override, then choose a name without abbreviations: e.g. ehrhartQuasiPolynomial
 -- function names and variables should start with lower case
 -- periodQP -> period (may need to change the key in the QuasiPolynomial type)
@@ -708,10 +674,10 @@ end--
 
 -- think about how a user might interact with the package and what would make life easier for them.
 -- E.g. A user comes along with a polytope in mind: either they know the vertices or a half-space description
---      the user want to compute the Ehrhart quasi-polynomial, Ehrhart series, hStar poly, delta-vector (coefficients of hStar poly)
+--      the user want to compute the Ehrhart quasi-polynomial, Ehrhart series, hStarPolynomial poly, delta-vector (coefficients of hStarPolynomial poly)
 
 
--- Whenever we perform a computation, e.g. computing the EhrhartQP, store the result in the cache
+-- Whenever we perform a computation, e.g. computing the ehrhartQP, store the result in the cache
 -- and before performing computations, check if we have already computed it by checking the cache
 -- a useful piece of code is:
 C = new CacheTable from {1 => "hi"}
@@ -736,13 +702,13 @@ check "RationalPolytopes"
 
 
 P=convexHull transpose matrix "0;1/2"
-EQP=EhrhartQP(P)
+EQP=ehrhartQP(P)
 
 P=convexHull transpose matrix "1,0;-1,0;0,1/2;0,-1/2"
-displayQP EhrhartQP(P)
+displayQP ehrhartQP(P)
 
 P=convexHull transpose matrix "-1/2; 1/2"
-EhrhartQP(P)
+ehrhartQP(P)
 
 
 
@@ -776,28 +742,28 @@ debug RationalPolytopes
 
 P = convexHull transpose matrix "1,0;-1,0;0,1/20;-1,11/20"
 latticePoints P
-EhrhartQP(P)
-displayQP(EhrhartQP P, Truncate => 1000)
+ehrhartQP(P)
+displayQP(ehrhartQP P, Truncate => 1000)
 
-QP1 = EhrhartQPM2(P)
-QP2 = EhrhartQPNormaliz(P)
+QP1 = ehrhartQPM2(P)
+QP2 = ehrhartQPNormaliz(P)
 
 QP1 === QP2
 
-hStar P
+hStarPolynomial P
 ehrhartSeries P
 
-hStar(P, Backend => "M2")
+hStarPolynomial(P, Backend => "M2")
 ehrhartSeries(P, Backend => "M2")
 
-f = EhrhartQP(P)
+f = ehrhartQP(P)
 displayQP(f)
 
 
 -------------------
 
 P = convexHull transpose matrix "0,0;0,1;1,0;1,1"
-f = EhrhartQP(P)
+f = ehrhartQP(P)
 displayQP(f)
 f 100
 
