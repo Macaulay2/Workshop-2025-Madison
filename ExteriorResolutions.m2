@@ -160,6 +160,21 @@ TEST ///
 ///
 
 
+TEST ///
+    -- Examples tried
+    restart
+    needsPackage "ExteriorResolutions"
+    S = QQ[x_0,x_1]
+    E = QQ[e_0, e_1, e_2, e_3, SkewCommutative=>true]
+    --m = matrix{{e_0*e_1, e_2*e_3}}
+    m = matrix{{e_0*e_2, e_1*e_2*e_3}}
+
+    priddyDifferential(-2, m, S)
+    priddyComplex(m, S, LengthLimit=>3)
+///
+
+
+
 end--
 
 restart
