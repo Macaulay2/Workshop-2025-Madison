@@ -9,7 +9,7 @@ newPackage(
         {Name => "Victoria Schleis", Email => "victoria.m.schleis@durham.ac.uk", HomePage => "https://victoriaschleis.github.io/"},
         {Name => "Vincenzo Reda", Email => "redav@tcd.ie", HomePage => ""},
         {Name => "Benoît Guerville-Ballé", Email => "benoit.guerville-balle@math.cnrs.fr", HomePage => "https://www.benoit-guervilleballe.com"}
-        },
+	},
     AuxiliaryFiles => false,
     DebuggingMode => false,
     PackageExports => {"Polyhedra", "Normaliz"}
@@ -27,7 +27,7 @@ export {
     "ehrhartSeries",
     "ReturnDenominator",
     "Backend",
-		"latticePointsFromHData"
+    "latticePointsFromHData"
     }
 
 
@@ -435,6 +435,7 @@ doc ///
 doc ///
   Key
     Ehrhart
+   (Ehrhart,Polyhedron,ZZ)
   Headline
     a function
   Usage
@@ -609,6 +610,15 @@ doc ///
 ///
 
 
+
+-* Test section *-
+TEST /// -- (1)
+R=QQ[t]
+assert(1_R == hStar(convexHull transpose matrix "0,0,0;1,0,0;0,1,0;0,0,1",R))
+assert(t^5+3*t^4+4*t^3+4*t^2+3*t+1 == hStar(convexHull transpose matrix "1,0;-1,0;0,1/2;0,-1/2",R))
+assert(t+1 == hStar(convexHull transpose matrix "0; 1/2",R))
+assert(t^5+t^3+t^2+1 == hStar(convexHull transpose matrix "1/4; 1/2",R))
+///
 
 -* Test section *-
 TEST /// -- (1)
