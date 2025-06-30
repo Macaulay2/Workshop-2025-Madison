@@ -8,10 +8,9 @@
 
 beginDocumentation()
 
-doc ///
+document {
  Node
-  Key
-   Permutation Group
+  Key => Permutation Group
   Headline
    a package to deal with permutation groups and orbit sums
   Description
@@ -27,9 +26,9 @@ doc ///
     ShuffMon
 	orbSum
     orbSumList
-///
+}
 
-doc ///
+document {
     Key
         ListSpInd
     Headline
@@ -49,9 +48,9 @@ doc ///
             This function returns all the special monomials of degree d in n variables.
         Example
 
-///
+}
 
-doc ///
+document {
     Key
         ListSpMon
     Headline
@@ -71,12 +70,12 @@ doc ///
            This function returns all the special monomials of degree d in n variables.
         Example
 
-///
+}
 
-doc ///
-  Key
+document {
+  Key =>
    ShuffMon
-  Headline
+  Headline =>
     Permutes monomial.
   Usage
     ShuffMon(f,n)
@@ -96,9 +95,9 @@ doc ///
     g = {x^2, x*y, y^2};
     S = subring g;
     numgens presentationRing S
-///
+}
 
-doc ///
+document {
   Key
    orbSum
   Headline
@@ -119,10 +118,9 @@ doc ///
    Text
     This function computes the orbit sum of a monomial f under the action of a permutation group G.
    Example
+}
 
-///
-
-doc ///
+document {
   Key
    orbSumList
   Headline
@@ -144,4 +142,4 @@ doc ///
     This function computes the orbit sums of a list of special monomials of degree d in n variables under the action of a permutation group G.
    Example
 
-///
+}
