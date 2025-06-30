@@ -45,3 +45,11 @@ RealRepresentationMackeyFunctor(ZZ) := CpMackeyFunctor => (p) -> (
         return makeCpMackeyFunctor(p,R,T,C);
     )
 )
+
+makeZeroMackeyFunctor = method()
+makeZeroMackeyFunctor (ZZ) := CpMackeyFunctor => (p) ->(
+    C:=matrix({});
+    R:=C;
+    T:=C;
+    return makeCpMackeyFunctor(p,R,T,C)
+)
