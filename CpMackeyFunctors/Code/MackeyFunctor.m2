@@ -36,7 +36,7 @@ isWellDefinedCpMackeyFunctor CpMackeyFunctor := Boolean => M ->  (
 
     -- Axiom 1: Conj is an automorphism of order dividing p
     if not isIsomorphism(M.Conj) then return false;
-    if not matrixPower(M.Conj, M.PrimeOrder) == id_(M.Underlying) then return false;
+    if not (M.Conj)^(M.PrimeOrder) == id_(M.Underlying) then return false;
 
     -- Axiom 2: ... TODO
     return true
