@@ -61,3 +61,11 @@ makeFixedPointMackeyFunctor (ZZ,Matrix) := CpMackeyFunctor => (p,C) -> (
     T := inducedMap(kernel m, source m, sum (for i to p-1 list C^i));
     return makeCpMackeyFunctor(p,R,T,C)
 )
+
+makeOrbitMackeyFunctor = method()
+makeOrbitMackeyFunctor (ZZ,Matrix) := CpMackeyFunctor => (p,C) -> (
+    m := C^0 - C; --declare the matrix 1-C
+    R := inducedMap(source m, cokernel m, sum (for i to p-1 list C^i));
+    T := inducedMap(cokernel m, source m);
+    return makeCpMackeyFunctor(p,R,T,C)
+)

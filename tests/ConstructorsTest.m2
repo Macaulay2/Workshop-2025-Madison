@@ -13,3 +13,6 @@ assert(isWellDefined makeZeroMackeyFunctor(3));
 
 assert(isWellDefined makeFixedPointMackeyFunctor(41,matrix{}));
 assert(isWellDefined makeFixedPointMackeyFunctor(2,matrix{{0,1,0},{1,0,0},{0,0,1}}));
+
+assert(isWellDefined makeOrbitMackeyFunctor(31,matrix{}));
+assert(isWellDefined makeOrbitMackeyFunctor(2,matrix{{0,1,0},{1,0,0},{0,0,1}}));
