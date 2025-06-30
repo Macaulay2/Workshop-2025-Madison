@@ -4,6 +4,8 @@ newPackage (
     Version => "2.0",
     Date => "June 5, 2023",
     Authors => {
+        {Name=> "Stephanie Atherton",
+    Email => "satherton@student.otis.edu"},
         {Name => "Nikita Borisov",
 	 Email => "nborisov@sas.upenn.edu",
 	 HomePage => "https://www.math.upenn.edu/people/nikita-borisov"},
