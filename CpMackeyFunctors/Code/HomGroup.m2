@@ -6,15 +6,16 @@ Hom(CpMackeyFunctor, CpMackeyFunctor) := Module => opts -> (M,N) -> (
     homUnderlyingFixed := Hom(getUnderlyingModule M, getFixedModule N);
     lhs := directSum(homUnderlyingUnderlying, homFixedFixed);
     rhs := directSum(homFixedUnderlying, homUnderlyingFixed, homUnderlyingUnderlying);
-    kernel map(rhs, lhs, matrix(
+    result := kernel map(rhs, lhs, matrix(
         {
             {-Hom(M.Res, getUnderlyingModule N), Hom(getFixedModule M, N.Res)},
             {-Hom(getUnderlyingModule M, N.Tr), Hom(M.Tr, getFixedModule N)},
             {Hom(M.Conj, getUnderlyingModule N) - Hom(getUnderlyingModule M, N.Conj), 0}
         }
-    ))
+    ));
+    -- TODO: Store info in `result` to define `homomorphism()`
+    result
 )
-
 
 Hom(CpMackeyFunctor, MackeyFunctorHomomorphism) := Matrix => opts -> (M,f) -> (
     T := getFixedModule(M);
