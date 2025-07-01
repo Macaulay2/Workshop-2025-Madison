@@ -45,6 +45,7 @@ doc ///
 Key
     equivariantEhrhartSeries
 Headline
+    computes the equivariant Ehrhart series of a polytope
 Usage
 Inputs
 Outputs
