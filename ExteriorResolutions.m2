@@ -60,7 +60,8 @@ priddyComplex(Matrix, Ring) := opts -> (m, S) -> (
 priddyDifferential = method(TypicalValue=>Matrix)
 priddyDifferential(ZZ, Matrix, Ring) := (i, m, S) -> (
     E := ring m;
-    
+    L := flatten (degrees m)_1; --degrees of the forms on which we are taking the Priddy complex
+    assert(all(L, i -> odd L_i));
     monsSrc := basis(-i, S);
     monsTgt := basis(-i+1, S);
 
@@ -172,11 +173,11 @@ TEST ///
 
 TEST ///
     S = QQ[x_0,x_1]
-    E = QQ[e_0, e_1, SkewCommutative=>true]
-    m = matrix{{e_0, e_0*e_1}}
+    E = QQ[e_0, e_1,e_2, SkewCommutative=>true]
+    m = matrix{{e_0, e_0*e_1*e_2}}
     D = priddyDifferential(-2, m, S)
     C = priddyComplex(m, S, LengthLimit=>3)
-    assert(D == map(E^{{3}, {4}, {5}, {6}},E^{{2}, {3}, {4}},{{e_0, 0, 0}, {e_0*e_1, e_0, 0}, {0, e_0*e_1, e_0}, {0, 0, e_0*e_1}}))
+    assert(D == map(E^{{3}, {5}, {7}, {9}},E^{{2}, {4}, {6}},{{e_0, 0, 0}, {e_0*e_1*e_2, e_0, 0}, {0, e_0*e_1*e_2, e_0}, {0, 0, e_0*e_1*e_2}}))
     assert isWellDefined C
     assert isHomogeneous C
     assert(C.dd_(-2) == D)
@@ -185,6 +186,7 @@ TEST ///
 
 TEST ///
     -- Examples tried
+    -- This next example doesn't make sense, because one of the forms is even degree. 
     restart
     needsPackage "ExteriorResolutions"
     S = QQ[x_0,x_1]
