@@ -15,10 +15,25 @@ Hom(CpMackeyFunctor, CpMackeyFunctor) := Module => opts -> (M,N) -> (
     ))
 )
 
-Hom(CpMackeyFunctor, MackeyFunctorHomomorphism) := Matrix => opts -> (M,f) -> (
 
+Hom(CpMackeyFunctor, MackeyFunctorHomomorphism) := Matrix => opts -> (M,f) -> (
+    T := getFixedModule(M);
+    B := getUnderlyingModule(M);
+    fT := f.FixedMap;
+    fB := f.UnderlyingMap;
+    phi := Hom(T, fT);
+    psi := Hom(B, fB);
+    inducedMap(Hom(M,target(f)), Hom(M, source(f)), psi ++ phi) 
 )
 
 Hom(MackeyFunctorHomomorphism, CpMackeyFunctor) := Matrix => opts -> (f,N) -> (
-    
+    T := getFixedModule(N);
+    B := getUnderlyingModule(N);
+    fT := f.FixedMap;
+    fB := f.UnderlyingMap;
+    phi := Hom(fT, T);
+    psi := Hom(fB, B);
+    inducedMap(Hom(source(f),N), Hom(target(f),N), psi ++ phi) 
 )
+
+

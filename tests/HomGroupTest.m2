@@ -8,3 +8,7 @@ assert(isFreeModule prune y and rank y == 5)
 
 z := Hom(makeBurnsideMackeyFunctor 2, makeUnderlyingFreeMackeyFunctor 2)
 assert(isFreeModule prune z and rank z == 1)
+
+A := makeBurnsideMackeyFunctor(5)
+f := complexLinearizationMap(5)
+Hom(A,f)
