@@ -95,6 +95,11 @@ export{
     "boxProduct"
 }
 
+importFrom_Core {
+    "concatBlocks", "concatCols", "concatRows",
+    "isMorphism", "isAbelianCategory",
+    }
+
 beginDocumentation()
 
 document{
