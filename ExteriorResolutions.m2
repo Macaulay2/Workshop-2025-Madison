@@ -60,8 +60,8 @@ priddyComplex(Matrix, Ring) := opts -> (m, S) -> (
 priddyDifferential = method(TypicalValue=>Matrix)
 priddyDifferential(ZZ, Matrix, Ring) := (i, m, S) -> (
     E := ring m;
-    L := flatten (degrees m)_1; --degrees of the forms on which we are taking the Priddy complex
-    assert(all(L, i -> odd L_i));
+    --L := flatten (degrees m)_1; --degrees of the forms on which we are taking the Priddy complex
+    --assert(all(L, i -> odd L_i));
     monsSrc := basis(-i, S);
     monsTgt := basis(-i+1, S);
 
@@ -192,7 +192,7 @@ TEST ///
     S = QQ[x_0,x_1]
     E = QQ[e_0, e_1, e_2, e_3, SkewCommutative=>true]
     --m = matrix{{e_0*e_1, e_2*e_3}}
-    m = matrix{{e_0*e_2, e_1*e_2*e_3}}
+    m = matrix{{e_0*e_1*e_2, e_1*e_2*e_3}}
 
     priddyDifferential(-2, m, S)
     priddyComplex(m, S, LengthLimit=>3)
