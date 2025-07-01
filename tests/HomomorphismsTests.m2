@@ -30,9 +30,11 @@ assert isWellDefined(realLinearizationMap(5))
 
 RO := makeRealRepresentationMackeyFunctor 5;
 assert isWellDefined(makeUniversalMapFixed(RO, vector (matrix {{4},{1},{-7}})))
+assert isWellDefined(makeUniversalMapFixed(RO, gens(getFixedModule RO)))
 
 B := makeUnderlyingFreeMackeyFunctor 3;
 assert isWellDefined(makeUniversalMapUnderlying(B, vector (matrix {{0},{1},{0}})))
+assert isWellDefined(makeUniversalMapUnderlying(B, gens(getUnderlyingModule B)))
 
 -- verify composition does what we want it to do ?
 A :=makeBurnsideMackeyFunctor(11);

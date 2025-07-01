@@ -122,7 +122,7 @@ makeUniversalMapUnderlying(CpMackeyFunctor,Vector) := MackeyFunctorHomomorphism 
 -- Given a Mackey functor M and n columns in underlying, produce map B^n -> M 
 makeUniversalMapUnderlying(CpMackeyFunctor,Matrix) := MackeyFunctorHomomorphism => (M,X) -> (
     n := numColumns X;
-    return MackeyFunctorHomomorphism.concatBlocks{for i to n-1 list makeUniversalMapFixed(M,X_i)};
+    return MackeyFunctorHomomorphism.concatBlocks{for i to n-1 list makeUniversalMapUnderlying(M,X_i)};
 )
 
 -- Arithmetic operations
