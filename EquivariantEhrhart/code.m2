@@ -17,6 +17,16 @@ isSymmetric(Polyhedron, Matrix) := Boolean => (P, M) -> (
     MV == V
     )
 
+-- isSymmetric(Polyhedron, Matrix) := Boolean => (P, M) -> (
+--     if numColumns M != numRows M then error("matrix must be square");
+-- 	V := vertices P;
+--     if numColumns M != numRows V then error("matrix incompatible with polytope");
+-- 	V' := set entries transpose V;
+	
+-- 	MV := M * V;
+-- 	isSubset(V', set entries transpose MV)
+-- 	)
+
 isSymmetric(Polyhedron, List) := Boolean => (P, L) -> (
     result := true;
     for M in L do if not isSymmetric(P, M) then (result = false; break);
