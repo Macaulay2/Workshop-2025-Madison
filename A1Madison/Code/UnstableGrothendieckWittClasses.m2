@@ -160,6 +160,9 @@ addGWu (UnstableGrothendieckWittClass,UnstableGrothendieckWittClass) := Unstable
     makeGWuClass(getMatrix beta ++ getMatrix gamma, getScalar beta * getScalar gamma)
     )
 
+-- Input: List of GWu(k) classes, list of elements of k
+-- Output: The divisorial sum of the GWu(k) classes as a GWu(k) class
+
 addGWuDivisorial = method()
 addGWuDivisorial (List, List) := UnstableGrothendieckWittClass => (classList, rootList) -> (
     n := #classList;
@@ -195,6 +198,9 @@ addGWuDivisorial (List, List) := UnstableGrothendieckWittClass => (classList, ro
     );
     makeGWuClass(newForm,newScalar)
     )
+
+-- Input: List of unstable Grothendieck-Witt classes, list of numbers/ring elements
+-- Output: Boolean of whether the elements of the second list are elements of the field corresponding to the GWu class
 
 fieldsAreCompatible = method()
 fieldsAreCompatible (List, List) := Boolean => (baseFieldList, rootList) -> (
