@@ -104,6 +104,11 @@ export{
     "boxProduct"
 }
 
+load "./CpMackeyFunctors/Code/Resolutions.m2"
+export{
+    "makeFreeModuleSurjection"
+}
+
 beginDocumentation()
 
 document{

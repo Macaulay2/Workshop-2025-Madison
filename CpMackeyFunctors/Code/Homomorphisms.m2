@@ -84,7 +84,7 @@ realLinearizationMap(ZZ) := MackeyFunctorHomomorphism => p -> (
 makeUniversalMapFixed = method()
 makeUniversalMapFixed(CpMackeyFunctor,Vector) := MackeyFunctorHomomorphism => (M,x) -> (
     X := matrix x;
-    if (target X) != M.Fixed then (
+    if not isSubset(image X, M.Fixed) then (
         error "element is not in fixed module";
     )
     else (
@@ -107,7 +107,7 @@ makeUniversalMapUnderlying = method()
 makeUniversalMapUnderlying(CpMackeyFunctor,Vector) := MackeyFunctorHomomorphism => (M,x) -> (
     X := matrix x;
 
-    if (target X) != M.Underlying then (
+    if not isSubset(image X, M.Underlying) then (
         error "element is not in underlying module";
     )
     else (
