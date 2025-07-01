@@ -67,9 +67,9 @@ listSpInd=(n,d)->( --intakes the number of variables n and the degree d.
 )
 
 -- Shuffle every monomial
-shuffMon=(f,n)->( -- f is a monomial and n is the number of variables.
+shuffMon=(r,n)->( -- f is a monomial and n is the number of variables.
     R:=QQ[x_1..x_n];
-    P:=(exponents f)_0; -- Takes the exponents of the monomial and makes a list.
+    P:=(exponents r)_0; -- Takes the exponents of the monomial and makes a list.
     P= permutations P; -- Gives all permutations of the exponent list.
     Mon:={};
     for i from 0 to (#P-1) do(
@@ -97,9 +97,9 @@ listSpMon(4,6)
 
 
 --Orbit Sum for one monomial
-orbSum = (f,G,n) ->( -- Intakes a monomial f, a group action G, and the number of variables n.
+orbSum = (r,G,n) ->( -- Intakes a monomial f, a group action G, and the number of variables n.
     R:=QQ[x_1..x_n];
-    I:= (exponents f)_0; -- Gets a list of the exponents of f.
+    I:= (exponents r)_0; -- Gets a list of the exponents of f.
     v:= transpose matrix{I}; -- Takes a transpose of matrix made by the list of exponents.
     g:=0;
     S := G*v; -- This takes the group action over the exponents.

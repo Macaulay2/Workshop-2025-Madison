@@ -1,31 +1,32 @@
+-*
+   Copyright 2025, ??????
+    
+   You may redistribute this file under the terms of the GNU General Public
+   License as published by the Free Software Foundation, either version 2 of
+   the License, or any later version.
+*-
+
 document {
   Key       => OrbitSum,
   Headline  => "Invariance of permutation groups.",
   BOLD "OrbitSum", " is a package dedicated to permutation groups and orbit sums.",
   PARA {"Current algorithms include:"},
   UL {
-    
-      TO listSpInd, " -- lists the special monomials that are related to a degree.",
-      TO listSpMon, " -- Lists the special monomials that are related to a degree"
-      
-      
+      TO listSpInd,
+      TO listSpMon,
+      TO orbSum,
+      TO orbSumList,
+      TO shuffMon
   },
-  Contributors => "Gordon Novak, Sasha Arasha",
+  Contributors => "Gordon Novak & Sasha Arasha, for the documentation.",
   Acknowledgement => "A special thanks to the organizers of the 2025 Madison workshop",
-  Caveat => {"warning"},
-  Subnodes  => {
-    TO listSpInd,
-    TO listSpMon,
-    TO orbSum,
-    TO orbSumList,
-    TO shuffMon
-  }
+  Caveat => {"warning"}
 }
 
 document {
   Key => listSpInd, 
 
-  Headline => "List the special monomials that are related to a degree.",
+  Headline => "List the special indicies that are related to a degree.",
 
   Usage => "listSpInd(n,d)",
 
@@ -36,10 +37,17 @@ document {
     },    
 
   Outputs => {
-    "M" => List => {"a list of special monomials"},
+    "M" => List => {"a list of special indicies"},
   },
 
-  "This function returns all the special monomials of degree d in n variables."
+  EXAMPLE {
+    "listSpInd(3,4)",
+    "listSpInd(1,2)",
+    "listSpInd(4,5)"
+  },
+
+  "This function returns all the special incidies of degree ", CODE "d", " in ", CODE "n", " variables."
+
 }
 
 document {
@@ -55,6 +63,12 @@ document {
   },
   Outputs => {
       List => {"a list of special monomials"},       
+  },
+
+  EXAMPLE {
+    "listSpMon(3,4)",
+    "listSpMon(1,2)",
+    "listSpMon(4,2)"
   },
 
   "This function returns all the special monomials of degree d in n variables."
@@ -77,7 +91,15 @@ document {
   Outputs => {
       List  => {"a list of orbit sums of special monomials"},
   },
-  "This function computes the orbit sums of a list of special monomials of degree d in n variables under the action of a permutation group G."
+  "This function computes the orbit sums of a list of special monomials of degree d in n variables under the action of a permutation group G.",
+
+  EXAMPLE {
+    "needsPackage(\"SpechtModule\")",
+    "G = generatePermutationGroup {{1,0,2,3},{1,2,3,0}};",
+    "n = 3",
+    "d = 3",
+    "orbSumList(G,n,d)"
+  }
 }
 
 document {
@@ -85,10 +107,10 @@ document {
 
   Headline => "Computes the orbit sum of a monomial",
 
-  Usage => "orbSum(f,G,n)",
+  Usage => "orbSum(r,G,n)",
 
   Inputs => {
-    "f" => RingElement => {"a monomial in the polynomial ring"},
+    "r" => RingElement => {"a monomial in the polynomial ring"},
         
     "G" => {"a permutation group"},     
 
@@ -101,7 +123,16 @@ document {
 
   PARA {
     "This function computes the orbit sum of a monomial f under the action of a permutation group G."
+  },
+  
+  EXAMPLE {
+    "needsPackage(\"SpechtModule\")",
+    "R = QQ[x..z]",
+    "r = x^2*y",
+    "G = generatePermutationGroup {{1,0,2,3},{1,2,3,0}};",
+    "orbSum(r,G,numgens R)"
   }
+   
 }
 
 document {
@@ -109,10 +140,10 @@ document {
 
   Headline => "Permutes monomial.",
 
-  Usage =>  "shuffMon(f,n)",
+  Usage =>  "shuffMon(r,n)",
 
   Inputs => {
-   "f" => RingElement => {"a monomial in the polynomial ring"},
+    "r" => RingElement => {"a monomial in the polynomial ring"},
       
     "n" => Number => {"the number of variables in the polynomial ring"}, 
   }, 
@@ -121,99 +152,13 @@ document {
     "Mon" => List => {"a list of monomials"},
   }, 
 
-  PARA {"This function takes a monomial and permutes all the variables of the monomial and puts all permutations in a list."}
+  PARA {"This function takes a monomial and permutes all the variables of the monomial and puts all permutations in a list."}, 
+
+  EXAMPLE {
+    "R = QQ[x..z];",
+    "r = x^2*y;",
+    "shuffMon(r,numgens R)"
+  }
 }
 
-
--*
-   Copyright 2025, ??????
-    
-   You may redistribute this file under the terms of the GNU General Public
-   License as published by the Free Software Foundation, either version 2 of
-   the License, or any later version.
-*-
-
--- beginDocumentation()
-
--- ///document {
---  Node
---   Key => {PermutationGroup}
---   Headline => "a package to deal with permutation groups and orbit sums",
---   Description
---    Text
---      is a package to give basic ring permutations and orbit sums
---    Example
---      needsPackage("PermutationGroup")
---    Text
---      In particular, this package allows you to do computations with permutation groups and orbit sums.
---   Subnodes
---     ListSpInd
---     ListSpMon
---     shuffMon
--- 	orbSum
---     orbSumList
--- }
-
--- document {
---     Key => {ListSpInd},
---     Headline => "List the special monomials that are related to a degree.",
---     Usage
---         ListSpInd(n,d)
---     Inputs
---         n: Number
---             the number of variables in the polynomial ring
---         d: Number
---             the degree of the polynomial ring
---     Outputs
---         M: List
---             a list of special monomials
---     Description
---         Text
---             This function returns all the special monomials of degree d in n variables.
---         Example
-
--- }
-
--- document {
---     Key => {ListSpMon}
---     Headline => "List the special monomials that are related to a degree.",
---     Usage
---         ListSpMon(n,d)
---     Inputs
---         n: Number
---             the number of variables in the polynomial ring
---         d: Number
---             the degree of the polynomial ring
---     Outputs
---         M: List
---             a list of special monomials
---     Description
---         Text
---            This function returns all the special monomials of degree d in n variables.
---         Example
-
--- }
-
-
-
--- document {
---   Key => {orbSum}
---   Headline => "Computes the orbit sum of a monomial.",
---   Usage
---     orbSum(f,G,n)
---   Inputs
---     f: Monomial
---          a monomial in the polynomial ring
---      G: Group
---          a permutation group
---      n: Number
---          the number of variables in the polynomial ring
---   Outputs
---     g: Monomial
---          the orbit sum of the monomial f
---   Description
---    Text
---     This function computes the orbit sum of a monomial f under the action of a permutation group G.
---    Example
--- }///
 
