@@ -81,28 +81,32 @@ priddyComplex(Matrix, Ring) := opts -> (m, S) -> (
 --------------------------------------------------
 
 -- RR: Com(S) -> Com(E) is the right-adjoint functor
-koszulRR = method()
+koszulRR = method(Options => { Concentration => null })
 -- RR(M)^i = E^*(i) \otimes_k M_i
 -- E^* = Hom_k(E, k) = E(n+1)
-koszulRR Module := Complex    => M -> ()
-koszulRR Matrix := ComplexMap => f -> ()
+koszulRR Module := Complex    => opts -> M -> ()
+-- RR(y**s) = \sum_{l=0}^n y*e_l ** s*x_l
+koszulRR Matrix := ComplexMap => opts -> f -> ()
 
 -- RR(C)^i = \bigoplus_{j\in\ZZ} Hom_k(E(-j), C^{i-j}_j)
 --         = \bigoplus_{j\in\ZZ} (E(-j))^* \otimes_k C^{i-j}_j
 --         = \bigoplus_{j\in\ZZ} E^*(j)    \otimes_k C^{i-j}_j
-koszulRR Complex    := Complex    => C   -> ()
-koszulRR ComplexMap := ComplexMap => psi -> ()
+koszulRR Complex    := Complex    => opts -> C -> ()
+-- ???
+koszulRR ComplexMap := ComplexMap => opts -> psi -> ()
 
 
 -- LL: Com(E) -> Com(S) is the left-adjoint functor
-koszulLL = method()
+koszulLL = method(Options => options koszulRR)
 -- LL(N)^i = S(i) \otimes_k N_i
-koszulLL Module := Complex    => N -> ()
-koszulLL Matrix := ComplexMap => g -> ()
+koszulLL Module := Complex    => opts -> N -> ()
+-- LL(s**y) = (-1)^i \sum_{l=0}^n x_l*s \otimes y*e_l
+koszulLL Matrix := ComplexMap => opts -> g -> ()
 
 -- LL(D)^i = \bigoplus_{j\in\ZZ} S(j) \otimes_k D^{i-j}_j
-koszulLL Complex    := Complex    => D   -> ()
-koszulLL ComplexMap := ComplexMap => phi -> ()
+koszulLL Complex    := Complex    => opts -> D   -> ()
+-- LL(s**y) = (-1)^i LL(s**y) + s ** dd_D(y) for y \in D^{i-j}_j
+koszulLL ComplexMap := ComplexMap => opts -> phi -> ()
 
 
 --------------------------------------------------
