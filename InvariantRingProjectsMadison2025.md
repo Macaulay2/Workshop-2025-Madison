@@ -164,26 +164,23 @@ L / f
 ```
 
 ---
-## Other algorithms for invariants in exterior algebra?
+
+## Algorithms for invariants in exterior algebra?
 The general question here is: which algorithms that we have implemented for polynomials work for skew polynomials (in the exterior algebra)?
 
-In particular, I (Francesca) suspect that the diagonal action algorithm (at least for abelian groups but likely for tori too) should work in a skew setting. Working on this would require carefully reading the algorithm and proof of correctedness and determine whether this works over the exterior algebra, with possibly some adaptation. A write-up of the algorithm is my thesis, the precise pages are available in the Google drive linked in Zulip in the Mini-school:Invariant Rings substream.
-
----
-## Skew commutative methods
-As another offshoot of conversations about invariants in a skew settings (and as pointed out by Trevor in a GitHub issue), there are some things that work well in M2 with the option SkewCommutative=>true and some that do not. Here I record a few methods that would be nice to implement. Ollie might be interested in helping with this and Frank Moore has programmed a lot of non-commutative (nc) methods in M2. He can be pinged on Zulip or reached by email.
+In conversations about invariants in a skew settings (and as pointed out by Trevor in a GitHub issue), there are some things that work well in M2 with the option SkewCommutative=>true and some that do not. Here I record a few methods that would be nice to implement. Ollie might be interested in helping with this and Frank Moore has programmed a lot of non-commutative (nc) methods in M2. He can be pinged on Zulip or reached by email.
 
 * kernel is currently not implemented for maps of rings with the skew commutative option. From a GitHub discussion Mahrud pointed out that graphIdeal of a RingMap might be what needs to be adapted (and if it could be adapted even to rings over the integers would make Sasha and Vic happy). On the other hand, Frank pointed out there is a way to compute the kernel using the AssociativeAlgebras package (which handles nc computations).  https://github.com/Macaulay2/M2/issues/2808
 * a more exploratory project: what else does NOT work with skewcommutative option? Would be good to at least record, even if might not be able to fix right away.
 * a theoretical project is to think about skewcommutative subalgebras of a skewcommutative algebra and ask what SAGBI theory would be like in this context. It is possible that things might be "too easy" to be interesting, but the SAGBI
 
---
+---
 
 
 ## SAGBI bases for invariant rings
 More cross-over with the cool folks of SAGBI bases! Stillman and Tsai have described how to use SAGBI bases to compute invariants. Ollie and I (Francesca) have wanted to think about this more and maybe see if it is worth implementing? It might be not very fast, but it could be useful as an alternative method to at least test (against) other computations! Here is the paper https://www.sciencedirect.com/science/article/pii/S0022404999000158 
 
----
+----
 
 ## Specialized algorithms for elementary abelian groups 
 
