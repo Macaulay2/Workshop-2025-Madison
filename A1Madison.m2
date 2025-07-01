@@ -72,6 +72,8 @@ export{
     "addGWu",
     "scalar", -- To avoid error about unexported symbol
     "addGWuDivisorial",
+    "fieldsAreCompatible",  --Exported only for testing purposes
+    --"multiplicityList",  --Why???
     
     --BuildingForms.m2
     "makeDiagonalForm",

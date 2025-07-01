@@ -152,7 +152,39 @@ addGWuDivisorial (List, List) := UnstableGrothendieckWittClass => (classList, ro
 
     -- Return an error if the base fields are different for the list of GWu classes
     baseFieldList := apply(classList, getBaseField);
+    matrixList := apply(classList, getMatrix);
+    scalarList := apply(classList, getScalar);
+    multiplicityList := apply(classList, i -> rank(getMatrix(i)));
     isGaloisField := apply(baseFieldList, i -> instance(i, GaloisField));
     if (not instance(baseFieldList#0, GaloisField) and not same baseFieldList) or (isGaloisField#0 and (not same isGaloisField or not same apply(baseFieldList, i -> i.order))) then 
-        error "the list of GWu classes should have the same base field"
+        error "the list of GWu classes should have the same base field";
+    if not fieldsAreCompatible(baseFieldList, rootList) then
+        error "the roots must be in the base field of the classes";
+    newForm := directSum(matrixList);
+    newScalar := product(scalarList);
+    for i from 0 to n-1 do (
+        for j from i+1 to n-1 do (
+            newScalar = newScalar * (rootList#i-rootList#j)^(2*multiplicityList#i*multiplicityList#j);
+        );
+    );
+    makeGWuClass(newForm,newScalar)
     )
+
+fieldsAreCompatible = method()
+fieldsAreCompatible (List, List) := Boolean => (baseFieldList, rootList) -> (
+    n := #baseFieldList;
+    for i from 0 to n-1 do (
+        -- If matrix is defined over the complex numbers, allow root to be one of complex, real, rational, or integral. 
+        if instance(baseFieldList#i, ComplexField) and not (instance(ring rootList#i, ComplexField) or instance(ring rootList#i, RealField) or ring rootList#i===QQ or ring rootList#i===ZZ) then return false;
+
+        -- If matrix is defined over the real numbers, allow scalar to be one of real, rational, or integral. 
+        if instance(baseFieldList#i, RealField) and not (instance(ring rootList#i, RealField) or ring rootList#i===QQ or ring rootList#i===ZZ) then return false;
+
+        -- If matrix is defined over the rationals, allow scalar to be one of rational, or integral. 
+        if baseFieldList#i===QQ and not (ring rootList#i===QQ or ring rootList#i===ZZ) then return false;
+
+        -- If matrix is defined over a finite field, allow scalar then the only scalars allowed are integral. The case of the scalar being over the same Galois field is treated in the next variant. 
+        if instance(baseFieldList#i, GaloisField) and not (ring rootList#i===ZZ or (instance(ring rootList#i, GaloisField) and (baseFieldList#i).order == (ring rootList#i).order)) then return false;
+    );
+    true
+)
