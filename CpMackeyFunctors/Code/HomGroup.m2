@@ -13,7 +13,13 @@ Hom(CpMackeyFunctor, CpMackeyFunctor) := Module => opts -> (M,N) -> (
             {Hom(M.Conj, getUnderlyingModule N) - Hom(getUnderlyingModule M, N.Conj), 0}
         }
     ));
-    -- TODO: Store info in `result` to define `homomorphism()`
+    result.cache.homomorphism = f -> (
+        map(
+            N, M,
+            homomorphism (inducedMap(homUnderlyingUnderlying, result, lhs^[0]) * f),
+            homomorphism (inducedMap(homFixedFixed, result, lhs^[1]) * f)
+        )
+    );
     result
 )
 
