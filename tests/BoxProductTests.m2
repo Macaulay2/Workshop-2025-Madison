@@ -16,3 +16,8 @@ isIsomorphic(getFixedModule(R), getFixedModule(A ** R))
 L = complexLinearizationMap(7)
 assert(isWellDefined boxProduct(A,L))
 assert(isWellDefined boxProduct(L,A))
+
+-- A ** A == A. We can see this with prune!
+A = makeBurnsideMackeyFunctor 5
+B = A ** A
+assert(prune B === A)

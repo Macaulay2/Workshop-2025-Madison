@@ -95,14 +95,14 @@ CpMackeyFunctor == CpMackeyFunctor := Boolean => (M,N) -> (
     )
 
 -- Pruning
-prune CpMackeyFunctor := CpMackeyFunctor => M -> (
+prune CpMackeyFunctor := CpMackeyFunctor => opts -> M -> (
     T := prune M.Fixed;
     B := prune M.Underlying;
-    fT := T.cache.pruningMap;
-    fB := B.cache.pruningMap;
-    r := fT * M.Res * fB;
-    t := fB * M.Tr * fT;
-    c := fB * M.Conj;
+    fT := (T.cache.pruningMap);
+    fB := (B.cache.pruningMap);
+    r := (matrix inverse fB) * (matrix M.Res) * (matrix fT);
+    t := (matrix inverse fT) * (matrix M.Tr) * (matrix fB);
+    c := (matrix inverse fB) * (matrix M.Conj) * (matrix fB);
     makeCpMackeyFunctor(M.PrimeOrder, r, t, c)
     )
 
