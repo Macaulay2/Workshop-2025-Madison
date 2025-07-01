@@ -35,8 +35,8 @@ getGlobalUnstableA1Degree RingElement := (Matrix,Number) => q -> (
     
     -- If the field is CC, output the Grothendieck-Witt class of an identity matrix of the appropriate rank
     if instance(kk, ComplexField) then (
-    	rankAlgebra := getGlobalAlgebraRank Endo;
-    	return makeGWClass id_(CC^rankAlgebra);
+    	rankAlgebra := getGlobalAlgebraRank list{q};
+    	return makeGWuClass id_(CC^rankAlgebra);
         );
 	
     
