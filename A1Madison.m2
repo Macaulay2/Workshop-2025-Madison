@@ -70,6 +70,7 @@ export{
     "isWellDefinedGWu", -- Leave exported for now
     "getScalar",
     "addGWu",
+    "scalar", -- To avoid error about unexported symbol
     
     --BuildingForms.m2
     "makeDiagonalForm",
