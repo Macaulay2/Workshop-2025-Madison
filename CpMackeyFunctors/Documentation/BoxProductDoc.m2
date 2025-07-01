@@ -1,9 +1,9 @@
 doc ///
     Key
+        boxProduct
         (boxProduct,CpMackeyFunctor,CpMackeyFunctor)
         (symbol ⊠, CpMackeyFunctor,CpMackeyFunctor)
         (symbol **,CpMackeyFunctor,CpMackeyFunctor)
-        boxProduct
     Headline
         box product of Cp-Mackey functors
     Usage 

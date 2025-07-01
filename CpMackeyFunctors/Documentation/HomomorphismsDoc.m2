@@ -28,7 +28,7 @@ document{
 
 doc ///
     Key
-        (FixedMap)
+        FixedMap
     Headline
         the fixed-point level of a Mackey functor homomorphism
     Usage
@@ -38,7 +38,7 @@ doc ///
 
 doc ///
     Key
-        (UnderlyingMap)
+        UnderlyingMap
     Headline
         the underlying level of a Mackey functor homomorphism
     Usage
@@ -110,6 +110,7 @@ doc ///
 
 doc ///
     Key
+        complexLinearizationMap
         (complexLinearizationMap, ZZ)
     Headline
         returns the complex linearization map for the prime p
@@ -129,6 +130,7 @@ doc ///
 
 doc ///
     Key
+        realLinearizationMap
         (realLinearizationMap, ZZ)
     Headline
         returns the real linearization map for the prime p
@@ -148,6 +150,7 @@ doc ///
 
 doc ///
     Key
+        makeUniversalMapFixed
         (makeUniversalMapFixed, CpMackeyFunctor, Vector)
     Headline
         constructs a homomorphism out of the Burnside Mackey functor
@@ -168,6 +171,7 @@ doc ///
 
 doc ///
     Key
+        makeUniversalMapUnderlying
         (makeUniversalMapUnderlying, CpMackeyFunctor, Vector)
     Headline
         constructs a homomorphism out of the free Mackey functor on an underling generator
