@@ -1,5 +1,5 @@
 document{
-    Key => {Hom, (Hom, CpMackeyFunctor,CpMackeyFunctor)},
+    Key => {Hom, (Hom, CpMackeyFunctor,CpMackeyFunctor),[Hom,DegreeLimit],[Hom,MinimalGenerators],[Hom,Strategy]},
     Headline => "computes the Hom group between two Cp Mackey functors",
     Usage => "Hom(M,N)",
     Inputs => {
