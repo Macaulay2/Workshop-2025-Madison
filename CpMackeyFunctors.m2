@@ -70,7 +70,8 @@ export{
     -- Homomorphisms
     "MackeyFunctorHomomorphism",
     "UnderlyingMap",
-    "FixedMap"
+    "FixedMap",
+    "complexLinearizationMap",
 }
 
 -- Methods for working in the abelian category Mack_p.
