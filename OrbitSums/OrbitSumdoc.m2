@@ -96,7 +96,7 @@ document {
 }
 
 document {
-  Key => {"orbSumList"},
+  Key => {orbSumList},
   Headline => "Computes the orbit sums of a list of monomials.",
   Usage => "orbSumList(G,n,d)",
   Inputs =>{
