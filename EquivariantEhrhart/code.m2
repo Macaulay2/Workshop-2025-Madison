@@ -256,7 +256,7 @@ equivariantEhrhartSeries (Polyhedron, List) := opts -> (P, gList) -> (
 		-- todo: define this propery with a monoid
 		C := QQ[w];
 		QQw := C / ideal cyclotomicPoly(m, w);
-		w := QQw_0;
+		w = QQw_0;
 
 		-- representation ring
 		a := getSymbol "a";
@@ -264,7 +264,7 @@ equivariantEhrhartSeries (Polyhedron, List) := opts -> (P, gList) -> (
 
 
 		-- character table
-		T := matrix for i from 0 to m-1 list for j from 0 to m-1 list w^(i*j)
+		T := matrix for i from 0 to m-1 list for j from 0 to m-1 list w^(i*j);
 
 		-- MARK
 		Rt := R[getSymbol "t"];
