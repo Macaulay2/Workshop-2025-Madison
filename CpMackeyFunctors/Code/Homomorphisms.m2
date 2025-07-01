@@ -210,3 +210,4 @@ MackeyFunctorHomomorphism || MackeyFunctorHomomorphism := MackeyFunctorHomomorph
 MackeyFunctorHomomorphism.concatBlocks = maps -> MackeyFunctorHomomorphism.concatRows apply(maps, MackeyFunctorHomomorphism.concatCols)
 MackeyFunctorHomomorphism.matrix = opts -> MackeyFunctorHomomorphism.concatBlocks
 
+blockMatrixMackeyFunctorHomomorphism = MackeyFunctorHomomorphism.concatBlocks
