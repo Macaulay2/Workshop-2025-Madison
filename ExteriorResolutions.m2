@@ -113,16 +113,25 @@ koszulRR = method(Options => { Concentration => null })
 -- RR(M)^i = E^*(i) \otimes_k M_i
 -- E^* = Hom_k(E, k) = E(n+1)
 koszulRR Module := Complex => opts -> M -> (
-    E := koszulDual ring M;
-    E' := Hom(E, koszul vars E);
+    S := ring M;
+    n := numgens S - 1;
+    E := koszulDual S;
+    ev := map(E,S,vars E); -- not a map of algebras, just substiuting variables
     (lo, hi) := try opts.Concentration else degreeSupport M;
+    modules := hashTable apply(lo..hi, i -> i => E^{n+1+i} ** (E ** part(i, M)));
     if lo == hi
-    then complex(E' ** E^{lo} ** part(lo, M), Base => -lo)
+    then complex(modules#lo, Base => -lo)
     else complex hashTable apply(lo..hi-1,
 	i -> -i => (
 	    src := basis(i, M);
 	    tar := basis(i+1, M);
-	    -- TODO
+	    
+	    -- we construct the differential by factoring it through (vars S)**src
+	    g := ((vars S)**src)//tar; -- g is a map from source (vars S)**src to source tar making the traingle involving (vars S)**src and tar commute
+	    b := (ev g)*((transpose vars E)**(ev source src));
+	    -- the above 2 lines  were pasted and modified from the BGG package
+	    
+	    map(modules#(i+1), modules#i, b)
 	    )))
 -- RR(y**s) = \sum_{l=0}^n y*e_l ** s*x_l
 koszulRR Matrix := ComplexMap => opts -> f -> ()
@@ -332,15 +341,33 @@ end--
 
 restart
 needsPackage "ExteriorResolutions"
-check "ExteriorResolutions"
-installPackage "ExteriorResolutions"
-viewHelp "ExteriorResolutions"
 
-S = QQ[x_0,x_1]
-E = QQ[e_0,e_1,  SkewCommutative=>true]
+(S,E)= koszulPair(2, ZZ/101)
+M = S^1
 
-m = matrix{{e_0^10, e_0*e_1}}
-
-C = priddyComplex(m, S, LengthLimit=>3)
+C = koszulRR(M, Concentration=>(0,3))
 C.dd
+
+P = priddyComplex(vars E, S, LengthLimit=>3)
+
+C == P
+
 prune HH C
+
+M = coker matrix{{x_0}}
+E = ZZ/101[e_0,e_1,e_2, SkewCommutative=>true]
+
+-- the following was pasted and modified from the BGG package
+S := ring(M)
+numvarsE := numgens E
+ev := map(E,S,vars E) 
+f0 := basis(i,M)
+f1 := basis(i+1,M)
+-- we construct the differential by factoring it through (vars S)**f0
+g := ((vars S)**f0)//f1 -- g is a map from source (vars S)**f0 to source f1 making the traingle involving (vars S)**f0 and f1 commute
+b := (ev g)*((transpose vars E)**(ev source f0))
+--correct the degrees (which are otherwise wrong in the transpose)
+map(E^{(rank target b):i+1},E^{(rank source b):i}, b))
+
+methods koszulComplex
+code 0 
