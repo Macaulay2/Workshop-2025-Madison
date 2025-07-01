@@ -35,17 +35,3 @@ coker MackeyFunctorHomomorphism := CpMackeyFunctor => F -> (
 
     makeCpMackeyFunctor(p',R',T',C')
 )
-
-MackeyFunctorHomomorphism.directSum = args -> (
-    if not same ((args/source)/getPrimeOrder) then error "-- Prime not compatible";
-    Src := directSum(args/source);
-    Tgt := directSum(args/target);
-    T := directSum(apply(args,a->a.FixedMap));
-    B := directSum(apply(args,a->a.UnderlyingMap));
-    
-    map(Tgt,Src,B,T)
-    )
-MackeyFunctorHomomorphism ++ MackeyFunctorHomomorphism := MackeyFunctorHomomorphism => (F, G) -> MackeyFunctorHomomorphism.directSum(F, G)
-directSum MackeyFunctorHomomorphism := MackeyFunctorHomomorphism => F -> MackeyFunctorHomomorphism.directSum(1 : F)
-
-

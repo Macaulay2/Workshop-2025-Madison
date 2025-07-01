@@ -108,8 +108,34 @@ makeUniversalMapUnderlying(CpMackeyFunctor,Vector) := MackeyFunctorHomomorphism 
 )
 
 
+-- Arithmetic operations
+-- ZZ-linear operations
+MackeyFunctorHomomorphism + MackeyFunctorHomomorphism := MackeyFunctorHomomorphism => (f,g) -> (
+    if source f != source g then error("-- sources of maps must agree");
+    if target f != target g then error("-- targets of maps must agree");
+    map(target f, source g, f.UnderlyingMap + g.UnderlyingMap, f.FixedMap + g.FixedMap)
+    )
+
+ZZ * MackeyFunctorHomomorphism := MackeyFunctorHomomorphism => (n, f) -> (
+    map(target f, source f, n * f.UnderlyingMap, n * f.FixedMap)
+    )
+
+-- Function composition
 MackeyFunctorHomomorphism * MackeyFunctorHomomorphism := MackeyFunctorHomomorphism => (G,F) ->(
     -- todo: uncomment after Sasha pushes == method
     -- if not (F.Codomain == G.Domain) then error "Mackey functor maps are not composable";
     map(G.Codomain, F.Domain, G.UnderlyingMap * F.UnderlyingMap, G.FixedMap * F.FixedMap)
 )
+
+-- Direct sums of homomorphisms
+MackeyFunctorHomomorphism.directSum = args -> (
+    if not same ((args/source)/getPrimeOrder) then error "-- Prime not compatible";
+    Src := directSum(args/source);
+    Tgt := directSum(args/target);
+    T := directSum(apply(args,a->a.FixedMap));
+    B := directSum(apply(args,a->a.UnderlyingMap));
+    
+    map(Tgt,Src,B,T)
+    )
+MackeyFunctorHomomorphism ++ MackeyFunctorHomomorphism := MackeyFunctorHomomorphism => (F, G) -> MackeyFunctorHomomorphism.directSum(F, G)
+directSum MackeyFunctorHomomorphism := MackeyFunctorHomomorphism => F -> MackeyFunctorHomomorphism.directSum(1 : F)

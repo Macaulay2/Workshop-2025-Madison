@@ -83,6 +83,17 @@ makeCpMackeyFunctor(ZZ,Matrix,Matrix,Matrix) := CpMackeyFunctor => (p,R,T,C) ->(
 	)
 )
 
+-- Equality
+CpMackeyFunctor == CpMackeyFunctor := Boolean => (M,N) -> (
+    if M.PrimeOrder != N.PrimeOrder then return false;
+    if M.Underlying != N.Underlying then return false;
+    if M.Fixed != N.Fixed then return false;
+    if M.Res != N.Res then return false;
+    if M.Tr != N.Tr then return false;
+    if M.Conj != N.Conj then return false;
+    true
+    )
+
 -------------------------
 -- Recovering cached data
 -------------------------
