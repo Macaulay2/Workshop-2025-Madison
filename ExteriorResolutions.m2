@@ -152,7 +152,27 @@ koszulRR ComplexMap := ComplexMap => opts -> psi -> ()
 -- LL: Com(E) -> Com(S) is the left-adjoint functor
 koszulLL = method(Options => options koszulRR)
 -- LL(N)^i = S(i) \otimes_k N_i
-koszulLL Module := Complex    => opts -> N -> ()
+koszulLL Module := Complex  => opts -> N -> (
+    E := ring N;
+    n := numgens E - 1;
+    S := koszulDual E;
+    ev := map(S,E,vars S); -- not a map of algebras, just substiuting variables
+    (lo, hi) := try opts.Concentration else degreeSupport N;
+    modules := hashTable apply(lo..hi, i -> i => S^{i} ** (S ** part(i, N)));
+    if lo == hi
+    then complex(modules#lo, Base => -lo)
+    else complex hashTable apply(lo..hi-1,
+	i -> -i => (
+	    src := basis(i, N);
+	    tar := basis(i+1, N);
+	    
+	    -- we construct the differential by factoring it through (vars S)**src
+	    g := ((vars E)**src)//tar; -- g is a map from source (vars S)**src to source tar making the traingle involving (vars S)**src and tar commute
+	    b := (ev g)*((transpose vars S)**(ev source src));
+	    -- the above 2 lines  were pasted and modified from the BGG package
+	    
+	    map(modules#(i+1), modules#i, (-1)^i*b)
+	    )))
 -- LL(s**y) = (-1)^i \sum_{l=0}^n x_l*s \otimes y*e_l
 koszulLL Matrix := ComplexMap => opts -> g -> ()
 
@@ -368,6 +388,24 @@ TEST ///
     P = priddyComplex(vars E, S, LengthLimit=>3)
     
     assert(C == P)
+
+    F = koszulLL(HH_0 C, Concentration=>(-5,5))
+    assert( F_0 == M)
+///
+
+TEST ///
+    (S,E) = koszulPair(2, ZZ/101)
+    M = E^{3}
+    
+    C = koszulLL(M, Concentration=>(-3,0))
+    D = koszulComplex vars S
+
+    assert(betti C == betti D)
+
+    P = priddyComplex(vars S, E, LengthLimit=>3)
+
+    F = koszulRR(HH_0 C, Concentration=>(-5,5))
+    assert( F_0 == M)
 ///
 
 end--
@@ -380,9 +418,10 @@ restart
 needsPackage "ExteriorResolutions"
 
 (S,E)= koszulPair(2, ZZ/101)
-    M = S^1
+    M = E^1
     
-    C = koszulRR(M, Concentration=>(0,3))
+    C = koszulLL(M, Concentration=>(0,5))
+
     P = priddyComplex(vars E, S, LengthLimit=>3)
     
     assert(C == P)
