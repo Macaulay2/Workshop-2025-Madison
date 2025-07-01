@@ -16,3 +16,30 @@ document {
     },
 }
 
+document {
+    Key => {
+        (kernel, MackeyFunctorHomomorphism),
+    },
+    Headline => "kernel of a Mackey functor homomorphism",
+    Usage => "kernel f",
+    Inputs => {
+        MackeyFunctorHomomorphism => "f" => {""},
+    },
+    Outputs => {
+        CpMackeyFunctor => {"the kernel of the homomorphism f."},
+    },
+}
+
+document {
+    Key => {
+        (cokernel, MackeyFunctorHomomorphism),
+    },
+    Headline => "cokernel of a Mackey functor homomorphism",
+    Usage => "cokernel f",
+    Inputs => {
+        MackeyFunctorHomomorphism => "f" => {""},
+    },
+    Outputs => {
+        CpMackeyFunctor => {"the cokernel of the homomorphism f."},
+    },
+}
