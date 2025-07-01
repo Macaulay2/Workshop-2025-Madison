@@ -38,6 +38,11 @@ newPackage(
     DebuggingMode=>true
 )
 
+importFrom_Core {
+    "concatBlocks", "concatCols", "concatRows",
+    "isMorphism", "isAbelianCategory",
+    }
+
 load "./CpMackeyFunctors/Code/Helpers.m2"
 -- helper commands are internal only, and not exported
 
@@ -94,11 +99,6 @@ load "./CpMackeyFunctors/Code/BoxProduct.m2"
 export{
     "boxProduct"
 }
-
-importFrom_Core {
-    "concatBlocks", "concatCols", "concatRows",
-    "isMorphism", "isAbelianCategory",
-    }
 
 beginDocumentation()
 
