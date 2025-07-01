@@ -31,12 +31,28 @@ export {
     "shiftPolynomials",
     "getTemplate",
     "getTemplateMatrix",
-    "getActionMatrix"
+    "getActionMatrix",
+    "templateSolve",
+    "EliminationTemplate",
+    "newEliminationTemplate"
 }
 
-ElimProblem = new Type of HashTable
+EliminationTemplate = new Type of HashTable
 ShiftSet = new Type of List
 MonomialPartition = new Type of List
+
+newEliminationTemplate = method(Options => {})
+newEliminationTemplate (RingElement, Ideal) := o -> (aVar, J) -> (
+    (sh, mp) := getTemplate(aVar, basis(R/J), J);
+    M := getTemplateMatrix(shifts, monomialPartition, J);
+    new EliminationTemplate from {
+	shifts => sh,
+        monomialPartition => mp,
+        templateMatrix => M,
+        actionVariable => aVar,
+        ideal => J
+    }
+    )
 
 getH0 = method(Options => {MonomialOrder => null})
 getH0 (RingElement, Ideal) := o -> (a, J) -> (
@@ -133,12 +149,14 @@ templateSolve(Ideal) := o -> (I) -> (
 )
 templateSolve(RingElement, Ideal) := o -> (a, I) -> (
     R = ring I;
+    local B, local sh, local mp, local M, local Ma, local svals, local P;
 
     -- TODO: input checking, i.e. is a in R or I
+    
     if isMember(a, flatten entries vars R) then (
         -- 1. a is a variable
         B = lift(basis(R/I), R);
-        (sh, mp) = getTemplate(a, B, I);
+        (sh, mp) := getTemplate(a, B, I);
         M = getTemplateMatrix(sh, mp, I);
         Ma = getActionMatrix(a, mp, M);
         (svals, P) = eigenvectors Ma;
@@ -147,8 +165,8 @@ templateSolve(RingElement, Ideal) := o -> (a, I) -> (
     )
     else (
         -- 2. a is a linear form
-        S = QQ[s, flatten entries vars R, MonomialOrder => Eliminate 1];
-        J = sub(I, S) + ideal(s - sub(a, S));
+        S := QQ[s, flatten entries vars R, MonomialOrder => Eliminate 1];
+        J := sub(I, S) + ideal(s - sub(a, S));
 
         B = lift(basis(S/J), S);
         (sh, mp) = getTemplate(s, B, J);
