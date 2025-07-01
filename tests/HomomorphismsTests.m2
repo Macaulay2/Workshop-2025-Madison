@@ -39,4 +39,4 @@ A :=makeBurnsideMackeyFunctor(11);
 assert isWellDefined (id_(A) * id_(A))
 assert (id_(A) * id_(A) === id_(A))
 
--- assert isWellDefined ( complexLinearizationMap(11) * id_(A));
+assert isWellDefined ( complexLinearizationMap(11) * id_(A));
