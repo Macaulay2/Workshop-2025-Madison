@@ -54,3 +54,39 @@ document{
     target(complexLinearizationMap(5))
     ///
 }
+
+document{
+    Key => {complexLinearizationMap, (complexLinearizationMap, ZZ)},
+    Headline => "returns the complex linearization map for the prime p",
+    Usage => "complexLinearizationMap(p)",
+    Inputs => {
+        ZZ=> "p" => {"a prime"},
+	},
+    Outputs => {
+	    MackeyFunctorHomomorphism => {"the linearization map from the Burnside Mackey functor to the complex representation functor for the prime p."},
+	},
+    PARA{
+        "Every ", TEX///$G$///,"-set X determines a complex representation with basis X, called the permutation representation of X.  This induces a map from the Burnside Mackey functor to the complex representation Mackey functor called the linearization map."
+    },
+    EXAMPLE lines///
+    complexLinearizationMap(5)
+    ///
+}
+
+document{
+    Key => {realLinearizationMap, (realLinearizationMap, ZZ)},
+    Headline => "returns the real linearization map for the prime p",
+    Usage => "realLinearizationMap(p)",
+    Inputs => {
+        ZZ=> "p" => {"a prime"},
+	},
+    Outputs => {
+	    MackeyFunctorHomomorphism => {"the linearization map from the Burnside Mackey functor to the real representation functor for the prime p."},
+	},
+    PARA{
+        "Every ", TEX///$G$///,"-set X determines a real representation with basis X, called the permutation representation of X.  This induces a map from the Burnside Mackey functor to the real representation Mackey functor called the linearization map."
+    },
+    EXAMPLE lines///
+    realLinearizationMap(5)
+    ///
+}
