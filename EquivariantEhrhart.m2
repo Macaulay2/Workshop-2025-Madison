@@ -21,7 +21,7 @@ newPackage(
         }
     },
     Keywords => {"Combinatorics", "Convex Geometry"},
-    PackageImports => {"BettiCharacters", "Permutations", "RationalPolytopes"},
+    PackageImports => {"BettiCharacters", "Permutations", "RationalPolytopes", "Cyclotomic"},
     AuxiliaryFiles => true,
     DebuggingMode => false
 )
@@ -36,7 +36,6 @@ export {
     "isSymmetric",
     "orbitPolytope",
     "representationRing",
-
     -- options
     "OnlyListRepresentatives",
     "ReturnHStarList",
