@@ -85,7 +85,7 @@ export{
     "makeUniversalMapUnderlying",
     "getUnderlyingMap",
     "getFixedMap",
-    "isTrivialMackeyFunctor"
+    "isTrivialMackeyFunctor",
     "concatBlocks",
 }
 
