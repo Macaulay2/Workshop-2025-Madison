@@ -85,6 +85,7 @@ export{
     "makeUniversalMapUnderlying",
     "getUnderlyingMap",
     "getFixedMap",
+    "concatBlocks",
 }
 
 -- Methods for working in the abelian category Mack_p.
