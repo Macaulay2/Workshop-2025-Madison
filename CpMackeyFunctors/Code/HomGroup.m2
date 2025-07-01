@@ -35,5 +35,3 @@ Hom(MackeyFunctorHomomorphism, CpMackeyFunctor) := Matrix => opts -> (f,N) -> (
     psi := Hom(fB, B);
     inducedMap(Hom(source(f),N), Hom(target(f),N), psi ++ phi) 
 )
-
-

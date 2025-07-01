@@ -92,3 +92,5 @@ boxProduct (CpMackeyFunctor,CpMackeyFunctor) := CpMackeyFunctor => (M,N) ->(
 )
 
 CpMackeyFunctor ** CpMackeyFunctor := boxProduct
+
+CpMackeyFunctor ⊠ CpMackeyFunctor := boxProduct
