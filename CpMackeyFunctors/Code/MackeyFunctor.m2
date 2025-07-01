@@ -92,7 +92,7 @@ CpMackeyFunctor == CpMackeyFunctor := Boolean => (M,N) -> (
     if M.Tr != N.Tr then return false;
     if M.Conj != N.Conj then return false;
     true
-    )
+)
 
 -- Pruning
 prune CpMackeyFunctor := CpMackeyFunctor => opts -> M -> (
