@@ -1,12 +1,6 @@
-<<<<<<< HEAD
-directSumCpMackeyFunctors = method()
-directSumCpMackeyFunctors(CpMackeyFunctor,CpMackeyFunctor) := CpMackeyFunctor => (M,N) -> (
-    if not getPrimeOrder(M) == getPrimeOrder(N) then error("-- Primes not the same (incompatable)");
-=======
 -- Direct sums
 CpMackeyFunctor ++ CpMackeyFunctor := CpMackeyFunctor => (M,N) -> (
     if getPrimeOrder(M) != getPrimeOrder(N) then error("-- Primes not the same (incompatable)");
->>>>>>> 6fd72f2 (Cleaning up code and adding coker)
     T := getTransfer(M) ++ getTransfer(N);
     R := getRestriction(M) ++ getRestriction(N);
     C := getConjugation(M) ++ getConjugation(N);
@@ -15,14 +9,7 @@ CpMackeyFunctor ++ CpMackeyFunctor := CpMackeyFunctor => (M,N) -> (
     makeCpMackeyFunctor(p,R,T,C)
 )
 
-<<<<<<< HEAD
--- can we overload the directSum method instead of writing new directSumMackeyFunctors method?
-
-CpMackeyFunctor ++ CpMackeyFunctor := directSumCpMackeyFunctors
-
-=======
 -- Kernels
->>>>>>> 6fd72f2 (Cleaning up code and adding coker)
 ker MackeyFunctorHomomorphism := CpMackeyFunctor => options -> F -> (
     T := ker F.FixedMap;
     B := ker F.UnderlyingMap;
