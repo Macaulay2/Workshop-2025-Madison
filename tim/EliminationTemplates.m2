@@ -84,9 +84,10 @@ getActionMatrix = (actVar, mp, M) -> (
     extraMonomials := toList(mp#2 - set apply(mp#2, p -> numerator(p/actVar)));
     print extraMonomials;
     -- b = {y^2, y, x, 1};
-    binaryMatrix := matrix apply(extraMonomials, m -> apply(mp#2, n -> if m == n then 1_RR else 0_RR));
-    
-    A || binaryMatrix
+    if #extraMonomials > 0 then (
+	binaryMatrix := matrix apply(extraMonomials, m -> apply(mp#2, n -> if m == n then 1_RR else 0_RR));
+	A || binaryMatrix
+	) else A
     )
 
 needsPackage "EigenSolver"
@@ -106,8 +107,12 @@ max apply(20, i -> (
     )
 )
 
--- homotopy continuation works better...
-netList solveSystem J_*
+max apply(20, i -> (
+    sols1 = solveSystem J_*;
+    -- are residuals small? not always... bug in EigenSolver?
+    max apply(sols1, x -> norm sub(gens J, matrix x))
+    )
+)
 
 -- what about E-template?
 B = lift(basis(R/J), R)
@@ -115,6 +120,22 @@ B = lift(basis(R/J), R)
 M = getTemplateMatrix(sh, mp, J)
 Mx = getActionMatrix(x, mp, M) 
 (xvals, P) = eigenvectors Mx
-scaledEigVecs = P * diagonalMatrix apply(4, i -> 1/P_(3,i))
-clean_(1e-3) scaledEigVecs
+scaledEigVecs = P * inverse diagonalMatrix P^{3}
 netList solveSystem J_*
+
+-- try linear form?
+restart
+load "EliminationTemplates.m2"
+
+S = QQ[s,x,y,MonomialOrder => Eliminate 1]
+I = ideal(x^2+y^2-1, x^2 - y) + ideal(s - (3*x + 3*y))
+B = lift(basis(S/I), S)
+(sh2, mp2) = getTemplate(s, B, I)
+M = getTemplateMatrix(sh2, mp2, I)
+Ms = getActionMatrix(s, mp2, M) 
+(svals, P) = eigenvectors Ms
+clean_(1e-3) (P * inverse diagonalMatrix(P^{3}))
+
+
+
+
