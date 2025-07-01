@@ -1,3 +1,4 @@
+-- The Hom group Hom(M,N) is a subgroup of Hom(M(Cp/Cp),N(Cp/Cp)) ++ Hom(M(Cp/e),N(Cp/e))
 Hom(CpMackeyFunctor, CpMackeyFunctor) := Module => opts -> (M,N) -> (
     homFixedFixed := Hom(getFixedModule M, getFixedModule N);
     homUnderlyingUnderlying := Hom(getUnderlyingModule M, getUnderlyingModule N);
@@ -12,4 +13,12 @@ Hom(CpMackeyFunctor, CpMackeyFunctor) := Module => opts -> (M,N) -> (
             {0, Hom(M.Conj, getUnderlyingModule N) - Hom(getUnderlyingModule M, N.Conj)}
         }
     ))
-);
+)
+
+Hom(CpMackeyFunctor, MackeyFunctorHomomorphism) := Matrix => opts -> (M,f) -> (
+
+)
+
+Hom(MackeyFunctorHomomorphism, CpMackeyFunctor) := Matrix => opts -> (f,N) -> (
+    
+)
