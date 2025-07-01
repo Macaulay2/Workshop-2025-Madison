@@ -1,16 +1,8 @@
--- permutation matrix from permutation
--- expected permutation on indices 0 .. n-1
--- permutationMatrix = method()
--- permutationMatrix List := S -> (
---     n := #S;
---     matrix for i from 0 to n-1 list for j from 0 to n-1 list if S_i == j then 1 else 0
---     )
-
--- symmetricGroup = method()
--- symmetricGroup ZZ := n -> (
---     if n < 1 then error("invalid matrix size");
---     for S in permutations(n) list permutationMatrix S
---     )
+symmetricGroup = method()
+symmetricGroup ZZ := n -> (
+    if n < 1 then error("invalid matrix size");
+	for sigma in permutations toList(1..n) list permutation sigma
+    )
 
 
 -- given a polytope P and a matrix M or list of matrices L
@@ -131,7 +123,7 @@ partitionToPermutation List := L -> (
 cycleTypeRepresentatives = method()
 cycleTypeRepresentatives ZZ := n -> (
     S := toList \ partitions n;
-    for s in S list permutationMatrix partitionToPermutation s
+    for s in S list matrix partitionToPermutation s
     )
 
 
@@ -199,8 +191,8 @@ equivariantEhrhartSeries = method(
 equivariantEhrhartSeries Polyhedron := opts -> P -> (
 		n := numRows vertices P;
 		-- check P invariant under Sn
-		g1 := permutationMatrix(toList(1 .. n-1) | {0}); -- n cycle
-		g2 := permutationMatrix({1,0} | toList(2 .. n-1)); -- transposition
+		g1 := matrix permutation rotate(1, toList(1..n));
+		g2 := matrix extend(transposition 1, n);
 		if not (isSymmetric(P, g1) and isSymmetric(P, g2)) then error("polytope is not Sn invariant");
 		conjClassRepMats := cycleTypeRepresentatives n;
 		fixedPolytopeList := (g -> fixedPolytope(P, g)) \ conjClassRepMats;
@@ -236,7 +228,7 @@ orbitPolytope Matrix := p -> (
     n := numRows p;
     if numColumns p != 1 then error("expected matrix with 1 column");
     V := map(QQ^n, QQ^0, 0);
-    for g in symmetricGroup n do (
+    for g in (symmetricGroup n) / matrix do (
 	V = V | g*p;
 	);
     convexHull V
