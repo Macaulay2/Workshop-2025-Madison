@@ -90,6 +90,7 @@ getActionMatrix = (actVar, mp, M) -> (
     )
 
 needsPackage "EigenSolver"
+needsPackage "NumericalAlgebraicGeometry"
 
 
 end--
@@ -98,15 +99,22 @@ load "EliminationTemplates.m2"
 
 R = QQ[x,y]
 J = ideal(x^2+y^2-1, x^2 - y)
-zeroDimSolve J
+max apply(20, i -> (
+    sols1 = zeroDimSolve J;
+    -- are residuals small? not always... bug in EigenSolver?
+    max apply(sols1, x -> norm sub(gens J, matrix x))
+    )
+)
 
-actVar = x
+-- homotopy continuation works better...
+netList solveSystem J_*
+
+-- what about E-template?
 B = lift(basis(R/J), R)
-(sh, mp) = getTemplate(actVar, B, J)
+(sh, mp) = getTemplate(x, B, J)
 M = getTemplateMatrix(sh, mp, J)
-reducedRowEchelonForm M
-mp
-Ma = getActionMatrix(actVar, mp, M) 
-(xvals, P) = eigenvectors Ma
+Mx = getActionMatrix(x, mp, M) 
+(xvals, P) = eigenvectors Mx
 scaledEigVecs = P * diagonalMatrix apply(4, i -> 1/P_(3,i))
 clean_(1e-3) scaledEigVecs
+netList solveSystem J_*
