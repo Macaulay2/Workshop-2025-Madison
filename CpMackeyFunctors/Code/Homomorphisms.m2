@@ -99,7 +99,7 @@ makeUniversalMapFixed(CpMackeyFunctor,Vector) := MackeyFunctorHomomorphism => (M
 -- Given a Mackey functor M and n columns in fixed, produce map A^n -> M 
 makeUniversalMapFixed(CpMackeyFunctor,Matrix) := MackeyFunctorHomomorphism => (M,X) -> (
     n := numColumns X;
-    return MackeyFunctorHomomorphism.concatBlocks{for i to n-1 list makeUniversalMapFixed(M,X_i)};
+    return blockMatrixMackeyFunctorHomomorphism{for i to n-1 list makeUniversalMapFixed(M,X_i)};
 )
 
 -- Given a Mackey functor M and vector x in underlying module, produce map B -> M
@@ -122,7 +122,17 @@ makeUniversalMapUnderlying(CpMackeyFunctor,Vector) := MackeyFunctorHomomorphism 
 -- Given a Mackey functor M and n columns in underlying, produce map B^n -> M 
 makeUniversalMapUnderlying(CpMackeyFunctor,Matrix) := MackeyFunctorHomomorphism => (M,X) -> (
     n := numColumns X;
-    return MackeyFunctorHomomorphism.concatBlocks{for i to n-1 list makeUniversalMapUnderlying(M,X_i)};
+    return blockMatrixMackeyFunctorHomomorphism{for i to n-1 list makeUniversalMapUnderlying(M,X_i)};
+)
+
+-- Given:
+-- a Mackey functor M,
+-- a matrix of n elements X in fixed, and
+-- a matrix of m elements Y in underlying,
+-- return the universal map A^n ++ B^m -> M
+makeUniversalMap = method()
+makeUniversalMap(CpMackeyFunctor,Matrix,Matrix) := MackeyFunctorHomomorphism => (M,X,Y) -> (
+    return makeUniversalMapFixed(M,X) | makeUniversalMapUnderlying(M,Y)
 )
 
 -- Arithmetic operations

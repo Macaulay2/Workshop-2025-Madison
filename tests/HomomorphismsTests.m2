@@ -36,6 +36,8 @@ B := makeUnderlyingFreeMackeyFunctor 3;
 assert isWellDefined(makeUniversalMapUnderlying(B, vector (matrix {{0},{1},{0}})))
 assert isWellDefined(makeUniversalMapUnderlying(B, gens(getUnderlyingModule B)))
 
+assert isWellDefined(makeUniversalMap(B, gens(getFixedModule B), gens(getUnderlyingModule B)))
+
 -- verify composition does what we want it to do ?
 A :=makeBurnsideMackeyFunctor(11);
 assert isWellDefined (id_(A) * id_(A))
