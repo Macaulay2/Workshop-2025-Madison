@@ -50,4 +50,3 @@ assert( isWellDefined(directSum({f,id_U,f})))
 -- Checking arithmetic of homomorphisms
 h = id_B;
 assert(h + h + h == 3 * h)
->>>>>>> c4a6adf (added equality, temporary prune)
