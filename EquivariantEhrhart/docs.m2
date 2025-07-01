@@ -134,13 +134,26 @@ doc ///
 Key
     representationRing
 Headline
+    representation ring of Sn over QQ
 Usage
+    R = representationRing(n)
+    (R,T) = representationRing(n, opts.ReturnTable => true)
 Inputs
+    n : ZZ
+        the Sn that we compute the representation ring for
 Outputs
+    R : Ring
+        representation ring of Sn over QQ
+    T : CharacterTable
+        the symmetric group table of QQ[a_1 .. a_n]
 Description
     Text
+        Creates the representation ring for Sn.
     Example
+        representationRing 7
+        representationRing(7, opts.ReturnTable => true)
 SeeAlso
+    EquivariantEhrhart
 ///
 
 

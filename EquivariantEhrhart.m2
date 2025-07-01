@@ -21,7 +21,7 @@ newPackage(
         }
     },
     Keywords => {"Combinatorics", "Convex Geometry"},
-    PackageImports => {"BettiCharacters", "Permutations", "RationalPolytopes", "Cyclotomic"},
+    PackageExports => {"BettiCharacters", "Permutations", "RationalPolytopes", "Cyclotomic"},
     AuxiliaryFiles => true,
     DebuggingMode => false
 )
