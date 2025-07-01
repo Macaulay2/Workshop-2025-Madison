@@ -47,7 +47,7 @@ For GLn and SLn there is an alternative method for computing the Reynolds operat
 
 Coding this algorithm should not be too bad and in fact, I know that Derksen wrote this in Singular using C language several years ago... you can even find the C code searching through Singular if that would be helpful to you (Francesca did not find it particularly enlightening). 
 
---
+---
 
 ## Permutation groups and Sasha's functions
 In Tulane we have started implementing methods for permutation actions following Gobel's bound. There is a first draft of the permutation groups methods in this repo.
