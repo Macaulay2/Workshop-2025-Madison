@@ -9,6 +9,8 @@
 getGlobalUnstableA1Degree = method()
 getGlobalUnstableA1Degree RingElement := (Matrix,Number) => q -> (
     
+    n := 1;
+    
     -- Extract numerator f from q
     f := numerator(q);
     
@@ -38,6 +40,18 @@ getGlobalUnstableA1Degree RingElement := (Matrix,Number) => q -> (
     	rankAlgebra := getGlobalAlgebraRank list{q};
     	return makeGWuClass id_(CC^rankAlgebra);
         );
-	
+
+    -- If the field is RR, ask the user to run the computation over QQ instead and then base change to RR
+    if instance(kk, RealField) then error "getGlobalUnstableA1Degree method does not work over the reals. Instead, define the polynomials over QQ to output an unstableGrothendieckWittClass. Then extract the matrix, base change it to RR, and run getSumDecomposition().";    
+    -- Create internal rings/matrices
     
+    -- Initialize a polynomial ring in X_i's and Y_i's in which to compute the Bezoutian
+    X := local X;
+    Y := local Y;
+    R := kk(monoid[X | Y]);
+
+    numD   := sub(f,X)*sub(g,Y) - sub(f,Y)*sub(g,X)
+    denomD := X - Y
+    qD     := numD/ denomD
+    	 
 )
