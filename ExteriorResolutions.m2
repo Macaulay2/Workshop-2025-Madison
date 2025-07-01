@@ -26,6 +26,8 @@ export {
     "coaugmentationMap",
     "priddyComplex",
     "priddyDifferential",
+    "koszulRR",
+    "koszulLL",
     }
 
 --------------------------------------------------
@@ -33,7 +35,7 @@ export {
 --------------------------------------------------
 
 injectiveResolution = method(Options => options freeResolution)
-injectiveResolution(Module) := Complex => opts -> M -> (
+injectiveResolution Module := Complex => opts -> M -> (
     E := ring M;
     n := numgens E;
     if not isSkewCommutative E then error "expected underlying ring to be skew commutative";
@@ -41,6 +43,7 @@ injectiveResolution(Module) := Complex => opts -> M -> (
     P.cache.Module = M;
     P)
 
+injectiveResolution Complex := Complex => opts -> M -> ()
 
 coaugmentationMap = method()
 coaugmentationMap Complex := ComplexMap => C -> C.cache.coaugmentationMap ??= (
@@ -74,6 +77,35 @@ priddyComplex(Matrix, Ring) := opts -> (m, S) -> (
     complex hashTable apply(opts.LengthLimit, i -> -i => priddyDifferential(-i, m, S)))
 
 --------------------------------------------------
+--- Koszul duality Functors
+--------------------------------------------------
+
+-- RR: Com(S) -> Com(E) is the right-adjoint functor
+koszulRR = method()
+-- RR(M)^i = E^*(i) \otimes_k M_i
+-- E^* = Hom_k(E, k) = E(n+1)
+koszulRR Module := Complex    => M -> ()
+koszulRR Matrix := ComplexMap => f -> ()
+
+-- RR(C)^i = \bigoplus_{j\in\ZZ} Hom_k(E(-j), C^{i-j}_j)
+--         = \bigoplus_{j\in\ZZ} (E(-j))^* \otimes_k C^{i-j}_j
+--         = \bigoplus_{j\in\ZZ} E^*(j)    \otimes_k C^{i-j}_j
+koszulRR Complex    := Complex    => C   -> ()
+koszulRR ComplexMap := ComplexMap => psi -> ()
+
+
+-- LL: Com(E) -> Com(S) is the left-adjoint functor
+koszulLL = method()
+-- LL(N)^i = S(i) \otimes_k N_i
+koszulLL Module := Complex    => N -> ()
+koszulLL Matrix := ComplexMap => g -> ()
+
+-- LL(D)^i = \bigoplus_{j\in\ZZ} S(j) \otimes_k D^{i-j}_j
+koszulLL Complex    := Complex    => D   -> ()
+koszulLL ComplexMap := ComplexMap => phi -> ()
+
+
+--------------------------------------------------
 --- Documentation
 --------------------------------------------------
 
@@ -91,10 +123,11 @@ Node
 --   SeeAlso
 --   References
 --      Text
+
 Node
    Key
        priddyComplex
-       (priddyComplex, Matrix, Ring)
+      (priddyComplex, Matrix, Ring)
    Headline
        computes the Priddy complex of several elements of an exterior algebra
    Usage
@@ -117,6 +150,24 @@ Node
 	   C = priddyComplex(m, S, LengthLimit=>3)
 	   C.dd
 	   prune HH C
+Node
+   Key
+     priddyDifferential
+    (priddyDifferential, ZZ, Matrix, Ring)
+
+Node
+   Key
+     injectiveResolution
+Node
+   Key
+     coaugmentationMap
+
+Node
+   Key
+     koszulRR
+Node
+   Key
+     koszulLL
 ///
 
 --------------------------------------------------
@@ -167,7 +218,6 @@ TEST ///
 TEST ///
     -- Examples tried
     -- This next example doesn't make sense, because one of the forms is even degree.
-    restart
     needsPackage "ExteriorResolutions"
     S = QQ[x_0,x_1]
     E = QQ[e_0, e_1, e_2, e_3, SkewCommutative=>true]
@@ -177,7 +227,6 @@ TEST ///
     priddyDifferential(-2, m, S)
     priddyComplex(m, S, LengthLimit=>3)
 ///
-
 
 end--
 
