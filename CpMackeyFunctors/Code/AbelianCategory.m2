@@ -11,6 +11,10 @@ directSumCpMackeyFunctors(CpMackeyFunctor,CpMackeyFunctor) := CpMackeyFunctor =>
     makeCpMackeyFunctor(p,R,T,C)
 )
 
+-- can we overload the directSum method instead of writing new directSumMackeyFunctors method?
+
+CpMackeyFunctor ++ CpMackeyFunctor := directSumCpMackeyFunctors
+
 ker MackeyFunctorHomomorphism := CpMackeyFunctor => options -> F -> (
     T := ker F.FixedMap;
     B := ker F.UnderlyingMap;
