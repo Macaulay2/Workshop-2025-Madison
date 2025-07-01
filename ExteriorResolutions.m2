@@ -60,6 +60,7 @@ coaugmentationMap Complex := ComplexMap => C -> C.cache.coaugmentationMap ??= (
 priddyDifferential = method(TypicalValue => Matrix)
 priddyDifferential(ZZ, Matrix, Ring) := (i, m, S) -> (
     E := ring m;
+    n := numgens E - 1;
     --L := flatten (degrees m)_1; --degrees of the forms on which we are taking the Priddy complex
     --assert(all(L, i -> odd L_i));
     monsSrc := basis(-i, S);
@@ -67,8 +68,8 @@ priddyDifferential(ZZ, Matrix, Ring) := (i, m, S) -> (
     --
     expTgt := apply(first entries monsTgt, n -> flatten exponents n);
     --
-    tgt := directSum apply(expTgt, n ->
-	E^{sum(numcols m, i -> n_i * flatten degree(m_i))});
+    tgt := directSum apply(expTgt, d ->
+	E^{{n+1}+sum(numcols m, i -> d_i * flatten degree(m_i))});
     --
     f := matrix table(numcols monsTgt, numcols monsSrc,
 	(r,c) -> monsTgt_{r} // monsSrc_{c});
@@ -333,6 +334,16 @@ TEST ///
     priddyComplex(m, S, LengthLimit=>3)
 ///
 
+TEST ///
+    (S,E)= koszulPair(2, ZZ/101)
+    M = S^1
+    
+    C = koszulRR(M, Concentration=>(0,3))
+    P = priddyComplex(vars E, S, LengthLimit=>3)
+    
+    assert(C == P)
+///
+
 end--
 
 --------------------------------------------------
@@ -343,16 +354,12 @@ restart
 needsPackage "ExteriorResolutions"
 
 (S,E)= koszulPair(2, ZZ/101)
-M = S^1
-
-C = koszulRR(M, Concentration=>(0,3))
-C.dd
-
-P = priddyComplex(vars E, S, LengthLimit=>3)
-
-C == P
-
-prune HH C
+    M = S^1
+    
+    C = koszulRR(M, Concentration=>(0,3))
+    P = priddyComplex(vars E, S, LengthLimit=>3)
+    
+    assert(C == P)
 
 M = coker matrix{{x_0}}
 E = ZZ/101[e_0,e_1,e_2, SkewCommutative=>true]
