@@ -129,7 +129,7 @@ addGWu (UnstableGrothendieckWittClass,UnstableGrothendieckWittClass) := Unstable
 	-- Return an error if the underlying fields of the two classes are different
 	if not Kb.order == Kg.order then
 	    error "these classes have different underlying fields";
-	return makeGWClass(getMatrix beta ++ sub(getMatrix gamma, Kb), getScalar beta * sub(getScalar gamma, Kb));
+	return makeGWuClass(getMatrix beta ++ sub(getMatrix gamma, Kb), getScalar beta * sub(getScalar gamma, Kb));
 	);
     
     -- Remaining cases
