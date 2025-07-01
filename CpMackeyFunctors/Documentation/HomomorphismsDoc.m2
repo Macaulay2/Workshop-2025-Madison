@@ -1,5 +1,33 @@
 document{
-    Key => {map, (map, CpMackeyFunctor, CpMackeyFunctor, Matrix, Matrix)},
+    Key => {MackeyFunctorHomomorphism},
+    Headline => "the class of Mackey functor homomorphisms",
+    PARA{
+        "Common ways to construct a Mackey functor homomorphism:",
+    },
+    UL {
+        TO2((map, CpMackeyFunctor, CpMackeyFunctor, Matrix, Matrix), "map"),
+        TT "id_M",
+    },
+    Subnodes => {
+        TO FixedMap,
+        TO UnderlyingMap,
+    }
+}
+
+document{
+    Key => {FixedMap},
+    Headline => "the fixed-point level of a Mackey functor homomorphism",
+    Usage => "f.FixedMap",
+}
+
+document{
+    Key => {UnderlyingMap},
+    Headline => "the underlying level of a Mackey functor homomorphism",
+    Usage => "f.UnderlyingMap",
+}
+
+document{
+    Key => {(map, CpMackeyFunctor, CpMackeyFunctor, Matrix, Matrix)},
     Headline => "constructs a map between two Mackey functors",
     Usage => "map(N,M,U,F)",
     Inputs => {
@@ -20,9 +48,9 @@ document{
 }
 
 document{
-    Key => {source, (source, MackeyFunctorHomomorphism)},
+    Key => {(source, MackeyFunctorHomomorphism)},
     Headline => "returns the source of a Mackey functor homomorphism",
-    Usage => "map(f)",
+    Usage => "source f",
     Inputs => {
         MackeyFunctorHomomorphism => "f" => {""},
 	},
@@ -38,9 +66,9 @@ document{
 }
 
 document{
-    Key => {target, (target, MackeyFunctorHomomorphism)},
-    Headline => "returns the source of a Mackey functor homomorphism",
-    Usage => "map(f)",
+    Key => {(target, MackeyFunctorHomomorphism)},
+    Headline => "returns the target of a Mackey functor homomorphism",
+    Usage => "target f",
     Inputs => {
         MackeyFunctorHomomorphism => "f" => {""},
 	},
