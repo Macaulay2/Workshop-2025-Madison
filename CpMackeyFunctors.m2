@@ -94,6 +94,7 @@ undocumented{
 load "./CpMackeyFunctors/Documentation/ConstructorsDoc.m2"
 load "./CpMackeyFunctors/Documentation/HomGroupDoc.m2"
 load "./CpMackeyFunctors/Documentation/MackeyFunctorDoc.m2"
+load "./CpMackeyFunctors/Documentation/AbelianCategoryDoc.m2"
 
 
 

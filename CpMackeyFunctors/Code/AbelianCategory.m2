@@ -1,5 +1,3 @@
-
-
 directSumCpMackeyFunctors = method()
 directSumCpMackeyFunctors(CpMackeyFunctor,CpMackeyFunctor) := CpMackeyFunctor => (M,N) -> (
     if not getPrimeOrder(M) == getPrimeOrder(N) then error("-- Primes not the same (incompatable)");
