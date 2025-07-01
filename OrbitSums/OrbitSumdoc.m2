@@ -19,8 +19,7 @@ document {
       TO shuffMon
   },
   Contributors => "Gordon Novak & Sasha Arasha, for the documentation.",
-  Acknowledgement => "A special thanks to the organizers of the 2025 Madison workshop",
-  Caveat => {"warning"}
+  Acknowledgement => "A special thanks to the organizers of the 2025 Madison workshop"
 }
 
 document {
