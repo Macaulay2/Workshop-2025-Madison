@@ -43,3 +43,25 @@ document{
     makeZeroMackeyFunctor(2)
     ///
 }
+
+document{
+    Key => {makeComplexRepresentationMackeyFunctor, (makeComplexRepresentationMackeyFunctor, ZZ)},
+    Headline => "constructs the complex representation Mackey functor",
+    Usage => "makeComplexRepresentationMackeyFunctor(p)",
+    Inputs => {
+	ZZ => "p" => {"a prime number ", TEX///$p$///},
+	},
+    Outputs => {
+	CpMackeyFunctor => {"the complex representation Mackey functor for the group ", TEX///$C_p.$///},
+	},
+    PARA{
+        "The ", EM "complex representation", " Mackey functor of a group ", TEX///$G$///, " is defined by sending ", TEX///$G/H$///, " to the Grothendieck group of complex ", TEX///$G$/// , "-representations. The transfer and restriction come from induction and restriction of ", TEX///$G$///,"-representations. When ", TEX///$G$///, " is a cyclic group of prime order, this admits a nice form. The underlying module is given by ", TEX///$\mathbb{Z}$///, " with trivial conjugation action, while the fixed module is ", TEX///$\mathbb{Z}\{\lambda_{0},\lambda_1,\dots,\lambda_{p-1}\}$///, ". The element ", TEX///$\lambda_i$///,  " represents the one dimensional complex representation given by multiplication by ",TEX///$e^{2\pi i/p}.$///, " Restriction is defined as",
+        TEX///\[\text{res}_e^{C_p} \colon \mathbb{Z}\{\lambda_{0},\lambda_1,\dots,\lambda_{p-1}\} \to \mathbb{Z}\]///,
+        "by sending ", TEX///$\lambda\mapsto 1$///, ". Transfer is of the form ",
+        TEX///\[\text{tr}_e^{C_p} \colon \mathbb{Z} \to \mathbb{Z}\{\lambda_{0},\lambda_1,\dots,\lambda_{p-1}\}\]///,
+        "by sending ", TEX///$x\mapsto x\cdot \left(\Sigma^{p-1}_{0} \lambda_i\right)$///, "."
+        },
+    EXAMPLE lines///                                                                         
+    makeComplexRepresentationMackeyFunctor(5)
+    ///
+}
