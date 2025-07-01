@@ -137,5 +137,16 @@ Ms = getActionMatrix(s, mp2, M)
 clean_(1e-3) (P * inverse diagonalMatrix(P^{3}))
 
 
+-- use different basis for S/I
+S = QQ[s,y,x,MonomialOrder => {Eliminate 1, Lex}]
+I = ideal(x^2+y^2-1, x^2 - y) + ideal(s - (x + y))
+B = lift(basis(S/I), S)
+(sh2, mp2) = getTemplate(s, B, I)
+M = getTemplateMatrix(sh2, mp2, I)
+Ms = getActionMatrix(s, mp2, M) 
+(svals, P) = eigenvectors Ms
+clean_(1e-3) (P * inverse diagonalMatrix(P^{numcols P-1}))
+
+
 
 
