@@ -1,3 +1,8 @@
+
+-- needsPackage Complexes???
+isAbelianCategory CpMackeyFunctor := M -> true
+isMorphism MackeyFunctorHomomorphism := f -> true
+
 -- input: a matrix of mackey homs {fij: Mj -> Ni}
 
 matrixMackeyFunctorHomomorphism = method()
@@ -24,3 +29,18 @@ matrixMackeyFunctorHomomorphism(List) := MackeyFunctorHomomorphism => Fij -> (
 
 
 )
+
+-- SheafMap |  SheafMap := SheafMap => SheafMap.concatCols = maps -> map(
+--     target maps#0, directSum apply(maps, source), concatCols apply(maps, matrix))
+MackeyFunctorHomomorphism | MackeyFunctorHomomorphism := MackeyFunctorHomomorphism => MackeyFunctorHomomorphism.concatCols = maps -> (
+    --blah
+)
+
+-- SheafMap || SheafMap := SheafMap => SheafMap.concatRows = maps -> map(
+--     directSum apply(maps, target), source maps#0, concatRows autotruncate maps)
+MackeyFunctorHomomorphism || MackeyFunctorHomomorphism := MackeyFunctorHomomorphism => MackeyFunctorHomomorphism.concatRows = maps -> (
+    --blah
+)
+
+MackeyFunctorHomomorphism.concatBlocks = maps -> MackeyFunctorHomomorphism.concatRows apply(maps, MackeyFunctorHomomorphism.concatCols)
+MackeyFunctorHomomorphism.matrix = opts -> MackeyFunctorHomomorphism.concatBlocks
