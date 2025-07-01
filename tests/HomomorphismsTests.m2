@@ -25,3 +25,5 @@ assert isWellDefined(F)
 -- verify that the linearization map is well-defined
 
 assert isWellDefined(complexLinearizationMap(5))
+
+assert isWellDefined(realLinearizationMap(5))

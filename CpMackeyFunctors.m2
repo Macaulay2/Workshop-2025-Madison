@@ -75,6 +75,7 @@ export{
     "UnderlyingMap",
     "FixedMap",
     "complexLinearizationMap",
+    "realLinearizationMap",
 }
 
 -- Methods for working in the abelian category Mack_p.

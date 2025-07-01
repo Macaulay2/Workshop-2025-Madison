@@ -66,3 +66,10 @@ complexLinearizationMap = method()
 complexLinearizationMap(ZZ) := MackeyFunctorHomomorphism => p -> (
     map(makeComplexRepresentationMackeyFunctor p, makeBurnsideMackeyFunctor p, matrix {{1}}, matrix {{1,1}} || matrix (for i to p-2 list {0,1}))
 )
+
+-- This is the linearization map A -> RO
+realLinearizationMap = method()
+realLinearizationMap(ZZ) := MackeyFunctorHomomorphism => p -> (
+    RO := makeRealRepresentationMackeyFunctor p;
+    map(RO, makeBurnsideMackeyFunctor p, matrix {{1}}, matrix {{1,1}} || matrix (for i to (rank (getFixedModule RO) - 2) list {0,1}))
+)

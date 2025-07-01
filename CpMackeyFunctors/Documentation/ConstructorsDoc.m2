@@ -83,11 +83,34 @@ document{
     PARA{
         "The ", EM "complex representation", " Mackey functor of a group ", TEX///$G$///, " is defined by sending ", TEX///$G/H$///, " to the Grothendieck group of complex ", TEX///$G$/// , "-representations. The transfer and restriction come from induction and restriction of ", TEX///$G$///,"-representations. When ", TEX///$G$///, " is a cyclic group of prime order, this admits a nice form. The underlying module is given by ", TEX///$\mathbb{Z}$///, " with trivial conjugation action, while the fixed module is ", TEX///$\mathbb{Z}\{\lambda_{0},\lambda_1,\dots,\lambda_{p-1}\}$///, ". The element ", TEX///$\lambda_i$///,  " represents the one dimensional complex representation given by multiplication by ",TEX///$e^{2\pi i/p}.$///, " Restriction is defined as",
         TEX///\[\text{res}_e^{C_p} \colon \mathbb{Z}\{\lambda_{0},\lambda_1,\dots,\lambda_{p-1}\} \to \mathbb{Z}\]///,
-        "by sending ", TEX///$\lambda\mapsto 1$///, ". Transfer is of the form ",
+        "by sending ", TEX///$\lambda_i\mapsto 1$///, ". The transfer ",
         TEX///\[\text{tr}_e^{C_p} \colon \mathbb{Z} \to \mathbb{Z}\{\lambda_{0},\lambda_1,\dots,\lambda_{p-1}\}\]///,
-        "by sending ", TEX///$x\mapsto x\cdot \left(\Sigma^{p-1}_{0} \lambda_i\right)$///, "."
+        "by sending ", TEX///$x\mapsto x\cdot \left(\sum^{p-1}_{0} \lambda_i\right)$///, "."
         },
     EXAMPLE lines///                                                                         
     makeComplexRepresentationMackeyFunctor(5)
+    ///
+}
+
+document{
+    Key => {makeRealRepresentationMackeyFunctor, (makeRealRepresentationMackeyFunctor, ZZ)},
+    Headline => "constructs the real representation Mackey functor",
+    Usage => "makeRealRepresentationMackeyFunctor(p)",
+    Inputs => {
+	ZZ => "p" => {"a prime number ", TEX///$p$///},
+	},
+    Outputs => {
+	CpMackeyFunctor => {"the real representation Mackey functor for the group ", TEX///$C_p.$///},
+	},
+    PARA{
+        "The ", EM "real representation", " Mackey functor of a group ", TEX///$G$///, " is defined by sending ", TEX///$G/H$///, " to the Grothendieck group of real orthogonal ", TEX///$G$/// , "-representations. The transfer and restriction come from induction and restriction of ", TEX///$G$///,"-representations. When ", TEX///$G$///, " is a cyclic group of prime order p, with p odd, this admits a nice form. The underlying module is given by ", TEX///$\mathbb{Z}$///, " with trivial conjugation action, while the fixed module is ", TEX///$\mathbb{Z}\{\lambda_{0},\lambda_1,\dots,\lambda_{(p-1)/2}\}$///, ". The element ", TEX///$\lambda_i$///, " for ",TEX///$i>0$/// ,
+        " represents the two dimensional real representation given by rotation by ",TEX///$(2\pi i)/p$///, " radians. The element ", TEX///$\lambda_0$///," represents the trivial one dimensional representation.  Restriction is defined as",
+        TEX///\[\text{res}_e^{C_p} \colon \mathbb{Z}\{\lambda_{0},\lambda_1,\dots,\lambda_{(p-1)/2}\} \to \mathbb{Z}\]///,
+        "by sending ", TEX///\[\lambda_i\mapsto \begin{cases} 2 & i>0 \\ 1 & i=0. \end{cases} \]///, "Transfer is of the form ",
+        TEX///\[\text{tr}_e^{C_p} \colon \mathbb{Z} \to \mathbb{Z}\{\lambda_{0},\lambda_1,\dots,\lambda_{(p-1)/2}\}\]///,
+        "by sending ", TEX///$x\mapsto x\cdot \left(\sum^{(p-1)/2}_{0} \lambda_i\right)$///, "."
+        },
+    EXAMPLE lines///                                                                         
+    makeRealRepresentationMackeyFunctor(5)
     ///
 }
