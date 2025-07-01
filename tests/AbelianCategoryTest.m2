@@ -18,3 +18,5 @@ assert(gens(getFixedModule(K))== matrix {{2},{-1}});
 assert(getConjugation(K)==0);
 assert(getRestriction(K) == 0);
 assert(getTransfer(K) == 0);
+
+assert(isWellDefined(B ++ U))
