@@ -91,6 +91,27 @@ boxProduct (CpMackeyFunctor,CpMackeyFunctor) := CpMackeyFunctor => (M,N) ->(
     return makeCpMackeyFunctor(getPrimeOrder(M),boxProductRestriction(M,N), boxProductTransfer(M,N),boxProductConjugation(M,N))
 )
 
+-- induced maps on box products
+boxProduct (CpMackeyFunctor, MackeyFunctorHomomorphism) := MackeyFunctorHomomorphism => (M,f) -> (
+    underlyingReturn := M.Underlying ** f.UnderlyingMap;
+
+    fixedSource := coker(totalBoxProductRelation(M, source f));
+    fixedTarget := coker(totalBoxProductRelation(M, target f));
+    fixedReturn := inducedMap(fixedTarget, fixedSource, M.Fixed ** f.FixedMap ++ M.Underlying ** f.UnderlyingMap);
+
+    return map(boxProduct(M, f.Codomain),boxProduct(M, f.Domain), underlyingReturn, fixedReturn);
+)
+
+boxProduct (MackeyFunctorHomomorphism, CpMackeyFunctor) := MackeyFunctorHomomorphism => (f,M) -> (
+    underlyingReturn := f.UnderlyingMap ** M.Underlying;
+
+    fixedSource := coker(totalBoxProductRelation(source f, M));
+    fixedTarget := coker(totalBoxProductRelation(target f, M));
+    fixedReturn := inducedMap(fixedTarget, fixedSource, f.FixedMap ** M.Fixed ++ f.UnderlyingMap ** M.Underlying);
+
+    return map(boxProduct(f.Codomain, M),boxProduct(f.Domain, M), underlyingReturn, fixedReturn);
+)
+
 CpMackeyFunctor ** CpMackeyFunctor := boxProduct
 
 CpMackeyFunctor ⊠ CpMackeyFunctor := boxProduct
