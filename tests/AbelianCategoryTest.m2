@@ -20,4 +20,4 @@ assert( presentation getFixedModule C      == matrix {{2,4}} )
 assert( presentation getUnderlyingModule C == matrix {{2},{2}} )
 
 -- Checking that direct sums are well-defined.
-assert( isWellDefined B ++ U )
+assert( isWellDefined(B ++ U) )
