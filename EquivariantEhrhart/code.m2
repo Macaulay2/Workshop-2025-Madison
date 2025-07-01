@@ -196,7 +196,7 @@ equivariantEhrhartSeries = method(
     Options => {
 	ReturnTable => true,
 	ReturnPartitionList => true,
-	ReturnStarList => true
+	ReturnHStarList => true
 	})
 equivariantEhrhartSeries Polyhedron := opts -> P -> (
 		n := numRows vertices P;
@@ -206,11 +206,11 @@ equivariantEhrhartSeries Polyhedron := opts -> P -> (
 		if not (isSymmetric(P, g1) and isSymmetric(P, g2)) then error("polytope is not Sn invariant");
 		conjClassRepMats := cycleTypeRepresentatives n;
 		fixedPolytopeList := (g -> fixedPolytope(P, g)) \ conjClassRepMats;
-		(R, T) := representationRing(n, ReturnTable => true);
+		(R, T) := repRing(n, ReturnTable => true);
 		m := numgens R; -- equals number of conj classes
 		Rt := R[getSymbol "t"];
 		t := Rt_0;
-		hStarList := (Pg -> hStarPolynomial(Pg, Rt, ReturnDenominator => true)) \ fixedPolytopeList;
+		hStarList := (Pg -> hStar(Pg, Rt, ReturnDenominator => true)) \ fixedPolytopeList;
 		ehrhartHStarList := for i from 0 to m-1 list (
 				g := sub(conjClassRepMats_i, Rt);
 				detRep := det(id_(Rt^n) - t*g);
@@ -229,6 +229,9 @@ equivariantEhrhartSeries Polyhedron := opts -> P -> (
 		if opts.ReturnHStarList then result = result | {ehrhartHStarList};
 		result
 		)
+equivariantEhrhartSeries(Polyhedron, Matrix) := opts -> (P, M) ->  (
+	ehrhartSeries fixedPolytope(P, M)
+    )
 
 
 -- obit polytope under Sn
