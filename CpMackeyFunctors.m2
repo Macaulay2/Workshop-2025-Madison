@@ -73,6 +73,9 @@ export{
     "FixedMap"
 }
 
+-- Methods for working in the abelian category Mack_p.
+load "./CpMackeyFunctors/Code/AbelianCategory.m2"
+
 -- Methods for forming the abelian group of homomorphisms between two Mackey functors
 load "./CpMackeyFunctors/Code/HomGroup.m2"
 
@@ -94,11 +97,14 @@ undocumented{
 load "./CpMackeyFunctors/Documentation/ConstructorsDoc.m2"
 load "./CpMackeyFunctors/Documentation/HomGroupDoc.m2"
 load "./CpMackeyFunctors/Documentation/MackeyFunctorDoc.m2"
+<<<<<<< HEAD
 load "./CpMackeyFunctors/Documentation/AbelianCategoryDoc.m2"
 
 
 
 
+=======
+>>>>>>> 6fd72f2 (Cleaning up code and adding coker)
  
 ----------------------------
 ----------------------------
