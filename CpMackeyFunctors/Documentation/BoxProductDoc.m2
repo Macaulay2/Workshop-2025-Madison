@@ -3,6 +3,7 @@ document {
         boxProduct,
         (boxProduct,CpMackeyFunctor,CpMackeyFunctor),
         (symbol ⊠,CpMackeyFunctor,CpMackeyFunctor),
+        (symbol **,CpMackeyFunctor,CpMackeyFunctor),
     },
     Headline => "box product of Cp-Mackey functors",
     Usage => "M ⊠ N\nboxProduct(M,N)",
