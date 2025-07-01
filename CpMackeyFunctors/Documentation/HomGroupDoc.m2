@@ -10,7 +10,7 @@ document{
 	Module => {"The hom group as a ", TEX///$\mathbb{Z}$///,"-module"},
 	},
     PARA{
-        "Given two Mackey functors M and N, the set of Mackey functor homomorphisms from M to N forms an abelian group under pointwise addition.",
+        "Given two Mackey functors ", TEX"$M$", " and ", TEX"$N$"," the set of Mackey functors homomorphisms from ",TEX"$N$"," to ",TEX"$M$"," forms an abelian group under pointwise addition.",
     },
     EXAMPLE lines///
     M = makeBurnsideMackeyFunctor(2);
