@@ -107,9 +107,9 @@ makeUniversalMapUnderlying(CpMackeyFunctor,Vector) := MackeyFunctorHomomorphism 
     )
 )
 
-composeMackeyFunctorHomorphisms = method()
-composeMackeyFunctorHomorphisms(MackeyFunctorHomomorphism,MackeyFunctorHomomorphism) := MackeyFunctorHomomorphism => (F,G) ->(
-    map(G.Codomain, F.Domain, F.UnderlyingMap*G.UnderlyingMap, F.FixedMap*G.FixedMap)
-)
 
-MackeyFunctorHomomorphism * MackeyFunctorHomomorphism := composeMackeyFunctorHomorphisms;
+MackeyFunctorHomomorphism * MackeyFunctorHomomorphism := MackeyFunctorHomomorphism => (G,F) ->(
+    -- todo: uncomment after Sasha pushes == method
+    -- if not (F.Codomain == G.Domain) then error "Mackey functor maps are not composable";
+    map(G.Codomain, F.Domain, G.UnderlyingMap * F.UnderlyingMap, G.FixedMap * F.FixedMap)
+)
