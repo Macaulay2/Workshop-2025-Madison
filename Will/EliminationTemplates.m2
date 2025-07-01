@@ -19,21 +19,21 @@ getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     BS := sub(B, S);
     P := last coefficients(BS%F); -- change of basis matrix
     Bhat := rsort lift(basis(S/F), S);
-    -- Ta := last coefficients((aS * Bhat)%F, Monomials => Bhat);
+    Ta := last coefficients((aS * Bhat)%F, Monomials => Bhat);
     V := aS * BS - lift(aS * sub(BS * (inverse P), S/F), S) * P;
-    -- V = aS * BS - BS * (inverse P) * Ta * P;
+    V = aS * BS - BS * (inverse P) * Ta * P;
     HVG := V // gens G;
     HGF := getChangeMatrix G;
     assert(gens G * HVG - V == 0);
     assert(gens F * HGF - gens G == 0);
     H0 := HGF * HVG;
     sub(H0, ring J)
-    )
+)
 
 shiftPolynomials = (shifts, J) -> (
     assert(length shifts == numgens J);
     apply(shifts, J_*, (m, f) -> f * sub(m, ring J))
-    )
+)
 
 getTemplate = method(Options => {MonomialOrder => null})
 getTemplate(RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
@@ -50,15 +50,16 @@ getTemplate(RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     (shifts, monomialPartition)
 )
 
+
 getTemplateMatrix = method(Options => {MonomialOrder => null})
 getTemplateMatrix(RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     (shifts, monomialPartition) := getTemplate(a, B, J, o);
     getTemplateMatrix(shifts, monomialPartition, J, o)
-    )
+)
 getTemplateMatrix(ShiftSet, MonomialPartition, Ideal) := o -> (shifts, monomialPartition, J) -> (
     allMons := apply(fold(monomialPartition, (a,b) -> a|b), m -> sub(m, ring J));
     sub(transpose fold(apply(shiftPolynomials(shifts, J), m -> last coefficients(m, Monomials => allMons)), (a,b) -> a|b), coefficientRing ring J)
-    )
+)
 
 needsPackage "NumericalLinearAlgebra"
 getActionMatrix = (actVar, mp, M) -> (
@@ -66,7 +67,8 @@ getActionMatrix = (actVar, mp, M) -> (
     b := length mp#1; -- number of "reducible monomials"
     c := length mp#2; -- number of "basic monomials"
     (m, n) := (numrows M, numcols M);
-
+    --M1 := reducedRowEchelonForm M;
+    
     -- eliminate "excessive monomials" w/ LU
     Ma := M_{0..a-1};
     (P, L, U) := LUdecomposition Ma;
@@ -77,11 +79,53 @@ getActionMatrix = (actVar, mp, M) -> (
     Mr := M1_{a..a+b-1}^{m-b..m-1};
     Mb := M1_{a+b..n-1}^{m-b..m-1};
     A := -solve(Mr, Mb);
-
+    
+    --A := M1_{a+b..n-1}^{m-b..m-1};
     extraMonomials := rsort toList(mp#2 - set apply(mp#2, p -> numerator(p/actVar)));
-    binaryMatrix := matrix apply(extraMonomials, m -> apply(mp#2, n -> if m == n then 1_RR else 0_RR));
-    if numRows A == numColumns A then A else A || binaryMatrix
+    print extraMonomials;
+    -- b = {y^2, y, x, 1};
+    if #extraMonomials > 0 then (
+        binaryMatrix := matrix apply(extraMonomials, m -> apply(mp#2, n -> if m == n then 1_RR else 0_RR));
+        A || binaryMatrix
+	) else A
+)
+
+templateSolve = method(Options => {MonomialOrder => null})
+--templateSolve(EliminationTemplate) := o -> (template) -> ()
+templateSolve(Ideal) := o -> (I) -> (
+    a = x  -- TODO
+    templateSolve(a, I)
+)
+templateSolve(RingElement, Ideal) := o -> (a, I) -> (
+    R = ring I;
+
+    -- TODO: input checking, i.e. is a in R or I
+    if isMember(a, flatten entries vars R) then (
+        -- 1. a is a variable
+        B = lift(basis(R/I), R);
+        (sh, mp) = getTemplate(a, B, I);
+        M = getTemplateMatrix(sh, mp, I);
+        Ma = getActionMatrix(a, mp, M);
+        (svals, P) = eigenvectors Ma;
+        eigenvectors Ma;
+        clean_(1e-10) (P * inverse diagonalMatrix(P^{3}))
     )
+    else (
+        -- 2. a is a linear form
+        S = QQ[s, flatten entries vars R, MonomialOrder => Eliminate 1];
+        J = sub(I, S) + ideal(s - sub(a, S));
+
+        B = lift(basis(S/J), S);
+        (sh, mp) = getTemplate(s, B, J);
+        M = getTemplateMatrix(sh, mp, J);
+        Ma = getActionMatrix(s, mp, M);
+        (svals, P) = eigenvectors Ma;
+        eigenvectors Ma;
+        clean_(1e-10) (P * inverse diagonalMatrix(P^{3}))
+    )
+
+    -- TODO: check eigenvalue multiplicity
+)
 
 end--
 restart
@@ -91,12 +135,13 @@ R = QQ[x,y]
 
 -- Example 1
 J = ideal(x^2+y^2-1,x^2+x*y+y^2-1)
-actVar = x
-B = lift(basis(R/J), R)
-(sh, mp) = getTemplate(actVar, B, J)
-M = getTemplateMatrix(sh, mp, J)
-Ma = getActionMatrix(actVar, mp, M) 
-eigenvalues Ma
+actVar = x + 2*y
+-- actVar = x
+templateSolve(actVar, J)
+-- B = lift(basis(R/J), R)
+-- (sh, mp) = getTemplate(actVar, B, J)
+-- M = getTemplateMatrix(sh, mp, J)
+-- Ma = getActionMatrix(actVar, mp, M)
 
 -- Example 2: non-standard basis
 B = matrix{{x^2, y, 1}}
