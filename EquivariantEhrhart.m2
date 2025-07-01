@@ -4,18 +4,18 @@ newPackage(
     Date => "June 30, 2025",
     Headline => "compute equivariant Ehrhart series of lattice polytopes",
     Authors => {
-        { 
-            Name => "Oliver Clarke", 
-            Email => "oliver.clarke@durham.ac.uk", 
+        {
+            Name => "Oliver Clarke",
+            Email => "oliver.clarke@durham.ac.uk",
             HomePage => "https://oliverclarkemath.com"
         },
-        { 
-            Name => "Mike Cummings", 
-            Email => "mike.cummings@uwaterloo.ca", 
+        {
+            Name => "Mike Cummings",
+            Email => "mike.cummings@uwaterloo.ca",
             HomePage => "https://mikecummings.ca"
         },
         {
-            Name => "Sean Grate", 
+            Name => "Sean Grate",
             Email => "sean.grate@auburn.edu",
             HomePage => "https://seangrate.com"
         }
@@ -41,8 +41,7 @@ export {
     "OnlyListRepresentatives",
     "ReturnHStarList",
     "ReturnPartitionList",
-    "ReturnTable",
-    "ReturnStarList"
+    "ReturnTable"
 }
 
 -* Code section *-

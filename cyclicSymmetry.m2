@@ -17,44 +17,56 @@ equivariantEhrhartSeries (Polyhedron, Matrix) := opts -> (P, g) -> (
 		n := numRows vertices P;
 
 		-- Todo: check that P is symmetric wrt g
-		groupElements := {}; -- Todo get the elements of the group as matrices   Task (1)
+		groupElements := generateGroup {g}; -- Todo get the elements of the group as matrices   Task (1)
 		-- assume that the order of the elements is {g^0, g^1, ..., g^s}
-		fixedPolytopeList := {}; -- Todo get the fixed polytopes									Task (2)
+		-- Todo: Check that the above assumption holds
+
+		fixedPolytopeList := apply(groupElements, g' -> fixedPolytope(P, g')); -- Todo get the fixed polytopes									Task (2)
 
 		m := #groupElements; -- Number of group elements (since group is abelian)
 
 
 		w := getSymbol "w";
+		-- todo: define this propery with a monoid
 		C := QQ[w];
 		QQw := C / ideal cyclotomicPoly(m, w);
 		w := QQw_0;
 
 		-- representation ring
 		a := getSymbol "a";
-		R := QQw[a_1 .. a_m]
+		R := QQw[a_1 .. a_m];
+
 
 		-- character table
 		T := matrix for i from 0 to m-1 list for j from 0 to m-1 list w^(i*j)
 
-x		-- MARK
+		-- MARK
 		Rt := R[getSymbol "t"];
 		t := Rt_0;
-		hStarList := (Pg -> hStar(Pg, Rt, ReturnDenominator => true)) \ fixedPolytopeList;
+		hStarList := (Pg -> hStarPolynomial(Pg, Rt, ReturnDenominator => true)) \ fixedPolytopeList;
 		ehrhartHStarList := for i from 0 to m-1 list (
-				g := sub(conjClassRepMats_i, Rt);
-				detRep := det(id_(Rt^n) - t*g);
+				h := sub(groupElements_i, Rt);
+				detRep := det(id_(Rt^n) - t*h);
 				(hStarNum, hStarDenom) := hStarList_i;
 				if not zero((hStarNum * detRep) % hStarDenom) then (
 						print "bad symmetry:";
-						print g;
+						print h;
 						error("equivariant hStar not polynomial");
 						);
 				(hStarNum * detRep) // hStarDenom
 				); -- list of Ehrhart H* polynomials note that denominator is det(I - tg)
-		H := (matrix {ehrhartHStarList} * (inverse T) * transpose matrix {gens R})_(0,0);
-		result := {H};
-		if opts.ReturnTable then result = result | {T};
-		if opts.ReturnPartitionList then result = result | {toList \ partitions n};
-		if opts.ReturnHStarList then result = result | {ehrhartHStarList};
-		result
-		)
+		(matrix {ehrhartHStarList} * (inverse T) * transpose matrix {gens R})_(0,0)
+	  )
+
+
+
+end --
+
+P = convexHull transpose matrix "1,1,0,0; 0,1,1,0; 0,0,1,1; 1,0,0,1"
+vertices P
+
+needsPackage "Permutations"
+g = matrix permutation {2,3,4,1}
+
+vertices P
+g * vertices P
