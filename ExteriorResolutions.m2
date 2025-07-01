@@ -44,8 +44,12 @@ injectiveResolution Module := Complex => opts -> M -> (
     P := Hom(freeResolution(Hom(M, E), opts), E);
     P.cache.Module = M;
     P)
-
-injectiveResolution Complex := Complex => opts -> M -> ()
+injectiveResolution Complex := Complex => opts -> C -> (
+    E:=ring C;
+    if not isSkewCommutative E then error "expected underlying ring to skew commutative";
+    P:= Hom(freeResolution(Hom(C,E), opts), E);
+    P
+    )
 
 coaugmentationMap = method()
 coaugmentationMap Complex := ComplexMap => C -> C.cache.coaugmentationMap ??= (
@@ -270,8 +274,30 @@ TEST ///
     assert isWellDefined f
     assert isQuasiIsomorphism f
     assert isComplexMorphism f
-    
 
+    --testing on complexes--
+    E = ZZ/101[e_0..e_3,SkewCommutative => true]
+    C= complex E
+    Res = injectiveResolution(C, LengthLimit => 4)
+    assert(Res == C)
+    assert isWellDefined Res
+    f = coaugmentationMap Res
+    assert isWellDefined f
+    assert isQuasiIsomorphism f
+
+    I=ideal (e_0+e_1,e_0*e_2)
+    C=Hom(freeResolution(I,LengthLimit=>4),comodule I)
+    prune HH C
+    P=injectiveResolution(C,LengthLimit=>5)
+    prune HH P;
+    prune HH C == prune HH P --needs coaugmentationMap of Cxs
+
+
+    Mat=random(E^3,E^{-1,-2})
+    prune ker Mat
+    CMat=complex Mat
+    P=injectiveResolution(CMat,LengthLimit=>5)
+    
 ///
 
 TEST ///
