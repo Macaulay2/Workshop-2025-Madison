@@ -28,6 +28,8 @@ export {
     "priddyDifferential",
     "koszulRR",
     "koszulLL",
+    "koszulPair",
+    "koszulDual",
     }
 
 --------------------------------------------------
@@ -80,11 +82,43 @@ priddyComplex(Matrix, Ring) := opts -> (m, S) -> (
 --- Koszul duality Functors
 --------------------------------------------------
 
+-- returns a pair S = Sym^* K^(n+1) and E = Wedge^* K^(n+1)
+koszulPair = method()
+koszulPair(ZZ, Ring) := (n, K) -> (
+    S := K[x_0..x_n];
+    E := K[e_0..e_n, SkewCommutative => true];
+    S.cache.koszulDual = E;
+    E.cache.koszulDual = S;
+    (S, E))
+
+koszulDual = method()
+koszulDual Ring := A -> A.cache.koszulDual ??= (
+    K := coefficientRing A;
+    if isSkewCommutative A
+    then K[x_0..x_(numgens A - 1)]
+    else K[e_0..e_(numgens A - 1), SkewCommutative => true])
+
+-- TODO: doesn't work over E yet
+degreeSupport = M -> (
+    if hilbertPolynomial M != 0 then error "expected a range provided as Concentration => {lo, hi}";
+    (min degrees source generators M, max degrees source relations M))
+
 -- RR: Com(S) -> Com(E) is the right-adjoint functor
 koszulRR = method(Options => { Concentration => null })
 -- RR(M)^i = E^*(i) \otimes_k M_i
 -- E^* = Hom_k(E, k) = E(n+1)
-koszulRR Module := Complex    => opts -> M -> ()
+koszulRR Module := Complex => opts -> M -> (
+    E := koszulDual ring M;
+    E' := Hom(E, koszul vars E);
+    (lo, hi) := try opts.Concentration else degreeSupport M;
+    if lo == hi
+    then complex(E' ** E^{lo} ** part(lo, M), Base => -lo)
+    else complex hashTable apply(lo..hi-1,
+	i -> -i => (
+	    src := basis(i, M);
+	    tar := basis(i+1, M);
+	    -- TODO
+	    ))
 -- RR(y**s) = \sum_{l=0}^n y*e_l ** s*x_l
 koszulRR Matrix := ComplexMap => opts -> f -> ()
 
