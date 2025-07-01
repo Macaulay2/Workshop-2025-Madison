@@ -108,6 +108,10 @@ Node
    Outputs
        :Complex
    Description
+       Text
+           Let $S = k[x_0, \dots, x_n]$ be a polynomial ring over a field. Let $f_1, \dots, f_c$ be odd degree elements of an exterior algebra $E = \Lambda_k(e_0, \dots, e_n)$. Then, we get a complex $E\otimes_k S_0\rightarrow E\otimes_k S_1\rightarrow \cdots$ whose differentials are left multiplication by $\sum_{i=0}^n f_i\otimes x_i$.
+    
+           Below we obtain the Priddy complex where $n=2$ and $f_1=e_0$ and $f_2=e_0*e_1$ and $k=\mathbb{Q}$.
        Example
 	   S = QQ[x_0,x_1]
 	   E = QQ[e_0,e_1, SkewCommutative=>true]
