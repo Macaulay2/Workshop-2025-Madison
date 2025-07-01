@@ -86,6 +86,11 @@ load "./CpMackeyFunctors/Code/HomGroup.m2"
 
 load "./CpMackeyFunctors/Code/AbelianCategory.m2"
 
+load "./CpMackeyFunctors/Code/BoxProduct.m2"
+export{
+    "boxProduct"
+}
+
 beginDocumentation()
 
 document{
