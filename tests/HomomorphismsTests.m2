@@ -22,8 +22,6 @@ underlyingLevelMap:=map(getUnderlyingModule(Z),getUnderlyingModule(A),0);
 F := map(Z,A,underlyingLevelMap,fixedLevelMap);
 assert isWellDefined(F)
 
--- verify that the linearization map is well-defined
-
+-- verify that the linearization maps are well-defined
 assert isWellDefined(complexLinearizationMap(5))
-
 assert isWellDefined(realLinearizationMap(5))

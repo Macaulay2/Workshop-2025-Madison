@@ -83,9 +83,6 @@ makeCpMackeyFunctor(ZZ,Matrix,Matrix,Matrix) := CpMackeyFunctor => (p,R,T,C) ->(
 	)
 )
 
--- todo: verify that this still works when the first input is an Array
-
-
 -------------------------
 -- Recovering cached data
 -------------------------
