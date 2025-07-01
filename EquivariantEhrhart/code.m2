@@ -1,5 +1,5 @@
 symmetricGroup = method()
-symmetricGroup ZZ := n -> (
+symmetricGroup ZZ := List => n -> (
     if n < 1 then error("invalid matrix size");
 	for sigma in permutations toList(1..n) list permutation sigma
     )
@@ -8,7 +8,7 @@ symmetricGroup ZZ := n -> (
 -- given a polytope P and a matrix M or list of matrices L
 -- check that P is invariant under M or under each matrix in L
 isSymmetric = method()
-isSymmetric(Polyhedron, Matrix) := (P, M) -> (
+isSymmetric(Polyhedron, Matrix) := Boolean => (P, M) -> (
     V := sort vertices P; -- vertices of P are probably already sorted
     if numColumns M != numRows M then error("matrix must be square");
     if numColumns M != numRows V then error("matrix incompatible with polytope");
@@ -17,7 +17,7 @@ isSymmetric(Polyhedron, Matrix) := (P, M) -> (
     MV == V
     )
 
-isSymmetric(Polyhedron, List) := (P, L) -> (
+isSymmetric(Polyhedron, List) := Boolean => (P, L) -> (
     result := true;
     for M in L do if not isSymmetric(P, M) then (result = false; break);
     result
@@ -32,7 +32,7 @@ generateGroup = method(
 	Verbose => false
 	}
     )
-generateGroup List := opts -> L -> (
+generateGroup List := List => opts -> L -> (
     local g;
     local h;
     local gh;
@@ -73,7 +73,7 @@ conjugacyClasses = method(
 	OnlyListRepresentatives => false
 	}
     )
-conjugacyClasses List := opts -> G -> (
+conjugacyClasses List := List => opts -> G -> (
     numConjugations := 0;
     isClassified := new MutableHashTable from for g in G list g => false;
     result := for g in G list (
@@ -104,7 +104,7 @@ conjugacyClasses List := opts -> G -> (
 -- takes a partition L of n and returns a permutation
 -- with cycle type L
 partitionToPermutation = method()
-partitionToPermutation List := L -> (
+partitionToPermutation List := List => L -> (
     cycleStart := 0;
     flatten for cycleLength in L list (
 		cycleStart = cycleStart + cycleLength;
@@ -121,7 +121,7 @@ partitionToPermutation List := L -> (
 -- snConjugacyClassReps = method()
 -- snConjugacyClassReps ZZ := n -> (
 cycleTypeRepresentatives = method()
-cycleTypeRepresentatives ZZ := n -> (
+cycleTypeRepresentatives ZZ := List => n -> (
     S := toList \ partitions n;
     for s in S list matrix partitionToPermutation s
     )
@@ -129,7 +129,7 @@ cycleTypeRepresentatives ZZ := n -> (
 
 -- return the subset of points of P that are fixed by g
 fixedPolytope = method()
-fixedPolytope(Polyhedron, Matrix) := (P, g) -> (
+fixedPolytope(Polyhedron, Matrix) := Polyhedron => (P, g) -> (
     n := numRows vertices P;
     if numRows g != numColumns g or numRows g != n then error("matrix size mismatch");
     gFixedSpace := coneFromHData(map(ZZ^0, ZZ^n, 0), g - id_(ZZ^n));
@@ -224,7 +224,7 @@ equivariantEhrhartSeries Polyhedron := opts -> P -> (
 -- obit polytope under Sn
 -- expects a single column matrix: a point in QQ^n
 orbitPolytope = method()
-orbitPolytope Matrix := p -> (
+orbitPolytope Matrix := Polyhedron => p -> (
     n := numRows p;
     if numColumns p != 1 then error("expected matrix with 1 column");
     V := map(QQ^n, QQ^0, 0);
