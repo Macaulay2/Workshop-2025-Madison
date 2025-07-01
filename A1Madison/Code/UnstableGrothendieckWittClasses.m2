@@ -9,16 +9,16 @@ isWellDefinedGWu (Matrix, Number) := Boolean => (M, a) -> (
     if not isField ring M then return false;
 
     -- If matrix is defined over the complex numbers, allow scalar to be one of complex, real, rational, or integral. 
-    if instance(ring(M), ComplexField) and not (instance(ring(a), ComplexField) or instance(ring(a), RealField) or ring(a)===QQ or (a)===ZZ) then return false;
+    if instance(ring M, ComplexField) and not (instance(ring a, ComplexField) or instance(ring a, RealField) or ring a===QQ or (a)===ZZ) then return false;
 
     -- If matrix is defined over the real numbers, allow scalar to be one of real, rational, or integral. 
-    if instance(ring(M), RealField) and not (instance(ring(a), RealField) or ring(a)===QQ or ring(a)===ZZ) then return false;
+    if instance(ring M, RealField) and not (instance(ring a, RealField) or ring a===QQ or ring a===ZZ) then return false;
 
     -- If matrix is defined over the rationals, allow scalar to be one of rational, or integral. 
-    if ring(M)===QQ and not (ring(a)===QQ or ring(a)===ZZ) then return false;
+    if ring M===QQ and not (ring a===QQ or ring a===ZZ) then return false;
 
     -- If matrix is defined over a finite field, allow scalar then the only scalars allowed are integral. The case of the scalar being over the same Galois field is treated in the next variant. 
-    if instance(ring(M), GaloisField) and not ring(a)===ZZ then return false;
+    if instance(ring M, GaloisField) and not ring a===ZZ then return false;
 
     -- Then check that M is a well-defined element of GW(k)
     isWellDefinedGW(M)
@@ -31,13 +31,13 @@ isWellDefinedGWu (Matrix, RingElement) := Boolean => (M, a) -> (
     if not isField ring M then return false;
 
     -- If matrix is defined over the complex numbers, allow scalar to be one of complex, real, rational, or integral. 
-    if instance(ring(M), ComplexField) or instance(ring(M), RealField) or ring(M)===QQ then return false;
+    if instance(ring M, ComplexField) or instance(ring M, RealField) or ring M===QQ then return false;
 
     -- If matrix is defined over a finite field, allow scalar to be an element of that Galois field. The case of a being an integer is treated in the previous variant. 
-    if instance(ring(M), GaloisField) and not (ring(a)===ZZ or (instance(ring(a), GaloisField) and (ring(M)).order == (ring(a)).order)) then return false;
+    if instance(ring M, GaloisField) and not (ring a===ZZ or (instance(ring a, GaloisField) and (ring M).order == (ring a).order)) then return false;
 
     -- If matrix is defined over an arbitrary field, allow scalar to be either integral or an element of that field. 
-    if not (ring(a)===ring(M) or ring(a)===ZZ) then return false;
+    if not (ring a===ring M or ring a===ZZ) then return false;
 
     -- Then check that M is a well-defined element of GW(k)
     isWellDefinedGW(M)
@@ -59,7 +59,7 @@ makeGWuClass (Matrix, Number) := UnstableGrothendieckWittClass => (M, a) -> (
         new UnstableGrothendieckWittClass from {
             symbol matrix => M,
             symbol cache => new CacheTable,
-            symbol scalar => sub(a, ring(M))
+            symbol scalar => sub(a, ring M)
             }
         )
     else (
@@ -72,7 +72,7 @@ makeGWuClass (Matrix, RingElement) := UnstableGrothendieckWittClass => (M, a) ->
         new UnstableGrothendieckWittClass from {
             symbol matrix => M,
             symbol cache => new CacheTable,
-            symbol scalar => sub(a, ring(M))
+            symbol scalar => sub(a, ring M)
             }
         )
     else (
@@ -85,7 +85,7 @@ makeGWuClass (Matrix) := UnstableGrothendieckWittClass => (M) -> (
         new UnstableGrothendieckWittClass from {
             symbol matrix => M,
             symbol cache => new CacheTable,
-            symbol scalar => sub(det(M), ring(M))
+            symbol scalar => sub(det(M), ring M)
             }
         )
     else (
