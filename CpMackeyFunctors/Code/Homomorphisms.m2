@@ -149,3 +149,12 @@ getFixedMap = method()
 getFixedMap(MackeyFunctorHomomorphism) := CpMackeyFunctor => F -> (
     F.FixedMap
 )
+
+-- Equality of morphisms
+MackeyFunctorHomomorphism == MackeyFunctorHomomorphism := Boolean => (f,g) -> (
+    if source f != source g then return false;
+    if target f != target g then return false;
+    if f.UnderlyingMap != g.UnderlyingMap then return false;
+    if f.FixedMap != g.FixedMap then return false;
+    true
+    )
