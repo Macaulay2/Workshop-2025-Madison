@@ -1,18 +1,21 @@
 doc ///
-Key
-    EquivariantEhrhart
-Headline
-Description
-    Text
-    Tree
-    Example
-    CannedExample
-Acknowledgement
-Contributors
-References
-Caveat
-SeeAlso
-Subnodes
+    Key
+        EquivariantEhrhart
+    Headline
+        a package
+    Usage
+        some reason
+    Description
+        Text
+        Tree
+        Example
+        CannedExample
+    Acknowledgement
+    Contributors
+    References
+    Caveat
+    SeeAlso
+    Subnodes
 ///
 
 doc ///

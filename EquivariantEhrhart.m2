@@ -41,15 +41,16 @@ export {
     "OnlyListRepresentatives",
     "ReturnHStarList",
     "ReturnPartitionList",
-    "ReturnTable"
+    "ReturnTable",
+    "ReturnStarList"
 }
 
 -* Code section *-
 load "./EquivariantEhrhart/code.m2"
 
 -* Documentation section *-
-beginDocumentation()
-load "./EquivariantEhrhart/docs.m2"
+--beginDocumentation()
+--load "./EquivariantEhrhart/docs.m2"
 
 -* Test section *-
 load "./EquivariantEhrhart/tests.m2"
