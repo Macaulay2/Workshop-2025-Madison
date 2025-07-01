@@ -128,43 +128,25 @@ doc ///
             realLinearizationMap(5)
 ///
 
-
-
--- document{
---     Key => {complexLinearizationMap, (complexLinearizationMap, ZZ)},
---     Headline => "returns the complex linearization map for the prime p",
---     Usage => "complexLinearizationMap(p)",
---     Inputs => {
---         ZZ=> "p" => {"a prime"},
--- 	},
---     Outputs => {
--- 	    MackeyFunctorHomomorphism => {"the linearization map from the Burnside Mackey functor to the complex representation functor for the prime p."},
--- 	},
---     PARA{
---         "Every ", TEX///$G$///,"-set X determines a complex representation with basis X, called the permutation representation of X.  This induces a map from the Burnside Mackey functor to the complex representation Mackey functor called the linearization map."
---     },
---     EXAMPLE lines///
---     complexLinearizationMap(5)
---     ///
--- }
-
--- document{
---     Key => {realLinearizationMap, (realLinearizationMap, ZZ)},
---     Headline => "returns the real linearization map for the prime p",
---     Usage => "realLinearizationMap(p)",
---     Inputs => {
---         ZZ=> "p" => {"a prime"},
--- 	},
---     Outputs => {
--- 	    MackeyFunctorHomomorphism => {"the linearization map from the Burnside Mackey functor to the real representation functor for the prime p."},
--- 	},
---     PARA{
---         "Every ", TEX///$G$///,"-set X determines a real representation with basis X, called the permutation representation of X.  This induces a map from the Burnside Mackey functor to the real representation Mackey functor called the linearization map."
---     },
---     EXAMPLE lines///
---     realLinearizationMap(5)
---     ///
--- }
+doc ///
+    Key
+        (makeUniversalMapFixed, CpMackeyFunctor, Vector)
+    Headline
+        constructs a homomorphism out of the Burnside Mackey functor
+    Usage
+        makeUniversalMapFixed(M,x)
+    Inputs
+        M : CpMackeyFunctor
+        x : Vector
+    Outputs
+        : MackeyFunctorHomomorphism
+            the homomorphism $\underline{A}\to M$ induced by the vector $x$.
+    Description
+        Text
+            The Burnside Mackey functor $\underline{A}$ is the free Mackey functor on a fixed generator, meaning there is a natural isomorphism $\text{Hom}_{\text{Mack}_{C_p}}(\underline{A},M)\cong M(C_p/C_p)$ for any $C_p$-Mackey functor $M$. This method implements this correspondence: for an element $x\in M(C_p/C_p)$ it returns the induced homomorphism of Mackey functors $\underline{A}\to M$. The homomorphism is determined by sending $1\mapsto x$ where $1\in\underline{A}(C_p/C_p)$ represents the singleton $C_p$-set.
+        Example
+            makeUniversalMapFixed(makeRealRepresentationMackeyFunctor(5), vector (matrix {{1},{2},{3}}))
+///
 
 -- document{
 --     Key => {makeUniversalMapFixed, (makeUniversalMapFixed, CpMackeyFunctor, Vector)},
