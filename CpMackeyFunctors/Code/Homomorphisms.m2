@@ -139,3 +139,13 @@ MackeyFunctorHomomorphism.directSum = args -> (
     )
 MackeyFunctorHomomorphism ++ MackeyFunctorHomomorphism := MackeyFunctorHomomorphism => (F, G) -> MackeyFunctorHomomorphism.directSum(F, G)
 directSum MackeyFunctorHomomorphism := MackeyFunctorHomomorphism => F -> MackeyFunctorHomomorphism.directSum(1 : F)
+
+getUnderlyingMap = method()
+getUnderlyingMap(MackeyFunctorHomomorphism) := CpMackeyFunctor => F -> (
+    F.UnderlyingMap
+)
+
+getFixedMap = method()
+getFixedMap(MackeyFunctorHomomorphism) := CpMackeyFunctor => F -> (
+    F.FixedMap
+)

@@ -77,7 +77,9 @@ export{
     "complexLinearizationMap",
     "realLinearizationMap",
     "makeUniversalMapFixed",
-    "makeUniversalMapUnderlying"
+    "makeUniversalMapUnderlying",
+    "getUnderlyingMap",
+    "getFixedMap",
 }
 
 -- Methods for working in the abelian category Mack_p.

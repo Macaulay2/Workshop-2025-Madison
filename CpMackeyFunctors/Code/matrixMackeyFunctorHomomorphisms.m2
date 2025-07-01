@@ -1,4 +1,3 @@
-
 -- needsPackage Complexes???
 isAbelianCategory CpMackeyFunctor := M -> true
 isMorphism MackeyFunctorHomomorphism := f -> true
@@ -33,7 +32,11 @@ matrixMackeyFunctorHomomorphism(List) := MackeyFunctorHomomorphism => Fij -> (
 -- SheafMap |  SheafMap := SheafMap => SheafMap.concatCols = maps -> map(
 --     target maps#0, directSum apply(maps, source), concatCols apply(maps, matrix))
 MackeyFunctorHomomorphism | MackeyFunctorHomomorphism := MackeyFunctorHomomorphism => MackeyFunctorHomomorphism.concatCols = maps -> (
-    --blah
+    if not all(maps, f -> target f === target maps#0) then
+        error "MackeyFunctorHomomorphism.concatCols: all maps must have the same source";
+    resultUnderlying = matrix({maps/getUnderlyingMap});
+    resultFixed = matrix({maps/getFixedMap});
+    map(target maps#0, directSum(maps/source), resultUnderlying, resultFixed)
 )
 
 -- SheafMap || SheafMap := SheafMap => SheafMap.concatRows = maps -> map(
