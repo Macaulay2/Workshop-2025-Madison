@@ -106,3 +106,10 @@ makeUniversalMapUnderlying(CpMackeyFunctor,Vector) := MackeyFunctorHomomorphism 
         return map(M, B, U, F);
     )
 )
+
+composeMackeyFunctorHomorphisms = method()
+composeMackeyFunctorHomorphisms(MackeyFunctorHomomorphism,MackeyFunctorHomomorphism) := MackeyFunctorHomomorphism => (F,G) ->(
+    map(G.Codomain, F.Domain, F.UnderlyingMap*G.UnderlyingMap, F.FixedMap*G.FixedMap)
+)
+
+MackeyFunctorHomomorphism * MackeyFunctorHomomorphism := composeMackeyFunctorHomorphisms;

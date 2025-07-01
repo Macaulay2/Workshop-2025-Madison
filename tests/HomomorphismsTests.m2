@@ -33,3 +33,10 @@ assert isWellDefined(makeUniversalMapFixed(RO, vector (matrix {{4},{1},{-7}})))
 
 B := makeUnderlyingFreeMackeyFunctor 3;
 assert isWellDefined(makeUniversalMapUnderlying(B, vector (matrix {{0},{1},{0}})))
+
+-- verify composition does what we want it to do ?
+A :=makeBurnsideMackeyFunctor(11);
+assert isWellDefined (id_(A) * id_(A))
+assert (id_(A) * id_(A) === id_(A))
+
+assert isWellDefined (id_(A) * complexLinearizationMap(11));
