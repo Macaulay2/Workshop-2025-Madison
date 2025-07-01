@@ -25,3 +25,11 @@ assert isWellDefined(F)
 -- verify that the linearization maps are well-defined
 assert isWellDefined(complexLinearizationMap(5))
 assert isWellDefined(realLinearizationMap(5))
+
+-- verifying some universal maps are well-defined
+
+RO := makeRealRepresentationMackeyFunctor 5;
+assert isWellDefined(makeUniversalMapFixed(RO, vector (matrix {{4},{1},{-7}})))
+
+B := makeUnderlyingFreeMackeyFunctor 3;
+assert isWellDefined(makeUniversalMapUnderlying(B, vector (matrix {{0},{1},{0}})))

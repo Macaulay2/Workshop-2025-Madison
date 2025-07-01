@@ -73,3 +73,36 @@ realLinearizationMap(ZZ) := MackeyFunctorHomomorphism => p -> (
     RO := makeRealRepresentationMackeyFunctor p;
     map(RO, makeBurnsideMackeyFunctor p, matrix {{1}}, matrix {{1,1}} || matrix (for i to (rank (getFixedModule RO) - 2) list {0,1}))
 )
+
+-- Given a Mackey functor M and vector x in fixed module, produce map A -> M
+makeUniversalMapFixed = method()
+makeUniversalMapFixed(CpMackeyFunctor,Vector) := MackeyFunctorHomomorphism => (M,x) -> (
+    X := matrix x;
+    if (target X) != M.Fixed then (
+        error "element is not in fixed module";
+    )
+    else (
+        p := M.PrimeOrder;
+        A := makeFixedFreeMackeyFunctor(p);
+        U := M.Res * X;
+        F := X | (M.Tr * M.Res * X);
+        return map(M, A, U, F);
+    )
+)
+
+-- Given a Mackey functor M and vector x in underlying module, produce map B -> M
+makeUniversalMapUnderlying = method()
+makeUniversalMapUnderlying(CpMackeyFunctor,Vector) := MackeyFunctorHomomorphism => (M,x) -> (
+    X := matrix x;
+
+    if (target X) != M.Underlying then (
+        error "element is not in underlying module";
+    )
+    else (
+        p := M.PrimeOrder;
+        B := makeUnderlyingFreeMackeyFunctor(p);
+        U := matrix {for i to p-1 list ((M.Conj)^i) * X};
+        F := M.Tr * X;
+        return map(M, B, U, F);
+    )
+)
