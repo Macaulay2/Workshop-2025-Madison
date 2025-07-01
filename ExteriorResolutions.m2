@@ -51,7 +51,7 @@ injectiveResolution Complex := Complex => opts -> M -> ()
 coaugmentationMap = method()
 coaugmentationMap Complex := ComplexMap => C -> C.cache.coaugmentationMap ??= (
     M := try C.cache.Module else error "expected an injective resolution";
-    map(C, complex M, i -> if i === 0 then map(C_0, M, syz transpose presentation M)))
+    map(C, complex M, i -> if i === 0 then map(C_0, M, transpose syz transpose presentation M)))
 
 --------------------------------------------------
 --- Priddy complex
@@ -86,6 +86,8 @@ priddyComplex(Matrix, Ring) := opts -> (m, S) -> (
 -- returns a pair S = Sym^* K^(n+1) and E = Wedge^* K^(n+1)
 koszulPair = method()
 koszulPair(ZZ, Ring) := (n, K) -> (
+    x := getSymbol "x";
+    e := getSymbol "e";
     S := K[x_0..x_n];
     E := K[e_0..e_n, SkewCommutative => true];
     S.cache.koszulDual = E;
@@ -95,6 +97,8 @@ koszulPair(ZZ, Ring) := (n, K) -> (
 koszulDual = method()
 koszulDual Ring := A -> A.cache.koszulDual ??= (
     K := coefficientRing A;
+    x := getSymbol "x";
+    e := getSymbol "e";
     if isSkewCommutative A
     then K[x_0..x_(numgens A - 1)]
     else K[e_0..e_(numgens A - 1), SkewCommutative => true])
@@ -119,7 +123,7 @@ koszulRR Module := Complex => opts -> M -> (
 	    src := basis(i, M);
 	    tar := basis(i+1, M);
 	    -- TODO
-	    ))
+	    )))
 -- RR(y**s) = \sum_{l=0}^n y*e_l ** s*x_l
 koszulRR Matrix := ComplexMap => opts -> f -> ()
 
@@ -242,8 +246,8 @@ needsPackage "ExteriorResolutions"
 *-
 TEST ///
     E = ZZ/101[e_0..e_3,SkewCommutative => true]
-    Res = injectiveResolution(E^1, LengthLimit => 4)
-    assert(Res == complex E)
+    Res = injectiveResolution(E^2, LengthLimit => 4)
+    assert(Res == complex E^2)
     assert isWellDefined Res
     f = coaugmentationMap Res
     assert isWellDefined f
@@ -261,6 +265,36 @@ TEST ///
     S = ZZ/101[x_0..x_3]
     for i to 10 list hilbertFunction(i,S)
     assert all (11,i -> rank P_(-i) === hilbertFunction(i,S))
+
+    needsPackage "HyperplaneArrangements"
+    A=typeA(2)
+    I=orlikSolomon(A)
+    E=ring I
+    B=typeA(2)
+    J=orlikSolomon(B,E)
+    M=(ring I)^1/I ++ (ring J)^1/J
+    P = injectiveResolution(M, LengthLimit => 7)
+    assert isWellDefined P
+    assert isFree P
+    f = coaugmentationMap P
+    assert isWellDefined f
+    assert isQuasiIsomorphism f
+    assert isComplexMorphism f
+
+    A=typeA(2)
+    I=orlikSolomon(A)
+    E=ring I
+    M=random(E^2,E^{-1,-2,-2})
+    J=image M
+    N=(ring I)^1/I ++ J
+    P = injectiveResolution(N, LengthLimit => 7)
+    assert isWellDefined P
+    assert isFree P
+    f = coaugmentationMap P
+    assert isWellDefined f
+    assert isQuasiIsomorphism f
+    assert isComplexMorphism f
+    
 
 ///
 
