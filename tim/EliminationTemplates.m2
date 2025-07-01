@@ -67,7 +67,8 @@ getActionMatrix = (actVar, mp, M) -> (
     b := length mp#1; -- number of "reducible monomials"
     c := length mp#2; -- number of "basic monomials"
     (m, n) := (numrows M, numcols M);
-
+    --M1 := reducedRowEchelonForm M;
+    
     -- eliminate "excessive monomials" w/ LU
     Ma := M_{0..a-1};
     (P, L, U) := LUdecomposition Ma;
@@ -78,12 +79,17 @@ getActionMatrix = (actVar, mp, M) -> (
     Mr := M1_{a..a+b-1}^{m-b..m-1};
     Mb := M1_{a+b..n-1}^{m-b..m-1};
     A := -solve(Mr, Mb);
-
+    
+    --A := M1_{a+b..n-1}^{m-b..m-1};
     extraMonomials := toList(mp#2 - set apply(mp#2, p -> numerator(p/actVar)));
+    print extraMonomials;
     -- b = {y^2, y, x, 1};
     binaryMatrix := matrix apply(extraMonomials, m -> apply(mp#2, n -> if m == n then 1_RR else 0_RR));
+    
     A || binaryMatrix
     )
+
+needsPackage "EigenSolver"
 
 
 end--
@@ -91,55 +97,16 @@ restart
 load "EliminationTemplates.m2"
 
 R = QQ[x,y]
--- Example 1
-J = ideal(x^2+y^2-1,x^2+x*y+y^2-1)
-
--- needsPackage "EigenSolver"
--- zeroDimSolve J
+J = ideal(x^2+y^2-1, x^2 - y)
+zeroDimSolve J
 
 actVar = x
 B = lift(basis(R/J), R)
 (sh, mp) = getTemplate(actVar, B, J)
 M = getTemplateMatrix(sh, mp, J)
+reducedRowEchelonForm M
+mp
 Ma = getActionMatrix(actVar, mp, M) 
-
-eigenvalues sub(Ma, RR)
-
--- Example 2: non-standard basis
-B = matrix{{x^2, y, 1}}
-J = ideal(x^3 + y^2 - 1, x - y - 1)
-getH0(x, B, J)
-(sh, mp) = getTemplate(x, B, J)
-mp#1
-M = getTemplateMatrix(x, B, J)
-Mred = reducedRowEchelonForm M
-Ma = getActionMatrix(actVar, mp, Mred)
-
-
--- essential matrix: template extraction
-F = ZZ/32003
-FF = frac(F[e_(1,1,1)..e_(4,3,3)])
-R = FF[x,y,z]
-Es = for i from 1 to 4 list matrix for j from 1 to 3 list for k from 1 to 3 list e_(i,j,k)
-E = x * Es#0 + y * Es#1 + z * Es#2 + Es#3
-J = ideal(E * transpose E * E - (1/2) * trace(E * transpose E) * E, det E);
-R0 = F[x,y,z]--,MonomialOrder=>{Weights => apply(3, i -> random(1, 50))}]
-J0 = sub(sub(J, flatten flatten for i from 1 to 4 list for j from 1 to 3 list for k from 1 to 3 list e_(i,j,k) => random F), R0);
-(sh, mp) = getTemplate(x, basis(R0/J0), J0)
-
-FF = RR[e_(1,1,1)..e_(4,3,3)]
-R = FF[x,y,z]
-Es = for i from 1 to 4 list matrix for j from 1 to 3 list for k from 1 to 3 list e_(i,j,k)
-E = x * Es#0 + y * Es#1 + z * Es#2 + Es#3
-J = ideal(E * transpose E * E - (1/2) * trace(E * transpose E) * E, det E);
-elapsedTime T = getTemplateMatrix(sh, mp, J);
-
-first mp
-(x0,y0,z0)=(1.0,2.0,3.0)
-E0 = matrix{{0,-z0,y0},{z0,0,-x0},{-y0,x0,0}}
-Ns = apply(3, i -> first QRDecomposition random(RR^3, RR^3))
-Ns = Ns | {E0 - sum apply(Ns, {x0,y0,z0}, (a,b) -> a*b)}
-
-M = sub(T, flatten flatten for i from 1 to 4 list for j from 1 to 3 list for k from 1 to 3 list e_(i,j,k) => (Ns#(i-1))_(j-1,k-1))
-
--- TODO: read off action matrix
+(xvals, P) = eigenvectors Ma
+scaledEigVecs = P * diagonalMatrix apply(4, i -> 1/P_(3,i))
+clean_(1e-3) scaledEigVecs
