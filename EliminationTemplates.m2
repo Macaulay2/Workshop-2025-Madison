@@ -64,12 +64,12 @@ getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     assert(gens F * HGF - gens G == 0);
     H0 := HGF * HVG;
     sub(H0, ring J)
-    )
+)
 
 shiftPolynomials = (shifts, J) -> (
     assert(length shifts == numgens J);
     apply(shifts, J_*, (m, f) -> f * sub(m, ring J))
-    )
+)
 
 getTemplate = method(Options => {MonomialOrder => null})
 getTemplate(RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
@@ -91,11 +91,11 @@ getTemplateMatrix = method(Options => {MonomialOrder => null})
 getTemplateMatrix(RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     (shifts, monomialPartition) := getTemplate(a, B, J, o);
     getTemplateMatrix(shifts, monomialPartition, J, o)
-    )
+)
 getTemplateMatrix(ShiftSet, MonomialPartition, Ideal) := o -> (shifts, monomialPartition, J) -> (
     allMons := apply(fold(monomialPartition, (a,b) -> a|b), m -> sub(m, ring J));
     sub(transpose fold(apply(shiftPolynomials(shifts, J), m -> last coefficients(m, Monomials => allMons)), (a,b) -> a|b), coefficientRing ring J)
-    )
+)
 
 needsPackage "NumericalLinearAlgebra"
 getActionMatrix = (actVar, mp, M) -> (
@@ -124,7 +124,41 @@ getActionMatrix = (actVar, mp, M) -> (
         binaryMatrix := matrix apply(extraMonomials, m -> apply(mp#2, n -> if m == n then 1_RR else 0_RR));
         A || binaryMatrix
 	) else A
+)
+
+templateSolve = method(Options => {MonomialOrder => null})
+--templateSolve(EliminationTemplate) := o -> (template) -> ()
+templateSolve(Ideal) := o -> (I) -> (
+
+)
+templateSolve(RingElement, Ideal) := o -> (a, I) -> (
+    R = ring I;
+
+    -- TODO: input checking, i.e. is a in R or I
+    if isMember(a, flatten entries vars R) then (
+        -- 1. a is a variable
+        B = lift(basis(R/I), R);
+        (sh, mp) = getTemplate(a, B, I);
+        M = getTemplateMatrix(sh, mp, I);
+        Ma = getActionMatrix(a, mp, M);
+        (svals, P) = eigenvectors Ma;
+        eigenvectors Ma;
+        clean_(1e-10) (P * inverse diagonalMatrix(P^{3}))
     )
+    else (
+        -- 2. a is a linear form
+        S = QQ[s, flatten entries vars R, MonomialOrder => Eliminate 1];
+        J = sub(I, S) + ideal(s - sub(a, S));
+
+        B = lift(basis(S/J), S);
+        (sh, mp) = getTemplate(s, B, J);
+        M = getTemplateMatrix(sh, mp, J);
+        Ma = getActionMatrix(s, mp, M);
+        (svals, P) = eigenvectors Ma;
+        eigenvectors Ma;
+        clean_(1e-10) (P * inverse diagonalMatrix(P^{3}))
+    )
+)
 
 beginDocumentation()
 
