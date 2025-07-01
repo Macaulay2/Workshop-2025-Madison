@@ -1,8 +1,8 @@
-Hom(CpMackeyFunctor, CpMackeyFunctor) := Module => opts -> (N,M) -> (
-    homFixedFixed := Hom(getFixedModule N, getFixedModule M);
-    homUnderlyingUnderlying := Hom(getUnderlyingModule N, getUnderlyingModule M);
-    homFixedUnderlying := Hom(getFixedModule N, getUnderlyingModule M);
-    homUnderlyingFixed := Hom(getUnderlyingModule N, getFixedModule M);
+Hom(CpMackeyFunctor, CpMackeyFunctor) := Module => opts -> (M,N) -> (
+    homFixedFixed := Hom(getFixedModule M, getFixedModule N);
+    homUnderlyingUnderlying := Hom(getUnderlyingModule M, getUnderlyingModule N);
+    homFixedUnderlying := Hom(getFixedModule M, getUnderlyingModule N);
+    homUnderlyingFixed := Hom(getUnderlyingModule M, getFixedModule N);
     lhs := directSum(homFixedFixed, homUnderlyingUnderlying);
     rhs := directSum(homFixedUnderlying, homUnderlyingFixed, homUnderlyingUnderlying);
     kernel map(rhs, lhs, matrix(

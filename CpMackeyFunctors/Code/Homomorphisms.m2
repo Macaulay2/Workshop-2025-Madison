@@ -59,10 +59,10 @@ target(MackeyFunctorHomomorphism) := CpMackeyFunctor => F -> (
     return F.Codomain
 )
 
--*getUnderlyingMap = method();
-getUnderlyingMap(MackeyFunctorHomomorphism) := Matrix => F -> (return F.UnderlyingMap)
-
-getFixedMap = method();
-getFixedMap(MackeyFunctorHomomorphism) := Matrix => F -> (return F.FixedMap)*-
-
 CpMackeyFunctor#id = X -> map(X, X, id_(X.Underlying), id_(X.Fixed))
+
+-- This is the linearization map A -> RU
+complexLinearizationMap = method()
+complexLinearizationMap(ZZ) := MackeyFunctorHomomorphism => p -> (
+    map(makeComplexRepresentationMackeyFunctor p, makeBurnsideMackeyFunctor p, matrix {{1}}, matrix {{1,1}} || matrix (for i to p-2 list {0,1}))
+)

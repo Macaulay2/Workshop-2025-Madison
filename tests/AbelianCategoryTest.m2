@@ -21,3 +21,4 @@ assert( presentation getUnderlyingModule C == matrix {{2},{2}} )
 
 -- Checking that direct sums are well-defined.
 assert( isWellDefined(B ++ U) )
+assert( isWellDefined(directSum {B,B,B,B}) )

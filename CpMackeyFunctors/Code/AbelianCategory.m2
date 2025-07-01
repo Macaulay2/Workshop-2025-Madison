@@ -1,13 +1,15 @@
 -- Direct sums
-CpMackeyFunctor ++ CpMackeyFunctor := CpMackeyFunctor => (M,N) -> (
-    if getPrimeOrder(M) != getPrimeOrder(N) then error("-- Primes not the same (incompatable)");
-    T := getTransfer(M) ++ getTransfer(N);
-    R := getRestriction(M) ++ getRestriction(N);
-    C := getConjugation(M) ++ getConjugation(N);
-    p := getPrimeOrder(M);
-
+CpMackeyFunctor.directSum = args -> (
+    if not same (args/getPrimeOrder) then error "-- Prime not compatible";
+    print "hello";
+    T := directSum (args/getTransfer);
+    R := directSum (args/getRestriction);
+    C := directSum (args/getConjugation);
+    p := getPrimeOrder(args_0);
     makeCpMackeyFunctor(p,R,T,C)
-)
+    )
+CpMackeyFunctor ++ CpMackeyFunctor := CpMackeyFunctor => (F, G) -> CpMackeyFunctor.directSum(F, G)
+directSum CpMackeyFunctor := CpMackeyFunctor => F -> CpMackeyFunctor.directSum(1 : F)
 
 -- Kernels
 ker MackeyFunctorHomomorphism := CpMackeyFunctor => options -> F -> (
