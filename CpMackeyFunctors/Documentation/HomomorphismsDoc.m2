@@ -118,3 +118,45 @@ document{
     realLinearizationMap(5)
     ///
 }
+
+document{
+    Key => {makeUniversalMapFixed, (makeUniversalMapFixed, CpMackeyFunctor, Vector)},
+    Headline => "constructs a homomorphism out of the Burnside Mackey functor",
+    Usage => "makeUniversalMapFixed(M,x)",
+    Inputs => {
+        CpMackeyFunctor => "M" => {""},
+        Vector => "x" => {"a vector in the fixed module ", TEX///$x\in M(C_p/C_p)$///}
+    },
+    Outputs => {
+        MackeyFunctorHomomorphism => {"the homomorphism ", TEX///$\underline{A}\to M$///, " induced by the vector ", TEX///$x$///}
+    },
+    PARA{
+        "The Burnside Mackey functor ", TEX///$\underline{A}$///, " is the free Mackey functor on a fixed generator, meaning there is a natural isomorphism ", TEX///$\text{Hom}_{\text{Mack}_{C_p}}(\underline A,M)\cong M(C_p/C_p)$///, " for any ", TEX///$C_p$///, "-Mackey functor ", TEX///$M$///, ". This method implements this correspondence: for an element ", TEX///$x\in M(C_p/C_p)$///, ", it returns the induced homomorphism of Mackey functors ", TEX///$\underline A\to M$///, ". The homomorphism is determined by sending ", TEX///$1\mapsto x$///, ", where ", TEX///$1\in\underline A(C_p/C_p)$///, " represents the singleton ", TEX///$C_p$///, "-set."
+    },
+    EXAMPLE lines///
+    RO = makeRealRepresentationMackeyFunctor 5;
+    makeUniversalMapFixed(RO, vector (matrix {{1},{2},{3}}))
+    ///,
+    SeeAlso => {"makeBurnsideMackeyFunctor", "makeFixedFreeMackeyFunctor"}
+}
+
+document{
+    Key => {makeUniversalMapUnderlying, (makeUniversalMapUnderlying, CpMackeyFunctor, Vector)},
+    Headline => "constructs a homomorphism out of the free Mackey functor on an underling generator",
+    Usage => "makeUniversalMapUnderlying(M,x)",
+    Inputs => {
+        CpMackeyFunctor => "M" => {""},
+        Vector => "x" => {"a vector in the underlying module ", TEX///$x\in M(C_p/e)$///}
+    },
+    Outputs => {
+        MackeyFunctorHomomorphism => {"the homomorphism ", TEX///$\underline{B}\to M$///, " induced by the vector ", TEX///$x$///}
+    },
+    PARA{
+        "The free Mackey functor ", TEX///$\underline{B}$///, " on an underlying generator has the property there is a natural isomorphism ", TEX///$\text{Hom}_{\text{Mack}_{C_p}}(\underline B,M)\cong M(C_p/e)$///, " for any ", TEX///$C_p$///, "-Mackey functor ", TEX///$M$///, ". This method implements this correspondence: for an element ", TEX///$x\in M(C_p/e)$///, ", it returns the induced homomorphism of Mackey functors ", TEX///$\underline B\to M$///, ". The homomorphism is determined by sending ", TEX///$1\mapsto x$///, ", where ", TEX///$1\in\underline B(C_p/e)$///, " represents the identity element ", TEX///$1\in C_p/e = \{1,\gamma,\ldots,\gamma^{p-1}\}$///, "."
+    },
+    EXAMPLE lines///
+    B = makeUnderlyingFreeMackeyFunctor 3;
+    makeUniversalMapUnderlying(B, vector (matrix {{1},{2},{3}}))
+    ///,
+    SeeAlso => {"makeUnderlyingFreeMackeyFunctor"}
+}
