@@ -46,6 +46,20 @@ generateGroup List := List => opts -> L -> (
     local g;
     local h;
     local gh;
+	local g';
+	local groupElementsList;
+
+	if #L == 1 then (
+		g = L_0 ;
+		gIdentity := id_(ZZ^(numColumns g)) ;
+		g' = g ;
+		groupElementsList = {gIdentity};
+		while not (g' == gIdentity) do (
+			groupElementsList = append(groupElementsList, g') ;
+			g' = g'*g ;
+		)
+	)
+	else(
     -- construct a Cayley table of the group
     countMults := 0;
     groupElements := new MutableHashTable from for M in L list M => true;
@@ -70,7 +84,9 @@ generateGroup List := List => opts -> L -> (
     if opts.Verbose then (
 	print("-- completed in " | toString countMults | " multiplications");
 	);
-    keys groupElements  -- returns list of matrices
+    groupElementsList = keys groupElements ;
+	) ;
+	groupElementsList  -- returns list of matrices
     )
 
 
@@ -264,7 +280,7 @@ equivariantEhrhartSeries (Polyhedron, List) := opts -> (P, gList) -> (
 
 
 		-- character table
-		T := matrix for i from 0 to m-1 list for j from 0 to m-1 list w^(i*j)
+		T := matrix for i from 0 to m-1 list for j from 0 to m-1 list w^(i*j);
 
 		-- MARK
 		Rt := R[getSymbol "t"];
