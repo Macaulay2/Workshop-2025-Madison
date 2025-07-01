@@ -76,6 +76,8 @@ export{
 -- Methods for forming the abelian group of homomorphisms between two Mackey functors
 load "./CpMackeyFunctors/Code/HomGroup.m2"
 
+load "./CpMackeyFunctors/Code/AbelianCategory.m2"
+
 beginDocumentation()
 
 document{
@@ -95,7 +97,6 @@ load "./CpMackeyFunctors/Documentation/MackeyFunctorDoc.m2"
 
 
 
-load "./CpMackeyFunctors/Code/AbelianCategory.m2"
 
  
 ----------------------------
