@@ -169,6 +169,12 @@ Here are several attachments. It's a lot, so I'll also give a brief description 
 
 I apologize that all of my code is un- or under-documented. To be honest, I was never confident that I would be able to do the calculations required for Mukai's construction until they were actually complete. Now that they are, and I know what worked, I am trying to put things in a form that other people can use, too!
 
+
+UPDATE: The new LieAlgebraRepresentation package (available for the first time in the LieAlgebraRepresentations branch for Tulane workhop) can help us compute Casimir operators and Reynolds operators as follows. Currently, things are only fully implemented for type A in that package, but that could change by the end of this week.
+
+In this package, one creates a ChevalleyBasis for the Lie algebra g. This includes a basis of g along with its dual basis with respect to the Killing form. Thus, to compute the Casimir operator on a representation rho, we just take the sum rho(B_i)*rho(Bstar_i) for i=0...dim(g)-1.
+
+The kernel ker(Cas) on a representation W gives the sum of all the trivial submodules in W. However, we can compute this iteratively, which may be faster than computing ker(Cas) using general algorithms in linear algebra. Let lambda_1,...,lambda_p be the nonzero highest weights in W. Let (k_1,...,k_p) be the values of the Casimir operator acting on V(lambda_1),...,V(lambda_p). Let w be any vector in W. Then prod (Cas - k_i)w gives the projection of w to the sum of the trivial submodules in W. We can do this for enough vectors w until we get a basis of ker(Cas).
 ---
 
 ## Cayley’s Omega Process
