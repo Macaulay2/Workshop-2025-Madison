@@ -81,9 +81,6 @@ priddyDifferential(ZZ, Matrix, Ring) := (i, m, S) -> (
 
 beginDocumentation()
 
---------------------------------------------------
---- Differential Modules
---------------------------------------------------
 
 doc ///
 Node
