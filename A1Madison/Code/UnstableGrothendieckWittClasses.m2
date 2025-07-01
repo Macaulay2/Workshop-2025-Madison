@@ -49,6 +49,20 @@ isWellDefinedGWu (Matrix, RingElement) := Boolean => (M, a) -> (
 UnstableGrothendieckWittClass = new Type of HashTable
 UnstableGrothendieckWittClass.synonym = "Unstable Grothendieck-Witt Class"
 
+-- Input: An UnstableGrothendieckWittClass
+-- Output: A net for printing the underlying dat
+
+net UnstableGrothendieckWittClass := Net => alpha -> (
+    net (getMatrix alpha, getScalar alpha)
+    )
+
+-- Input: A GrothendieckWittClass
+-- Output: A string for printing the underlying matrix
+
+texMath UnstableGrothendieckWittClass := String => alpha -> (
+    texMath (getMatrix alpha, getScalar alpha)
+    )
+
 -- Input: Either a matrix M or a matrix-scalar pair (M,a) representing a well-defined element of the unstable Grothendieck-Witt group. 
 -- Output: The GrothendieckWittClass representing the symmetric bilinear form determined by M
 
@@ -92,6 +106,14 @@ makeGWuClass (Matrix) := UnstableGrothendieckWittClass => (M) -> (
         error "makeGWuClass called on a matrix that does not produce a well-defined Grothendieck-Witt class.";
 	)
     )
+
+-- Input: An unstable Grothendieck-Witt class
+-- Output: Its stable part
+
+makeStableGWClass = method()
+makeStableGWClass (UnstableGrothendieckWittClass) := GrothendieckWittClass => alpha -> (
+    makeGWClass getMatrix alpha
+)
 
 
 -- Input: An UnstableGrothendieckWittClass
