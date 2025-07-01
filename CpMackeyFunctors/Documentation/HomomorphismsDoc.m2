@@ -27,7 +27,7 @@ document{
 }
 
 document{
-    Key => {(map, CpMackeyFunctor, CpMackeyFunctor, Matrix, Matrix)},
+    Key => {(map,CpMackeyFunctor, CpMackeyFunctor, Matrix, Matrix),[map,Degree],[map,DegreeLift],[map,DegreeMap]},
     Headline => "constructs a map between two Mackey functors",
     Usage => "map(N,M,U,F)",
     Inputs => {
