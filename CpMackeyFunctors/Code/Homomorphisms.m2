@@ -149,3 +149,15 @@ getFixedMap = method()
 getFixedMap(MackeyFunctorHomomorphism) := CpMackeyFunctor => F -> (
     F.FixedMap
 )
+
+isIsomorphism(MackeyFunctorHomomorphism) := Boolean => F -> (
+    if not (ker (F.UnderlyingMap)) == 0 or not (ker (F.FixedMap)) == 0 then return false;
+    if not (coker F.UnderlyingMap) == 0 or not (coker F.FixedMap) == 0 then return false;
+    true
+)
+
+isTrivialMackeyFunctor = method()
+isTrivialMackeyFunctor(CpMackeyFunctor) := Boolean => F -> (
+    if getFixedModule(F) == 0 and getUnderlyingModule(F) == 0 then return true;
+    false
+)
