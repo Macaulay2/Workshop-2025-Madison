@@ -30,7 +30,8 @@ export {
     "koszulLL",
     "koszulPair",
     "koszulDual",
-    }
+    "StanleyReisnerExterior",
+}
 
 --------------------------------------------------
 --- Injective resolutions
@@ -142,6 +143,29 @@ koszulLL Complex    := Complex    => opts -> D   -> ()
 -- LL(s**y) = (-1)^i LL(s**y) + s ** dd_D(y) for y \in D^{i-j}_j
 koszulLL ComplexMap := ComplexMap => opts -> phi -> ()
 
+
+--------------------------------------------------
+--- Stanley Reisner
+--------------------------------------------------
+
+needsPackage "SimplicialComplexes"
+
+StanleyReisnerExterior = method()
+StanleyReisnerExterior(SimplicialComplex, Ring) := (S, K) -> (
+
+    n := dim S;
+
+    R := ring S;
+    E := K[gens R, SkewCommutative => true];
+
+    L := {};
+    for m in facets S do (
+        L = append(L, sub(m, E));
+    );
+
+    ideal L
+
+)
 
 --------------------------------------------------
 --- Documentation
