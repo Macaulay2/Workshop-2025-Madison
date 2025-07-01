@@ -71,6 +71,7 @@ export{
     "getScalar",
     "addGWu",
     "scalar", -- To avoid error about unexported symbol
+    "addGWuDivisorial",
     
     --BuildingForms.m2
     "makeDiagonalForm",

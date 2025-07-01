@@ -137,3 +137,22 @@ addGWu (UnstableGrothendieckWittClass,UnstableGrothendieckWittClass) := Unstable
 	error "these classes have different underlying fields";
     makeGWuClass(getMatrix beta ++ getMatrix gamma, getScalar beta * getScalar gamma)
     )
+
+addGWuDivisorial = method()
+addGWuDivisorial (List, List) := UnstableGrothendieckWittClass => (classList, rootList) -> (
+    n := #classList;
+
+    -- Return an error if list of roots is of different size than list of classes
+    if n != #rootList then
+        error "need same number of classes and roots";
+
+    -- Return an error if lists are empty
+    if n == 0 then
+        error "the empty sum is the additive identity of the unstable Grothendieck-Witt group over the field of interes; please construct this as makeGWuClass(matrix(k,{}),1)";
+
+    -- Return an error if the base fields are different for the list of GWu classes
+    baseFieldList := apply(classList, getBaseField);
+    isGaloisField := apply(baseFieldList, i -> instance(i, GaloisField));
+    if (not instance(baseFieldList#0, GaloisField) and not same baseFieldList) or (isGaloisField#0 and (not same isGaloisField or not same apply(baseFieldList, i -> i.order))) then 
+        error "the list of GWu classes should have the same base field"
+    )
