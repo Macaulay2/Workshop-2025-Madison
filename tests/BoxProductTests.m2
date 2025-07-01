@@ -21,3 +21,6 @@ assert(isWellDefined boxProduct(L,A))
 A = makeBurnsideMackeyFunctor 5
 B = A ** A
 assert(prune B === A)
+f = (prune B).cache.pruningMap;
+assert isWellDefined f
+assert isWellDefined inverse f

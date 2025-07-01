@@ -89,6 +89,7 @@ export{
     "isTrivialMackeyFunctor",
     "concatBlocks",
     "blockMatrixMackeyFunctorHomomorphism",
+    "concatBlocks"
 }
 
 -- Methods for working in the abelian category Mack_p.

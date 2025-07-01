@@ -177,10 +177,28 @@ getFixedMap(MackeyFunctorHomomorphism) := CpMackeyFunctor => F -> (
     F.FixedMap
 )
 
-
+-- Checking if a morphism is an iso.
 isIsomorphism(MackeyFunctorHomomorphism) := Boolean => F -> (
     isTrivialMackeyFunctor ker F and isTrivialMackeyFunctor coker F
 )
+
+-- If it is an isomorphism, then we can invert it.
+inverse MackeyFunctorHomomorphism := MackeyFunctorHomomorphism => f -> (
+    if not isIsomorphism f then error("-- map must be invertible");
+    fT := inverse f.FixedMap;
+    fB := inverse f.UnderlyingMap;
+    map(source f, target f, fB, fT)
+    )
+
+-- Power function composition, including negative powers.
+MackeyFunctorHomomorphism ^ ZZ := MackeyFunctorHomomorphism => (f,n) -> (
+    if source f != target f then error("-- can only iterate self-maps");
+    if n == 0 then return id_(source f);
+    if n < 0 and not isIsomorphism f then error("-- f must be invertible to take negative self-iterates");
+    g := if n < 0 then inverse f else f;
+    for i to abs(n)-1 do g = f * g;
+    g
+    )
 
 isTrivialMackeyFunctor = method()
 isTrivialMackeyFunctor(CpMackeyFunctor) := Boolean => F -> (
@@ -218,3 +236,4 @@ MackeyFunctorHomomorphism.concatBlocks = maps -> MackeyFunctorHomomorphism.conca
 MackeyFunctorHomomorphism.matrix = opts -> MackeyFunctorHomomorphism.concatBlocks
 
 blockMatrixMackeyFunctorHomomorphism = MackeyFunctorHomomorphism.concatBlocks
+

@@ -100,10 +100,12 @@ prune CpMackeyFunctor := CpMackeyFunctor => opts -> M -> (
     B := prune M.Underlying;
     fT := (T.cache.pruningMap);
     fB := (B.cache.pruningMap);
-    r := (matrix inverse fB) * (matrix M.Res) * (matrix fT);
-    t := (matrix inverse fT) * (matrix M.Tr) * (matrix fB);
-    c := (matrix inverse fB) * (matrix M.Conj) * (matrix fB);
-    makeCpMackeyFunctor(M.PrimeOrder, r, t, c)
+    r := map(B, T, (matrix inverse fB) * (matrix M.Res) * (matrix fT));
+    t := map(T, B, (matrix inverse fT) * (matrix M.Tr) * (matrix fB));
+    c := map(B, B, (matrix inverse fB) * (matrix M.Conj) * (matrix fB));
+    M' := makeCpMackeyFunctor(M.PrimeOrder, r, t, c);
+    M'.cache.pruningMap = map(M,M',fB,fT);
+    M'
     )
 
 -------------------------
