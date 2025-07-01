@@ -132,8 +132,8 @@ MackeyFunctorHomomorphism.directSum = args -> (
     if not same ((args/source)/getPrimeOrder) then error "-- Prime not compatible";
     Src := directSum(args/source);
     Tgt := directSum(args/target);
-    T := directSum(apply(args,a->a.FixedMap));
     B := directSum(apply(args,a->a.UnderlyingMap));
+    T := directSum(apply(args,a->a.FixedMap));
     
     map(Tgt,Src,B,T)
     )

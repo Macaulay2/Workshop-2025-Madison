@@ -40,3 +40,14 @@ assert isWellDefined (id_(A) * id_(A))
 assert (id_(A) * id_(A) === id_(A))
 
 assert isWellDefined ( complexLinearizationMap(11) * id_(A));
+
+-- Checking direct sum of homomorphisms
+B = makeBurnsideMackeyFunctor 2;
+U = makeUnderlyingFreeMackeyFunctor 2;
+f = map(U, B, matrix {{2},{2}}, matrix {{2,4}});
+assert( isWellDefined(directSum({f,id_U,f})))
+
+-- Checking arithmetic of homomorphisms
+h = id_B;
+assert(h + h + h == 3 * h)
+>>>>>>> c4a6adf (added equality, temporary prune)
