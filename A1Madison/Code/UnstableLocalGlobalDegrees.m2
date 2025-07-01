@@ -17,8 +17,17 @@ getGlobalUnstableA1Degree RingElement := (Matrix,Number) => q -> (
     
     -- Check q = f/g is reduced
     if gcd(f,g) != 1 then
-    	error "rational function is not reduced";
-       
+    	error "the rational function is not reduced"
+	
+    -- Check that q is pointed, so deg f > def g
+    d := (deg f)_0
+    e := (deg g)_0
+    if assert d < e == true then
+        error "the rational function is not pointed" 
+
+    if assert d = e == true then
+        error "the rational function is not pointed"  
+	
     -- Get the underlying ring and ensure it is a field
     kk := coefficientRing ring(f)
 )
