@@ -41,6 +41,17 @@ assert (id_(A) * id_(A) === id_(A))
 
 assert isWellDefined ( complexLinearizationMap(11) * id_(A));
 
+
+-- test isTrivialMackeyFunctor
+assert not (isTrivialMackeyFunctor(makeBurnsideMackeyFunctor(7)));
+assert isTrivialMackeyFunctor(makeZeroMackeyFunctor(3));
+
+-- test isIsomorphism
+assert not (isIsomorphism(realLinearizationMap(7)));
+assert not (isIsomorphism(realLinearizationMap(11)));
+assert isIsomorphism(realLinearizationMap(2));
+assert isIsomorphism(realLinearizationMap(3));
+
 -- Checking direct sum of homomorphisms
 B = makeBurnsideMackeyFunctor 2;
 U = makeUnderlyingFreeMackeyFunctor 2;
