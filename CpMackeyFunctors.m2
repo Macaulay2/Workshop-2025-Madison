@@ -38,6 +38,11 @@ newPackage(
     DebuggingMode=>true
 )
 
+importFrom_Core {
+    "concatBlocks", "concatCols", "concatRows",
+    "isMorphism", "isAbelianCategory",
+    }
+
 load "./CpMackeyFunctors/Code/Helpers.m2"
 -- helper commands are internal only, and not exported
 
@@ -84,12 +89,12 @@ export{
 }
 
 -- Methods for working in the abelian category Mack_p.
+-- Note that ++ and ker and coker are already methods, hence exported
 load "./CpMackeyFunctors/Code/AbelianCategory.m2"
 
 -- Methods for forming the abelian group of homomorphisms between two Mackey functors
+-- Similarly Hom is already an exported method
 load "./CpMackeyFunctors/Code/HomGroup.m2"
-
-load "./CpMackeyFunctors/Code/AbelianCategory.m2"
 
 load "./CpMackeyFunctors/Code/BoxProduct.m2"
 export{

@@ -11,3 +11,8 @@ assert(rank getFixedModule R == rank getFixedModule (R**A))
 
 -- Verify that fixed modules of A and A ** R are isomorphic
 isIsomorphic(getFixedModule(R), getFixedModule(A ** R))
+
+-- Verifying that induced maps on box products are well-defined
+L = complexLinearizationMap(7)
+assert(isWellDefined boxProduct(A,L))
+assert(isWellDefined boxProduct(L,A))

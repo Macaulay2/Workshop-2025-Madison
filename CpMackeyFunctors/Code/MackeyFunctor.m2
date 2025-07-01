@@ -94,6 +94,18 @@ CpMackeyFunctor == CpMackeyFunctor := Boolean => (M,N) -> (
     true
     )
 
+-- Pruning
+prune CpMackeyFunctor := CpMackeyFunctor => M -> (
+    T := prune M.Fixed;
+    B := prune M.Underlying;
+    fT := T.cache.pruningMap;
+    fB := B.cache.pruningMap;
+    r := fT * M.Res * fB;
+    t := fB * M.Tr * fT;
+    c := fB * M.Conj;
+    makeCpMackeyFunctor(M.PrimeOrder, r, t, c)
+    )
+
 -------------------------
 -- Recovering cached data
 -------------------------

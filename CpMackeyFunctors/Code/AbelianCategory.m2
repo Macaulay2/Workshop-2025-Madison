@@ -1,3 +1,5 @@
+isAbelianCategory CpMackeyFunctor := M -> true
+
 -- Direct sums
 CpMackeyFunctor.directSum = args -> (
     if not same (args/getPrimeOrder) then error "-- Prime not compatible";
