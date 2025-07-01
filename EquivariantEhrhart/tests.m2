@@ -1,4 +1,4 @@
-TEST /// -* isSymmetric hypersimplex(4,2) *-
+TEST /// -* isSymmetric hypersimplex(4,2) at 2134 *-
 needsPackage "Permutations";
 P = convexHull transpose matrix{
     {1,1,0,0},
