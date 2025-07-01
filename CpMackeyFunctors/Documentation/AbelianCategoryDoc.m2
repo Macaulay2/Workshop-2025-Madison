@@ -18,7 +18,7 @@ document {
 
 document {
     Key => {
-        (kernel, MackeyFunctorHomomorphism),
+        (kernel, MackeyFunctorHomomorphism), [kernel,DegreeLimit],[kernel,Strategy],[kernel,SubringLimit],
     },
     Headline => "kernel of a Mackey functor homomorphism",
     Usage => "kernel f",
