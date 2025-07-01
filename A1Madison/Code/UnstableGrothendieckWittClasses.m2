@@ -163,6 +163,11 @@ addGWu (UnstableGrothendieckWittClass,UnstableGrothendieckWittClass) := Unstable
 addGWuDivisorial = method()
 addGWuDivisorial (List, List) := UnstableGrothendieckWittClass => (classList, rootList) -> (
     n := #classList;
+    baseFieldList := apply(classList, getBaseField);
+    matrixList := apply(classList, getMatrix);
+    scalarList := apply(classList, getScalar);
+    multiplicityList := apply(classList, i -> rank(getMatrix(i)));
+    isGaloisField := apply(baseFieldList, i -> instance(i, GaloisField));
 
     -- Return an error if list of roots is of different size than list of classes
     if n != #rootList then
@@ -170,23 +175,22 @@ addGWuDivisorial (List, List) := UnstableGrothendieckWittClass => (classList, ro
 
     -- Return an error if lists are empty
     if n == 0 then
-        error "the empty sum is the additive identity of the unstable Grothendieck-Witt group over the field of interes; please construct this as makeGWuClass(matrix(k,{}),1)";
+        error "the empty sum is the additive identity of the unstable Grothendieck-Witt group over the field of interest; please construct this as makeGWuClass(matrix(k,{}),1)";
 
     -- Return an error if the base fields are different for the list of GWu classes
-    baseFieldList := apply(classList, getBaseField);
-    matrixList := apply(classList, getMatrix);
-    scalarList := apply(classList, getScalar);
-    multiplicityList := apply(classList, i -> rank(getMatrix(i)));
-    isGaloisField := apply(baseFieldList, i -> instance(i, GaloisField));
     if (not instance(baseFieldList#0, GaloisField) and not same baseFieldList) or (isGaloisField#0 and (not same isGaloisField or not same apply(baseFieldList, i -> i.order))) then 
         error "the list of GWu classes should have the same base field";
+    
+    -- Return an error if the roots are not in the correct field
     if not fieldsAreCompatible(baseFieldList, rootList) then
         error "the roots must be in the base field of the classes";
+
+    -- Create the sum matrix and scalar    
     newForm := directSum(matrixList);
     newScalar := product(scalarList);
     for i from 0 to n-1 do (
-        for j from i+1 to n-1 do (
-            newScalar = newScalar * (rootList#i-rootList#j)^(2*multiplicityList#i*multiplicityList#j);
+        for j from i+1 to n-1 do ( -- We require j > i 
+            newScalar = newScalar * (rootList#i - rootList#j)^(2 * multiplicityList#i * multiplicityList#j);
         );
     );
     makeGWuClass(newForm,newScalar)
