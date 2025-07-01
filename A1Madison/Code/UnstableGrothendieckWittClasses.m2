@@ -34,7 +34,7 @@ isWellDefinedGWu (Matrix, RingElement) := Boolean => (M, a) -> (
     if instance(ring(M), ComplexField) or instance(ring(M), RealField) or ring(M)===QQ then return false;
 
     -- If matrix is defined over a finite field, allow scalar to be an element of that Galois field. The case of a being an integer is treated in the previous variant. 
-    if instance(ring(M), GaloisField) and not (ring(a)===ZZ or (instance(ring(a), GaloisField) and ring(M).order == ring(a).order)) then return false;
+    if instance(ring(M), GaloisField) and not (ring(a)===ZZ or (instance(ring(a), GaloisField) and (ring(M)).order == (ring(a)).order)) then return false;
 
     -- If matrix is defined over an arbitrary field, allow scalar to be either integral or an element of that field. 
     if not (ring(a)===ring(M) or ring(a)===ZZ) then return false;
@@ -89,7 +89,7 @@ makeGWuClass (Matrix) := UnstableGrothendieckWittClass => (M) -> (
             }
         )
     else (
-        error "makeGWuClass called on a pair that does not produce a well-defined element of the unstable Grothendieck-Witt group.";
+        error "makeGWuClass called on a matrix that does not produce a well-defined Grothendieck-Witt class.";
 	)
     )
 
