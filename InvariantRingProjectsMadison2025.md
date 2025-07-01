@@ -11,8 +11,6 @@ Below I (Francesca Gandini) have collected ideas from different folks I have rea
 ## Testing InvariantRing
 A question came up during the exercises about how large of a finite group (even acting diagonally) can be currently handled. I do not know, this might be fun to explore! Also it is always good to keep testing the package for bugs (or features?) that can be removed or edited accordingly. Another low key thing to do is to read through the documentation, find typos and/or point out places where things are unclear, not explained well (or at all) so that we can do some good old copy-editing.
 
---- 
-
 ---
 ## The Reynolds Operator for Semi-simple Groups
 Work on this has been done by Dave Swinarski (dswinarski@fordham.edu) who has kindly shared code he wrote for Spin(10) and could be generalized to other semi-simple groups. Federico Galetto should also be interested in this and he can be reached remotely on Zulip (or by email f.galetto@csuohio.edu). Below is what Dave says. The files mentioned have been added to the Google Drive for the Invariant Ring project. 
