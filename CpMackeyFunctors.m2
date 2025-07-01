@@ -97,14 +97,7 @@ undocumented{
 load "./CpMackeyFunctors/Documentation/ConstructorsDoc.m2"
 load "./CpMackeyFunctors/Documentation/HomGroupDoc.m2"
 load "./CpMackeyFunctors/Documentation/MackeyFunctorDoc.m2"
-<<<<<<< HEAD
 load "./CpMackeyFunctors/Documentation/AbelianCategoryDoc.m2"
-
-
-
-
-=======
->>>>>>> 6fd72f2 (Cleaning up code and adding coker)
  
 ----------------------------
 ----------------------------
