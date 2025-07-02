@@ -117,7 +117,7 @@ degreeSupport = M -> (
 koszulRR = method(Options => { Concentration => null })
 -- RR(M)^i = E^*(i) \otimes_k M_i
 -- E^* = Hom_k(E, k) = E(n+1)
-koszulRR Module := Complex => opts -> M -> (
+koszulRR Module := Complex => opts -> M -> M.cache#(koszulRR, opts) ??= (
     S := ring M;
     n := numgens S - 1;
     E := koszulDual S;
@@ -139,7 +139,7 @@ koszulRR Module := Complex => opts -> M -> (
 	    map(modules#(i+1), modules#i, b)
 	    )))
 -- RR(y**s) = \sum_{l=0}^n y*e_l ** s*x_l
-koszulRR Matrix := ComplexMap => opts -> f -> (
+koszulRR Matrix := ComplexMap => opts -> f -> f.cache#(koszulRR, opts) ??= (
     src := koszulRR(source f, opts);
     tar := koszulRR(target f, opts);
     E := koszulDual ring f;
@@ -157,7 +157,7 @@ koszulRR ComplexMap := ComplexMap => opts -> psi -> ()
 -- LL: Com(E) -> Com(S) is the left-adjoint functor
 koszulLL = method(Options => options koszulRR)
 -- LL(N)^i = S(i) \otimes_k N_i
-koszulLL Module := Complex  => opts -> N -> (
+koszulLL Module := Complex  => opts -> N -> N.cache#(koszulLL, opts) ??= (
     E := ring N;
     n := numgens E - 1;
     S := koszulDual E;
@@ -179,7 +179,7 @@ koszulLL Module := Complex  => opts -> N -> (
 	    map(modules#(i+1), modules#i, (-1)^i*b)
 	    )))
 -- LL(s**y) = (-1)^i \sum_{l=0}^n x_l*s \otimes y*e_l
-koszulLL Matrix := ComplexMap => opts -> f -> (
+koszulLL Matrix := ComplexMap => opts -> f -> f.cache#(koszulLL, opts) ??= (
     src := koszulLL(source f, opts);
     tar := koszulLL(target f, opts);
     S := koszulDual ring f;
