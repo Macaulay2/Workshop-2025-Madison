@@ -39,7 +39,7 @@ doc ///
     Outputs
         C : List
             a list of conjugacy classes of the group G
-    Description 
+    Description
         Text
             A way to compute the conjugacy classes of a finte group
         Example
@@ -110,7 +110,7 @@ doc ///
         G = generateGroup gList
     Inputs
         gList : List
-            a list of matrices which generate a finite group 
+            a list of matrices which generate a finite group
             (verifying finite group generation left to the user)
     Outputs
         G : List
@@ -158,7 +158,7 @@ doc ///
         representation ring of Sn over QQ
     Usage
         R = representationRing(n)
-        (R,T) = representationRing(n, opts.ReturnTable => true)
+        (R,T) = representationRing(n, ReturnTable => true)
     Inputs
         n : ZZ
             the Sn that we compute the representation ring for
@@ -172,7 +172,7 @@ doc ///
             Creates the representation ring for Sn.
         Example
             representationRing 7
-            representationRing(7, opts.ReturnTable => true)
+            representationRing(7, ReturnTable => true)
     SeeAlso
         EquivariantEhrhart
 ///
