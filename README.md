@@ -20,7 +20,7 @@ Interval arithmetic   | [IntervalArithmetic](https://github.com/Macaulay2/Worksh
 Exterior resolutions  | [ExteriorResolutions](https://github.com/Macaulay2/Workshop-2025-Madison/tree/ExteriorResolutions) | ![status](https://github.com/Macaulay2/Workshop-2025-Madison/actions/workflows/tests.yml/badge.svg?branch=ExteriorResolutions)
 Invariant rings       | [InvariantRings](https://github.com/Macaulay2/Workshop-2025-Madison/tree/InvariantRings) | ![status](https://github.com/Macaulay2/Workshop-2025-Madison/actions/workflows/tests.yml/badge.svg?branch=InvariantRings)
 Bilinear forms        | [BilinearForms](https://github.com/Macaulay2/Workshop-2025-Madison/tree/BilinearForms) | ![status](https://github.com/Macaulay2/Workshop-2025-Madison/actions/workflows/tests.yml/badge.svg?branch=BilinearForms)
-Ehrhart theory        | [EhrthartTheory](https://github.com/Macaulay2/Workshop-2025-Madison/tree/EhrthartTheory) | ![status](https://github.com/Macaulay2/Workshop-2025-Madison/actions/workflows/tests.yml/badge.svg?branch=EhrthartTheory)
+Ehrhart theory        | [EhrhartTheory](https://github.com/Macaulay2/Workshop-2025-Madison/tree/EhrhartTheory) | ![status](https://github.com/Macaulay2/Workshop-2025-Madison/actions/workflows/tests.yml/badge.svg?branch=EhrhartTheory)
 
 Each participant can directly push to their project branch.
 You do not need to fork this repository or submit any pull requests.
