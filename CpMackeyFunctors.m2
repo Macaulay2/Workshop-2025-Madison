@@ -111,18 +111,13 @@ export{
 }
 
 beginDocumentation()
-
-document{
-    Key => CpMackeyFunctors,
-    Headline => "package for working with Cp-Mackey functors",
-    PARA{
-        "This package is intended for doing", TEX ///$C_p$///, "-Mackey functor computations."
-    },
-}
-
 undocumented{
     }
 
+-- Main homepage documentation
+load "./CpMackeyFunctors/Documentation/MainPageDoc.m2"
+
+-- Documentation for methods and symbols
 load "./CpMackeyFunctors/Documentation/ConstructorsDoc.m2"
 load "./CpMackeyFunctors/Documentation/HomGroupDoc.m2"
 load "./CpMackeyFunctors/Documentation/MackeyFunctorDoc.m2"
