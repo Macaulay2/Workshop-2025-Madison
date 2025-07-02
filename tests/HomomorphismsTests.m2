@@ -38,11 +38,12 @@ assert isWellDefined(makeUniversalMapUnderlying(B, gens(getUnderlyingModule B)))
 
 assert isWellDefined(makeUniversalMap(B, gens(getFixedModule B), gens(getUnderlyingModule B)))
 
-T = cokernel matrix {{84}}
-B = (cokernel matrix {{2}}) ++ module ZZ
-r = map(B,T, matrix {{1},{0}})
-t = map(T,B, matrix {{42,42}})
-c = map(B,B, matrix {{1, 0}, {0,-1}})
+-- cursedMackeyFunctor
+F = cokernel matrix {{84}}
+U = (cokernel matrix {{2}}) ++ module ZZ
+r = map(U,F, matrix {{1},{0}})
+t = map(F,U, matrix {{42,42}})
+c = map(U,U, matrix {{1, 0}, {0,-1}})
 cursedMackeyFunctor := makeCpMackeyFunctor(2,r,t,c)
 x = gens getFixedModule cursedMackeyFunctor
 f1 = makeUniversalMapFixed(cursedMackeyFunctor,x)

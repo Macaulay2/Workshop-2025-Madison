@@ -81,66 +81,46 @@ realLinearizationMap(ZZ) := MackeyFunctorHomomorphism => p -> (
     map(RO, makeBurnsideMackeyFunctor p, matrix {{1}}, matrix {{1,1}} || matrix (for i to (rank (getFixedModule RO) - 2) list {0,1}))
 )
 
--- Given a Mackey functor M and vector x in fixed module, produce map A -> M
 makeUniversalMapFixed = method()
+-- Given a Mackey functor M and vector x in fixed module, produce map A -> M
 makeUniversalMapFixed(CpMackeyFunctor,Vector) := MackeyFunctorHomomorphism => (M,x) -> makeUniversalMapFixed(M,matrix x)
+-- Given a Mackey functor M and a matrix of n vectors in fixed module, produce map A^n -> M
 makeUniversalMapFixed(CpMackeyFunctor,Matrix) := MackeyFunctorHomomorphism => (M,x) -> (
     n := numColumns x;
     L := {for i to n-1 list (
-	X := map(M.Fixed, , matrix x_i);
-	-- TODO: should we error check element containment which is seemingly not
-	-- implemented?
-	p := M.PrimeOrder;
+        X := map(M.Fixed, , matrix x_i);
+        -- TODO: should we error check element containment which is seemingly not
+        -- implemented?
+        p := M.PrimeOrder;
         A := makeFixedFreeMackeyFunctor(p);
         U := M.Res * X;
         F := X | (M.Tr * M.Res * X);
         map(M, A, U, F)
 	)};
     blockMatrixMackeyFunctorHomomorphism L
-    )
-
--*
-restart
-needsPackage "CpMackeyFunctors"
-
-T = cokernel matrix {{84}}
-B = (cokernel matrix {{2}}) ++ module ZZ
-r = map(B,T, matrix {{1},{0}})
-t = map(T,B, matrix {{42,42}})
-c = map(B,B, matrix {{1, 0}, {0,-1}})
-cursedMackeyFunctor := makeCpMackeyFunctor(2,r,t,c)
-x = gens getFixedModule cursedMackeyFunctor
-makeUniversalMapFixed(cursedMackeyFunctor,x)
-x' = (gens getUnderlyingModule cursedMackeyFunctor)_1
-makeUniversalMapUnderlying(cursedMackeyFunctor, x')
-
-C = cokernel matrix {{2}}
-M = makeFixedPointMackeyFunctor(2,id_C)
-x = gens getUnderlyingModule M
-makeUniversalMapFixed(cursedMackeyFunctor,x)
-*-
+)
 
 
--- Given a Mackey functor M and vector x in underlying module, produce map B -> M
 makeUniversalMapUnderlying = method()
+-- Given a Mackey functor M and vector x in underlying module, produce map B -> M
 makeUniversalMapUnderlying(CpMackeyFunctor,Vector) := MackeyFunctorHomomorphism => (M,x) -> makeUniversalMapUnderlying(M,matrix x)
+-- Given a Mackey functor M and a matrix of n vectors in underlying module, produce map B^n -> M
 makeUniversalMapUnderlying(CpMackeyFunctor,Matrix) := MackeyFunctorHomomorphism => (M,x) -> (
     n := numColumns x;
     L := {for i to n-1 list (
-	X := map(M.Underlying, , matrix x_i);
-	-- TODO: should we error check element containment which is seemingly not
-	-- implemented?
-	p := M.PrimeOrder;
+        X := map(M.Underlying, , matrix x_i);
+        -- TODO: should we error check element containment which is seemingly not
+        -- implemented?
+        p := M.PrimeOrder;
         B := makeUnderlyingFreeMackeyFunctor(p);
         U := matrix {for i to p-1 list ((M.Conj)^i) * X};
         F := M.Tr * X;
         map(M, B, U, F)
 	)};
     blockMatrixMackeyFunctorHomomorphism L
-    )
+)
 
--- Given:
--- a Mackey functor M,
+-- Given a Mackey functor M,
 -- a matrix of n elements X in fixed, and
 -- a matrix of m elements Y in underlying,
 -- return the universal map A^n ++ B^m -> M
