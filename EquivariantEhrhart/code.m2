@@ -92,6 +92,7 @@ generateGroup List := List => opts -> L -> (
 
 -- conjugacy classes takes a list of matrices, which is a group,
 -- and returns a list of list of elements belonging to conugacy classes
+-- a general version that is currently not being utilized
 
 conjugacyClasses = method(
     Options => {
@@ -131,7 +132,7 @@ conjugacyClasses List := List => opts -> G -> (
 -- with cycle type L
 partitionToPermutation = method()
 partitionToPermutation List := List => L -> (
-    cycleStart := 0;
+    cycleStart := 1;
     flatten for cycleLength in L list (
 		cycleStart = cycleStart + cycleLength;
 		for i from cycleStart - cycleLength to cycleStart -1 list (
@@ -149,7 +150,7 @@ partitionToPermutation List := List => L -> (
 cycleTypeRepresentatives = method()
 cycleTypeRepresentatives ZZ := List => n -> (
     S := toList \ partitions n;
-    for s in S list matrix partitionToPermutation s
+    for s in S list matrix permutation partitionToPermutation s
     )
 
 
@@ -220,8 +221,7 @@ equivariantEhrhartSeries Polyhedron := opts -> P -> (
 		g1 := matrix permutation rotate(1, toList(1..n));
 		g2 := matrix extend(transposition 1, n);
 		if not (isSymmetric(P, g1) and isSymmetric(P, g2)) then error("polytope is not Sn invariant");
-		conjClassRepMats := cycleTypeRepresentatives n; -- cycleTypeRepresentatives not working
-		-- maybe change to use conjugacyClasses with opt OnlyListRepresentatives=>true
+		conjClassRepMats := cycleTypeRepresentatives n; 
 		fixedPolytopeList := (g -> fixedPolytope(P, g)) \ conjClassRepMats;
 		(R, T) := representationRing(n, ReturnTable => true);
 		m := numgens R; -- equals number of conj classes
