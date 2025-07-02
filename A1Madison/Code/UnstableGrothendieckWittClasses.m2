@@ -67,7 +67,8 @@ texMath UnstableGrothendieckWittClass := String => alpha -> (
 -- Output: The GrothendieckWittClass representing the symmetric bilinear form determined by M
 
 makeGWuClass = method()
--- First version of this function treats the case of an input (M,a) where a is a Number, (eg. an element of CC_53, RR_53, QQ, or ZZ)
+
+-- First version of this function treats the case of an input (M,a) where a is a Number (eg. an element of CC_53, RR_53, QQ, or ZZ)
 makeGWuClass (Matrix, Number) := UnstableGrothendieckWittClass => (M, a) -> (
    if isWellDefinedGWu (M, a) then (
         new UnstableGrothendieckWittClass from {
@@ -80,6 +81,7 @@ makeGWuClass (Matrix, Number) := UnstableGrothendieckWittClass => (M, a) -> (
         error "makeGWuClass called on a pair that does not produce a well-defined element of the unstable Grothendieck-Witt group.";
 	)
     )
+
 -- Second version of this function treats the case of an input (M,a) where a is a Number (eg. an element of a Galois field)
 makeGWuClass (Matrix, RingElement) := UnstableGrothendieckWittClass => (M, a) -> (
    if isWellDefinedGWu (M, a) then (
@@ -93,6 +95,7 @@ makeGWuClass (Matrix, RingElement) := UnstableGrothendieckWittClass => (M, a) ->
         error "makeGWuClass called on a pair that does not produce a well-defined element of the unstable Grothendieck-Witt group.";
 	)
     )
+
 -- Third version of this function treats the case of an input M, where a is assumed to be the determinant of M. 
 makeGWuClass (Matrix) := UnstableGrothendieckWittClass => (M) -> (
    if isWellDefinedGWu (M, det M) then (
@@ -103,7 +106,49 @@ makeGWuClass (Matrix) := UnstableGrothendieckWittClass => (M) -> (
             }
         )
     else (
-        error "makeGWuClass called on a matrix that does not produce a well-defined Grothendieck-Witt class.";
+        error "makeGWuClass called on a matrix that does not produce a well-defined element of the unstable Grothendieck-Witt group.";
+	)
+    )
+
+-- Fourth version of this function treats the case of an input a GrothendieckWittClass alpha and a Number (eg. an element of CC_53, RR_53, QQ, or ZZ)
+makeGWuClass (GrothendieckWittClass, Number) := UnstableGrothendieckWittClass => (alpha, a) -> (
+   if isWellDefinedGWu (getMatrix alpha, a) then (
+        new UnstableGrothendieckWittClass from {
+            symbol matrix => getMatrix alpha,
+            symbol cache => new CacheTable,
+            symbol scalar => sub(a, getBaseField alpha)
+            }
+        )
+    else (
+        error "makeGWuClass called on a pair that does not produce a well-defined element of the unstable Grothendieck-Witt group.";
+	)
+    )
+
+-- Fifth version of this function treats the case of an input a GrothendieckWittClass alpha and a RingElement (eg. an element of a Galois field)
+makeGWuClass (GrothendieckWittClass, RingElement) := UnstableGrothendieckWittClass => (alpha, a) -> (
+   if isWellDefinedGWu (getMatrix alpha, a) then (
+        new UnstableGrothendieckWittClass from {
+            symbol matrix => getMatrix alpha,
+            symbol cache => new CacheTable,
+            symbol scalar => sub(a, getBaseField alpha)
+            }
+        )
+    else (
+        error "makeGWuClass called on a pair that does not produce a well-defined element of the unstable Grothendieck-Witt group.";
+	)
+    )
+
+-- Sixth version of this function treats the case of an input a GrothendieckWittClass alpha, where a is assumed to be the determinant of the Gram matrix of alpha.  
+makeGWuClass (GrothendieckWittClass) := UnstableGrothendieckWittClass => (alpha) -> (
+   if isWellDefinedGWu (getMatrix alpha, det getMatrix alpha) then (
+        new UnstableGrothendieckWittClass from {
+            symbol matrix => getMatrix alpha,
+            symbol cache => new CacheTable,
+            symbol scalar => sub(det getMatrix alpha, getBaseField alpha)
+            }
+        )
+    else (
+        error "makeGWuClass called on a form that does not produce a well-defined element of the unstable Grothendieck-Witt group.";
 	)
     )
 
