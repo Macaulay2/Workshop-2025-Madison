@@ -70,4 +70,21 @@ makeOrbitMackeyFunctor (ZZ,Matrix) := CpMackeyFunctor => (p,C) -> (
     return makeCpMackeyFunctor(p,R,T,C)
 )
 
+makeFixedTrivMackeyFunctor = method()
+makeFixedTrivMackeyFunctor(ZZ) := CpMackeyFunctor => (p) -> (
+    U := cokernel(matrix({{p}}));
+    R := inducedMap(U,U);
+    T := inducedMap(U,U,matrix({{0}}));
+    C := inducedMap(U,U);
+    return makeCpMackeyFunctor(p,R,T,C)
+)
 
+makeFixedSignMackeyFunctor = method(Dispatch => Thing)   --takes no argument so write makeFixedSignMackeyFunctor()
+makeFixedSignMackeyFunctor Sequence := x -> (
+    F := ker matrix id_ZZ;
+    U := module(ZZ);
+    R := map(U,F,0);
+    T := map(F,U,0);
+    C := map(U,U,matrix({{-1}}));
+    makeCpMackeyFunctor(2,R,T,C)
+)

@@ -70,7 +70,9 @@ export{
     "makeRealRepresentationMackeyFunctor",
     "makeZeroMackeyFunctor",
     "makeFixedPointMackeyFunctor",
-    "makeOrbitMackeyFunctor"
+    "makeOrbitMackeyFunctor",
+    "makeFixedTrivMackeyFunctor",
+    "makeFixedSignMackeyFunctor"
 }
 
 -- Methods for working with homomorphisms between Mackey functors
