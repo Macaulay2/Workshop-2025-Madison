@@ -209,7 +209,7 @@ MackeyFunctorHomomorphism == MackeyFunctorHomomorphism := Boolean => (f,g) -> (
     )
 
 -- Pruning morphisms
-prune MackeyFunctorHomomorphism := MackeyFunctorHomomorphism => f -> (
+prune MackeyFunctorHomomorphism := MackeyFunctorHomomorphism => opts -> f -> (
     src := prune source f;
     tgt := prune target f;
     srcPrune := src.pruningMap;
