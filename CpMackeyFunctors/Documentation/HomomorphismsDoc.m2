@@ -1,30 +1,20 @@
-document{
-    Key => {MackeyFunctorHomomorphism},
-    Headline => "the class of Mackey functor homomorphisms",
-    PARA{
-        "Common ways to construct a Mackey functor homomorphism:",
-    },
-    UL {
-        TO2((map, CpMackeyFunctor, CpMackeyFunctor, Matrix, Matrix), "map"),
-        TT "id_M",
-    },
-    Subnodes => {
-        TO FixedMap,
-        TO UnderlyingMap,
-    }
-}
-
--- doc ///
---     Key
---         (MackeyFunctorHomomorphism)
---     Headline
---         the class of Mackey functor homomorphisms
---     Usage
---         F.FixedMap
---     Subnodes
---         FixedMap
---         UnderlyingMap
--- ///
+doc ///
+    Key
+        MackeyFunctorHomomorphism
+    Headline
+        the class of Mackey functor homomorphisms
+    Subnodes
+        FixedMap
+        UnderlyingMap
+    Description
+        Text
+            Common ways to construct a Mackey functor homomorphism:
+        Text
+            • @ TO2((map, CpMackeyFunctor, CpMackeyFunctor, Matrix, Matrix), "map") @  
+        Text
+            • @ TT "id_M" @
+///
+-- ^^ There must be a better way!
 
 doc ///
     Key
@@ -34,7 +24,6 @@ doc ///
     Usage
         F.FixedMap
 ///
-
 
 doc ///
     Key
@@ -188,4 +177,46 @@ doc ///
             "The free Mackey functor $\underline{B}$ on an underlying generator has the property there is a natural isomorphism $\text{Hom}_{\text{Mack}_{C_p}}(\underline B,M)\cong M(C_p/e)$ for any $C_p$-Mackey functor $M$ This method implements this correspondence: for an element $x\in M(C_p/e)$ it returns the induced homomorphism of Mackey functors $\underline B\to M$ The homomorphism is determined by sending $1\mapsto x$ where $1\in\underline B(C_p/e)$ represents the identity element $1\in C_p/e = \{1,\gamma,\ldots,\gamma^{p-1}\}$.
         Example
             makeUniversalMapUnderlying(makeUnderlyingFreeMackeyFunctor(3), vector (matrix {{1},{2},{3}}))
+///
+
+doc ///
+    Key
+        (symbol |,MackeyFunctorHomomorphism,MackeyFunctorHomomorphism)
+    Headline
+        Horizontal concatenation of Mackey functor homomorphisms
+    Usage
+        f | g
+    Outputs
+        : MackeyFunctorHomomorphism
+            the horizontal concatenation of the homomorphisms $f$ and $g$.
+    Inputs
+        f : MackeyFunctorHomomorphism
+        g : MackeyFunctorHomomorphism
+    Description
+        Text
+            Given two Mackey functor homomorphisms $f : A \to C$ and $g : B \to C$ with the same codomain, $f | g$ is the homomorphism $(f,g) : A \oplus B \to C$.
+        Example
+            A = makeBurnsideMackeyFunctor 2;
+            id_A | id_A
+///
+
+doc ///
+    Key
+        (symbol ||,MackeyFunctorHomomorphism,MackeyFunctorHomomorphism)
+    Headline
+        Vertical concatenation of Mackey functor homomorphisms
+    Usage
+        f || g
+    Outputs
+        : MackeyFunctorHomomorphism
+            the vertical concatenation of the homomorphisms $f$ and $g$.
+    Inputs
+        f : MackeyFunctorHomomorphism
+        g : MackeyFunctorHomomorphism
+    Description
+        Text
+            Given two Mackey functor homomorphisms $f : A \to B$ and $g : A \to C$ with the same domain, $f || g$ is the homomorphism $(f,g) : A \to B \oplus C$.
+        Example
+            A = makeBurnsideMackeyFunctor 2;
+            id_A || id_A
 ///
