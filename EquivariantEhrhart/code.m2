@@ -220,7 +220,8 @@ equivariantEhrhartSeries Polyhedron := opts -> P -> (
 		g1 := matrix permutation rotate(1, toList(1..n));
 		g2 := matrix extend(transposition 1, n);
 		if not (isSymmetric(P, g1) and isSymmetric(P, g2)) then error("polytope is not Sn invariant");
-		conjClassRepMats := cycleTypeRepresentatives n;
+		conjClassRepMats := cycleTypeRepresentatives n; -- cycleTypeRepresentatives not working
+		-- maybe change to use conjugacyClasses with opt OnlyListRepresentatives=>true
 		fixedPolytopeList := (g -> fixedPolytope(P, g)) \ conjClassRepMats;
 		(R, T) := representationRing(n, ReturnTable => true);
 		m := numgens R; -- equals number of conj classes
