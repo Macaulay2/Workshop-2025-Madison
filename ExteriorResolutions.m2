@@ -419,7 +419,7 @@ f1 := basis(i+1,M)
 g := ((vars S)**f0)//f1 -- g is a map from source (vars S)**f0 to source f1 making the traingle involving (vars S)**f0 and f1 commute
 b := (ev g)*((transpose vars E)**(ev source f0))
 --correct the degrees (which are otherwise wrong in the transpose)
-map(E^{(rank target b):i+1},E^{(rank source b):i}, b))
+map(E^{(rank target b):i+1},E^{(rank source b):i}, b)
 
 methods koszulComplex
 code 0 
