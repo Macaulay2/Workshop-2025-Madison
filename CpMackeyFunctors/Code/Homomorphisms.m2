@@ -42,9 +42,6 @@ isWellDefined MackeyFunctorHomomorphism := Boolean => F ->(
 -- 2. Source
 -- 3. Underlying map
 -- 4. Fixed-point map
-map(CpMackeyFunctor, CpMackeyFunctor, MackeyFunctorHomomorphism) := MackeyFunctorHomomorphism => opts -> (N,M,f) -> (
-    map(CpMackeyFunctor, CpMackeyFunctor, f.UnderylingMap, f.FixedMap)
-    )
 map(CpMackeyFunctor, CpMackeyFunctor, Matrix, Matrix) := MackeyFunctorHomomorphism => opts -> (N,M,u,f) -> (
     F := new MackeyFunctorHomomorphism from {
         symbol Codomain => N,
@@ -217,7 +214,7 @@ prune MackeyFunctorHomomorphism := MackeyFunctorHomomorphism => f -> (
     tgt := prune target f;
     srcPrune := src.pruningMap;
     tgtPrune := tgt.pruningMap;
-    map(tgt, src, tgtPrune^-1 * f * srcPrune)
+    tgtPrune^-1 * f * srcPrune
     )
 
 -- block homomorphisms
