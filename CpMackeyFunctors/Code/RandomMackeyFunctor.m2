@@ -4,8 +4,10 @@ getRandomElementsInModule(Module, ZZ) := Matrix => (M, n) -> (
     matrix {for i to n-1 list matrix random M}
 )
 
-makeRandomCpMackeyFunctor = method()
-makeRandomCpMackeyFunctor(ZZ, List):= CpMackeyFunctor => (p, L) -> (
+protect GenBound;
+
+makeRandomCpMackeyFunctor = method(Options=>{GenBound=>5})
+makeRandomCpMackeyFunctor(ZZ, List):= CpMackeyFunctor => opts -> (p, L) -> (
 
     if not isPrime p then error " -- p is not prime!";
     if not (length L === 4) then error " -- expected a list of length 4.";
@@ -17,7 +19,6 @@ makeRandomCpMackeyFunctor(ZZ, List):= CpMackeyFunctor => (p, L) -> (
 
     if not (class n === ZZ and class m === ZZ and class k === ZZ and class l === ZZ) then error " -- not a list of integers.";
 
-
     A := makeBurnsideMackeyFunctor p;
     B := makeUnderlyingFreeMackeyFunctor p;
 
@@ -26,11 +27,19 @@ makeRandomCpMackeyFunctor(ZZ, List):= CpMackeyFunctor => (p, L) -> (
     XUnderlying := getUnderlyingModule X;
     XFixed := getFixedModule X;
 
+    -- Pick random elements in the underlying and fixed modules,
+    -- yielding a random map from A^k + B^l
     RandomUnderlyingElements := getRandomElementsInModule(XUnderlying, k);
     RandomFixedElements := getRandomElementsInModule(XFixed, l);
 
-
-
     return prune cokernel makeUniversalMap(X, RandomFixedElements, RandomUnderlyingElements)
+)
 
+makeRandomCpMackeyFunctor(ZZ):= CpMackeyFunctor => opts -> p-> (
+    n := random(1,opts.GenBound);
+    m := random(1,opts.GenBound);
+    k := random(1,2*n);
+    l := random(1,2*m);
+
+    return makeRandomCpMackeyFunctor(p,{n,m,k,l});
 )

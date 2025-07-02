@@ -114,6 +114,12 @@ export{
     "makeFreeModuleSurjection"
 }
 
+load "./CpMackeyFunctors/Code/RandomMackeyFunctor.m2"
+export{
+    "makeRandomCpMackeyFunctor",
+    "GenBound"
+}
+
 beginDocumentation()
 undocumented{
     }
