@@ -266,6 +266,23 @@ fieldsAreCompatible (List, List) := Boolean => (baseFieldList, rootList) -> (
     true
 )
 
+-- Input: An unstable Grothendieck-Witt class beta over QQ, RR, CC, or a finite field of characteristic not 2
+-- Output: A diagonalized form of beta, with squarefree entries on the diagonal
+getDiagonalClass UnstableGrothendieckWittClass := UnstableGrothendieckWittClass => beta -> (
+
+    -- Check if the diagonal class has already been computed; if so, recall it from the cache
+    if beta.cache.?getDiagonalClass then return beta.cache.getDiagonalClass;
+
+    getDiagonalClassOfBetaMatrix := diagonalizeAndSimplifyViaCongruence getMatrix beta;
+
+    -- The computed diagonal class gets stored in the cache
+    beta.cache.getDiagonalClass = makeGWuClass(getDiagonalClassOfBetaMatrix, getScalar beta);
+    makeGWuClass(getDiagonalClassOfBetaMatrix, getScalar beta)
+    )
+
+-- Input: Two unstable Grothendieck-Witt classes over CC, RR, QQ, or a finite field of characteristic not 2
+-- Output: Boolean that gives whether the classes are isomorphic
+
 isIsomorphicForm (UnstableGrothendieckWittClass,UnstableGrothendieckWittClass) := Boolean => (alpha,beta) -> (
     k1 := ring getScalar alpha;
     k2 := ring getScalar beta;

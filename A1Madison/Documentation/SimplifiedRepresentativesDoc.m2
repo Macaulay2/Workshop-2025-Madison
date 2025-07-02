@@ -1,20 +1,23 @@
 document {
-    Key => {getDiagonalClass, (getDiagonalClass, GrothendieckWittClass)},
-	Headline => "produces a diagonalized form for any Grothendieck-Witt class, with simplified terms on the diagonal",
+    Key => {getDiagonalClass, (getDiagonalClass, GrothendieckWittClass), (getDiagonalClass, UnstableGrothendieckWittClass)},
+	Headline => "produces a diagonalized form for any (unstable) Grothendieck-Witt class, with simplified terms on the diagonal",
 	Usage => "getDiagonalClass beta",
 	Inputs => {
-	    GrothendieckWittClass => "beta" => {"over ", TEX///$\mathbb{Q}$///,", ",TEX///$ \mathbb{R}$///,", ",TEX///$\mathbb{C}$///, ", or a finite field of characteristic not 2"}
+	    GrothendieckWittClass => "beta" => {"over ", TEX///$\mathbb{Q}$///,", ",TEX///$ \mathbb{R}$///,", ",TEX///$\mathbb{C}$///, ", or a finite field of characteristic not 2"},
+		UnstableGrothendieckWittClass => "beta" => {"over ", TEX///$\mathbb{Q}$///,", ",TEX///$ \mathbb{R}$///,", ",TEX///$\mathbb{C}$///, ", or a finite field of characteristic not 2"}
 	    },
 	Outputs => {
-	    GrothendieckWittClass => {"a form isomorphic to ", TEX///$\beta$///, " with a diagonal Gram matrix"}
+	    GrothendieckWittClass => {"a form isomorphic to ", TEX///$\beta$///, " with a diagonal Gram matrix"},
+		UnstableGrothendieckWittClass => {"a class isomorphic to ", TEX///$\beta$///, " with a diagonal Gram matrix"},
 	    },
-	PARA {"Given a symmetric bilinear form, this method uses the ", TO2(diagonalizeViaCongruence,"diagonalizeViaCongruence"), " command in order to produce a diagonal symmetric bilinear form isomorphic to ", TEX///$\beta$///, ", with reduced square classes appearing as the diagonal entries."},
+	PARA {"Given a symmetric bilinear form, this method uses the ", TO2(diagonalizeViaCongruence,"diagonalizeViaCongruence"), " command in order to produce a diagonal symmetric bilinear form isomorphic to ", TEX///$\beta$///, ", with reduced square classes appearing as the diagonal entries. In the case of ", TO2(UnstableGrothendieckWittClass, "UnstableGrothendieckWittClasses"), " the function applies ", TO2(diagonalizeViaCongruence,"diagonalizeViaCongruence"), " to the stable part."},
 	EXAMPLE lines ///
 	M = matrix(QQ, {{9,1,7,4},{1,10,3,2},{7,3,6,7},{4,2,7,5}});
-	beta = makeGWClass M;
+	beta = makeGWuClass M;
 	getDiagonalClass beta
+	getDiagonalClass makeGWClass M
 	///,
-	PARA{"Note that the  ", TO2(GrothendieckWittClass, "GrothendieckWittClass"), " type caches diagonal versions of a form once they've been computed. We can recover this quickly in the following way."},
+	PARA{"Note that the  ", TO2(GrothendieckWittClass, "GrothendieckWittClass"), " and ", TO2(UnstableGrothendieckWittClass, "UnstableGrothendieckWittClass"), " type caches diagonal versions of a form once they've been computed. We can recover this quickly in the following way."},
 	EXAMPLE lines///
 	beta.cache.getDiagonalClass
 	///,

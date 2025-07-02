@@ -561,3 +561,82 @@ assert(getHilbertSymbolReal(-3, -5/1) == -1);
 assert(getHilbertSymbolReal(-3/1, -5) == -1);
 assert(getHilbertSymbolReal(3, 5) == 1);
 ///
+
+-- Test 26
+TEST ///
+M1 = matrix(RR, {{0,1},{1,0}});
+G1 = makeGWuClass M1;
+G2 = getDiagonalClass G1;
+assert(getMatrix(G2) === matrix(RR, {{1,0},{0,-1}}));
+assert(getScalar(G2) === det M1)
+///
+
+-- Test 27
+TEST ///
+M3 = matrix(CC, {{1,2,3},{2,4,5},{3,5,7}});
+G3 = makeGWuClass M3;
+G4 = getDiagonalClass G3;
+assert(getMatrix(G4) === matrix(CC, {{1,0,0},{0,1,0},{0,0,1}}));
+assert(getScalar(G4) === det M3)
+///
+
+--Test 28
+TEST ///
+M5 = matrix(QQ, {{1,2,3},{2,4,5},{3,5,7}});
+G5 = makeGWuClass M5;
+G6 = getDiagonalClass G5;
+assert(getMatrix(G6) === matrix(QQ, {{1,0,0},{0,-2,0},{0,0,2}}));
+assert(getScalar(G6) === det M5)
+///
+
+-- Test 29
+TEST ///
+-- Tests for GrothendieckWittClass type
+M1 = matrix(QQ, {{1,0},{0,1}});
+M2 = matrix(QQ, {{1,2},{2,5}});
+G1 = makeGWuClass M1;
+G2 = makeGWuClass M2;
+assert(getBaseField(G1) === QQ);
+assert(getMatrix(G1) === M1);
+-- Test for addGWu
+G3 = addGWu(G1, G2);
+assert(getMatrix(G3) === matrix(QQ, {{1,0,0,0},{0,1,0,0},{0,0,1,2},{0,0,2,5}}));
+assert(getScalar(G3) === (det M1) * (det M2))
+///
+
+-- Test 30
+
+
+-- Test for getBaseField
+-- Test 31
+TEST ///
+M1 = makeGWuClass matrix(QQ, {{1/1,0,0},{0,2,3},{0,3,1}});
+M2 = makeGWuClass matrix(RR, {{1.0,24/10,-2.41},{24/10,-5,0},{-2.41,0,69}});
+M3 = makeGWuClass matrix(CC, {{1*ii,24/10,-2.41},{24/10,-5,0},{-2.41,0,69+ii}});
+M4 = makeGWuClass matrix(GF(7), {{1,0,0},{0,2,0},{0,0,-3}});
+
+assert(getBaseField(M1) === QQ);
+assert(getBaseField(M2) === RR_53);
+assert(getBaseField(M3) === CC_53);
+assert((getBaseField M4).order == 7);
+///
+
+-- Test for addGW
+-- Test 32
+TEST ///
+A1 = makeGWuClass matrix(QQ, {{1/1,0,-3},{0,23,0},{-3,0,-2/5}});
+A2 = makeGWuClass matrix(QQ, {{0,1/2,0},{1/2,5/9,0},{0,0,1}});
+A3 = makeGWuClass matrix(QQ, {{1/1,0,-3,0,0,0},{0,23,0,0,0,0},{-3,0,-2/5,0,0,0},{0,0,0,0,1/2,0},{0,0,0,1/2,5/9,0},{0,0,0,0,0,1}})
+
+B1 = makeGWuClass matrix(RR, {{sqrt(2),0,-3},{0,sqrt(5),0},{-3,0,-1/5}});
+B2 = makeGWuClass matrix(RR, {{1/3}});
+B3 = makeGWuClass matrix(RR, {{sqrt(2),0,-3,0},{0,sqrt(5),0,0},{-3,0,-1/5,0},{0,0,0,1/3}});
+
+C1 = makeGWuClass matrix(CC, {{2*ii,0,0},{0,-2,0},{0,0,-3}});
+C2 = makeGWuClass matrix(CC, {{1,0,-3+ii,0},{0,-2,0,0},{-3+ii,0,-3,0},{0,0,0,5}});
+C3 = makeGWuClass matrix(CC, {{2*ii,0,0,0,0,0,0},{0,-2,0,0,0,0,0},{0,0,-3,0,0,0,0},{0,0,0,1,0,-3+ii,0},{0,0,0,0,-2,0,0},{0,0,0,-3+ii,0,-3,0},{0,0,0,0,0,0,5}});
+
+assert(addGWu(A1, A2) === A3);
+assert(addGWu(B1, B2) === B3);
+assert(addGWu(C1, C2) === C3);
+///
