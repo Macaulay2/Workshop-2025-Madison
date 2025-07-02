@@ -38,6 +38,20 @@ assert isWellDefined(makeUniversalMapUnderlying(B, gens(getUnderlyingModule B)))
 
 assert isWellDefined(makeUniversalMap(B, gens(getFixedModule B), gens(getUnderlyingModule B)))
 
+T = cokernel matrix {{84}}
+B = (cokernel matrix {{2}}) ++ module ZZ
+r = map(B,T, matrix {{1},{0}})
+t = map(T,B, matrix {{42,42}})
+c = map(B,B, matrix {{1, 0}, {0,-1}})
+cursedMackeyFunctor := makeCpMackeyFunctor(2,r,t,c)
+x = gens getFixedModule cursedMackeyFunctor
+f1 = makeUniversalMapFixed(cursedMackeyFunctor,x)
+x' = (gens getUnderlyingModule cursedMackeyFunctor)
+f2 = makeUniversalMapUnderlying(cursedMackeyFunctor, x')
+assert(matrix f1.FixedMap == matrix {{1,42}} and matrix f1.UnderlyingMap == matrix{{1},{0}})
+assert(matrix f2.FixedMap == matrix {{42,42}} and matrix f2.UnderlyingMap == matrix{{1,1,0,0},{0,0,1,-1}})
+
+
 -- verify composition does what we want it to do ?
 A :=makeBurnsideMackeyFunctor(11);
 assert isWellDefined (id_(A) * id_(A))

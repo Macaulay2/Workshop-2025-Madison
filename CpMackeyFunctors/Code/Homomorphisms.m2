@@ -83,48 +83,61 @@ realLinearizationMap(ZZ) := MackeyFunctorHomomorphism => p -> (
 
 -- Given a Mackey functor M and vector x in fixed module, produce map A -> M
 makeUniversalMapFixed = method()
-makeUniversalMapFixed(CpMackeyFunctor,Vector) := MackeyFunctorHomomorphism => (M,x) -> (
-    X := matrix x;
-    if not isSubset(image X, M.Fixed) then (
-        error "element is not in fixed module";
-    )
-    else (
-        p := M.PrimeOrder;
+makeUniversalMapFixed(CpMackeyFunctor,Vector) := MackeyFunctorHomomorphism => (M,x) -> makeUniversalMapFixed(M,matrix x)
+makeUniversalMapFixed(CpMackeyFunctor,Matrix) := MackeyFunctorHomomorphism => (M,x) -> (
+    n := numColumns x;
+    L := {for i to n-1 list (
+	X := map(M.Fixed, , matrix x_i);
+	-- TODO: should we error check element containment which is seemingly not
+	-- implemented?
+	p := M.PrimeOrder;
         A := makeFixedFreeMackeyFunctor(p);
         U := M.Res * X;
         F := X | (M.Tr * M.Res * X);
-        return map(M, A, U, F);
+        map(M, A, U, F)
+	)};
+    blockMatrixMackeyFunctorHomomorphism L
     )
-)
 
--- Given a Mackey functor M and n columns in fixed, produce map A^n -> M 
-makeUniversalMapFixed(CpMackeyFunctor,Matrix) := MackeyFunctorHomomorphism => (M,X) -> (
-    n := numColumns X;
-    return blockMatrixMackeyFunctorHomomorphism{for i to n-1 list makeUniversalMapFixed(M,X_i)};
-)
+-*
+restart
+needsPackage "CpMackeyFunctors"
+
+T = cokernel matrix {{84}}
+B = (cokernel matrix {{2}}) ++ module ZZ
+r = map(B,T, matrix {{1},{0}})
+t = map(T,B, matrix {{42,42}})
+c = map(B,B, matrix {{1, 0}, {0,-1}})
+cursedMackeyFunctor := makeCpMackeyFunctor(2,r,t,c)
+x = gens getFixedModule cursedMackeyFunctor
+makeUniversalMapFixed(cursedMackeyFunctor,x)
+x' = (gens getUnderlyingModule cursedMackeyFunctor)_1
+makeUniversalMapUnderlying(cursedMackeyFunctor, x')
+
+C = cokernel matrix {{2}}
+M = makeFixedPointMackeyFunctor(2,id_C)
+x = gens getUnderlyingModule M
+makeUniversalMapFixed(cursedMackeyFunctor,x)
+*-
+
 
 -- Given a Mackey functor M and vector x in underlying module, produce map B -> M
 makeUniversalMapUnderlying = method()
-makeUniversalMapUnderlying(CpMackeyFunctor,Vector) := MackeyFunctorHomomorphism => (M,x) -> (
-    X := matrix x;
-
-    if not isSubset(image X, M.Underlying) then (
-        error "element is not in underlying module";
-    )
-    else (
-        p := M.PrimeOrder;
+makeUniversalMapUnderlying(CpMackeyFunctor,Vector) := MackeyFunctorHomomorphism => (M,x) -> makeUniversalMapUnderlying(M,matrix x)
+makeUniversalMapUnderlying(CpMackeyFunctor,Matrix) := MackeyFunctorHomomorphism => (M,x) -> (
+    n := numColumns x;
+    L := {for i to n-1 list (
+	X := map(M.Underlying, , matrix x_i);
+	-- TODO: should we error check element containment which is seemingly not
+	-- implemented?
+	p := M.PrimeOrder;
         B := makeUnderlyingFreeMackeyFunctor(p);
         U := matrix {for i to p-1 list ((M.Conj)^i) * X};
         F := M.Tr * X;
-        return map(M, B, U, F);
+        map(M, B, U, F)
+	)};
+    blockMatrixMackeyFunctorHomomorphism L
     )
-)
-
--- Given a Mackey functor M and n columns in underlying, produce map B^n -> M 
-makeUniversalMapUnderlying(CpMackeyFunctor,Matrix) := MackeyFunctorHomomorphism => (M,X) -> (
-    n := numColumns X;
-    return blockMatrixMackeyFunctorHomomorphism{for i to n-1 list makeUniversalMapUnderlying(M,X_i)};
-)
 
 -- Given:
 -- a Mackey functor M,
@@ -213,6 +226,10 @@ MackeyFunctorHomomorphism == MackeyFunctorHomomorphism := Boolean => (f,g) -> (
     if f.UnderlyingMap != g.UnderlyingMap then return false;
     if f.FixedMap != g.FixedMap then return false;
     true
+    )
+
+prune MackeyFunctorHomomorphism := MackeyFunctorHomomorphism => f -> (
+    
     )
 
 
