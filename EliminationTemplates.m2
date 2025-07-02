@@ -43,6 +43,7 @@ MonomialPartition = new Type of List
 
 newEliminationTemplate = method(Options => {})
 newEliminationTemplate (RingElement, Ideal) := o -> (aVar, J) -> (
+    R := ring J
     (sh, mp) := getTemplate(aVar, basis(R/J), J);
     M := getTemplateMatrix(shifts, monomialPartition, J);
     new EliminationTemplate from {
@@ -52,7 +53,7 @@ newEliminationTemplate (RingElement, Ideal) := o -> (aVar, J) -> (
         actionVariable => aVar,
         ideal => J
     }
-    )
+)
 
 getH0 = method(Options => {MonomialOrder => null})
 getH0 (RingElement, Ideal) := o -> (a, J) -> (
@@ -147,40 +148,31 @@ templateSolve = method(Options => {MonomialOrder => null})
 templateSolve(Ideal) := o -> (I) -> (
 
 )
-templateSolve(RingElement, Ideal) := o -> (a, I) -> (
-    R = ring I;
-    local B, local sh, local mp, local M, local Ma, local svals, local P;
+templateSolve(RingElement, Ideal) := o -> (a, J) -> (
+    R := ring J;
+    K := coefficientRing R;
+    ringVars := flatten entries vars R;
+    I := J;
+    actvar := a;
 
-    -- TODO: input checking, i.e. is a in R or I
-    
-    if isMember(a, flatten entries vars R) then (
-        -- 1. a is a variable
-        B = lift(basis(R/I), R);
-        (sh, mp) := getTemplate(a, B, I);
-        M = getTemplateMatrix(sh, mp, I);
-        Ma = getActionMatrix(a, mp, M);
-        (svals, P) = eigenvectors Ma;
-        eigenvectors Ma;
-        clean_(1e-10) (P * inverse diagonalMatrix(P^{3}))
-    )
-    else (
-        -- 2. a is a linear form
-        S := QQ[s, flatten entries vars R, MonomialOrder => Eliminate 1];
-        J := sub(I, S) + ideal(s - sub(a, S));
+    -- if a is a linear form
+    if not isMember(a, ringVars) then (
+        R = K[prepend("s", ringVars), MonomialOrder => Eliminate 1];
+        I = sub(J, R) + ideal(R_0 - sub(a, R));
+        actvar = R_0;
+    );
 
-        B = lift(basis(S/J), S);
-        (sh, mp) = getTemplate(s, B, J);
-        M = getTemplateMatrix(sh, mp, J);
-        Ma = getActionMatrix(s, mp, M);
-        (svals, P) = eigenvectors Ma;
-        eigenvectors Ma;
-        clean_(1e-10) (P * inverse diagonalMatrix(P^{3}))
-    )
+    B := lift(basis(R/I), R);
+    (sh, mp) := getTemplate(actvar, B, I);
+    M := getTemplateMatrix(sh, mp, I);
+    Ma := getActionMatrix(actvar, mp, M);
+    (svals, P) := eigenvectors Ma;
+    clean_(1e-10) (P * inverse diagonalMatrix(P^{3}))
 )
 
 beginDocumentation()
 
-doc /// -- TODO
+doc ///
  Node
   Key
    EliminationTemplates
@@ -191,27 +183,6 @@ doc /// -- TODO
     {\em EliminationTemplates} is a basic package to be used as an example.
   Caveat
     Still trying to figure this out.
-  Subnodes
-    firstFunction
- Node
-  Key
-   (firstFunction,ZZ)
-   firstFunction
-  Headline
-   a silly first function
-  Usage
-   firstFunction n
-  Inputs
-   n:
-  Outputs
-   :
-    a silly string, depending on the value of {\tt n}
-  Description
-   Text
-    Here we show an example.
-   Example
-    firstFunction 1
-    firstFunction 0
 ///
 
 TEST ///
@@ -240,7 +211,6 @@ eigenvalues Ma
 ///
 
 end--
-
 
 -* Development section *-
 restart

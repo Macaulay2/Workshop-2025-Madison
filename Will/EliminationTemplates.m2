@@ -93,38 +93,28 @@ getActionMatrix = (actVar, mp, M) -> (
 templateSolve = method(Options => {MonomialOrder => null})
 --templateSolve(EliminationTemplate) := o -> (template) -> ()
 templateSolve(Ideal) := o -> (I) -> (
-    a = x  -- TODO
-    templateSolve(a, I)
+
 )
-templateSolve(RingElement, Ideal) := o -> (a, I) -> (
-    R = ring I;
+templateSolve(RingElement, Ideal) := o -> (a, J) -> (
+    R := ring J;
+    K := coefficientRing R;
+    ringVars := flatten entries vars R;
+    I := J;
+    actvar := a;
 
-    -- TODO: input checking, i.e. is a in R or I
-    if isMember(a, flatten entries vars R) then (
-        -- 1. a is a variable
-        B = lift(basis(R/I), R);
-        (sh, mp) = getTemplate(a, B, I);
-        M = getTemplateMatrix(sh, mp, I);
-        Ma = getActionMatrix(a, mp, M);
-        (svals, P) = eigenvectors Ma;
-        eigenvectors Ma;
-        clean_(1e-10) (P * inverse diagonalMatrix(P^{3}))
-    )
-    else (
-        -- 2. a is a linear form
-        S = QQ[s, flatten entries vars R, MonomialOrder => Eliminate 1];
-        J = sub(I, S) + ideal(s - sub(a, S));
+    -- if a is a linear form
+    if not isMember(a, ringVars) then (
+        R = K[prepend("s", ringVars), MonomialOrder => Eliminate 1];
+        I = sub(J, R) + ideal(R_0 - sub(a, R));
+        actvar = R_0;
+    );
 
-        B = lift(basis(S/J), S);
-        (sh, mp) = getTemplate(s, B, J);
-        M = getTemplateMatrix(sh, mp, J);
-        Ma = getActionMatrix(s, mp, M);
-        (svals, P) = eigenvectors Ma;
-        eigenvectors Ma;
-        clean_(1e-10) (P * inverse diagonalMatrix(P^{3}))
-    )
-
-    -- TODO: check eigenvalue multiplicity
+    B := lift(basis(R/I), R);
+    (sh, mp) := getTemplate(actvar, B, I);
+    M := getTemplateMatrix(sh, mp, I);
+    Ma := getActionMatrix(actvar, mp, M);
+    (svals, P) := eigenvectors Ma;
+    clean_(1e-10) (P * inverse diagonalMatrix(P^{3}))
 )
 
 end--
