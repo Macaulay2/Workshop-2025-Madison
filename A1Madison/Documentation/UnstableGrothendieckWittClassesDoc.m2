@@ -5,15 +5,15 @@ document{
 	
     PARA{"An ", TT"UnstableGrothendieckWittClass", " object can be built in one of several way using the ", TO2(makeGWuClass, "makeGWuClass"), " method."},
 
-	PARA{"We can construct an ", TT"UnstableGrothendieckWittClass", " object by applying ", TT"makeGWuClass", " to a pair ", TT"(M,a)", " where ", TT"M", " is either a symmetric matrix of full rank or a ", TO2(GrothendieckWittClass, "GrothendieckWittClass"), "."},
+	PARA{"We can construct an ", TT"UnstableGrothendieckWittClass", " over a field ", TEX///$k$///, " object by applying ", TT"makeGWuClass", " to a pair ", TT"(M,a)", " where ", TT"M", " is either a symmetric matrix of full rank or a ", TO2(GrothendieckWittClass, "GrothendieckWittClass"), " and ", TT"a", " is a scalar which agrees with the determinant of ", TT"M", " in the quotient ", TEX///$k^{\times}/(k^{\times})^{2}$///, "."},
 	EXAMPLE lines///
 	M = matrix(QQ, {{0,1},{1,0}})
-	alpha = makeGWuClass(M, -2)
+	alpha = makeGWuClass(M, 1)
 	class alpha
 	///,
     EXAMPLE lines///
     beta0 = makeGWClass matrix(QQ, {{0,1},{1,0}})
-    beta = makeGWuClass(beta0, -2)
+    beta = makeGWuClass(beta0, 1)
 	class beta
     ///,
 	PARA{"Alternatively, we can construct an ", TT"UnstableGrothendieckWittClass", " object by applying ", TT"makeGWuClass", " to", TT"M", " where ", TT"M", " is either a symmetric matrix of full rank or a ", TO2(GrothendieckWittClass, "GrothendieckWittClass"), ", and the scalar ", TT"a", "is assumed to be the determinant of (a matrix representative of)", TT"M", "."},
@@ -54,12 +54,12 @@ document {
 	PARA {"The unstable Grothendieck-Witt class represented by the data ", TT"(M,a)", " or ", TT"(alpha, a)", " where ", TT"a", " is assumed to be the determinant of (a matrix representative of)", TT"M", " or ", TT"alpha", " if not otherwise specified."},
 	EXAMPLE lines///
 	M = matrix(QQ, {{0,1},{1,0}})
-	alpha = makeGWuClass(M, -2)
+	alpha = makeGWuClass(M, 1)
 	class alpha
 	///,
     EXAMPLE lines///
     beta0 = makeGWClass matrix(QQ, {{0,1},{1,0}})
-    beta = makeGWuClass(beta0, -2)
+    beta = makeGWuClass(beta0, 1)
 	class beta
     ///,
 	EXAMPLE lines///
@@ -72,7 +72,19 @@ document {
     delta = makeGWuClass(delta0)
 	class delta
     ///,
-		
+	PARA {"Over the complex numbers, real numbers, rational numbers, or finite fields, the constructor ", TT"makeGWuClass", " verifies that the scalar ", TT"a", ", if provided, agrees with the determinant of ", TT"M", " as an element of ", TEX///$k^{\times}/(k^{\times})^{2}$///, ". Over arbitrary fields, the constructor will permit the construction of an unstable Grothendieck-Witt class with any nonzero scalar and warn the user to verify that the scalar agrees with the determinant of the matrix representative of the stable part up to squares."},
+	EXAMPLE lines///
+	N = matrix(QQ, {{0,1},{1,0}})
+	makeGWuClass(N, 1)
+	makeGWuClass(N, -1)
+	///,
+    EXAMPLE lines///
+    R = QQ[x]/(x^2 + 1);
+	K = toField R
+	P = matrix(K, {{1,0}, {0,x}})
+	makeGWuClass(P, x^3)
+    ///,
+
 	SeeAlso => {"GrothendieckWittClass", "getMatrix", "getBaseField", "getScalar"}
         }
 

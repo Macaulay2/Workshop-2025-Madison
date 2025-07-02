@@ -21,7 +21,7 @@ isWellDefinedGWu (Matrix, Number) := Boolean => (M, a) -> (
     if ring M === QQ and not ((ring a === QQ or ring a === ZZ) and (getSquarefreePart det M == getSquarefreePart a)) then return false;
 
     -- If matrix is defined over a finite field, allow scalar then the only scalars allowed are integral. The case of the scalar being over the same Galois field is treated in the next variant. 
-    if instance(ring M, GaloisField) and not (ring a === ZZ and isGFSquare(det M) == isGFSquare(sub(a, ring M))) then return false;
+    if instance(ring M, GaloisField) and not ((ring a === QQ or ring a === ZZ) and isGFSquare(det M) == isGFSquare(sub(a, ring M))) then return false;
 
     -- Then check that M is a well-defined element of GW(k)
     isWellDefinedGW M
