@@ -26,7 +26,6 @@ export {
     "coefficientMonomial",
     "ehrhartSeries",
     "ReturnDenominator",
-    "Backend",
     "latticePointsFromHData"
     }
 
@@ -219,19 +218,19 @@ ehrhartConstituents (Polyhedron,ZZ):=(P, i) -> (
 
 ehrhartQP = method(
     Options => {
-        Backend => "Normaliz" -- Normaliz or M2
+        Strategy => "Normaliz" -- Normaliz or M2
         }
     )
 
 ehrhartQP Polyhedron := opts -> P -> (
     if not P#cache#?"ehrhartQP" then (
-        QP := if opts.Backend == "Normaliz" then (
+        QP := if opts.Strategy == "Normaliz" then (
             ehrhartQPNormaliz P
             )
-        else if opts.Backend == "M2" then (
+        else if opts.Strategy == "M2" then (
             ehrhartQPM2 P
             )
-        else error("Unknown Backend");
+        else error("unknown Strategy option: " | toString opts.Strategy | "; allowable options are Normaliz (default), M2");
         QP#cache#"OriginalPolyhedron" = P;
         P#cache#"ehrhartQP" = QP;
         );
@@ -249,7 +248,7 @@ ehrhartQPM2 Polyhedron := P -> (
 
 ehrhartQPNormaliz = method()
 ehrhartQPNormaliz Polyhedron := P -> (
-    ES := value ehrhartSeries(P, Backend => "Normaliz");
+    ES := value ehrhartSeries(P, Strategy => "Normaliz");
     R := ring ES;
     t := R_0;
     n := dim P;
@@ -283,20 +282,21 @@ ehrhartQPNormaliz Polyhedron := P -> (
 hStarPolynomial = method(
     Options => {
         ReturnDenominator => false, --returns a pair of polys (h, d) s.t. Ehrhart series is h/d
-        Backend => "Normaliz" -- either Normaliz or M2
+        Strategy => "Normaliz" -- either Normaliz or M2
         })
 
 hStarPolynomial(Polyhedron, Ring) := opts -> (P, R) -> (
     if numgens R < 1 then error("ring must have at least one generator");
     if not P#cache#?"ehrhartSeriesNumerator" then (
-        if opts.Backend == "M2" then (
+        if opts.Strategy == "M2" then (
             hStarPolynomialM2(P, R);
             )
-        else if opts.Backend == "Normaliz" then (
+        else if opts.Strategy == "Normaliz" then (
             hStarPolynomialNormaliz(P, R);
             )
-        else error("unknown Backend option: " | toString opts.Backend);
+        else error("unknown Strategy option: " | toString opts.Strategy | "; allowable options are Normaliz (default), M2");
         );
+      
     if opts.ReturnDenominator then (
         P#cache#"ehrhartSeriesNumerator",
         P#cache#"ehrhartSeriesDenominator"
@@ -356,13 +356,13 @@ hStarPolynomialNormaliz(Polyhedron, Ring) := (P, R) -> (
 
 ehrhartSeries = method(
     Options => {
-        Backend => "Normaliz" -- Normaliz or M2
+        Strategy => "Normaliz" -- Normaliz or M2
         }
     )
 
 ehrhartSeries(Polyhedron, Ring) := opts -> (P, R) -> (
     if not P#cache#?"ehrhartSeries" then (
-        (h, d) := hStarPolynomial(P, R, ReturnDenominator => true, Backend => opts.Backend);
+        (h, d) := hStarPolynomial(P, R, ReturnDenominator => true, Strategy => opts.Strategy);
         --R' := ring h; -- if R' =!= R then we previously constructed R' so we should ignore R
         --F := frac R';
         --h = h_F;
@@ -475,7 +475,7 @@ doc ///
     hStarPolynomial
     (hStarPolynomial, Polyhedron)
     (hStarPolynomial, Polyhedron, Ring)
-    [hStarPolynomial, Backend]
+    [hStarPolynomial, Strategy]
     [hStarPolynomial, ReturnDenominator]
   Headline
     the $h^*$-polynomial of a polytope
@@ -489,7 +489,7 @@ doc ///
       A ring in at least one variable
     ReturnDenominator => Boolean
       whether to return the denominator of the Ehrhart series
-    Backend => String
+    Strategy => String
       either "Normaliz" or "M2", selects the method for computing
       the Ehrhart series
   Outputs
@@ -509,7 +509,7 @@ doc ///
       and denominator of the Ehrhart series. 
     Example
       hStarPolynomial(convexHull transpose matrix "0; 1/2",
-          Backend => "Normaliz", ReturnDenominator => true)
+          Strategy => "Normaliz", ReturnDenominator => true)
   SeeAlso
     RationalPolytopes
     ehrhartSeries
@@ -626,8 +626,8 @@ doc ///
 TEST /// -- (1)
 R = QQ[t]
 assert(1_R == hStarPolynomial(convexHull transpose matrix "0,0,0;1,0,0;0,1,0;0,0,1",R))
-assert(t^5+3*t^4+4*t^3+4*t^2+3*t+1 == hStarPolynomial(convexHull transpose matrix "1,0;-1,0;0,1/2;0,-1/2",R, Backend => "Normaliz"))
-assert(t+1 == hStarPolynomial(convexHull transpose matrix "0; 1/2",R, Backend => "M2"))
+assert(t^5+3*t^4+4*t^3+4*t^2+3*t+1 == hStarPolynomial(convexHull transpose matrix "1,0;-1,0;0,1/2;0,-1/2",R, Strategy => "Normaliz"))
+assert(t+1 == hStarPolynomial(convexHull transpose matrix "0; 1/2",R, Strategy => "M2"))
 assert(t^5+t^3+t^2+1 == hStarPolynomial(convexHull transpose matrix "1/4; 1/2",R))
 ///
 
@@ -757,8 +757,8 @@ QP1 === QP2
 hStarPolynomial P
 ehrhartSeries P
 
-hStarPolynomial(P, Backend => "M2")
-ehrhartSeries(P, Backend => "M2")
+hStarPolynomial(P, Strategy => "M2")
+ehrhartSeries(P, Strategy => "M2")
 
 f = ehrhartQP(P)
 displayQP(f)
