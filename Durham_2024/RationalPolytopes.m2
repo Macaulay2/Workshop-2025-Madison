@@ -684,6 +684,22 @@ assert(t^5+t^3+t^2+1 == hStarPolynomial(convexHull transpose matrix "1/4; 1/2",R
 
 end--
 
+----
+
+restart
+needsPackage "RationalPolytopes"
+A = transpose matrix "1,0;-1,0;0,1/2;0,-1/2";
+pN = hStarPolynomial(convexHull A, Strategy => "Normaliz")
+pM2 = hStarPolynomial(convexHull A, Strategy => "M2")
+
+R = ring pN
+
+periodA = period ehrhartQP convexHull A
+k = denominator convexHull A // periodA
+pN * (sum for j from 0 to k-1 list t^(j))^(dim convexHull A + 1)
+
+----
+
 ----------------------------------
 -- Plans for future development --
 ----------------------------------
