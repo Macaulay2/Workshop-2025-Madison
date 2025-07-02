@@ -614,6 +614,9 @@ M3 = matrix(GF(7), {{1,0,0},{0,2,0},{0,0,-3}});
 assert(class(makeGWuClass M1) === UnstableGrothendieckWittClass);
 assert(class(makeGWuClass M2) === UnstableGrothendieckWittClass);
 assert(class(makeGWuClass M3) === UnstableGrothendieckWittClass);
+assert(try(makeGWuClass(M1,-1)) then false else true);
+assert(try(makeGWuClass(M2,sub(3,GF 17))) then false else true);
+assert(try(makeGWuClass(M3,sub(-6,GF 5))) then false else true);
 ///
 
 
