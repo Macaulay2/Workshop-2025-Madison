@@ -125,4 +125,8 @@ boxProduct (MackeyFunctorHomomorphism, CpMackeyFunctor) := MackeyFunctorHomomorp
 
 -- Alternative notations for box product
 CpMackeyFunctor ** CpMackeyFunctor := boxProduct
+CpMackeyFunctor ** MackeyFunctorHomomorphism := boxProduct
+MackeyFunctorHomomorphism ** CpMackeyFunctor := boxProduct
 CpMackeyFunctor ⊠ CpMackeyFunctor := boxProduct
+CpMackeyFunctor ⊠ MackeyFunctorHomomorphism := boxProduct
+MackeyFunctorHomomorphism ⊠ CpMackeyFunctor := boxProduct

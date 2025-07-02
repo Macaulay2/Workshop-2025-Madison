@@ -20,6 +20,7 @@ Hom(CpMackeyFunctor, CpMackeyFunctor) := Module => opts -> (M,N) -> (
             homomorphism (inducedMap(homFixedFixed, result, lhs^[1]) * f)
         )
     );
+    result.cache.formation = FunctionApplication { Hom, (M, N) };
     result
 )
 
