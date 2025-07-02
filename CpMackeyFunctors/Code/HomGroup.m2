@@ -26,6 +26,7 @@ Hom(CpMackeyFunctor, CpMackeyFunctor) := Module => opts -> (M,N) -> (
 )
 
 Hom(CpMackeyFunctor, MackeyFunctorHomomorphism) := Matrix => opts -> (M,f) -> (
+    if not M.PrimeOrder === (source f).PrimeOrder then error "-- Mackey functors must have the same prime";
     T := getFixedModule(M);
     B := getUnderlyingModule(M);
     fT := f.FixedMap;
@@ -36,6 +37,7 @@ Hom(CpMackeyFunctor, MackeyFunctorHomomorphism) := Matrix => opts -> (M,f) -> (
 )
 
 Hom(MackeyFunctorHomomorphism, CpMackeyFunctor) := Matrix => opts -> (f,N) -> (
+    if not (source f).PrimeOrder === N.PrimeOrder then error "-- Mackey functors must have the same prime";
     T := getFixedModule(N);
     B := getUnderlyingModule(N);
     fT := f.FixedMap;
