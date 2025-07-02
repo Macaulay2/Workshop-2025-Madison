@@ -207,6 +207,7 @@ TEST ///
 R = QQ[x,y]
 B = matrix{{x^2, y, 1}}
 J = ideal(x^3 + y^2 - 1, x - y - 1)
+actVar = x
 getH0(x, B, J)
 (sh, mp) = getTemplate(x, B, J)
 M = getTemplateMatrix(x, B, J)
