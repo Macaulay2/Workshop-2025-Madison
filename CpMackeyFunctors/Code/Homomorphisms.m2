@@ -212,9 +212,9 @@ MackeyFunctorHomomorphism == MackeyFunctorHomomorphism := Boolean => (f,g) -> (
 prune MackeyFunctorHomomorphism := MackeyFunctorHomomorphism => opts -> f -> (
     src := prune source f;
     tgt := prune target f;
-    srcPrune := src.pruningMap;
-    tgtPrune := tgt.pruningMap;
-    tgtPrune^-1 * f * srcPrune
+    srcPrune := src.cache.pruningMap;
+    tgtPrune := tgt.cache.pruningMap;
+    (inverse tgtPrune) * f * srcPrune
     )
 
 -- block homomorphisms
