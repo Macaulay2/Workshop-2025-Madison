@@ -45,17 +45,32 @@ injectiveResolution Module := Complex => opts -> M -> (
     P := Hom(freeResolution(Hom(M, E), opts), E);
     P.cache.Module = M;
     P)
+    
 injectiveResolution Complex := Complex => opts -> C -> (
     E:=ring C;
     if not isSkewCommutative E then error "expected underlying ring to skew commutative";
-    P:= Hom(freeResolution(Hom(C,E), opts), E);
+    tempHom := Hom(C,E);
+    fC := resolutionMap(tempHom,opts);
+    P:= Hom(freeResolution(tempHom, opts), E);
+    hfC := Hom(fC,E);
+    P.cache.resolutionMap = hfC;
     P
     )
 
 coaugmentationMap = method()
 coaugmentationMap Complex := ComplexMap => C -> C.cache.coaugmentationMap ??= (
-    M := try C.cache.Module else error "expected an injective resolution";
-    map(C, complex M, i -> if i === 0 then map(C_0, M, transpose syz transpose presentation M)))
+    if C.cache.?Module then (
+        M := C.cache.Module;
+        map(C, complex M, i -> if i === 0 then map(C_0, M, transpose syz transpose presentation M))
+    )
+    else if C.cache.?resolutionMap then (
+        hfC := C.cache.resolutionMap;
+        D := source hfC;
+        tempMap := map(D, C, i -> map(D_i, C_i, transpose syz transpose presentation C_i));
+        hfC*tempMap 
+    )
+    else error "Expected an injective resolution"
+)
 
 --------------------------------------------------
 --- Priddy complex
@@ -320,18 +335,22 @@ TEST ///
     assert isQuasiIsomorphism f
 
     I=ideal (e_0+e_1,e_0*e_2)
-    C=Hom(freeResolution(I,LengthLimit=>4),comodule I)
+    C=Hom(freeResolution(I,LengthLimit=>5),comodule I)
     prune HH C
     P=injectiveResolution(C,LengthLimit=>5)
-    prune HH P;
-    prune HH C == prune HH P --needs coaugmentationMap of Cxs
-
-
+    assert isWellDefined P
+    assert isFree P
+    f = coaugmentationMap P
+    assert isWellDefined f
+    assert isQuasiIsomorphism f
+    assert isComplexMorphism f
+    
     Mat=random(E^3,E^{-1,-2})
     prune ker Mat
     CMat=complex Mat
     P=injectiveResolution(CMat,LengthLimit=>5)
-    
+    f=coaugmentationMap P
+
 ///
 
 TEST ///
