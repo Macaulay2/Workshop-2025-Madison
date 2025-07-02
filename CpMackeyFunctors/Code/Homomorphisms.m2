@@ -136,12 +136,12 @@ makeUniversalMapUnderlying(CpMackeyFunctor,Matrix) := MackeyFunctorHomomorphism 
 )
 
 -- Given a Mackey functor M,
--- a matrix of n elements X in fixed, and
--- a matrix of m elements Y in underlying,
--- return the universal map A^n ++ B^m -> M
+-- a matrix of n elements X in underlying, and
+-- a matrix of m elements Y in fixed,
+-- return the universal map B^n ++ A^m -> M
 makeUniversalMap = method()
 makeUniversalMap(CpMackeyFunctor,Matrix,Matrix) := MackeyFunctorHomomorphism => (M,X,Y) -> (
-    return makeUniversalMapFixed(M,X) | makeUniversalMapUnderlying(M,Y)
+    return makeUniversalMapUnderlying(M,X) | makeUniversalMapFixed(M,Y)
 )
 
 -- Arithmetic operations
