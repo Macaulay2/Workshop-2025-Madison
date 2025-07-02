@@ -26,13 +26,21 @@ InternalHom (CpMackeyFunctor, MackeyFunctorHomomorphism) := MackeyFunctorHomomor
     p := M.PrimeOrder;
     A := makeBurnsideMackeyFunctor p;
     B := makeUnderlyingFreeMackeyFunctor p;
-    src := Hom(M, source f);
-    tgt := Hom(M, target f);
-    underlyingMap := Hom(B ** M, f.UnderlyingMap);
-    fixedMap := Hom(A ** M, f.FixedMap);
+    src := InternalHom(M, source f);
+    tgt := InternalHom(M, target f);
+    underlyingMap := Hom(B ** M, f);
+    fixedMap := Hom(A ** M, f);
     map(tgt, src, underlyingMap, fixedMap)
 )
 
 InternalHom (MackeyFunctorHomomorphism, CpMackeyFunctor) := MackeyFunctorHomomorphism => (f,N) -> (
-    -- TODO
+    if not N.PrimeOrder === (source f).PrimeOrder then error "InternalHom: Mackey functors are over different primes";
+    p := N.PrimeOrder;
+    A := makeBurnsideMackeyFunctor p;
+    B := makeUnderlyingFreeMackeyFunctor p;
+    src := InternalHom(target f, N);
+    tgt := InternalHom(source f, N);
+    underlyingMap := Hom(B ** f, N);
+    fixedMap := Hom(A ** f, N);
+    map(tgt, src, underlyingMap, fixedMap)
 )
