@@ -32,7 +32,7 @@ makeRandomCpMackeyFunctor(ZZ, List):= CpMackeyFunctor => opts -> (p, L) -> (
     RandomUnderlyingElements := getRandomElementsInModule(XUnderlying, k);
     RandomFixedElements := getRandomElementsInModule(XFixed, l);
 
-    return prune cokernel makeUniversalMap(X, RandomFixedElements, RandomUnderlyingElements)
+    return prune cokernel makeUniversalMap(X, RandomUnderlyingElements, RandomFixedElements)
 )
 
 makeRandomCpMackeyFunctor(ZZ):= CpMackeyFunctor => opts -> p-> (
