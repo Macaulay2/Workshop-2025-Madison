@@ -16,3 +16,21 @@ doc ///
             Generates a @TO2((CpMackeyFunctor),"Cp-Mackey Functor")@ $M$ of prime $p$ with at most GenBound generators
 ///
 
+
+
+doc ///
+    Key
+        makeRandomMackeyFunctorsHomomorphism
+        (makeRandomMackeyFunctorsHomomorphism, CpMackeyFunctor, CpMackeyFunctor)
+    Headline
+        generate a random Cp-Macky functor homomorphism
+    Usage
+        makeRandomMackeyFunctorsHomomorphism(M,N)
+    Inputs
+        M : CpMackeyFunctor
+        N : CpMackeyFunctor
+    Description
+        Text
+            Generates a @TO2((MackeyFunctorHomomorphism), "Mackey functor homomorphism")@ $f$ between two compatable @TO2((CpMackeyFunctor),"Cp-Mackey Functors")@ $M$ and $N$
+///
+
