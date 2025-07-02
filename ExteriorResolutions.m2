@@ -132,7 +132,7 @@ degreeSupport = M -> (
 koszulRR = method(Options => { Concentration => null })
 -- RR(M)^i = E^*(i) \otimes_k M_i
 -- E^* = Hom_k(E, k) = E(n+1)
-koszulRR Module := Complex => opts -> M -> (
+koszulRR Module := Complex => opts -> M -> M.cache#(koszulRR, opts) ??= (
     S := ring M;
     n := numgens S - 1;
     E := koszulDual S;
@@ -154,7 +154,12 @@ koszulRR Module := Complex => opts -> M -> (
 	    map(modules#(i+1), modules#i, b)
 	    )))
 -- RR(y**s) = \sum_{l=0}^n y*e_l ** s*x_l
-koszulRR Matrix := ComplexMap => opts -> f -> ()
+koszulRR Matrix := ComplexMap => opts -> f -> f.cache#(koszulRR, opts) ??= (
+    src := koszulRR(source f, opts);
+    tar := koszulRR(target f, opts);
+    E := koszulDual ring f;
+    map(tar, src, i -> map(tar_i, src_i, E**part(-i, f)))
+    )
 
 -- RR(C)^i = \bigoplus_{j\in\ZZ} Hom_k(E(-j), C^{i-j}_j)
 --         = \bigoplus_{j\in\ZZ} (E(-j))^* \otimes_k C^{i-j}_j
@@ -167,9 +172,34 @@ koszulRR ComplexMap := ComplexMap => opts -> psi -> ()
 -- LL: Com(E) -> Com(S) is the left-adjoint functor
 koszulLL = method(Options => options koszulRR)
 -- LL(N)^i = S(i) \otimes_k N_i
-koszulLL Module := Complex    => opts -> N -> ()
+koszulLL Module := Complex  => opts -> N -> N.cache#(koszulLL, opts) ??= (
+    E := ring N;
+    n := numgens E - 1;
+    S := koszulDual E;
+    ev := map(S,E,vars S); -- not a map of algebras, just substiuting variables
+    (lo, hi) := try opts.Concentration else degreeSupport N;
+    modules := hashTable apply(lo..hi, i -> i => S^{i} ** (S ** part(i, N)));
+    if lo == hi
+    then complex(modules#lo, Base => -lo)
+    else complex hashTable apply(lo..hi-1,
+	i -> -i => (
+	    src := basis(i, N);
+	    tar := basis(i+1, N);
+	    
+	    -- we construct the differential by factoring it through (vars S)**src
+	    g := ((vars E)**src)//tar; -- g is a map from source (vars S)**src to source tar making the traingle involving (vars S)**src and tar commute
+	    b := (ev g)*((transpose vars S)**(ev source src));
+	    -- the above 2 lines  were pasted and modified from the BGG package
+	    
+	    map(modules#(i+1), modules#i, (-1)^i*b)
+	    )))
 -- LL(s**y) = (-1)^i \sum_{l=0}^n x_l*s \otimes y*e_l
-koszulLL Matrix := ComplexMap => opts -> g -> ()
+koszulLL Matrix := ComplexMap => opts -> f -> f.cache#(koszulLL, opts) ??= (
+    src := koszulLL(source f, opts);
+    tar := koszulLL(target f, opts);
+    S := koszulDual ring f;
+    map(tar, src, i -> map(tar_i, src_i, S**part(-i, f)))
+)
 
 -- LL(D)^i = \bigoplus_{j\in\ZZ} S(j) \otimes_k D^{i-j}_j
 koszulLL Complex    := Complex    => opts -> D   -> ()
@@ -387,6 +417,43 @@ TEST ///
     P = priddyComplex(vars E, S, LengthLimit=>3)
     
     assert(C == P)
+
+    F = koszulLL(HH_0 C, Concentration=>(-5,5))
+    assert( F_0 == M)
+///
+
+TEST ///
+    (S,E) = koszulPair(2, ZZ/101)
+    M = E^{3}
+    
+    C = koszulLL(M, Concentration=>(-3,0))
+    D = koszulComplex vars S
+
+    assert(betti C == betti D)
+
+    P = priddyComplex(vars S, E, LengthLimit=>3)
+
+    F = koszulRR(HH_0 C, Concentration=>(-5,5))
+    assert( F_0 == M)
+///
+TEST ///
+    (S,E)= koszulPair(2, ZZ/101)
+
+    M = S^1
+
+    f = koszulRR(id_M, Concentration=>(-5,5))
+    g = koszulRR(map(S^{1}, S^1, S_0), Concentration=>(-5,5))
+    
+    assert( f == id_(koszulRR(M, Concentration=>(-5,5))))
+///
+TEST ///
+    (S,E)= koszulPair(2, ZZ/101)
+
+    M = E^1
+
+    f = koszulLL(id_M, Concentration=>(-5,5))
+    
+    assert( f == id_(koszulLL(M, Concentration=>(-5,5))))
 ///
 
 end--
@@ -399,12 +466,18 @@ restart
 needsPackage "ExteriorResolutions"
 
 (S,E)= koszulPair(2, ZZ/101)
-    M = S^1
-    
-    C = koszulRR(M, Concentration=>(0,3))
-    P = priddyComplex(vars E, S, LengthLimit=>3)
-    
-    assert(C == P)
+
+M = E^1
+
+f = koszulLL(id_M, Concentration=>(-5,5))
+
+assert( f == id_(koszulLL(M, Concentration=>(-5,5))))
+
+C = koszulLL(M, Concentration=>(0,5))
+
+P = priddyComplex(vars E, S, LengthLimit=>3)
+
+assert(C == P)
 
 M = coker matrix{{x_0}}
 E = ZZ/101[e_0,e_1,e_2, SkewCommutative=>true]
