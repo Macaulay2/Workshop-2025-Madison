@@ -240,6 +240,8 @@ load "./A1Madison/Documentation/AnisotropicDimensionDoc.m2"
 
 load "./A1Madison/Documentation/DecompositionDoc.m2"
 
+load "./A1Madison/Documentation/UnstableGrothendieckWittClassesDoc.m2"
+
 
 ----------------------------
 ----------------------------

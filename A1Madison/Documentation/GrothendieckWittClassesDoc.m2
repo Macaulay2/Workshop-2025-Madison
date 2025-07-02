@@ -4,7 +4,7 @@ document{
     PARA {"A ", TT "GrothendieckWittClass" ," object is a type of ", TO2(HashTable, "HashTable"), " encoding the isomorphism class of a non-degenerate symmetric bilinear form ", TEX///$V \times V \to k$///, " over a field ", TEX///$k$///, "."},
     PARA{"Given any basis ", TEX///$e_1,\ldots,e_n$///, " for ", TEX///$V$///, " as a ", TEX///$k$///, "-vector space, we can encode the symmetric bilinear form ", TEX///$\beta$///, " by how it acts on basis elements. That is, we can produce a matrix ", TEX///$\left(\beta(e_i,e_j)\right)_{i,j}$///, ". This is called a ", EM "Gram matrix", " for the symmetric bilinear form. A change of basis produces a congruent Gram matrix, so thus a matrix represents a symmetric bilinear form uniquely up to matrix congruence."},
 	
-    PARA{"A GrothendieckWittClass object can be built from a symmetric ", TO2(matrix, "matrix"), " over a field using the ", TO2(makeGWClass,"makeGWClass"), " method."},
+    PARA{"A ", TT"GrothendieckWittClass", " object can be built from a symmetric ", TO2(matrix, "matrix"), " over a field using the ", TO2(makeGWClass,"makeGWClass"), " method."},
     EXAMPLE lines///
     beta = makeGWClass matrix(QQ, {{0,1},{1,0}})
     class beta
@@ -66,43 +66,6 @@ document {
 		
 	SeeAlso => {"GrothendieckWittClass", "getMatrix", "getBaseField"}
         }
-
-document {
-    Key => {getMatrix, (getMatrix, GrothendieckWittClass)},
-	Headline => "the underlying matrix of a Grothendieck-Witt class",
-	Usage => "getMatrix beta",
-	Inputs => {
-	    GrothendieckWittClass => "beta" => {"the isomorphism class of a non-degenerate symmetric bilinear form over a field of characteristic not 2"}
-	    },
-	Outputs => {
-	    Ring => {"the underlying matrix of the Grothendieck-Witt class ", TT "beta"}
-	    },
-	PARA {"Given the isomorphism class of a symmetric bilinear form, ", TT "beta", ", this command outputs the underlying matrix of the form."},
-	EXAMPLE lines ///
-		 beta = makeGWClass matrix(QQ, {{0,2},{2,0}});
-		 getMatrix beta
-	 	 ///,
-    SeeAlso => {"GrothendieckWittClass", "makeGWClass"}
-        }
-
-document {
-    Key => {getBaseField, (getBaseField, GrothendieckWittClass)},
-	Headline => "the base field of a Grothendieck-Witt class",
-	Usage => "getBaseField beta",
-	Inputs => {
-	    GrothendieckWittClass => "beta" => {"the isomorphism class of a non-degenerate symmetric bilinear form over a field of characteristic not 2"}
-	    },
-	Outputs => {
-	    Ring => {"the base field of the Grothendieck-Witt class ", TT "beta"}
-	    },
-	PARA {"Given the isomorphism class of a symmetric bilinear form, ", TT "beta", ", this command outputs the base field of the form."},
-	EXAMPLE lines ///
-		 beta = makeGWClass matrix(QQ, {{0,2},{2,0}});
-		 getBaseField beta
-	 	 ///,
-    SeeAlso => {"GrothendieckWittClass"}
-        }
-
 
 document {
     Key => {addGW, (addGW, GrothendieckWittClass, GrothendieckWittClass)},
