@@ -1,4 +1,4 @@
-
+-- Small helper method for returning a list of n random elements in a module
 getRandomElementsInModule = method()
 getRandomElementsInModule(Module, ZZ) := Matrix => (M, n) -> (
     matrix {for i to n-1 list matrix random M}
@@ -6,6 +6,11 @@ getRandomElementsInModule(Module, ZZ) := Matrix => (M, n) -> (
 
 protect GenBound;
 
+-- Make a random Cp-Mackey functor! Input is a prime p, and a list {n,m,k,l}, where
+--    n = max number of generators on the free part
+--    m = max number of generators on the underlying part
+--    k = max number of relations on the free part
+--    l = max number of relations on the underlying part
 makeRandomCpMackeyFunctor = method(Options=>{GenBound=>5})
 makeRandomCpMackeyFunctor(ZZ, List):= CpMackeyFunctor => opts -> (p, L) -> (
 
@@ -21,7 +26,8 @@ makeRandomCpMackeyFunctor(ZZ, List):= CpMackeyFunctor => opts -> (p, L) -> (
 
     A := makeBurnsideMackeyFunctor p;
     B := makeUnderlyingFreeMackeyFunctor p;
-
+    
+    -- Build the Macky functor A^n + B^m
     X := directSum ((for i to n-1 list A) | (for j to m-1 list B));
 
     XUnderlying := getUnderlyingModule X;
@@ -35,6 +41,7 @@ makeRandomCpMackeyFunctor(ZZ, List):= CpMackeyFunctor => opts -> (p, L) -> (
     return prune cokernel makeUniversalMap(X, RandomUnderlyingElements, RandomFixedElements)
 )
 
+-- Make a random Cp Mackey functor, given an input prime
 makeRandomCpMackeyFunctor(ZZ):= CpMackeyFunctor => opts -> p-> (
     n := random(1,opts.GenBound);
     m := random(1,opts.GenBound);
