@@ -91,7 +91,6 @@ export{
     "getFixedMap",
     "isTrivialMackeyFunctor",
     "concatBlocks",
-    "blockMatrixMackeyFunctorHomomorphism"
 }
 
 -- Methods for working in the abelian category Mack_p.

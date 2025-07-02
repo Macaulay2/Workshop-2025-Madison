@@ -112,7 +112,7 @@ makeUniversalMapFixed(CpMackeyFunctor,Matrix) := MackeyFunctorHomomorphism => (M
         F := X | (M.Tr * M.Res * X);
         map(M, A, U, F)
 	)};
-    blockMatrixMackeyFunctorHomomorphism L
+    matrix L
 )
 
 
@@ -132,7 +132,7 @@ makeUniversalMapUnderlying(CpMackeyFunctor,Matrix) := MackeyFunctorHomomorphism 
         F := M.Tr * X;
         map(M, B, U, F)
 	)};
-    blockMatrixMackeyFunctorHomomorphism L
+    matrix L
 )
 
 -- Given a Mackey functor M,
@@ -252,5 +252,3 @@ MackeyFunctorHomomorphism || MackeyFunctorHomomorphism := MackeyFunctorHomomorph
 
 MackeyFunctorHomomorphism.concatBlocks = maps -> MackeyFunctorHomomorphism.concatRows apply(maps, MackeyFunctorHomomorphism.concatCols)
 MackeyFunctorHomomorphism.matrix = opts -> MackeyFunctorHomomorphism.concatBlocks
-
-blockMatrixMackeyFunctorHomomorphism = MackeyFunctorHomomorphism.concatBlocks
