@@ -81,53 +81,46 @@ realLinearizationMap(ZZ) := MackeyFunctorHomomorphism => p -> (
     map(RO, makeBurnsideMackeyFunctor p, matrix {{1}}, matrix {{1,1}} || matrix (for i to (rank (getFixedModule RO) - 2) list {0,1}))
 )
 
--- Given a Mackey functor M and vector x in fixed module, produce map A -> M
 makeUniversalMapFixed = method()
-makeUniversalMapFixed(CpMackeyFunctor,Vector) := MackeyFunctorHomomorphism => (M,x) -> (
-    X := matrix x;
-    if not isSubset(image X, M.Fixed) then (
-        error "element is not in fixed module";
-    )
-    else (
+-- Given a Mackey functor M and vector x in fixed module, produce map A -> M
+makeUniversalMapFixed(CpMackeyFunctor,Vector) := MackeyFunctorHomomorphism => (M,x) -> makeUniversalMapFixed(M,matrix x)
+-- Given a Mackey functor M and a matrix of n vectors in fixed module, produce map A^n -> M
+makeUniversalMapFixed(CpMackeyFunctor,Matrix) := MackeyFunctorHomomorphism => (M,x) -> (
+    n := numColumns x;
+    L := {for i to n-1 list (
+        X := inducedMap(M.Fixed, , matrix x_i);
+        -- TODO: should we error check element containment which is seemingly not
+        -- implemented?
         p := M.PrimeOrder;
         A := makeFixedFreeMackeyFunctor(p);
         U := M.Res * X;
         F := X | (M.Tr * M.Res * X);
-        return map(M, A, U, F);
-    )
+        map(M, A, U, F)
+	)};
+    blockMatrixMackeyFunctorHomomorphism L
 )
 
--- Given a Mackey functor M and n columns in fixed, produce map A^n -> M 
-makeUniversalMapFixed(CpMackeyFunctor,Matrix) := MackeyFunctorHomomorphism => (M,X) -> (
-    n := numColumns X;
-    return blockMatrixMackeyFunctorHomomorphism{for i to n-1 list makeUniversalMapFixed(M,X_i)};
-)
 
--- Given a Mackey functor M and vector x in underlying module, produce map B -> M
 makeUniversalMapUnderlying = method()
-makeUniversalMapUnderlying(CpMackeyFunctor,Vector) := MackeyFunctorHomomorphism => (M,x) -> (
-    X := matrix x;
-
-    if not isSubset(image X, M.Underlying) then (
-        error "element is not in underlying module";
-    )
-    else (
+-- Given a Mackey functor M and vector x in underlying module, produce map B -> M
+makeUniversalMapUnderlying(CpMackeyFunctor,Vector) := MackeyFunctorHomomorphism => (M,x) -> makeUniversalMapUnderlying(M,matrix x)
+-- Given a Mackey functor M and a matrix of n vectors in underlying module, produce map B^n -> M
+makeUniversalMapUnderlying(CpMackeyFunctor,Matrix) := MackeyFunctorHomomorphism => (M,x) -> (
+    n := numColumns x;
+    L := {for i to n-1 list (
+        X := inducedMap(M.Underlying, , matrix x_i);
+        -- TODO: should we error check element containment which is seemingly not
+        -- implemented?
         p := M.PrimeOrder;
         B := makeUnderlyingFreeMackeyFunctor(p);
         U := matrix {for i to p-1 list ((M.Conj)^i) * X};
         F := M.Tr * X;
-        return map(M, B, U, F);
-    )
+        map(M, B, U, F)
+	)};
+    blockMatrixMackeyFunctorHomomorphism L
 )
 
--- Given a Mackey functor M and n columns in underlying, produce map B^n -> M 
-makeUniversalMapUnderlying(CpMackeyFunctor,Matrix) := MackeyFunctorHomomorphism => (M,X) -> (
-    n := numColumns X;
-    return blockMatrixMackeyFunctorHomomorphism{for i to n-1 list makeUniversalMapUnderlying(M,X_i)};
-)
-
--- Given:
--- a Mackey functor M,
+-- Given a Mackey functor M,
 -- a matrix of n elements X in fixed, and
 -- a matrix of m elements Y in underlying,
 -- return the universal map A^n ++ B^m -> M
@@ -215,6 +208,14 @@ MackeyFunctorHomomorphism == MackeyFunctorHomomorphism := Boolean => (f,g) -> (
     true
     )
 
+-- Pruning morphisms
+prune MackeyFunctorHomomorphism := MackeyFunctorHomomorphism => opts -> f -> (
+    src := prune source f;
+    tgt := prune target f;
+    srcPrune := src.pruningMap;
+    tgtPrune := tgt.pruningMap;
+    tgtPrune^-1 * f * srcPrune
+    )
 
 -- block homomorphisms
 MackeyFunctorHomomorphism | MackeyFunctorHomomorphism := MackeyFunctorHomomorphism => MackeyFunctorHomomorphism.concatCols = maps -> (
@@ -237,4 +238,3 @@ MackeyFunctorHomomorphism.concatBlocks = maps -> MackeyFunctorHomomorphism.conca
 MackeyFunctorHomomorphism.matrix = opts -> MackeyFunctorHomomorphism.concatBlocks
 
 blockMatrixMackeyFunctorHomomorphism = MackeyFunctorHomomorphism.concatBlocks
-
