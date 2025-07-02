@@ -1,128 +1,174 @@
+--  CREDITS  --
+--  Advisor: Francesca Gandini
+--  Theory: Lucas Rizzolo (2021)
+--  Initial Code: Lucas Rizzolo (2021)
+--      * Last Editied - Gordon Novak 07/02/25
+--  Code-Cleanup: Gordon Novak
+--      * Last Editied - Gordon Novak 07/02/25
+--  Documentation: Gordon Novak & Sasha Arasha
+--      * Last Documented - 07/02/25
+
+-- //////////////// --
+-- //////////////// --
+-- CODE STARTS HERE
+-- //////////////// --
+-- //////////////// --
+
+
 needsPackage "InvariantRing"
+-- METHOD_NAME: genAlg
+-- USAGE: Finds the minimal generating seed invariants for an invariant ring
+--      INPUT: 
+--          * R     : polynomialRing    => Ring being acted upon
+--          * W     : matrix            => Weight matrix representing the group action
+--          * ZList : List              => List of the dimensions of the weight matrix
+--      OUTPUT:
+--          * N     : List              => List of minimal generating seeds
+genAlg = method();
+genAlg (Ring,Matrix,List) := (R,W,ZList) ->(
+    
+    -- First, we get the weight matrix via the diagonalAction function.
+    T = diagonalAction(W,ZList,R);
 
---Def generating algorithm as a method that we can use
---@param Ring the ring in which we are working
---@param Matrix the weight matrix
---@param List the list of dimensions
-genAlg = method()
-genAlg (Ring,Matrix,List) := (r,mat,lis) ->(
-    R = r;
-    numVars = numgens R;
-    type = coefficientRing R;
+    -- To view the output of each step of the process, remove the "///" and "///;" from around the print statements
+    ///
+    print("\n------\nDiagonal Action:");
+    print(T);
     
-    R = consoleRing(toString(type), toString numVars);
+    print("\n------\nCyclic Factors:");
+    print(cyclicFactors T);
+    ///;
     
-    W = matrix mat;
-    d = lis;
-    <<"\n Weight Matrix:\n"<<W;
-    T = diagonalAction(W,d,R);
-    <<"\nDiagonalAction:\n"<<T;
-    <<"Cyclic factors:\n"<<cyclicFactors T << endl;
     
-    -- I compute the whole minimal generating set here just so that I can take one of the elements from the set
-    -- Then, I can use that one element to regenerate the rest of the set in the array M.
+    -- First we find the invariants under our diagonalAction (a list)
     S1 = invariants T;
+    -- Then we sort the list via our lex ordering.
     S1 = sort S1;
+    -- Uncomment the following line to print the minimal generating set of monomials computed by the InvariantRing package:
+    ///
+    print("\n------\nMinimal generating set (Invariant Ring):\n");
+    print(S1);
+    ///;
 
-    <<"\nMinimal generating set of monomials computed by InvariantRing: ";
-    <<S1;
+    -- First make a shortcut variable for our generators under R
+    gR = gens R;
+    -- Then, we apply the variables of our polynomialRing to a subring.
+    ///
+    modVars = apply(gR, m -> sub(m, ring T));
+    print ("\n------\nModvars:\n" | toString(modVars));
+    ///;
 
-    -- there's two x_1's in this array to make it so that array indexing (which starts at 0) lines up with the variable indexing (which starts at 1)
-    modVars = apply({x_1, x_1, x_2, x_3}, m -> sub(m, ring T) );
-    <<endl<<modVars<<endl;
-    -- this bit of code finds the first element of S1 that isn't a pure power, which will be a generator of the set
-    -- Quick edit: a higher degree term of S1 seems to work better in the Z9 x Z9 example, so maybe start at the end of the list?
+    -- Now, we need to find the first element of S1 that isn't a pure power:
+    -- First we make a guiding list of all the possible combinations of modded variables.
+    comb = subsets(toList(0..(#modVars - 1)), 2);
+    m := 0;
+    -- Then, we check each possible two-element combination:
+    -- Eg.. {0,1}, {0,2}, {1,2}, ect.
+    for i in comb do (
+        -- Afterwords, we run this combination for each s in our invariants
+        for s in S1 do (
+            -- If we get a nonzero combination, we've found an element of S1 that isn't a pure power, and we can end the loop.
+            if (degree(modVars#(i_0), s) * degree(modVars#(i_1), s) != 0) then (
+                m = s;
+                break;
+            )
+        );
+        -- This ends the loop.
+        if (m != 0) then break;
+    );
+    ///
+    print ("\n------\nGenerator:");
+    print (m);
+    ///
 
-    --i = 0;
-    --while ((degree(modVars#1, S1#i) * degree(modVars#2, S1#i) == 0) and (degree(modVars#1, S1#i) * degree(modVars#3, S1#i) == 0) and (degree(modVars#2, S1#i) * degree(modVars#3, S1#i) == 0)) do ( i = i+1;);
-    i = #S1-1;
-    while ((degree(modVars#1, S1#i) * degree(modVars#2, S1#i) == 0) and (degree(modVars#1, S1#i) * degree(modVars#3, S1#i) == 0) and (degree(modVars#2, S1#i) * degree(modVars#3, S1#i) == 0)) do ( i = i-1;);
-    m0 = S1#i;
-
-    print "\nGenerator: ";
-    print m0;
-
-    -- m' will be our "accumulator" that we constantly multiply by m0
-    m' := m0;
+    -- m' will be our "accumulator" that we constantly multiply by m
+    m' := m;
 
     -- sets the degree that each exponent will be modded by.
     -- this seems to work for Z/p x Z/p but I'm not sure about other groups.
-    modDegree := lcm(d#0,d#1);
+    modDegree := lcm(ZList#0,ZList#1);
+    print("\n------\nmodDegree:");
+    print(modDegree);
 
     -- M will be all of the elements in our group and N will include only minimal elements of M
+    ///
     M := {};
     N := {};
+    ///;
 
     -- add the pure power elements to M since they aren't generated by the three-variable elements.
     -- This step feels kind of clumsy and artificial. I'd like to find some way to make it so we don't have to manually add these elements.
-    i = 1;
-    while (i <= numVars) do (
+    i = 0;
+
+    -- This for loop goes through the variables and appends the 
+    for i from 0 to (numgens R - 1) do (
         M = M | {(modVars#i)^(modDegree)};
-        i = i + 1;
     );
+    ///
+    print("\n------\nM (List):");
+    print(M);
+    ///;
 
     -- accumulate the powers of m0
     i = 0;
-    while (i < modDegree) do (
-        M = M | {m'};
-        m' = m'* m0;
-        j = 1;
 
-        -- mod by the pure powers of each variable
-        while (j <= numVars) do (
+    for i to (modDegree -1) do (
+        -- First we add m' to our M
+        M = M | {m'};
+        -- Then, we multiply out a power. 
+        m' = m'* m;
+
+        for j to (numgens R - 1) do (
             while (degree(modVars#j, m') > modDegree) do (
                 m' = lift(m' / ((modVars#j)^(modDegree)), R);
             );
-            j = j + 1;
         );
-        i = i+1;
     );
+    ///
+    print("\n------\nM | {m'} (List):");
+    print(M);
+    ///;
 
     --remove duplicate monomials
     M = unique(M);
     M = sort(M);
-    print "Full group generated by m': ";
-    print M;
-    print "\nDoes the group generated by m' contain the minimal generating set?";
-    print isSubset(S1, M);
 
+    /// 
+    print ("\n-----------------------\n--Removing non-minimals:"); 
+    ///;
     -- remove nonminimal elements from the set
-    i = 0;
-    while (i < #M) do (
-        -- we will check if m1 is minimal
-        m1 = M#i;
-        j = 0;
+    for i to (#M - 1) do (
+        print (M#i);
+        -- Assume that it is initially minimal
+        isMinimal := true;
 
-        -- assume m1 is minimal until we find another monomial that divides it
-        isMinimal = true;
+        -- Then loop through all the elements that aren't i;
+        for j to (i-1) when isMinimal do (
 
-        -- since M is sorted and the while loops has j < i in it, we know that degree(m2) <= degree(m1), so m2 could divide m1. However, if j > i, m2 will never divide m1.
-        while (j < i and isMinimal) do (
-            m2 = M#j;
-
-            -- if m2 divides m1, then m1 is not minimal
-            if (degree(x_1, m1) >= degree(x_1, m2) and degree(x_2, m1) >= degree(x_2, m2) and degree(x_3, m1) >= degree(x_3, m2)) then isMinimal = false;
-
-            j = j+1;
+            -- Then, we create a variable to check if M#i is always a higher degree than M#j
+            higherDegree = true;
+            for var in (gens R) when higherDegree do (
+                if (degree(var, M#i) < degree(var, M#j)) then (
+                    higherDegree = false;
+                );
             );
-
-            -- if m1 was not divided by any other monomial, add it to the minimal set
-            if (isMinimal) then N = N | {m1};
-            i = i+1;
+            -- If it is a higher degree, then it's not minimal
+            if higherDegree then isMinimal = false;
         );
 
-    print "\nRemoved all nonminimal elements from the group generated by m':";
-    print N;
-    print "\nIs this the same set as the one found by InvariantRing?";
-    print (N == S1);
+        -- However, if it is minimal, then we add it to the minimal set, N.
+        if (isMinimal) then (N = N | {M#i};);
+    );
 
+    -- Finally, we return n
+    return N;
 )
 
 --Def Derksen-Gandini Algorithm as a method
 --@param Ring the ring in which we are working
 --@param Matrix the weight matrix
 --@param List the list of dimensions
-dGAlg = method()
+dGAlg = method();
 dGAlg (Ring,Matrix,List) := (r,mat,lis) ->(
     R = r;
     W = matrix mat;
@@ -133,3 +179,56 @@ dGAlg (Ring,Matrix,List) := (r,mat,lis) ->(
     <<cyclicFactors T;
 )
 
+beginDocumentation()
+
+document {
+  Key => genAlg, 
+
+  Headline => "List the seeds that can be used to generate a complete ring of invariants.",
+
+  Usage => "genAlg(R,W,ZList)",
+
+  Inputs => {
+    "R" => Ring => {"Ring upon which the group action is applied."},
+    "W" => Matrix => {"The weight matrix representing the group action."},
+    "ZList" => List => {"The list of the dimensions of the weight matrix."}
+    },    
+
+  Outputs => {
+    "Seeds" => List => {"A list of the generating seeds."},
+  },
+
+  EXAMPLE {
+    "R = QQ[x,y,z];",
+    "W = matrix{{0,1,1},{1,0,1}};",
+    "ZList = {2,2,2};",
+    "genAlg(R,W,ZList)"
+  },
+
+  "This function returns the generating seeds that can be used to find all invariants under a group action."
+
+}
+
+document {
+  Key => dGAlg, 
+  
+  Headline => "", 
+  
+  Usage => "dGAlg (Ring,Matrix,List)", 
+  
+  Inputs => 
+  {
+    "R" => Ring => {"Ring upon which the group action is applied"}, 
+    "M" => Matrix => {"The weight matrix of the variables x_1,...,x_n"}, 
+    "List" => List => {""}
+  },
+  Outputs => {
+    "List" => List => {"The list of minimal generating sets of monomials"}
+  } ,
+  EXAMPLE {
+    "R = QQ[x,y];",
+    "W = matrix{{0,1},{1,0},{1,1}};",
+    "List = {2,2,2};"
+  },
+  "This function returns minimal generating sets of monomials"
+}
