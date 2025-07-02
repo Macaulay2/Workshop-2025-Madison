@@ -44,7 +44,7 @@ isIsomorphicForm (Matrix,Matrix) := Boolean => (A,B) -> (
     -- Ensure both base fields are supported
     if not (instance(k1, ComplexField) or instance(k1, RealField) or k1 === QQ or (instance(k1, GaloisField) and k1.char != 2)) then
         error "Base field not supported; only implemented over QQ, RR, CC, and finite fields of characteristic not 2";
-    if not (instance(k2, ComplexField) or instance(k2, RealField) or k2 === QQ or (instance(k1, GaloisField) and k1.char != 2)) then
+    if not (instance(k2, ComplexField) or instance(k2, RealField) or k2 === QQ or (instance(k2, GaloisField) and k2.char != 2)) then
         error "Base field not supported; only implemented over QQ, RR, CC, and finite fields of characteristic not 2";
     
     -- Ensure both matrices are symmetric
