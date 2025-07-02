@@ -179,7 +179,12 @@ koszulLL Module := Complex  => opts -> N -> (
 	    map(modules#(i+1), modules#i, (-1)^i*b)
 	    )))
 -- LL(s**y) = (-1)^i \sum_{l=0}^n x_l*s \otimes y*e_l
-koszulLL Matrix := ComplexMap => opts -> g -> ()
+koszulLL Matrix := ComplexMap => opts -> f -> (
+    src := koszulLL(source f, opts);
+    tar := koszulLL(target f, opts);
+    S := koszulDual ring f;
+    map(tar, src, i -> map(tar_i, src_i, S**part(-i, f)))
+)
 
 -- LL(D)^i = \bigoplus_{j\in\ZZ} S(j) \otimes_k D^{i-j}_j
 koszulLL Complex    := Complex    => opts -> D   -> ()
@@ -422,6 +427,15 @@ TEST ///
     
     assert( f == id_(koszulRR(M, Concentration=>(-5,5))))
 ///
+TEST ///
+    (S,E)= koszulPair(2, ZZ/101)
+
+    M = E^1
+
+    f = koszulLL(id_M, Concentration=>(-5,5))
+    
+    assert( f == id_(koszulLL(M, Concentration=>(-5,5))))
+///
 
 end--
 
@@ -434,18 +448,17 @@ needsPackage "ExteriorResolutions"
 
 (S,E)= koszulPair(2, ZZ/101)
 
-M = S^1
+M = E^1
 
+f = koszulLL(id_M, Concentration=>(-5,5))
 
+assert( f == id_(koszulLL(M, Concentration=>(-5,5))))
 
+C = koszulLL(M, Concentration=>(0,5))
 
+P = priddyComplex(vars E, S, LengthLimit=>3)
 
-
-    C = koszulLL(M, Concentration=>(0,5))
-
-    P = priddyComplex(vars E, S, LengthLimit=>3)
-    
-    assert(C == P)
+assert(C == P)
 
 M = coker matrix{{x_0}}
 E = ZZ/101[e_0,e_1,e_2, SkewCommutative=>true]
