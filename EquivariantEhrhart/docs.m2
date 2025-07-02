@@ -3,11 +3,32 @@ doc ///
         EquivariantEhrhart
     Headline
         a package for equivariant Ehrhart theory of rational polytopes
+    Subnodes
+        -- Methods
+        conjugacyClasses
+        cycleTypeRepresentatives
+        equivariantEhrhartSeries
+        fixedPolytope
+        generateGroup
+        isSymmetric
+        orbitPolytope
+        representationRing
+        -- Optional arguments
+        OnlyListRepresentatives
+        [conjugacyClasses, OnlyListRepresentatives]
+        ReturnHStarList
+        [equivariantEhrhartSeries, ReturnHStarList]
+        ReturnPartitionList
+        [equivariantEhrhartSeries, ReturnPartitionList]
+        ReturnTable
+        [equivariantEhrhartSeries, ReturnTable]
+        [representationRing, ReturnTable]
 ///
 
 doc ///
     Key
         conjugacyClasses
+        (conjugacyClasses, List)
     Headline
         a function
     Usage
@@ -32,52 +53,61 @@ doc ///
 ///
 
 doc ///
-Key
-    cycleTypeRepresentatives
-Headline
-Usage
-Inputs
-Outputs
-Description
-    Text
-    Example
-SeeAlso
+    Key
+        cycleTypeRepresentatives
+        (cycleTypeRepresentatives, ZZ)
+    Headline
+        computes representatives for each cycle type in the symmetric group
 ///
 
 doc ///
-Key
-    equivariantEhrhartSeries
-Headline
-    computes the equivariant Ehrhart series of a polytope
-Usage
-Inputs
-Outputs
-Description
-    Text
-    Example
-SeeAlso
+    Key
+        equivariantEhrhartSeries
+    Headline
+        computes the equivariant Ehrhart series of a polytope
+    Subnodes
+        (equivariantEhrhartSeries, Polyhedron)
+        (equivariantEhrhartSeries, Polyhedron, Matrix)
+        (equivariantEhrhartSeries, Polyhedron, List)
 ///
 
 doc ///
-Key
-    fixedPolytope
-Headline
-Usage
-Inputs
-Outputs
-Description
-    Text
-    Example
-SeeAlso
+    Key
+        (equivariantEhrhartSeries, Polyhedron)
+    Headline
+        computes the equivariant Ehrhart series of a polytope
+///
+
+doc ///
+    Key
+        (equivariantEhrhartSeries, Polyhedron, Matrix)
+    Headline
+        computes the equivariant Ehrhart series of a polytope
+///
+
+doc ///
+    Key
+        (equivariantEhrhartSeries, Polyhedron, List)
+    Headline
+        computes the equivariant Ehrhart series of a polytope
+///
+
+doc ///
+    Key
+        fixedPolytope
+        (fixedPolytope, Polyhedron, Matrix)
+    Headline
+        computes the points of a polytope fixed by an invertible matrix
 ///
 
 doc ///
     Key
         generateGroup
+        (generateGroup, List)
     Headline
         a function
     Usage
-        G = generateGroup(gList)
+        G = generateGroup gList
     Inputs
         gList : List
             a list of matrices which generate a finite group 
@@ -105,55 +135,47 @@ doc ///
 ///
 
 doc ///
-Key
-    isSymmetric
-Headline
-Usage
-Inputs
-Outputs
-Description
-    Text
-    Example
-SeeAlso
+    Key
+        isSymmetric
+        (isSymmetric, Polyhedron, Matrix)
+        (isSymmetric, Polyhedron, List)
+    Headline
+        whether a polytope is symmetric
 ///
 
 doc ///
-Key
-    orbitPolytope
-Headline
-Usage
-Inputs
-Outputs
-Description
-    Text
-    Example
-SeeAlso
+    Key
+        orbitPolytope
+        (orbitPolytope, Matrix)
+    Headline
+        computes the polytope obtained from the orbit of a point under the action of the symmetric group
 ///
 
 doc ///
-Key
-    representationRing
-Headline
-    representation ring of Sn over QQ
-Usage
-    R = representationRing(n)
-    (R,T) = representationRing(n, opts.ReturnTable => true)
-Inputs
-    n : ZZ
-        the Sn that we compute the representation ring for
-Outputs
-    R : Ring
+    Key
+        representationRing
+        (representationRing, ZZ)
+    Headline
         representation ring of Sn over QQ
-    T : CharacterTable
-        the symmetric group table of QQ[a_1 .. a_n]
-Description
-    Text
-        Creates the representation ring for Sn.
-    Example
-        representationRing 7
-        representationRing(7, opts.ReturnTable => true)
-SeeAlso
-    EquivariantEhrhart
+    Usage
+        R = representationRing(n)
+        (R,T) = representationRing(n, opts.ReturnTable => true)
+    Inputs
+        n : ZZ
+            the Sn that we compute the representation ring for
+    Outputs
+        R : Ring
+            representation ring of Sn over QQ
+        T : CharacterTable
+            the symmetric group table of QQ[a_1 .. a_n]
+    Description
+        Text
+            Creates the representation ring for Sn.
+        Example
+            representationRing 7
+            representationRing(7, opts.ReturnTable => true)
+    SeeAlso
+        EquivariantEhrhart
 ///
 
 
@@ -163,17 +185,11 @@ SeeAlso
 
 
 doc ///
-Key
-    OnlyListRepresentatives
-    [conjugacyClasses, OnlyListRepresentatives]
-Headline
-Usage
-Inputs
-Outputs
-Description
-    Text
-    Example
-SeeAlso
+    Key
+        OnlyListRepresentatives
+        [conjugacyClasses, OnlyListRepresentatives]
+    Headline
+        whether to only list a representative for each conjugacy class
 ///
 
 doc ///
@@ -181,40 +197,22 @@ Key
     ReturnHStarList
     [equivariantEhrhartSeries, ReturnHStarList]
 Headline
-Usage
-Inputs
-Outputs
-Description
-    Text
-    Example
-SeeAlso
+    whether to return the specializations of the equivariant Ehrhart polynomial
 ///
 
 doc ///
-Key
-    ReturnPartitionList
-    [equivariantEhrhartSeries, ReturnPartitionList]
-Headline
-Usage
-Inputs
-Outputs
-Description
-    Text
-    Example
-SeeAlso
+    Key
+        ReturnPartitionList
+        [equivariantEhrhartSeries, ReturnPartitionList]
+    Headline
+        whether to return the partitions corresponding to each representation
 ///
 
 doc ///
-Key
-    ReturnTable
-    [equivariantEhrhartSeries, ReturnTable]
-    [representationRing, ReturnTable]
-Headline
-Usage
-Inputs
-Outputs
-Description
-    Text
-    Example
-SeeAlso
+    Key
+        ReturnTable
+        [equivariantEhrhartSeries, ReturnTable]
+        [representationRing, ReturnTable]
+    Headline
+        whether to return a table
 ///
