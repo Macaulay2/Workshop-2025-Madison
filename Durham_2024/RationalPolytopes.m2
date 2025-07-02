@@ -516,7 +516,7 @@ doc ///
       To return the denominator of the Ehrhart series, set the
       optional argument @TO ReturnDenominator@ to @TT "true"@.
       In this case, the result is a pair that consists of the numerator (as a RingElement)
-      and denominator (as an Expression) of the Ehrhart series. 
+      and denominator (as an @TO Expression@) of the Ehrhart series. 
     Example
       hStarPolynomial(convexHull transpose matrix "0; 1/2",
       Strategy => "Normaliz", ReturnDenominator => true)
@@ -662,7 +662,7 @@ doc ///
       ehrhartSeries P
   Caveat 
     To be consistent with definitions in the literature, the rational function is not necessarily simplified: the numerator and the denominator may share common factors.
-    The output is an expression. For further algebraic computation, use value().
+    The output is an @TO Expression@. For further algebraic computation, use value().
   SeeAlso
     hStarPolynomial
     RationalPolytopes
