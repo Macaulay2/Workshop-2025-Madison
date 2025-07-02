@@ -163,8 +163,8 @@ getActionMatrix(RingElement, MonomialPartition, Matrix) := o -> (actVar, mp, M) 
     -- eliminate "excessive monomials" w/ LU
     Ma := M_{0..a-1};
     (P, L, U) := LUdecomposition Ma;
-    L = L | matrix apply(m, i -> apply(m - a, j -> if i == j + a then 1_RR else 0_RR));
-    M1 := inverse(id_(RR^m)_P * L) * M;
+    L = L | matrix apply(m, i -> apply(m - a, j -> if i == j + a then 1_CC else 0_CC));
+    M1 := inverse(id_(CC^m)_P * L) * M;
 
     -- extract action matrix from reduced and basic monomials in template
     Mr := M1_{a..a+b-1}^{m-b..m-1};
@@ -176,7 +176,7 @@ getActionMatrix(RingElement, MonomialPartition, Matrix) := o -> (actVar, mp, M) 
     print extraMonomials;
     -- b = {y^2, y, x, 1};
     if #extraMonomials > 0 then (
-        binaryMatrix := matrix apply(extraMonomials, m -> apply(mp#2, n -> if m == n then 1_RR else 0_RR));
+        binaryMatrix := matrix apply(extraMonomials, m -> apply(mp#2, n -> if m == n then 1_CC else 0_CC));
         A || binaryMatrix
 	) else A
 )
@@ -202,22 +202,16 @@ templateSolve(RingElement, Ideal) := o -> (a, J) -> (
     R := ring J;
     K := coefficientRing R;
     ringVars := flatten entries vars R;
-    I := J;
-    actvar := a;
-
-    -- if a is a linear form
-    if not isMember(a, ringVars) then (
-        R = K[prepend("s", ringVars), MonomialOrder => Eliminate 1];
-        I = sub(J, R) + ideal(R_0 - sub(a, R));
-        actvar = R_0;
-    );
-
+    R = K[prepend("s", ringVars), MonomialOrder => Eliminate 1];
+    I := sub(J, R) + ideal(R_0 - sub(a, R));
+    actvar := R_0;
+    
     B := lift(basis(R/I), R);
     (sh, mp) := getTemplate(actvar, B, I);
     M := getTemplateMatrix(sh, mp, I);
     Ma := getActionMatrix(actvar, mp, M);
     (svals, P) := eigenvectors Ma;
-    clean_(1e-10) (P * inverse diagonalMatrix(P^{3}))
+    (transpose rsort B, clean_(1e-10) (P * inverse diagonalMatrix(P^{numColumns P - 1})))
 )
 
 beginDocumentation()
@@ -271,6 +265,21 @@ getTemplateMatrix E
 end--
 
 -* Development section *-
+restart
+loadPackage "EliminationTemplates"
+needsPackage "NumericalAlgebraicGeometry"
+R=QQ[x,y,z]
+J=ideal(x^3+y^3+z^3-4,x^2-y-z-1,x-y^2+z-3)
+B=basis(R/J)
+templateSolve(z,J)
+templateSolve(x,J)
+templateSolve(x+2*y+3*z,J)
+templateSolve(x,J)
+netList solveSystem J_*
+
+
+
+
 restart
 debug needsPackage "EliminationTemplates"
 check "EliminationTemplates"
