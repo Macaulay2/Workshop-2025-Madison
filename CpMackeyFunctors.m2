@@ -119,7 +119,8 @@ export{
 load "./CpMackeyFunctors/Code/RandomMackeyFunctor.m2"
 export{
     "makeRandomCpMackeyFunctor",
-    "GenBound"
+    "GenBound",
+    "makeRandomMackeyFunctorsHomomorphism",
 }
 
 beginDocumentation()

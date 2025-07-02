@@ -81,3 +81,11 @@ makeRandomABMap(ZZ, List):= MackeyFunctorHomomorphism => (p, L) -> (
     return makeUniversalMap(X, RandomFixedElements, RandomUnderlyingElements)
 
 )
+
+makeRandomMackeyFunctorsHomomorphism = method()
+makeRandomMackeyFunctorsHomomorphism(CpMackeyFunctor, CpMackeyFunctor) := MackeyFunctorHomomorphism => (M,N) -> (
+
+    if getPrimeOrder(M) != getPrimeOrder(N) then error " -- prime orders are not the same!";
+
+    return homomorphism(random(Hom(M,N)))
+)
