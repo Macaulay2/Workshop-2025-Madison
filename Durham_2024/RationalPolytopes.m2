@@ -32,7 +32,7 @@ export {
 
 -- define the denominator of polyhedron to be the lcm of all denominators of
 -- coordinates of its vertices
-denominator Polyhedron := P -> (
+denominator Polyhedron := ZZ => P -> (
     if not P.cache#?"denominator" then (
         P.cache#"denominator" = lcm for j in flatten entries vertices P list denominator promote(j,QQ);
         );
@@ -48,7 +48,7 @@ denominator Polyhedron := P -> (
 -- returns true if for every j:
 -- M^{j*q .. (j+1)*q-1} == M^{0 .. q-1}
 isPeriod = method()
-isPeriod(Matrix, ZZ) := (M, q) -> (
+isPeriod(Matrix, ZZ) := Boolean => (M, q) -> (
     if numRows M % q != 0 then false
 		else (
         result := for j from 0 to numRows M // q - 1 do (
@@ -64,7 +64,7 @@ isPeriod(Matrix, ZZ) := (M, q) -> (
 -- returns the smallest matrix that represents the
 -- same quasi-polynomial as M
 collapseMatrix = method()
-collapseMatrix Matrix := M -> (
+collapseMatrix Matrix := Matrix => M -> (
     q := for p from 1 to (numRows M)//2 do (
         if isPeriod(M, p) then break p;
         );
@@ -222,7 +222,7 @@ ehrhartQP = method(
         }
     )
 
-ehrhartQP Polyhedron := opts -> P -> (
+ehrhartQP Polyhedron := QuasiPolynomial => opts -> P -> (
     if not P#cache#?"ehrhartQP" then (
         QP := if opts.Strategy == "Normaliz" then (
             ehrhartQPNormaliz P
@@ -285,7 +285,7 @@ hStarPolynomial = method(
         Strategy => "Normaliz" -- either Normaliz or M2
         })
 
-hStarPolynomial(Polyhedron, Ring) := opts -> (P, R) -> (
+hStarPolynomial(Polyhedron, Ring) := RingElement => opts -> (P, R) -> (
     if numgens R < 1 then error("ring must have at least one generator");
     if not P#cache#?"ehrhartSeriesNumerator" then (
         if opts.Strategy == "M2" then (
@@ -304,7 +304,7 @@ hStarPolynomial(Polyhedron, Ring) := opts -> (P, R) -> (
     else P#cache#"ehrhartSeriesNumerator"
     )
 
-hStarPolynomial(Polyhedron) := opts -> P -> (
+hStarPolynomial(Polyhedron) := RingElement => opts -> P -> (
     if P#cache#?"ehrhartSeriesNumerator" then (
         P#cache#"ehrhartSeriesNumerator"
     )
