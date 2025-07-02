@@ -17,6 +17,7 @@ newPackage(
 
 export {
     "hStarPolynomial",
+    "hStarVector",
     --"ehrhartConstituents",
     "ehrhartQP",
     "isPeriod",
@@ -351,6 +352,18 @@ hStarPolynomialNormaliz(Polyhedron, Ring) := (P, R) -> (
     )
 
 
+hStarVector = method(
+    Options => {
+        Strategy => "Normaliz" -- either Normaliz or M2
+    })
+
+hStarVector(Polyhedron) := List => opts -> P -> (
+    h := if P#cache#?"ehrhartSeriesNumerator" then P#cache#"ehrhartSeriesNumerator" else hStarPolynomial(P, Strategy=>opts.Strategy);
+    if #(support h) > 1 then error("expected single-variable polynomial");
+    x := first support h;
+    reverse apply(terms h, m -> sub(m, x => 1))
+)
+
 ehrhartSeries = method(
     Options => {
         Strategy => "Normaliz" -- Normaliz or M2
@@ -511,6 +524,43 @@ doc ///
     RationalPolytopes
     ehrhartSeries
 ///
+
+
+doc ///
+  Key
+    hStarVector
+    (hStarVector, Polyhedron)
+    [hStarVector, Strategy]
+  Headline
+    the $h^*$-vector of a polytope
+  Usage
+    hStarVector P
+  Inputs
+    P : Polyhedron
+      a convex polyhedron which must be compact
+    Strategy => String
+      either "Normaliz" or "M2", selects the method for computing
+      the Ehrhart series
+  Outputs
+    : List
+      the $h^*$-vector of $P$
+  Description
+    Text
+      If $P$ is a lattice polytope then this function returns the
+      $h^*$-vector of $P$.
+      The $i$-th entry in the $h^*$-vector is the coefficient 
+      of the $x^{i-1}$ term of the $h^*$-polynomial.
+    Example
+      hStarVector convexHull transpose matrix "-1,0; 0,-1; 1,0; 0,1"
+      P = convexHull transpose matrix {{0,0,0},{1,0,0},{0,1,0},{1,1,3}};
+      hStarPolynomial P
+      hStarVector P
+  SeeAlso
+    RationalPolytopes
+    hStarPolynomial
+    ehrhartSeries
+///
+
 
 doc ///
   Key
