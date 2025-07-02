@@ -277,8 +277,6 @@ ehrhartQPNormaliz Polyhedron := P -> (
 -- hStarPolynomial currently uses M2 code to compute
 -- maybe we should add a Normaliz version too
 
--- For the M2 and Normaliz versions have different denominators - can they
--- be uniformised?
 hStarPolynomial = method(
     Options => {
         ReturnDenominator => false, --returns a pair of polys (h, d) s.t. Ehrhart series is h/d
@@ -335,7 +333,6 @@ hStarPolynomialM2(Polyhedron, Ring) := (P, R) -> (
 -- Normaliz version of hStarPolynomial polynomial
 -- once computed, it updates the cache
 
--- WARNING: the denominator of the hstar might not be the usual one!
 hStarPolynomialNormaliz = method()
 hStarPolynomialNormaliz(Polyhedron, Ring) := (P, R) -> (
     t := R_0;
