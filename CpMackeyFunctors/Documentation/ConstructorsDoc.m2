@@ -1,4 +1,27 @@
 doc ///
+    Key
+        "constructing examples of Mackey functors"
+    Headline
+        info about how to construct explicit Mackey functors
+    Description
+        Text
+            New Mackey functors can be built using @TO "makeCpMackeyFunctor"@, which constructs a Mackey functor out of a restriction, transfer, and conjugation @TO "matrix"@, in that order. For instance:
+            
+            todo - example here
+            
+            There are other constructors for various types of Mackey functors, including the @TO2(makeBurnsideMackeyFunctor,"Burnside Mackey functor")@, the @TO2(makeRealRepresentationMackeyFunctor,"real")@ and @TO2(makeComplexRepresentationMackeyFunctor,"complex representation")@ Mackey functors, @TO2(makeFixedPointMackeyFunctor,"fixed point")@ and @TO2(makeOrbitMackeyFunctor,"orbit")@ Mackey functors, {\em free} Mackey functors on an @TO2(makeUnderlyingFreeMackeyFunctor,"underlying element")@, and of course the @TO2(makeZeroMackeyFunctor,"zero Mackey functor")@. 
+
+        Example
+            makeZeroMackeyFunctor(5)
+
+        Text
+            Furthermore we have {\bf random constructors} which allow us to build a @TO2(makeRandomCpMackeyFunctor,"random Mackey functor")@ over the group $C_p$.
+
+    SeeAlso
+        "the abelian category of Mackey functors"
+///
+
+doc ///
     Key 
         makeBurnsideMackeyFunctor
         (makeBurnsideMackeyFunctor, ZZ)

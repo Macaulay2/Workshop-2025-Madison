@@ -124,10 +124,15 @@ export{
 
 beginDocumentation()
 undocumented{
+    "TheAbelianCatMackeyFunctors"
     }
 
 -- Main homepage documentation
 load "./CpMackeyFunctors/Documentation/MainPageDoc.m2"
+
+load "./CpMackeyFunctors/Documentation/BackgroundDoc.m2"
+load "./CpMackeyFunctors/Documentation/ApplicationsDoc.m2"
+
 
 -- Documentation for methods and symbols
 load "./CpMackeyFunctors/Documentation/ConstructorsDoc.m2"

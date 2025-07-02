@@ -7,7 +7,20 @@ doc ///
         for Cp-Mackey functor computations
     Description
         Text
-            todo - explain Cp Mackey functors
-        Text
-            Thie {\em Macaulay2} package does the following...
+            This {\em Macaulay2} package implements basic homological algebra for {\em Mackey functors} of a cyclic group $C_p$ of prime order. Some highlights of our functionality include:
+
+            @UL{
+                ("free resolutions of ", TEX"$C_p$","-Mackey functors"),
+                ("ext and tor computations"),
+                ("the ", TO2(boxProduct,"box product"), " and ", TO2(InternalHom,"internal hom")),
+                (TO2("constructing examples of Mackey functors", "constructions")," of various common examples of Mackey functors"),
+                ("the ability to generate ", TO2(makeRandomCpMackeyFunctor,"random Mackey functors")," over ", TEX"$C_p$"),
+                (TO2("explicit applications of the CpMackeyFunctors package","explicit examples")," from the equivariant algebra literature")
+            }@
+
+    SeeAlso
+        "background on Mackey functors"
+        "the abelian category of Mackey functors"
+        "constructing examples of Mackey functors"
+        "explicit applications of the CpMackeyFunctors package"
 ///
