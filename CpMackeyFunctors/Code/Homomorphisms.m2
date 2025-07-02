@@ -186,9 +186,10 @@ inverse MackeyFunctorHomomorphism := MackeyFunctorHomomorphism => f -> (
 
 -- Power function composition, including negative powers.
 MackeyFunctorHomomorphism ^ ZZ := MackeyFunctorHomomorphism => (f,n) -> (
-    if source f != target f then error("-- can only iterate self-maps");
+    if n == 1 then return f;
     if n == 0 then return id_(source f);
-    if n < 0 and not isIsomorphism f then error("-- f must be invertible to take negative self-iterates");
+    if n == -1 then (if isIsomorphism f then inverse f else error("-- f not invertible"));
+    if source f != target f then error("-- can only iterate self-maps");
     g := if n < 0 then inverse f else f;
     for i to abs(n)-1 do g = f * g;
     g
