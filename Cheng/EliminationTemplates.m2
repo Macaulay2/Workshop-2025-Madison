@@ -90,7 +90,7 @@ R = QQ[x,y]
 -- Example 1
 J = ideal(x^2+y^2-1,x^2+x*y+y^2-1)
 actVar = x
-B = lift(basis(R/J), R)
+B = lift(basis(R/J), R) 
 (sh, mp) = getTemplate(actVar, B, J)
 M = sub(getTemplateMatrix(sh, mp, J), RR)
 getActionMatrix(actVar, mp, M) 
