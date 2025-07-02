@@ -80,7 +80,9 @@ export{
     "makeDiagonalForm",
     "makeHyperbolicForm",
     "makePfisterForm",
-    
+    "makeDiagonalUnstableForm",
+    "makeHyperbolicUnstableForm",
+
     --SimplifiedRepresentatives.m2
     "getDiagonalClass",
     "getDiagonalEntries",

@@ -139,3 +139,59 @@ makePfisterForm (InexactFieldFamily,Sequence) := GrothendieckWittClass => (kk, L
 	);
     outputForm
     )
+
+-- Input: A field kk of characteristic not 2, and a list of elements a_1,...,a_n of kk
+-- Output: The unstable Grothendieck-Witt class represented by the diagonal form <a_1,...,a_n> 
+
+makeDiagonalUnstableForm = method()
+makeDiagonalUnstableForm (Ring, RingElement) := UnstableGrothendieckWittClass => (kk, a) -> (
+    makeGWuClass makeDiagonalForm(kk, a)
+    )
+
+makeDiagonalUnstableForm (Ring, ZZ) := UnstableGrothendieckWittClass => (kk, a) -> (
+    makeGWuClass makeDiagonalForm(kk, a)
+    )
+
+makeDiagonalUnstableForm (Ring, QQ) := UnstableGrothendieckWittClass => (kk, a) -> (
+    makeGWuClass makeDiagonalForm(kk, a)
+    )
+
+makeDiagonalUnstableForm (Ring, Sequence) := UnstableGrothendieckWittClass => (kk, L) -> (
+    makeGWuClass makeDiagonalForm(kk, L)
+    )
+
+makeDiagonalUnstableForm (InexactFieldFamily,RingElement) := UnstableGrothendieckWittClass => (kk, a) -> (
+    makeGWuClass makeDiagonalForm(kk, a)
+    )
+
+makeDiagonalUnstableForm (InexactFieldFamily,ZZ) := UnstableGrothendieckWittClass => (kk, a) -> (
+    makeGWuClass makeDiagonalForm(kk, a)
+    )
+
+makeDiagonalUnstableForm (InexactFieldFamily,QQ) := UnstableGrothendieckWittClass => (kk, a) -> (
+    makeGWuClass makeDiagonalForm(kk, a)
+    )
+
+makeDiagonalUnstableForm (InexactFieldFamily, Sequence) := UnstableGrothendieckWittClass => (kk, L) -> (
+    makeGWuClass makeDiagonalForm(kk, L)
+    )
+
+-- Input: A field kk of characteristic not 2, and an optional even rank n (default is n = 2)
+-- Output: An unstable Grothendieck-Witt class over kk represented by a totally hyperbolic form of rank n
+
+makeHyperbolicUnstableForm = method()
+makeHyperbolicUnstableForm Ring := UnstableGrothendieckWittClass => kk -> (
+    makeGWuClass makeHyperbolicForm(kk)
+    )
+
+makeHyperbolicUnstableForm (Ring, ZZ) := UnstableGrothendieckWittClass => (kk, n) -> (
+    makeGWuClass makeHyperbolicForm(kk, n)
+    )
+
+makeHyperbolicUnstableForm InexactFieldFamily := UnstableGrothendieckWittClass => kk -> (
+    makeGWuClass makeHyperbolicForm(kk)
+    )
+
+makeHyperbolicUnstableForm (InexactFieldFamily, ZZ) := UnstableGrothendieckWittClass => (kk, n) -> (
+    makeGWuClass makeHyperbolicForm(kk, n)
+    )
