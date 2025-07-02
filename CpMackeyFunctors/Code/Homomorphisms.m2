@@ -6,8 +6,9 @@ MackeyFunctorHomomorphism.synonym = "Mackey Functor homomorphism"
 
 -- For magic
 isMorphism MackeyFunctorHomomorphism := f -> true
--- Hack to make matrix() work
+-- Hack to make matrix() work; kind of justified!
 ring MackeyFunctorHomomorphism := f -> ZZ
+-- Hack to make matrix() work; unclear if this is justified.
 promote (MackeyFunctorHomomorphism, ZZ) := (f,R) -> f
 
 isWellDefined MackeyFunctorHomomorphism := Boolean => F ->(

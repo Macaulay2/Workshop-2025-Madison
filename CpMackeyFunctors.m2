@@ -33,6 +33,7 @@ newPackage(
                     -- Warning: The "CpMackeyFunctors" package provides insufficient citation data: howpublished.
     Headline=>"for working with Mackey functors for cyclic groups of prime order",
     PackageImports=>{},
+    -- One day: export Complexes and use that framework for computing derived functors
     PackageExports=>{},
     AuxiliaryFiles => true,
     DebuggingMode=>true

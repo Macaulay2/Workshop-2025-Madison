@@ -1,5 +1,11 @@
 isAbelianCategory CpMackeyFunctor := M -> true
 
+-- This doesn't really make sense unfortunately...
+-- CpMackeyFunctor#0 = p -> (error 0; makeZeroMackeyFunctor p)
+
+-- Hack to get complexes to work
+-- Complex _ ZZ := CpMackeyFunctor => (C,i) -> if C.module#?i then C.module#i else makeZeroMackeyFunctor getPrimeOrder C_0
+
 -- Direct sums
 CpMackeyFunctor.directSum = args -> (
     if not same (args/getPrimeOrder) then error "-- Prime not compatible";
