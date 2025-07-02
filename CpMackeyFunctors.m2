@@ -84,7 +84,6 @@ export{
     "realLinearizationMap",
     "makeUniversalMapFixed",
     "makeUniversalMapUnderlying",
-    "makeUniversalMap",
     "getUnderlyingMap",
     "getFixedMap",
     "isTrivialMackeyFunctor",
