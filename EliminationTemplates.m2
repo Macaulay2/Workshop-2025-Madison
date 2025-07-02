@@ -34,7 +34,12 @@ export {
     "getActionMatrix",
     "templateSolve",
     "EliminationTemplate",
-    "newEliminationTemplate"
+    "newEliminationTemplate",
+    "shifts",
+    "monomialPartition",
+    "templateMatrix",
+    "actionVariable",
+    "elimIdeal"
 }
 
 EliminationTemplate = new Type of HashTable
@@ -43,15 +48,15 @@ MonomialPartition = new Type of List
 
 newEliminationTemplate = method(Options => {})
 newEliminationTemplate (RingElement, Ideal) := o -> (aVar, J) -> (
-    R := ring J
+    R := ring J;
     (sh, mp) := getTemplate(aVar, basis(R/J), J);
     M := getTemplateMatrix(shifts, monomialPartition, J);
     new EliminationTemplate from {
-	shifts => sh,
+	    shifts => sh,
         monomialPartition => mp,
         templateMatrix => M,
         actionVariable => aVar,
-        ideal => J
+        elimIdeal => J
     }
 )
 
@@ -143,7 +148,7 @@ getActionMatrix = (actVar, mp, M) -> (
 	) else A
 )
 
-templateSolve = method(Options => {MonomialOrder => null})
+templateSolve = method(Options => {MonomialOrder => null, Tolerance => 1e-10})
 --templateSolve(EliminationTemplate) := o -> (template) -> ()
 templateSolve(Ideal) := o -> (I) -> (
 
