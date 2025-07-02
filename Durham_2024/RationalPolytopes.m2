@@ -506,7 +506,7 @@ doc ///
       and denominator of the Ehrhart series. 
     Example
       hStarPolynomial(convexHull transpose matrix "0; 1/2",
-          Strategy => "Normaliz", ReturnDenominator => true)
+      Strategy => "Normaliz", ReturnDenominator => true)
   SeeAlso
     RationalPolytopes
     ehrhartSeries
@@ -536,6 +536,7 @@ doc ///
     RationalPolytopes
 ///
 
+
 doc ///
   Key
     period
@@ -559,6 +560,7 @@ doc ///
   SeeAlso
     RationalPolytopes
 ///
+
 
 doc ///
   Key
