@@ -58,6 +58,21 @@ map(CpMackeyFunctor, CpMackeyFunctor, Matrix, Matrix) := MackeyFunctorHomomorphi
 	)
 )
 
+-- tries to induce from the identity 
+inducedMap(CpMackeyFunctor, CpMackeyFunctor) := MackeyFunctorHomomorphism => opts -> (N,M) -> (
+    map(N,M,inducedMap(N.Underlying, M.Underlying), inducedMap(N.Fixed, M.Fixed))
+)
+
+-- tries to induce from components of f
+inducedMap(CpMackeyFunctor, CpMackeyFunctor, MackeyFunctorHomomorphism) := MackeyFunctorHomomorphism => opts -> (N,M,f) -> (
+    map(N,M,inducedMap(N.Underlying, M.Underlying, f.UnderlyingMap), inducedMap(N.Fixed, M.Fixed, f.FixedMap))
+)
+
+-- tries to induce from u and f
+inducedMap(CpMackeyFunctor, CpMackeyFunctor, Matrix, Matrix) := MackeyFunctorHomomorphism => opts -> (N,M,u,f) -> (
+    map(N,M,inducedMap(N.Underlying, M.Underlying, u), inducedMap(N.Fixed, M.Fixed, f))
+)
+
 source(MackeyFunctorHomomorphism) := CpMackeyFunctor => F -> (
     return F.Domain
 )
