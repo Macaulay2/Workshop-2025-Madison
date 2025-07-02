@@ -34,31 +34,37 @@ export {
     "getActionMatrix",
     "templateSolve",
     "EliminationTemplate",
-    "newEliminationTemplate",
+    "eliminationTemplate",
     "shifts",
     "monomialPartition",
     "templateMatrix",
     "actionVariable",
-    "elimIdeal"
 }
 
 EliminationTemplate = new Type of HashTable
 ShiftSet = new Type of List
 MonomialPartition = new Type of List
 
-newEliminationTemplate = method(Options => {})
-newEliminationTemplate (RingElement, Ideal) := o -> (aVar, J) -> (
+eliminationTemplate = method(Options => {})
+eliminationTemplate (RingElement, Ideal) := o -> (aVar, J) -> (
     R := ring J;
-    (sh, mp) := getTemplate(aVar, basis(R/J), J);
-    M := getTemplateMatrix(shifts, monomialPartition, J);
+--    (sh, mp) := getTemplate(aVar, basis(R/J), J);
+--    M := getTemplateMatrix(shifts, monomialPartition, J);
     new EliminationTemplate from {
-	    shifts => sh,
-        monomialPartition => mp,
-        templateMatrix => M,
-        actionVariable => aVar,
-        elimIdeal => J
+--	    shifts => sh,
+--        monomialPartition => mp,
+  --      templateMatrix => M,
+        "actionVariable" => aVar,
+        ideal => J,
+	cache => new CacheTable from {}
     }
 )
+
+actionVariable = method()
+actionVariable EliminationTemplate := E -> E#"actionVariable"
+
+ideal EliminationTemplate := E -> E#ideal
+
 
 getH0 = method(Options => {MonomialOrder => null})
 getH0 (RingElement, Ideal) := o -> (a, J) -> (
@@ -107,7 +113,17 @@ getTemplate(RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     monomialPartition := new MonomialPartition from rsort \ toList \ {monsE, monsR, monsB};
     (shifts, monomialPartition)
 )
-
+getTemplate EliminationTemplate := o -> E -> (
+    if (E.cache#?"shifts" and E.cache#?"monomialPartition") then (E.cache#"shifts", E.cache#"monomialPartition") else (
+	    aVar := actionVariable E;
+	    J := ideal E;
+	    R := ring J;
+	    (sh, mp) := getTemplate(aVar, basis(R/J), J);
+	    E.cache#"shifts" = sh;
+	    E.cache#"monomialPartition" = mp;
+	    (sh, mp)
+	    )
+	)
 
 getTemplateMatrix = method(Options => {MonomialOrder => null})
 getTemplateMatrix(RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
@@ -118,6 +134,21 @@ getTemplateMatrix(ShiftSet, MonomialPartition, Ideal) := o -> (shifts, monomialP
     allMons := apply(fold(monomialPartition, (a,b) -> a|b), m -> sub(m, ring J));
     sub(transpose fold(apply(shiftPolynomials(shifts, J), m -> last coefficients(m, Monomials => allMons)), (a,b) -> a|b), coefficientRing ring J)
 )
+getTemplateMatrix(EliminationTemplate) := o -> E -> (
+    if E.cache#?"templateMatrix" then E.cache#"templateMatrix" else (
+	(shifts, monomialPartition) := getTemplate E;
+	J := ideal E;
+	ret := getTemplateMatrix(shifts, monomialPartition, J);
+	E.cache#"templateMatrix" = ret;
+	ret
+    )
+)
+    
+net EliminationTemplate := E -> (
+    str := " action variable: " | toString(actionVariable E);
+    if E.cache#?"templateMatrix" then str = net(getTemplateMatrix E) | str;
+    str
+    )
 
 needsPackage "NumericalLinearAlgebra"
 getActionMatrix = (actVar, mp, M) -> (
@@ -205,15 +236,22 @@ eigenvalues Ma
 
 TEST ///
 R = QQ[x,y]
-B = matrix{{x^2, y, 1}}
 J = ideal(x^3 + y^2 - 1, x - y - 1)
-actVar = x
+B = lift(basis(R/J), R)
 getH0(x, B, J)
 (sh, mp) = getTemplate(x, B, J)
 M = getTemplateMatrix(x, B, J)
-Ma = getActionMatrix(actVar, mp, M)
-eigenvalues Ma
+Mx = getActionMatrix(x, mp, M)
+eigenvalues Mx
+assert(all(sort eigenvalues Mx, {-2,0,1}, (e1, e2) -> abs(e1-e2) < 1e-4))
 -- TODO: add assertion
+///
+
+TEST ///
+R = QQ[x,y]
+J = ideal(x^3 + y^2 - 1, x - y - 1)
+E = eliminationTemplate(x, J)
+getTemplateMatrix E
 ///
 
 end--
@@ -222,6 +260,8 @@ end--
 restart
 debug needsPackage "EliminationTemplates"
 check "EliminationTemplates"
+
+
 
 uninstallPackage "EliminationTemplates"
 restart
