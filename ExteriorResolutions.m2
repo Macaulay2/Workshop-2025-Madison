@@ -53,7 +53,7 @@ injectiveResolution Complex := Complex => opts -> C -> (
     fC := resolutionMap(tempHom,opts);
     P:= Hom(freeResolution(tempHom, opts), E);
     hfC := Hom(fC,E);
-    P.cache.resolutionMap = hfC;
+    P.cache.resolutionMap = fC;
     P
     )
 
@@ -66,8 +66,8 @@ coaugmentationMap Complex := ComplexMap => C -> C.cache.coaugmentationMap ??= (
     else if C.cache.?resolutionMap then (
         hfC := C.cache.resolutionMap;
         D := source hfC;
-        tempMap := map(D, C, i -> map(D_i, C_i, transpose syz transpose presentation C_i));
-        hfC*tempMap 
+        --tempMap := map(D, C, i -> map(D_i, C_i, transpose syz transpose presentation C_i));
+        hfC
     )
     else error "Expected an injective resolution"
 )
