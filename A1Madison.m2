@@ -74,6 +74,7 @@ export{
     "addGWuDivisorial",
     "fieldsAreCompatible",  --Exported only for testing purposes
     "makeStableGWClass",
+    "UnstableGrothendieckWittClass",
     
     --BuildingForms.m2
     "makeDiagonalForm",
@@ -562,6 +563,7 @@ assert(getHilbertSymbolReal(-3/1, -5) == -1);
 assert(getHilbertSymbolReal(3, 5) == 1);
 ///
 
+-- New tests for v2.0 of package
 -- Test 26
 TEST ///
 M1 = matrix(RR, {{0,1},{1,0}});
@@ -605,6 +607,14 @@ assert(getScalar(G3) === (det M1) * (det M2))
 ///
 
 -- Test 30
+TEST ///
+M1 = matrix(QQ, {{1/1,0,0},{0,1,0},{0,0,1}});
+M2 = matrix(QQ, {{1/1,24/10,0},{24/10,-5,0},{0,0,69}});
+M3 = matrix(GF(7), {{1,0,0},{0,2,0},{0,0,-3}});
+assert(class(makeGWuClass M1) === UnstableGrothendieckWittClass);
+assert(class(makeGWuClass M2) === UnstableGrothendieckWittClass);
+assert(class(makeGWuClass M3) === UnstableGrothendieckWittClass);
+///
 
 
 -- Test for getBaseField
