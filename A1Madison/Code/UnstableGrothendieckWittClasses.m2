@@ -220,3 +220,37 @@ fieldsAreCompatible (List, List) := Boolean => (baseFieldList, rootList) -> (
     );
     true
 )
+
+isIsomorphicForm (UnstableGrothendieckWittClass,UnstableGrothendieckWittClass) := Boolean => (alpha,beta) -> (
+    k1 := ring getScalar alpha;
+    k2 := ring getScalar beta;
+
+    -- Ensure both base fields are supported
+    if not (instance(k1, ComplexField) or instance(k1, RealField) or k1 === QQ or (instance(k1, GaloisField) and k1.char != 2)) then
+        error "Base field not supported; only implemented over QQ, RR, CC, and finite fields of characteristic not 2";
+    if not (instance(k2, ComplexField) or instance(k2, RealField) or k2 === QQ or (instance(k1, GaloisField) and k1.char != 2)) then
+        error "Base field not supported; only implemented over QQ, RR, CC, and finite fields of characteristic not 2";
+    
+    -- Over CC, the scalars are automatically in the same square class, so just need to check the forms
+    if (instance(k1, ComplexField) and instance(k2, ComplexField)) then (
+        return (isIsomorphicForm(getMatrix alpha, getMatrix beta));
+        )
+    
+    -- Over RR, the scalars are in the same class if and only if they have the same sign
+    else if (instance(k1, RealField) and instance(k2, RealField)) then (
+        return (isIsomorphicForm(getMatrix alpha, getMatrix beta) and getScalar alpha * getScalar beta > 0);
+        )
+    
+    -- Over QQ, the scalars are in the same square class if and only if they have the same squarefreepart
+    else if (k1 === QQ and k2 === QQ) then (
+        return (isIsomorphicForm(getMatrix alpha, getMatrix beta) and getSquarefreePart getScalar alpha == getSquarefreePart getScalar beta);
+        )
+    
+    -- Over a finite field, the scalars are in the same square class if and only if they are either both squares or both not squares 
+    else if (instance(k1, GaloisField) and instance(k2, GaloisField) and k1.char !=2 and k2.char != 2 and k1.order == k2.order) then (
+        return (isIsomorphicForm(getMatrix alpha, getMatrix beta) and isGFSquare getScalar alpha == isGFSquare getScalar beta);
+        )
+    -- If we get here, then the base fields are not the same
+    else
+	    error "Base fields are not the same";
+    )
