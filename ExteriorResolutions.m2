@@ -139,7 +139,12 @@ koszulRR Module := Complex => opts -> M -> (
 	    map(modules#(i+1), modules#i, b)
 	    )))
 -- RR(y**s) = \sum_{l=0}^n y*e_l ** s*x_l
-koszulRR Matrix := ComplexMap => opts -> f -> ()
+koszulRR Matrix := ComplexMap => opts -> f -> (
+    src := koszulRR(source f, opts);
+    tar := koszulRR(target f, opts);
+    E := koszulDual ring f;
+    map(tar, src, i -> map(tar_i, src_i, E**part(-i, f)))
+    )
 
 -- RR(C)^i = \bigoplus_{j\in\ZZ} Hom_k(E(-j), C^{i-j}_j)
 --         = \bigoplus_{j\in\ZZ} (E(-j))^* \otimes_k C^{i-j}_j
@@ -407,6 +412,16 @@ TEST ///
     F = koszulRR(HH_0 C, Concentration=>(-5,5))
     assert( F_0 == M)
 ///
+TEST ///
+    (S,E)= koszulPair(2, ZZ/101)
+
+    M = S^1
+
+    f = koszulRR(id_M, Concentration=>(-5,5))
+    g = koszulRR(map(S^{1}, S^1, S_0), Concentration=>(-5,5))
+    
+    assert( f == id_(koszulRR(M, Concentration=>(-5,5))))
+///
 
 end--
 
@@ -418,8 +433,14 @@ restart
 needsPackage "ExteriorResolutions"
 
 (S,E)= koszulPair(2, ZZ/101)
-    M = E^1
-    
+
+M = S^1
+
+
+
+
+
+
     C = koszulLL(M, Concentration=>(0,5))
 
     P = priddyComplex(vars E, S, LengthLimit=>3)
