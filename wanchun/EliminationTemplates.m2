@@ -1,5 +1,5 @@
 ElimProblem = new Type of HashTable
-ShishftSet = new Type of List
+ShiftSet = new Type of List
 MonomialPartition = new Type of List
 
 -- length ShiftSet := sh -> sum(sh, numcols)
@@ -60,7 +60,8 @@ getTemplateMatrix(RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     )
 getTemplateMatrix(ShiftSet, MonomialPartition, Ideal) := o -> (shifts, monomialPartition, J) -> (
     allMons := apply(fold(monomialPartition, (a,b) -> a|b), m -> sub(m, ring J));
-    sub(transpose fold(apply(shiftPolynomials(shifts, J), m -> last coefficients(m, Monomials => allMons)), (a,b) -> a|b), coefficientRing ring J)
+    sub(tra
+    \nspose fold(apply(shiftPolynomials(shifts, J), m -> last coefficients(m, Monomials => allMons)), (a,b) -> a|b), coefficientRing ring J)
     )
 
 needsPackage "NumericalLinearAlgebra"

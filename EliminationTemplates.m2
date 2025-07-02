@@ -146,12 +146,14 @@ getTemplateMatrix(EliminationTemplate) := o -> E -> (
     
 net EliminationTemplate := E -> (
     str := " action variable: " | toString(actionVariable E);
-    if E.cache#?"templateMatrix" then str = net(getTemplateMatrix E) | str;
+    if E.cache#?"templateMatrix" then str = "Template matrix:\n" | net(E.cache#"templateMatrix") | str;
+    if E.cache#?"actionMatrix" then str = "Action matrix:\n" | net(E.cache#"actionMatrix") | str;
     str
     )
 
 needsPackage "NumericalLinearAlgebra"
-getActionMatrix = (actVar, mp, M) -> (
+getActionMatrix = method(Options => {MonomialOrder => null})
+getActionMatrix(RingElement, MonomialPartition, Matrix) := o -> (actVar, mp, M) -> (
     a := length mp#0; -- number of "excessive monomials"
     b := length mp#1; -- number of "reducible monomials"
     c := length mp#2; -- number of "basic monomials"
@@ -178,6 +180,18 @@ getActionMatrix = (actVar, mp, M) -> (
         A || binaryMatrix
 	) else A
 )
+
+getActionMatrix(EliminationTemplate) := o -> E -> (
+    if E.cache#?"actionMatrix" then E.cache#"actionMatrix" else (
+        actVar := actionVariable E;
+        (sh, mp) := getTemplate E;
+        templateMatrix := getTemplateMatrix E;
+        ret := getActionMatrix(actVar, mp, templateMatrix);
+	    E.cache#"actionMatrix" = ret;
+	    ret
+    )
+)
+
 
 templateSolve = method(Options => {MonomialOrder => null, Tolerance => 1e-10})
 --templateSolve(EliminationTemplate) := o -> (template) -> ()
@@ -267,3 +281,8 @@ uninstallPackage "EliminationTemplates"
 restart
 installPackage "EliminationTemplates"
 viewHelp "EliminationTemplates"
+
+R = QQ[x,y]
+E = eliminationTemplate(x, ideal(x^3 + y^2 - 1, x - y - 1))
+getActionMatrix E
+net E
