@@ -1,5 +1,6 @@
 -- The Hom group Hom(M,N) is a subgroup of Hom(M(Cp/e),N(Cp/e)) ++ Hom(M(Cp/Cp),N(Cp/Cp))
 Hom(CpMackeyFunctor, CpMackeyFunctor) := Module => opts -> (M,N) -> (
+    if not M.PrimeOrder === N.PrimeOrder then error "-- Mackey functors must have the same prime";
     homFixedFixed := Hom(getFixedModule M, getFixedModule N);
     homUnderlyingUnderlying := Hom(getUnderlyingModule M, getUnderlyingModule N);
     homFixedUnderlying := Hom(getFixedModule M, getUnderlyingModule N);
