@@ -232,6 +232,7 @@ equivariantEhrhartSeries Polyhedron := opts -> P -> (
 				g := sub(conjClassRepMats_i, Rt);
 				detRep := det(id_(Rt^n) - t*g);
 				(hStarNum, hStarDenom) := hStarList_i;
+				hStarDenom = value hStarDenom;
 				if not zero((hStarNum * detRep) % hStarDenom) then (
 						print "bad symmetry:";
 						print g;
@@ -297,6 +298,7 @@ equivariantEhrhartSeries (Polyhedron, List) := opts -> (userP, userGList) -> (
 				h := sub(groupElements_i, Rt);
 				detRep := det(id_(Rt^n) - t*h);
 				(hStarNum, hStarDenom) := hStarList_i;
+				hStarDenom = value hStarDenom;
 				if not zero((hStarNum * detRep) % hStarDenom) then (
 						print "bad symmetry:";
 						print h;
