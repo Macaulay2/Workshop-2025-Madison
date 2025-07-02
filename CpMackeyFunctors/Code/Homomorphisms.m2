@@ -88,7 +88,7 @@ makeUniversalMapFixed(CpMackeyFunctor,Vector) := MackeyFunctorHomomorphism => (M
 makeUniversalMapFixed(CpMackeyFunctor,Matrix) := MackeyFunctorHomomorphism => (M,x) -> (
     n := numColumns x;
     L := {for i to n-1 list (
-        X := map(M.Fixed, , matrix x_i);
+        X := inducedMap(M.Fixed, , matrix x_i);
         -- TODO: should we error check element containment which is seemingly not
         -- implemented?
         p := M.PrimeOrder;
@@ -108,7 +108,7 @@ makeUniversalMapUnderlying(CpMackeyFunctor,Vector) := MackeyFunctorHomomorphism 
 makeUniversalMapUnderlying(CpMackeyFunctor,Matrix) := MackeyFunctorHomomorphism => (M,x) -> (
     n := numColumns x;
     L := {for i to n-1 list (
-        X := map(M.Underlying, , matrix x_i);
+        X := inducedMap(M.Underlying, , matrix x_i);
         -- TODO: should we error check element containment which is seemingly not
         -- implemented?
         p := M.PrimeOrder;
