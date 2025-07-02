@@ -12,14 +12,14 @@ document{
 	Boolean => {"whether the two Grothendieck-Witt classes (resp. unstable Grothendieck-Witt classes) are equal as elements of the Grothendieck-Witt ring (resp. unstable Grothendieck-Witt group)"},
 	},
  
-    PARA{"Determining if unstable Grothendieck-Witt classes ", TEX///$\alpha$///, " and ", TEX///$\beta$///,  " over a field ", TEX///$k$///, ", ", TEX///$\alpha$///, " and ", TEX///$\beta$///, " are isomorphic entails checking both whether their underlying ", EM"stable parts", " are isomorphic in the Grothendieck-Witt ring and whether their ", EM"scalar parts"," agree.
-    To verify when forms are isomorphic in the Grothendieck-Witt ring, ", EM "Sylvester's Law of Inertia", " proves that any symmetric bilinear form can be diagonalized into a block sum of rank one symmetric bilinear forms. Since the rank one forms ", TEX///$\langle a \rangle \colon k \times k \to k$///, ", ", TEX///$(x,y) \mapsto axy$///, " and ", TEX///$\langle ab^2 \rangle \colon k \times k \to k$///, ", ", TEX///$(x,y) \mapsto ab^2xy$///, " differ by a change of basis in the ground field, it follows they are isomorphic (provided that ", TEX///$a,b\ne 0$///, "). Thus after diagonalizing a form, it suffices to consider the square class of each entry appearing along the diagonal. Consider the following example over the complex numbers:"},
+    PARA{"Determining if Grothendieck-Witt classes ", TEX///$\alpha$///, " and ", TEX///$\beta$///,  " over a field ", TEX///$k$///, ", are isomorphic is to verify when forms are isomorphic in the Grothendieck-Witt ring. ", EM "Sylvester's Law of Inertia", " proves that any symmetric bilinear form can be diagonalized into a block sum of rank one symmetric bilinear forms. Since the rank one forms ", TEX///$\langle a \rangle \colon k \times k \to k$///, ", ", TEX///$(x,y) \mapsto axy$///, " and ", TEX///$\langle ab^2 \rangle \colon k \times k \to k$///, ", ", TEX///$(x,y) \mapsto ab^2xy$///, " differ by a change of basis in the ground field, it follows they are isomorphic (provided that ", TEX///$a,b\ne 0$///, "). Thus after diagonalizing a form, it suffices to consider the square class of each entry appearing along the diagonal. Consider the following example over the complex numbers:"},
     EXAMPLE lines ///
     alpha = makeGWClass matrix(CC, {{2,3,1},{3,-1,0},{1,0,0}})
     beta = makeGWClass matrix(CC, {{2,4,-1},{4,5,7},{-1,7,9}})
     isIsomorphicForm(alpha,beta)
     ///,
     PARA{"The two forms are isomorphic since they can be diagonalized, after which they can be rewritten as the identity matrix after a change of basis, since every nonzero element is a square over ", TEX///$\mathbb{C}$///, " (the same is true for any quadratically closed field). Thus we have that the ", EM "rank", " of a form completely determines it over the complex numbers. That is, it provides an isomorphism ", TEX///$\text{GW}(\mathbb{C}) \to \mathbb{Z}$/// ,"."},
+    
     PARA{"Over the real numbers, the story is a bit different. Since there are two square classes of nonzero real numbers, ", TEX///$ \mathbb{R}^\times / \left(\mathbb{R}^\times\right)^2 \cong \left\{\pm 1\right\}$///," we have a further invariant which classifies symmetric bilinear forms, called the ", TO2(getSignature, "signature"), ". This is computed as first diagonalizing, then taking the number of positive entries appearing on the diagonal minus the number of negative entries appearing on the diagonal."},
     EXAMPLE lines ///
     gamma = makeGWClass matrix(RR, {{1,0,0},{0,-1,0},{0,0,1}});
@@ -57,6 +57,15 @@ document{
     alphaQ = makeGWClass matrix(QQ, {{1,4,7},{4,3,2},{7,2,-1}})
     betaQ = makeGWClass matrix(QQ, {{0,0,1},{0,2,7},{1,7,3}})
     isIsomorphicForm(alphaQ,betaQ)
+    ///,
+    PARA{"Determining if unstable Grothendieck-Witt classes ", TEX///$\alpha$///, " and ", TEX///$\beta$///,  " over a field ", TEX///$k$///, ", are isomorphic entails checking both whether their underlying ", EM"stable parts", " are isomorphic in the Grothendieck-Witt ring and whether their ", EM"scalar parts"," agree."},
+    EXAMPLE lines///
+    alpha = makeGWuClass(matrix(QQ, {{2,3,1},{3,-1,0},{1,0,0}}), 1)
+    beta = makeGWuClass(matrix(QQ, {{2,3,1},{3,-1,0},{1,0,0}}), 4)
+    isIsomorphicForm(alpha,beta)
+    alpha = makeGWuClass(matrix(CC, {{2,3,1},{3,-1,0},{1,0,0}}), 1)
+    beta = makeGWuClass(matrix(CC, {{2,4,-1},{4,5,7},{-1,7,9}}), 1)
+    isIsomorphicForm(alpha,beta)
     ///,
     PARA{EM "Citations:"},
     UL{
