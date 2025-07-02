@@ -112,9 +112,11 @@ doc ///
             the linearization map from the Burnside Mackey functor to the complex representation functor for the prime p.
     Description
         Text
-            Every $G$-set $X$ determines a complex representation with basis $X$, called the permutation representation of $X$.  This induces a map from the Burnside Mackey functor to the complex representation Mackey functor called the linearization map.
+            Every $G$-set $X$ determines a complex representation with basis $X$, called the permutation representation of $X$.  This induces a map from the @TO2(makeBurnsideMackeyFunctor,"Burnside Mackey functor")@ to the @TO2(makeComplexRepresentationMackeyFunctor,"complex representation Mackey functor")@ called the linearization map.
         Example
             complexLinearizationMap(5)
+    SeeAlso
+        realLinearizationMap
 ///
 
 doc ///
@@ -135,6 +137,8 @@ doc ///
             Every $G$-set $X$ determines a real representation with basis $X$, called the permutation representation of $X$.  This induces a map from the Burnside Mackey functor to the real representation Mackey functor called the linearization map.
         Example
             realLinearizationMap(5)
+    SeeAlso
+        complexLinearizationMap
 ///
 
 doc ///
