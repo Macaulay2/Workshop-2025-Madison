@@ -1,17 +1,20 @@
 document{
-    Key => {isIsomorphicForm, (isIsomorphicForm, GrothendieckWittClass, GrothendieckWittClass), (isIsomorphicForm, Matrix, Matrix)},
-    Headline => "determines whether two Grothendieck-Witt classes over CC, RR, QQ, or a finite field of characteristic not 2 are isomorphic.",
+    Key => {isIsomorphicForm, (isIsomorphicForm, GrothendieckWittClass, GrothendieckWittClass), (isIsomorphicForm, Matrix, Matrix), (isIsomorphicForm, UnstableGrothendieckWittClass, UnstableGrothendieckWittClass)},
+    Headline => "determines whether two (unstable) Grothendieck-Witt classes over CC, RR, QQ, or a finite field of characteristic not 2 are isomorphic.",
     Usage => "isIsomorphicForm(alpha, beta)",
     Inputs => {
 	GrothendieckWittClass => "alpha" => {"denoted by ", TEX///$\alpha$///, " over ", TEX///$\mathbb{Q}$///,", ",TEX///$ \mathbb{R}$///,", ",TEX///$\mathbb{C}$///, ", or a finite field of characteristic not 2"},
 	GrothendieckWittClass => "beta" => {"denoted by ", TEX///$\beta$///, " over ", TEX///$\mathbb{Q}$///,", ",TEX///$ \mathbb{R}$///,", ",TEX///$\mathbb{C}$///, ", or a finite field of characteristic not 2"},
+    UnstableGrothendieckWittClass => "alpha" => {"denoted by ", TEX///$\alpha$///, " over ", TEX///$\mathbb{Q}$///,", ",TEX///$ \mathbb{R}$///,", ",TEX///$\mathbb{C}$///, ", or a finite field of characteristic not 2"},
+	UnstableGrothendieckWittClass => "beta" => {"denoted by ", TEX///$\beta$///, " over ", TEX///$\mathbb{Q}$///,", ",TEX///$ \mathbb{R}$///,", ",TEX///$\mathbb{C}$///, ", or a finite field of characteristic not 2"},
 	},
     Outputs => {
-	Boolean => {"whether the two Grothendieck-Witt classes are equal as elements of the Grothendieck-Witt ring"},
+	Boolean => {"whether the two Grothendieck-Witt classes (resp. unstable Grothendieck-Witt classes) are equal as elements of the Grothendieck-Witt ring (resp. unstable Grothendieck-Witt group)"},
 	},
-    PARA{"Given two matrices representing symmetric bilinear forms over a field ", TEX///$k$///, ", it is a fundamental question to ask when they represent isomorphic symmetric bilinear forms, i.e. when they are equal in the Grothendieck-Witt ring ", TEX///$\text{GW}(k)$///,"."},
+
+    PARA{"Determining if unstable Grothendieck-Witt classes", TEX///$\alplha$///, " and ", TEX///$\beta$///,  "over a field ", TEX///$k$///, ", ", TEX///$\alpha$///, " and ", TEX///$\beta$///, " are isomorphic readily reduces to checking if their underlying ", EM"stable parts", " are isomorphic in the Grothendieck-Witt ring. By the structure of the unstable Grothendieck-Witt group ", TEX///$\text{GW}^{u}(k)$///, " being a fibered product ", TEX///$\text{GW}(k)\times_{(k^{\times})/(k^{\times})^{2}}k^{\times}$///, ", it is necessary and sufficient to verify that the scalar parts agree up to square and that the stable parts are isomorphic in the Grothendieck-Witt ring. The former condition is easily verified over ", TEX///$\mathbb{C}$///, " and ", TEX///$\mathbb{R}$///, ", and in the case of ", TEX///$\mathbb{Q}$///, " and ", TEX///$\mathbb{F}_{q}$///, " are given by the ", TO2(getSquarefreePart, "getSquarefreePart"), " and ", TO2(isGFSquare, "isGFSquare"), ", respectively."},
     
-    PARA{EM "Sylvester's Law of Inertia", " proves that any symmetric bilinear form can be diagonalized into a block sum of rank one symmetric bilinear forms. Since the rank one forms ", TEX///$\langle a \rangle \colon k \times k \to k$///, ", ", TEX///$(x,y) \mapsto axy$///, " and ", TEX///$\langle ab^2 \rangle \colon k \times k \to k$///, ", ", TEX///$(x,y) \mapsto ab^2xy$///, " differ by a change of basis in the ground field, it follows they are isomorphic (provided that ", TEX///$a,b\ne 0$///, "). Thus after diagonalizing a form, it suffices to consider the square class of each entry appearing along the diagonal. Consider the following example over the complex numbers:"},
+    PARA{"To verify when forms are isomorphic in the Grothendieck-Witt ring ", EM "Sylvester's Law of Inertia", " proves that any symmetric bilinear form can be diagonalized into a block sum of rank one symmetric bilinear forms. Since the rank one forms ", TEX///$\langle a \rangle \colon k \times k \to k$///, ", ", TEX///$(x,y) \mapsto axy$///, " and ", TEX///$\langle ab^2 \rangle \colon k \times k \to k$///, ", ", TEX///$(x,y) \mapsto ab^2xy$///, " differ by a change of basis in the ground field, it follows they are isomorphic (provided that ", TEX///$a,b\ne 0$///, "). Thus after diagonalizing a form, it suffices to consider the square class of each entry appearing along the diagonal. Consider the following example over the complex numbers:"},
     EXAMPLE lines ///
     alpha = makeGWClass matrix(CC, {{2,3,1},{3,-1,0},{1,0,0}})
     beta = makeGWClass matrix(CC, {{2,4,-1},{4,5,7},{-1,7,9}})
