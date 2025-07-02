@@ -6,4 +6,8 @@ doc ///
     Description
         Text
             todo - give a mathematical introduction to Mackey functors
+    SeeAlso
+        "the abelian category of Mackey functors"
+        "constructing examples of Mackey functors"
+        "explicit applications of the CpMackeyFunctors package"
 ///

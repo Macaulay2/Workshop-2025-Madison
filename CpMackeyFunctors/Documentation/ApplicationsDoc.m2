@@ -6,4 +6,8 @@ doc ///
     Description
         Text
             todo - populate this with some real-life examples of where our package is useful
+    SeeAlso
+        "background on Mackey functors"
+        "the abelian category of Mackey functors"
+        "constructing examples of Mackey functors"
 ///

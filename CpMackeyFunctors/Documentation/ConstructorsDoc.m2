@@ -18,7 +18,9 @@ doc ///
             Furthermore we have {\bf random constructors} which allow us to build a @TO2(makeRandomCpMackeyFunctor,"random Mackey functor")@ over the group $C_p$.
 
     SeeAlso
+        "background on Mackey functors"
         "the abelian category of Mackey functors"
+        "explicit applications of the CpMackeyFunctors package"
 ///
 
 doc ///

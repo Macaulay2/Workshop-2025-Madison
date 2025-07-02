@@ -31,8 +31,9 @@ doc ///
             {\bf Ext and Tor:} todo
 
     SeeAlso
-        CpMackeyFunctor
-        MackeyFunctorHomomorphism
+        "background on Mackey functors"
+        "constructing examples of Mackey functors"
+        "explicit applications of the CpMackeyFunctors package"
 
 ///
 
