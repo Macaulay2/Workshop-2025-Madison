@@ -1,45 +1,78 @@
--------------------------------------
--- unstable A1-Brouwer degree methods (task 3.12 from Overleaf)
--------------------------------------
-
--- Input: A rational function f/g
+-- Input: A rational function f/g, a root of f, and the multiplicity of that root
 
 -- Output: A pair (M,a) where M is a matrix and a is a scalar
 
 getLocalUnstableA1Degree = method()
-getLocalUnstableA1Degree (RingElement, Number, ZZ) := (UnstableGrothendieckWittClass) => (q, r, m) -> (
+getLocalUnstableA1Degree (RingElement, Number) := (UnstableGrothendieckWittClass) => (q, r) -> (
 
+    if not (instance(ring q, PolynomialRing) or instance(ring q, FractionField)) then
+        error "input must be in polynomial ring or fraction field";
+        
     kk := coefficientRing ring q;
+
+    if not (kk === QQ or (instance(kk, GaloisField) and kk.char != 2)) then 
+        error "only implemented over QQ and finite fields of characteristic not 2";
+
+    if numgens ring q != 1 then error "must input function of one variable";
 
     x := (gens ring q)#0;
 
-    R := kk[x];
-    fracR := frac R;
+    q = sub(q, frac ring q);
 
     -- Extract numerator f from q
-    f := numerator(sub(q, fracR));
+    f := numerator(q);
        
-    -- Extract numerator g from q
-    g := denominator(sub(q, fracR));
-    
-    -- Get the underlying ring and ensure it is a field
-    --kk := coefficientRing ring(f);
-    if not isField kk then kk = toField kk;
+    -- Extract denominator g from q
+    g := denominator(q);
     
     -- Check whether the rational function has isolated zeros
     if dim ideal(f) > 0 then 
         error "rational function does not have isolated zeros";
 	
     -- Check whether the number of variables matches the number of polynomials
-    
-    S := ring f;
-    if #(gens S) != 1 then
-        error "the number of variables does not match the number of polynomials";
-
     if not f(r) == 0 then
         error "the field element is not a zero of the function";
 
-    F := (sub(x,fracR)-sub(r,fracR))^m * g/f;
+    m := getMultiplicity(f, r);
+
+    F := (x-sub(r, frac ring q))^m * g/f;
+
+    makeAntidiagonalUnstableForm(kk, F(r), m)
+)
+
+getLocalUnstableA1Degree (RingElement, RingElement) := (UnstableGrothendieckWittClass) => (q, r) -> (
+
+    if not (instance(ring q, PolynomialRing) or instance(ring q, FractionField)) then
+        error "input must be in polynomial ring or fraction field";
+        
+    kk := coefficientRing ring q;
+
+    if not (kk === QQ or (instance(kk, GaloisField) and kk.char != 2)) then 
+        error "only implemented over QQ and finite fields of characteristic not 2";
+
+    if numgens ring q != 1 then error "must input function of one variable";
+
+    x := (gens ring q)#0;
+
+    q = sub(q, frac ring q);
+
+    -- Extract numerator f from q
+    f := numerator(q);
+       
+    -- Extract denominator g from q
+    g := denominator(q);
+    
+    -- Check whether the rational function has isolated zeros
+    if dim ideal(f) > 0 then 
+        error "rational function does not have isolated zeros";
+	
+    -- Check whether the number of variables matches the number of polynomials
+    if not f(r) == 0 then
+        error "the field element is not a zero of the function";
+
+    m := getMultiplicity(f, r);
+
+    F := (x-sub(r, frac ring q))^m * g/f;
 
     makeAntidiagonalUnstableForm(kk, F(r), m)
 )

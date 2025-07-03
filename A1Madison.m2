@@ -160,6 +160,7 @@ load "./A1Madison/Code/Decomposition.m2"
 
 -- Unstable Grothendieck-Witt classes 
 load "./A1Madison/Code/UnstableGrothendieckWittClasses.m2"
+load "./A1Madison/Code/multiplicity.m2"
 load "./A1Madison/Code/UnstableLocalDegrees.m2"
 
 ----------------------------
