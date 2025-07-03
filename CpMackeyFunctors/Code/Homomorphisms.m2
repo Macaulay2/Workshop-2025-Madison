@@ -99,9 +99,9 @@ net MackeyFunctorHomomorphism := f -> (
     hs := if s >= t then 1 else t - s + 1;
     ht := if t >= s then 1 else s - t + 1;
     horizontalJoin(
-	vertSpace(h1) || objHelper(source f, hs), vertSpace(h1) || " <--" || vertSpace(h2) || " <--",
+	vertSpace(h1) || objHelper(target f, ht), vertSpace(h1) || " <--" || vertSpace(h2) || " <--",
 	lineBelow("fix : " | net (f.FixedMap), n) || vertSpace(h2) || lineAbove("und : " | net (f.UnderlyingMap), n),
-	vertSpace(h1) || "-- " || vertSpace(h2) || "-- ", vertSpace(h1) || objHelper(target f, ht)   
+	vertSpace(h1) || "-- " || vertSpace(h2) || "-- ", vertSpace(h1) || objHelper(source f, hs)   
 	)
     )
 
