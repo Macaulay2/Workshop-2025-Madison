@@ -71,10 +71,11 @@ getH0 (RingElement, Ideal) := o -> (a, J) -> (
     R := ring J;
     B := basis(R/J);
     H0 := getH0(a, B, J, o);
-    if (o.Strategy == null) then H0 else if (o.Strategy == "Larsson") then (
-	H0%ideal(syz(H0))
+    if (o.Strategy === null) then H0 else if (o.Strategy == "Larsson") then (
+	print("Using Larsson's strategy to compute H0.");
+    --H0%module(syz(H0))
 	) else (error "Strategy not yet implemented.") 
-)
+)    
 getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     R := ring J;
     FF := coefficientRing R;
@@ -102,9 +103,11 @@ shiftPolynomials = (shifts, J) -> (
     apply(shifts, J_*, (m, f) -> f * sub(m, ring J))
 )
 
-getTemplate = method(Options => {MonomialOrder => null})
+getTemplate = method(Options => {MonomialOrder => null, Strategy => null})
 getTemplate(RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     H0 := getH0(a, B, J, o);
+    print(o);
+    --print("Strategy in getTemplate" | toString(o.Strategy);
     shifts := new ShiftSet from apply(numgens J, i -> monomials(H0^{i}));
     allMons := union(set \ flatten \ entries \ monomials \ shiftPolynomials(shifts, J));
     monsB := set flatten entries(lift(B, ring J));
@@ -121,14 +124,14 @@ getTemplate EliminationTemplate := o -> E -> (
 	    aVar := actionVariable E;
 	    J := ideal E;
 	    R := ring J;
-	    (sh, mp) := getTemplate(aVar, basis(R/J), J);
+	    (sh, mp) := getTemplate(aVar, basis(R/J), J, o);
 	    E.cache#"shifts" = sh;
 	    E.cache#"monomialPartition" = mp;
 	    (sh, mp)
 	    )
 	)
 
-getTemplateMatrix = method(Options => {MonomialOrder => null})
+getTemplateMatrix = method(Options => {MonomialOrder => null, Strategy => null})
 getTemplateMatrix(RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     (shifts, monomialPartition) := getTemplate(a, B, J, o);
     getTemplateMatrix(shifts, monomialPartition, J, o)
@@ -141,7 +144,7 @@ getTemplateMatrix(EliminationTemplate) := o -> E -> (
     if E.cache#?"templateMatrix" then E.cache#"templateMatrix" else (
 	(shifts, monomialPartition) := getTemplate E;
 	J := ideal E;
-	ret := getTemplateMatrix(shifts, monomialPartition, J);
+	ret := getTemplateMatrix(shifts, monomialPartition, J, o);
 	E.cache#"templateMatrix" = ret;
 	ret
     )
@@ -262,7 +265,19 @@ TEST ///
 R = QQ[x,y]
 J = ideal(x^3 + y^2 - 1, x - y - 1)
 E = eliminationTemplate(x, J)
+
 getTemplateMatrix E
+getTemplateMatrix(E, Strategy => "Larsson")
+
+getTemplate(E, Strategy => "Larsson")
+getH0(x, J, Strategy => "Larsson")
+getH0(x, J, Strategy => null)
+
+theH0 = getH0(x,J)
+theH0%module(syz(theH0))
+
+getActionMatrix E
+eigenvalues getActionMatrix E
 ///
 
 end--
