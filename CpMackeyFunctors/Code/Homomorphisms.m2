@@ -58,6 +58,14 @@ map(CpMackeyFunctor, CpMackeyFunctor, Matrix, Matrix) := MackeyFunctorHomomorphi
 	)
 )
 
+-- Allows you construct the zero map, and also k*id
+map(CpMackeyFunctor,CpMackeyFunctor,ZZ) := MackeyFunctorHomomorphism => opts -> (N,M,a) -> (
+    if not M.PrimeOrder == N.PrimeOrder then error "Mackey functors for different primes";
+    if a==0 then return map(N,M,map(N.Underlying,M.Underlying,0),map(N.Fixed,M.Fixed,0));
+    if N==M then return map(N,M, map(N.Underlying,M.Underlying,a),map(N.Fixed,M.Fixed,a));
+    error "Mackey functors are not the same and integer is not zero."
+)
+
 -- tries to induce from the identity 
 inducedMap(CpMackeyFunctor, CpMackeyFunctor) := MackeyFunctorHomomorphism => opts -> (N,M) -> (
     map(N,M,inducedMap(N.Underlying, M.Underlying), inducedMap(N.Fixed, M.Fixed))
@@ -253,12 +261,3 @@ MackeyFunctorHomomorphism || MackeyFunctorHomomorphism := MackeyFunctorHomomorph
 
 MackeyFunctorHomomorphism.concatBlocks = maps -> MackeyFunctorHomomorphism.concatRows apply(maps, MackeyFunctorHomomorphism.concatCols)
 MackeyFunctorHomomorphism.matrix = opts -> MackeyFunctorHomomorphism.concatBlocks
-
-
---map--
-map(CpMackeyFunctor,CpMackeyFunctor,ZZ) := MackeyFunctorHomomorphism => opts -> (N,M,a) -> (
-    if not M.PrimeOrder == N.PrimeOrder then error "Mackey functors for different primes";
-    if a==0 then return map(N,M,map(N.Underlying,M.Underlying,0),map(N.Fixed,M.Fixed,0));
-    if N==M then return map(N,M, map(N.Underlying,M.Underlying,a),map(N.Fixed,M.Fixed,a));
-    error "Mackey functors are not the same and integer is not zero."
-)
