@@ -146,3 +146,29 @@ document {
     SeeAlso => {"GrothendieckWittClass", "UnstableGrothendieckWittClass", "makeGWuClass"}
         }
 
+document {
+    Key => {addGWuDivisorial, (addGWuDivisorial, List, List)},
+	Headline => "the divisorial sum of local degrees of a rational function",
+	Usage => "addGWuDivisorial(L1, L2)",
+	Inputs => {
+	    List => "L1" => {"a list of unstable Grothendieck-Witt classes representing unstable local degrees"},
+		List => "L2" => {"a list of elements of the base field corresponding to the roots at which the unstable local degrees of ", TT"L1", " are computed."}
+	    },
+	Outputs => {
+	    UnstableGrothendieckWittClass => {"the divisorial sum of the unstable Grothendieck-Witt classes in ", TT "L1", " with respect to the divisor determined by the points in ", TT"L2", "."}
+	    },
+	PARA {"Let ", TEX///$\frac{f(x)}{g(x)}:\mathbb{P}^{1}_{k}\to\mathbb{P}^{1}_{k}$///, " be a pointed rational function with zeroes ", TEX///$\{r_{1},\dots,r_{n}\}$///, " and ", TEX///$\{\beta_{1},\dots,\beta_{n}\}$///, " the unstable local ", TEX///$\mathbb{A}^{1}$///, "-degrees at the ", TEX///$r_{i}$///, ". The unstable global ", TEX///$\mathbb{A}^{1}$///, "-degree of the rational function is not computed as the ", TO2(addGWu, "addGWu"), " of the local unstable degrees, but as the divisorial sum [IMS+24, Thm. 1.2]."},
+	PARA {"The following example computes the divisorial sum of the rational function ", TEX///$\frac{x^{2}+x-2}{3x+5}$///, " over ", TEX///$\mathbb{Q}$/// , " where the lists of unstable Grothendieck-Witt classes are given by ", TEX///$\{(\langle \frac{1}{3}\rangle, \frac{1}{3}), (\langle \frac{8}{3}\rangle, \frac{8}{3})\}$///, " and ", TEX///$\{-2, 1\}$///, "." },
+	EXAMPLE lines///
+	M1 = matrix(QQ, {{1/3}})
+	alpha = makeGWuClass(M1)
+	M2 = matrix(QQ, {{8/3}})
+	beta = makeGWuClass(M2)
+	addGWuDivisorial({alpha, beta}, {-2, 1})
+	///,
+	 PARA{EM "Citations:"},
+    UL{
+	{"[IMS+24] Igieobo, et. al., ", EM "Motivic configurations on the line,", TT"arXiv: 2411.15347", "."},
+    },
+    SeeAlso => {"UnstableGrothendieckWittClass"} -- to add local and global degree functions
+        }
