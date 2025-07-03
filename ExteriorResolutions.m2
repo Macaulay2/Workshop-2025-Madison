@@ -189,25 +189,24 @@ koszulRR Complex    := Complex    => opts -> C -> (
     )
 -- ???
 koszulRR ComplexMap := ComplexMap => opts -> f -> (
-    (lo,hi) := opts.Concentration;
+    (lo, hi) := opts.Concentration;
     C := source f;
     D := target f;
-    (infC,supC) := concentration C;
-    (infD,supD) := concentration D;
-    (inf,sup) := (min{infC,infD},max{supC,supD});
+    (infC, supC) := concentration C;
+    (infD, supD) := concentration D;
+    (inf, sup) := (min{infC, infD},max{supC, supD});
     
-    RRtermsf := hashTable apply(inf..sup, k -> -k=>koszulRR(f_k, Concentration=>(lo+k,hi+k)));
-    maps := hashTable apply(lo..hi, i ->
-	i => hashTable apply(inf..sup, k -> -k=>(RRtermsf#(-k))^(i+k))
-	);
-
-    map(koszulRR(D, opts), koszulRR(C, opts),
-	hashTable apply(lo..hi, i-> i =>
-	    matrix table(toList(inf..sup), toList(inf..sup),
-	    (r,c)->map(maps#(-i-1)#(-r), maps#(-i)#(-c),
-	    if r==c then (RRtermsf#(-r))_(-r+i)
-	    else 0
-	    ))))
+    RRmaps := hashTable apply(inf..sup,
+	k -> -k => koszulRR(f_k, Concentration => (k-hi,k-lo)));
+    
+    map(tar := koszulRR(D, opts), src := koszulRR(C, opts),
+	hashTable apply(lo..hi,
+	    i -> i => map(tar_i, src_i,
+		matrix table(toList(inf..sup), toList(inf..sup),
+		    (r, c) -> if r == c then (RRmaps#(-sup+r))_(-sup+r+i) else 0)
+		)
+	    )
+	)
     )
 
 
@@ -518,6 +517,14 @@ TEST ///
     
     assert( f == id_(koszulLL(M, Concentration=>(-5,5))))
 ///
+TEST ///
+    (S,E)= koszulPair(1, ZZ/101)
+
+    C = koszulComplex vars S
+    
+    -- RR(id_C) == id_(RR(C))
+    assert( koszulRR(id_C, Concentration=>(-5,5)) == id_(koszulRR(C, Concentration=>(-5,5))) )
+///
 
 TEST ///
     (S, E) = koszulPair(4, ZZ/19937)
@@ -559,11 +566,18 @@ needsPackage "ExteriorResolutions"
 koszulRR(koszulComplex matrix {{x_0}}, Concentration=>(-5,5))
 koszulRR(koszulComplex vars S, Concentration=>(-5,5))
 
+C = koszulComplex matrix {{x_0}}
+koszulRR(id_C, Concentration=>(-5,5))
+
 M = E^1
 
 C = koszulComplex vars S
 
 f = koszulRR(id_C, Concentration=>(-5,5))
+f == id_(koszulRR(C, Concentration=>(-5,5)))
+
+
+koszulRR(koszulLL(E^1, Concentration=>(-5,5)), Concentration=>(-5,5))
 
 
 C = koszulComplex matrix{{x_0}}
