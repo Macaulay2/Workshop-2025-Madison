@@ -240,8 +240,6 @@ doc ///
       a basis for a zero-dimensional quotient ring
     J:Ideal
       a zero-dimensional ideal
-    MonomialOrder=>Thing
-      the monomial order used on the ambient ring
   Outputs
     shifts:ShiftSet
       A list of matrices, each encoding rows of the template matrix
@@ -260,6 +258,29 @@ doc ///
       actVar = x;
       B = lift(basis(R/J), R);
       (sh, mp) = getTemplate(actVar, B, J)
+///
+
+doc ///
+ Node
+  Key
+   [getTemplate, MonomialOrder]
+  Headline
+    the monomial order used on the ambient ring, 
+  Usage
+    getTemplate(a, B, J, MonomialOrder => Eliminate 1)
+  Inputs
+    GRevLex:MonomialOrder
+      a monomial order such as Lex, GRevLex, Eliminate, etc.
+  Consquences
+   {"If this option is not provided, the default monomial order ", TT "Eliminate 1", " will be used to construct the ambient ring."}
+    The monomial order will be used to construct the ambient polynomial ring in which the elimination template is computed.
+    This affects the ordering of monomials in the basis and may change the resulting template matrix.
+  Example
+    R = QQ[x,y];
+    J = ideal(x^2+y^2-1, x^2+x*y+y^2-1);    
+    actVar = x;
+    B = lift(basis(R/J), R);
+    getTemplate(actVar, B, J, MonomialOrder => Eliminate 1)
 ///
 
 doc ///
