@@ -59,7 +59,25 @@ doc ///
         cycleTypeRepresentatives
         (cycleTypeRepresentatives, ZZ)
     Headline
-        computes representatives for each cycle type in the symmetric group
+        computes representatives for each cycle type in the symmetric group S_n
+    Usage
+        C = cycleTypeRepresentatives n
+    Inputs
+        n : ZZ
+            size of the symmetric group for which we want to know the cycle type representatives
+    Outputs
+        : List
+            one representative (written as a permutation matrix) from each cycle type of S_n
+            in a list
+    Description
+        Text
+            A way to compute a representative of each cycle type of the symmetric group
+            on n elements. Representatives are given as n by n permutation matrices.
+        Example
+            cycleTypeRepresentatives 4
+    SeeAlso
+        EquivariantEhrhart
+        (equivariantEhrhartSeries, Polyhedron)
 ///
 
 doc ///
