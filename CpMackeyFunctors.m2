@@ -92,7 +92,7 @@ export{
     "isTrivialMackeyFunctor",
     "concatBlocks",
     "makeUniversalMapFixedCohomological",
-    "makeUniversalMapCohomolgical"
+    "makeUniversalMapCohomological"
 }
 
 -- Methods for working in the abelian category Mack_p.

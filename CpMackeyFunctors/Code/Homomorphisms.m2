@@ -340,7 +340,9 @@ makeUniversalMapFixedCohomological(CpMackeyFunctor,Matrix) := MackeyFunctorHomom
 -- return the universal map B^n ++ Z^m -> M
 makeUniversalMapCohomological = method()
 makeUniversalMapCohomological(CpMackeyFunctor,Matrix,Matrix) := MackeyFunctorHomomorphism => (M,X,Y) -> (
-    return makeUniversalMapUnderlying(M,X) | makeUniversalMapFixedCohomological(M,Y))
+    return makeUniversalMapUnderlying(M,X) | makeUniversalMapFixedCohomological(M,Y)
+)
+
 --map--
 map(CpMackeyFunctor,CpMackeyFunctor,ZZ) := MackeyFunctorHomomorphism => opts -> (N,M,a) -> (
     if not M.PrimeOrder == N.PrimeOrder then error "Mackey functors for different primes";
