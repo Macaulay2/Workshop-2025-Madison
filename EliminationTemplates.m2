@@ -244,11 +244,18 @@ doc ///
     (sh, mp) = getTemplate(a, B, J)
   Inputs
     a:RingElement
+      the action polynomial defining a multiplication matrix
     B:Matrix
+      a basis for a zero-dimensional quotient ring
     J:Ideal
+      a zero-dimensional ideal
+    MonomialOrder=>Thing
+      the monomial order used on the ambient ring
   Outputs
     shifts:ShiftSet
+      A list of matrices, each encoding rows of the template matrix
     monomialPartition:MonomialPartition
+      A list of monomials encoding columns of the template matrix
   Description
    Text
      This method builds an elimination template. It returns a Sequence of length two, which can be used to recover the template matrix.
@@ -324,6 +331,9 @@ check "EliminationTemplates"
 uninstallPackage "EliminationTemplates"
 restart
 installPackage "EliminationTemplates"
+help EliminationTemplates
+help getTemplate
+
 viewHelp "EliminationTemplates"
 
 R = QQ[x,y]
