@@ -45,7 +45,17 @@ getGlobalUnstableA1Degree RingElement := (Matrix,Number) => q -> (
     -- Initialize a polynomial ring in X_i's and Y_i's in which to compute the Bezoutian
     X := local X;
     Y := local Y;
-    R := kk(monoid[X_1..X_n | Y_1..Y_n]);
+    R := kk[X,Y];
+    
+fX = sub(f,{x => X})
+
+fY = sub(f,{x => Y})
+
+gX = sub(g,{x => X})
+
+gY = sub(g,{x => Y})
+
+D = lift((fX * gY - fY * gX)/(X-Y),R)
 
     -- Create an (n x n) matrix D to be populated by \Delta_{ij} from the Brazelton-McKean-Pauli paper
     D := "";
@@ -72,12 +82,12 @@ getGlobalUnstableA1Degree RingElement := (Matrix,Number) => q -> (
     bezDetR:="";
       
     -- The determinant of D is interpreted as an element of Frac(k[x_1..x_n]), so we can try to lift it to k[x_1..x_n]           
-    if liftable(det D, R) then bezDetR = lift(det D, R);
+    if liftable(D, R) then bezDetR = lift(D, R);
     
     -- In some computations, applying lift(-,R) doesn't work, so we instead lift the numerator and
     -- then divide by a lift of the denominator (which will be a scalar) to the coefficient ring kk
-    if not liftable(det D, R) then (
-	bezDet = lift(numerator det D, R) / lift(denominator det D, coefficientRing R);
+    if not liftable(D, R) then (
+	bezDet = lift(numerator D, R) / lift(denominator D, coefficientRing R);
     	bezDetR = lift(bezDet, R);
 	);
 
@@ -102,29 +112,36 @@ gY = sub(g,{x => Y})
 
 bez = sub((fX * gY - fY * gX)/(X-Y),S)
 
+-- test
+b' = 3*X*Y + 5*X + 11 + 0*Y -- monomial Y does not show up in 'coefficiens'
+
     -- Create the Bezoutian matrix B for the symmetric bilinear form by reading off the coefficients. 
     -- B is an (m x m) matrix. The coefficient B_(i,j) is the coefficient of the (ith basis vector x jth basis vector) in the tensor product.
     -- phi0 maps the coefficient to kk
-    (M,C) := coefficients bez;
+    (M,C) := coefficients bez
     B := mutableMatrix id_(QQ^2);
     for i from 0 to 1 do (
         for j from 0 to 1 do
            if i == 0 then B_(i,j) = coefficient(M_(i,3-j),bez) else B_(i,j) = coefficient(M_(1-i,1-j),bez);
         );
     
-    (makeGWClass matrix B, det matrix B) -- need correct class here
+    (makeGWClass matrix B, det matrix B) -- need correct class here check makeGWuClass
         
 ----------------
 -- end here
-----------------
+----------------    
+    -- Define formal variables X and Y that replace x
+    S := QQ[X,s]
+    gXs := sub(gX,S)
+    RX := S/(s*gXs - 1) 
+    
+    T := QQ[Y,t]
+    gYt := sub(gY,T)
+    RY := T/(t*gYt-1)
 
-    -- Define formal variables X_i and Y_i that replace x_i
-    RX := QQ[X,s]/(s*g-1); 
-    RY := QQ[Y,t]/(t*f-1);
-
-    -- mapxtoX replaces all instances of x_i with X_i; mapxtoY replaces all instances of y_i with Y_i
-    mapxtoX := map(RX,R,toList(X))
-    mapxtoY := map(RY,R,toList(Y))
+    -- mapxtoX replaces all instances of x with X; mapxtoY replaces all instances of x with Y
+    mapxtoX := map(RX,R,X)
+    mapxtoY := map(RY,R,Y)
 
     -- Compute the standard basis of kk[X_1,...,X_n]/(f_1,...,f_n)
     standBasisX := basis (RX/(ideal (leadTerm (mapxtoX ideal f)))) 
