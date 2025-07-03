@@ -78,11 +78,12 @@ getH0 = method(Options => {MonomialOrder => null, Strategy => null})
 getH0 (RingElement, Ideal) := o -> (a, J) -> (
     R := ring J;
     B := basis(R/J);
-    getH0(a, B, J, o)
-    --if (o.Strategy === null) then H0 else if (o.Strategy == "Larsson") then (
-	--print("Using Larsson's strategy to compute H0.");
-        --H0%image(syz(gens(J)))
-	--) else (error "Strategy not yet implemented.") 
+    H0 := getH0(a, B, J, o);
+    if (o.Strategy === null) then H0 else if (o.Strategy == "Larsson") then (
+	    print("Using Larsson's strategy to compute H0.");
+        --H0%module(syz(H0))
+        H0
+	) else (error "Strategy not yet implemented.") 
 )    
 getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     R := ring J;
@@ -103,7 +104,7 @@ getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     H0 = sub(H0, ring J);
     if (o.Strategy === null) then H0 else if (o.Strategy == "Larsson") then (
 	    print("Using Larsson's strategy to compute H0.(detailed getH0 method)");
-        H0%image(syz(gens(J)))
+        H0
     ) else (error "Strategy not yet implemented.") 
 )
 
@@ -128,8 +129,7 @@ getTemplate(EliminationTemplate) := o -> E -> (
 	    aVar := actionVariable E;
 	    J := ideal E;
 	    R := ring J;
-	    E.cache#basis = basis(R/J);
-	    (sh, mp) := getTemplate(aVar, E.cache#basis, J, o);
+	    (sh, mp) := getTemplate(aVar, basis(R/J), J, o);
 	    E.cache#"shifts" = sh;
 	    E.cache#"monomialPartition" = mp;
 	    (sh, mp)
@@ -197,15 +197,9 @@ getActionMatrix(EliminationTemplate) := o -> E -> (
     )
 )
 
-basis(EliminationTemplate) := o -> E -> E.cache#basis
-
 templateSolve = method(Options => {MonomialOrder => null})
-templateSolve(EliminationTemplate) := o -> (E) -> (
-    Ma := getActionMatrix(E);
-    (svals, P) := eigenvectors Ma;
-    cleanEvecs := clean_(1e-10) (P * inverse diagonalMatrix(P^{numColumns P - 1}));
-    B := basis E;
-    (transpose rsort B, cleanEvecs)
+templateSolve(EliminationTemplate) := o -> (template) -> (
+
 )
 templateSolve(Ideal) := o -> (I) -> (
 
@@ -254,6 +248,33 @@ doc ///
 	{"Optimizing Elimination Templates by Greedy Parameter Search, Martyushev-Vrablikova-Pajdla", EM "CVPR 2022"},
 	{"Efficient solvers for minimal problems by syzygy-based reduction, Larsson-Oskarsson-Astrom", EM "CVPR 2017"}
 	}@
+///
+
+doc ///
+ Node
+    Key
+        eliminationTemplate
+        (eliminationTemplate, RingElement, Ideal)
+    Headline
+        Constructor for a EliminationTemplate object
+    Usage
+        E = eliminationTemplate(a, J)
+    Inputs
+        a:RingElement
+            the action polynomial defining a multiplication matrix
+        J:Ideal
+            a zero-dimensional ideal
+    Outputs
+        E:EliminationTemplate
+            An EliminationTemplate object encoding the data for elimination template computations
+    Description
+        Text
+            This function constructs an EliminationTemplate object, which stores the action variable and ideal, and provides a cache for storing computed template data.
+            The EliminationTemplate object can be used with other functions in this package to compute template matrices, action matrices, and solve polynomial systems.
+     Example
+            R = QQ[x,y]
+            J = ideal(x^2+y^2-1, x^2+x*y+y^2-1)
+            E = eliminationTemplate(x, J)
 ///
 
 doc ///
@@ -308,6 +329,8 @@ doc ///
       Other monomial orders can be used, such as `Eliminate 2` or `Eliminate 3`.
       See the documentation for `Macaulay2` for more information on monomial orders.
 ///
+
+
 
 doc ///
  Node
@@ -374,28 +397,19 @@ assert(all(sort eigenvalues Mx, {-2,0,1}, (e1, e2) -> abs(e1-e2) < 1e-4))
 
 TEST ///
 R = QQ[x,y]
---J = ideal(x^3 + y^2 - 1, x - y - 1)
-J=ideal(x^3+y^3+z^3-4,x^2-y-z-1,x-y^2+z-3)
+J = ideal(x^3 + y^2 - 1, x - y - 1)
 E = eliminationTemplate(x, J)
-H0 = getH0(x,J,Strategy=>"Larsson")
-image(syz(gens(J)))
 
+getTemplateMatrix E
 getTemplateMatrix(E, Strategy => "Larsson")
+
+getTemplate(E, Strategy => "Larsson")
+
+getH0(x, J, Strategy => "Larsson")
+getH0(x, J, Strategy => null)
+
 getActionMatrix E
 eigenvalues getActionMatrix E
-///
-
-TEST ///
-R = QQ[x,y]
---J = ideal(x^3 + y^2 - 1, x - y - 1)
-J=ideal(x^3+y^3+z^3-4,x^2-y-z-1,x-y^2+z-3)
-E1 = eliminationTemplate(x, J)
-H0 = getH0(x,J,Strategy=>null)
-H0%image(syz(gens(J)))
-
-getTemplateMatrix(E1, Strategy => null)
-getActionMatrix E1
-eigenvalues getActionMatrix E1
 ///
 
 end--
