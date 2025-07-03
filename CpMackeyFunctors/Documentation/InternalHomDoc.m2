@@ -21,6 +21,7 @@ doc ///
 doc ///          
     Key
         (InternalHom, CpMackeyFunctor, MackeyFunctorHomomorphism)
+        (InternalHom, MackeyFunctorHomomorphism, CpMackeyFunctor)
     Headline
         returns the induced map on an internal hom.
     Usage
@@ -38,18 +39,3 @@ doc ///
         Example
             InternalHom(makeRealRepresentationMackeyFunctor(5), complexLinearizationMap(5))
 ///
-
---this last doesn't work
-
--- doc ///          
---     Key
---         (InternalHom, MackeyFunctorHomomorphism, CpMackeyFunctor)
---     Headline
---         returns the induced map on an internal hom.
---     Usage
---         InternalHom(F,M)
---         InternalHom(M,F)
---     Inputs
---         M : CpMackeyFunctor
---         F : MackeyFunctorHomomorphism
--- ///
