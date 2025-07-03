@@ -25,7 +25,7 @@ needsPackage "InvariantRing"
 --      OUTPUT:
 --          * N     : List              => List of minimal generating seeds
 genseeds = method();
-genseeds (PolynomialRing,Matrix,List) := (R,W,ZList) ->(
+genseeds (PolynomialRing, Matrix, List) := (R, W, ZList) ->(
     
     -- First, we get the weight matrix via the diagonalAction function.
     T = diagonalAction(W,ZList,R);
@@ -39,7 +39,6 @@ genseeds (PolynomialRing,Matrix,List) := (R,W,ZList) ->(
     gR = gens R;
     -- Then, we apply the variables of our polynomialRing to a subring.
     modVars = apply(gR, m -> sub(m, ring T));
-    print modVars;
 
     -- Now, we need to find the first element of S1 that isn't a pure power:
     -- First we make a guiding list of all the possible combinations of modded variables.
@@ -76,15 +75,16 @@ genseeds (PolynomialRing,Matrix,List) := (R,W,ZList) ->(
         M = M | {(modVars#i)^(modDegree)};
     );
 
+    -- This code accumulates the m' over and over and then mods out by our modDegree
     for i to (modDegree - 1) when (m' != 0) do (
         -- First we add m' to our M
         M = M | {m'};
         -- Then, we multiply out a power. 
         m' = m'* m;
 
-        for j to (numgens R - 1) do (
-            while (degree(modVars#j, m') > modDegree) do (
-                m' = lift(m' / ((modVars#j)^(modDegree)), R);
+        for j in modVars do (
+            while (degree(j, m') > modDegree) do (
+                m' = lift(m' / ((j)^(modDegree)), R);
             );
         );
     );
@@ -93,31 +93,27 @@ genseeds (PolynomialRing,Matrix,List) := (R,W,ZList) ->(
     M = unique(M);
     M = sort(M);
 
-    -- remove nonminimal elements from the set
-    for i to (#M - 1) do (
-        -- Assume that it is initially minimal
-        isMinimal := true;
+    -- Now, we're going to check if we can make 
+    for i when (i < #M) do (
 
-        -- Then loop through all the elements that aren't i;
-        for j to (i-1) when isMinimal do (
+        candidate = M_i;
 
-            -- Then, we create a variable to check if M#i is always a higher degree than M#j
-            higherDegree = true;
-            for var in (gens R) when higherDegree do (
-                if (degree(var, M#i) < degree(var, M#j)) then (
-                    higherDegree = false;
+        for j when (j < #M) do (
+            if (i != j and (candidate % M_j) == 0) then (
+                candidate = candidate // M_j;
+
+                if candidate == 1_R then (
+                    M = drop(M, {i,i}); 
+                    i = i-1; 
+                    break;
                 );
-            );
-            -- If it is a higher degree, then it's not minimal
-            if higherDegree then isMinimal = false;
+            );  
+            
         );
-
-        -- However, if it is minimal, then we add it to the minimal set, N.
-        if (isMinimal) then (N = N | {M#i};);
     );
 
-    -- Finally, we return n
-    return N;
+    -- Finally, we return M
+    return M;
 )
 
 
