@@ -187,6 +187,22 @@ doc ///
         (makeCpMackeyFunctor,ZZ,Matrix,Matrix,Matrix)
     Headline
         make a Cp Mackey functor
+    Usage
+        makeCpMackeyFunctor(p,R,T,C)
+    Inputs
+        p : ZZ
+            a prime number
+        R : Matrix
+            a restriction homomorphim
+        T : Matrix
+            a transfer homomorphim
+        C : Matrix
+            a conjugation homomorphim
+    Outputs
+        : CpMackeyFunctor
+    Description
+        Text
+            Builds an instance of the @TO("CpMackeyFunctor")@ type from the data of a prime number and three matrices, encoding restriction, transfer, and conjugation, respectively. The method will verify whether the input data yields a valid Mackey functor.
     SeeAlso
         "background on Mackey functors"
         CpMackeyFunctor

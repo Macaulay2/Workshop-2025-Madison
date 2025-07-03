@@ -12,7 +12,7 @@ newPackage(
             HomePage=>"https://sites.google.com/view/davidchanmath"},
         {Name=>"Benjamin Mudrak",
             Email=>"bmudrak@purdue.edu",
-            HomePage=>"BenjaminMudrak.github.io"},
+            HomePage=>"https://benjaminmudrak.github.io"},
         {Name=>"Ben Spitz",
             Email=>"benspitz@virginia.edu",
             HomePage=>"https://benspitz.com/"},
