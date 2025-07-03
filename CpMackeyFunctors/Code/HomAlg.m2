@@ -16,6 +16,6 @@ Tor(ZZ,CpMackeyFunctor,CpMackeyFunctor) := CpMackeyFunctor => opts -> (i,M,N) ->
     if i == 0 then (
         coker (M**(d_1))
     ) else (
-        computeHomology (M**d_i), (M**d_(i+1))
+        computeHomology((M**d_i),(M**(d_(i+1))))
     )
 )

@@ -9,9 +9,17 @@ cursedMF := makeCpMackeyFunctor(2,r,t,c)
 
 d = getResolution(cursedMF,3);
 
+-- check that the homology of a free resolution is zero
 for i to (length d) - 2 do (
     assert(isTrivialMackeyFunctor(computeHomology(d_i,d_(i+1))))
 )
 
-A = makeBurnsideMackeyFunctor 2
+-- check that Tor_i(A,-) and Tor_i(B,-) is zero for i > 0
+A = makeBurnsideMackeyFunctor 2;
+B = makeBurnsideMackeyFunctor 2;
+for i from 1 to 3 do (
+    assert(isTrivialMackeyFunctor Tor_i(A,A));
+    assert(isTrivialMackeyFunctor Tor_i(A,cursedMF));
+    assert(isTrivialMackeyFunctor Tor_i(B,cursedMF))
+)
 
