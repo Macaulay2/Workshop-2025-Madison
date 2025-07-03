@@ -94,36 +94,36 @@ generateGroup List := List => opts -> L -> (
 -- and returns a list of list of elements belonging to conugacy classes
 -- a general version that is currently not being utilized
 
-conjugacyClasses = method(
-    Options => {
-	Verbose => false,
-	OnlyListRepresentatives => false
-	}
-    )
-conjugacyClasses List := List => opts -> G -> (
-    numConjugations := 0;
-    isClassified := new MutableHashTable from for g in G list g => false;
-    result := for g in G list (
-	if isClassified#g then continue else (
-	    if opts.Verbose then (
-		print("new class: " | net g);
-		print("");
-		);
-	    isClassified#g = true;
-	    conjClass := new MutableHashTable from {g => true};
-	    for h in G do (
-		hgh := h * g * h^(-1);
-		numConjugations = numConjugations + 1;
-		if not conjClass#?hgh then (isClassified#hgh = true; conjClass#hgh = true);
-		);
-	    if opts.OnlyListRepresentatives then g else keys conjClass
-	    )
-	);
-    if opts.Verbose then (
-	print("-- completed in " | toString numConjugations | " conjugations");
-	);
-    result
-    )
+-- conjugacyClasses = method(
+--     Options => {
+-- 	Verbose => false,
+-- 	OnlyListRepresentatives => false
+-- 	}
+--     )
+-- conjugacyClasses List := List => opts -> G -> (
+--     numConjugations := 0;
+--     isClassified := new MutableHashTable from for g in G list g => false;
+--     result := for g in G list (
+-- 	if isClassified#g then continue else (
+-- 	    if opts.Verbose then (
+-- 		print("new class: " | net g);
+-- 		print("");
+-- 		);
+-- 	    isClassified#g = true;
+-- 	    conjClass := new MutableHashTable from {g => true};
+-- 	    for h in G do (
+-- 		hgh := h * g * h^(-1);
+-- 		numConjugations = numConjugations + 1;
+-- 		if not conjClass#?hgh then (isClassified#hgh = true; conjClass#hgh = true);
+-- 		);
+-- 	    if opts.OnlyListRepresentatives then g else keys conjClass
+-- 	    )
+-- 	);
+--     if opts.Verbose then (
+-- 	print("-- completed in " | toString numConjugations | " conjugations");
+-- 	);
+--     result
+--     )
 
 
 -- replace the following with permutation [Partition type]
