@@ -130,7 +130,9 @@ export{
 load "./CpMackeyFunctors/Code/Cohomological.m2"
 export{
     "makeUniversalMapFixedCohomological",
-    "makeUniversalMapCohomological"
+    "makeUniversalMapCohomological",
+    "makeFreeModuleSurjectionCohomological",
+    "resolutionCohomological"
 }
 
 beginDocumentation()
@@ -169,3 +171,4 @@ load "./CpMackeyFunctors/Documentation/HomAlgDoc.m2"
 
 -- load "./tests/HelpersTest.m2"
 -- load "./tests/MackeyFunctorsTest.m2"
+--load "./tests/CohomologicalTest.m2"

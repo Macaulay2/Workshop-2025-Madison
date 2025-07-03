@@ -27,3 +27,37 @@ makeUniversalMapCohomological = method()
 makeUniversalMapCohomological(CpMackeyFunctor,Matrix,Matrix) := MackeyFunctorHomomorphism => (M,X,Y) -> (
     return makeUniversalMapUnderlying(M,X) | makeUniversalMapFixedCohomological(M,Y)
 )
+
+-- make a surjection from a free cohomological Mackey functor
+makeFreeModuleSurjectionCohomological = method()
+makeFreeModuleSurjectionCohomological(CpMackeyFunctor) := MackeyFunctorHomomorphism => (M) -> (
+    gensUnderlying0 := mingens cokernel (id_(M.Underlying) - M.Conj);
+    gensUnderlying := inducedMap(M.Underlying, source gensUnderlying0, gensUnderlying0);
+    gensFixed0 := mingens cokernel (M.Tr * gensUnderlying);
+    gensFixed := inducedMap(M.Fixed, source gensFixed0, gensFixed0);
+    makeUniversalMapCohomological(M, gensUnderlying, gensFixed)
+)
+
+
+-- get resolution up to F_(n-1) <-- F_n
+resolutionCohomological = method()
+resolutionCohomological(CpMackeyFunctor,ZZ) := List => (M,n) -> (
+    if n < 0 then return {};
+    k := 0;
+    if M.cache#?"CohProjRes" then (
+        k = length M.cache#"CohProjRes";
+    ) else (
+        M.cache#"CohProjRes" = {makeFreeModuleSurjectionCohomological M};
+        k = 1
+    );
+
+    while k <= n do (
+        -- add differential d_k to cache
+        d := (M.cache#"CohProjRes")#(k-1);
+        M.cache#"CohProjRes" |= {inducedMap(source d, kernel d) * (makeFreeModuleSurjectionCohomological (kernel d))};
+        k += 1
+    );
+
+    M.cache#"CohProjRes"_(for i to n list i)
+)
+
