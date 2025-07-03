@@ -180,15 +180,15 @@ koszulRR Complex    := Complex    => opts -> C -> (
 
     modules := hashTable apply(lo..hi,
 	i -> i => hashTable apply(inf..sup,
-	    k -> k => (RRterms#k)_(i-k)));
+	    k -> k => (RRterms#k)_(-k+i)));
 
     if lo == hi then return complex(directSum values modules#lo, Base => lo);
 
     complex hashTable apply((lo+1)..hi,
 	i -> i => matrix table(sup-inf+1, sup-inf+1,
-	    (r,c) -> map(modules#(i-1)#(inf+r), modules#(i)#(inf+c),
-		if r == c   then (-1)^r * dd^(RRterms#(sup-r))_(i+r-sup) else
-		if r == c+1 then             (RRdiffs#(sup-c))_(i+c-sup) else 0)
+	    (r,c) -> map(modules#(i-1)#(inf+r), modules#i#(inf+c),
+		if r == c   then (-1)^r * dd^(RRterms#(inf+r))_(-inf-r+i) else
+		if r == c-1 then             (RRdiffs#(inf+c))_(-inf-c+i) else 0)
 	    )
 	)
     )
@@ -252,57 +252,27 @@ koszulLL Complex := Complex => opts -> D -> (
     (inf, sup) := concentration D;  -- bounds for homological degrees k in D
 
     LLterms := hashTable apply(inf..sup,
-	k -> -k => koszulLL(D_k,    Concentration => (lo-k, hi-k)));
+	k -> k => koszulLL(D_k,    Concentration => (lo-k, hi-k)));
     LLdiffs := hashTable apply((inf+1)..sup,
-	k -> -k => koszulLL(D.dd_k, Concentration => (lo-k, hi-k)));
+	k -> k => koszulLL(D.dd_k, Concentration => (lo-k, hi-k)));
 
     modules := hashTable apply(lo..hi,
 	i -> i => hashTable apply(inf..sup,
-	    k -> -k => (LLterms#(-k))_(i-k)));
+	    k -> k => (LLterms#k)_(-k+i)));
 
     if lo == hi then return complex(directSum values modules#lo, Base => lo);
 
-///
-restart
-needsPackage "ExteriorResolutions"
-  (S,E) = koszulPair(1, ZZ/101)
-
-  errorDepth=2
-  koszulRR(complex { matrix {{x_0}} }, Concentration => (-5,5))
-  koszulRR(koszulComplex vars S, Concentration => (-5,5))
-
-  koszulLL(freeResolution(coker vars E, LengthLimit => 3), Concentration => (-5,5))
-
-  C = koszulLL(E^1, Concentration => (-2, 0))
-  D = koszulRR(S^1, Concentration => (-5, 0))
-
-  assert(complex E == naiveTruncation(prune HH koszulRR(C, Concentration => (-5,0)), -4, 0))
-  --assert(complex S ==
-      koszulLL(D, Concentration => (-5,5))
-
-  koszulLL(D, Concentration => (-5, 5))
-
-  koszulLL(E^1, Concentration => (-3, 1))
-///;
-
     complex hashTable apply((lo+1)..hi,
-	i -> i => matrix table(toList(inf..sup), toList(inf..sup),
-	    (r,c) -> map(modules#(i-1)#(-r), modules#(i)#(-c),
-		if r == c   then (-1)^r * dd^(LLterms#(-inf-sup+r))_(-inf-sup+r+i) else
-		if r == c+1 then             (LLdiffs#(-inf-sup+c))_(-inf-sup+c+i) else 0)
+	i -> i => matrix table(sup-inf+1, sup-inf+1,
+	    (r,c) -> map(modules#(i-1)#(inf+r), modules#i#(inf+c),
+		if r == c   then (-1)^r * dd^(LLterms#(inf+r))_(-inf-r+i) else
+		if r == c-1 then             (LLdiffs#(inf+c))_(-inf-c+i) else 0)
 	    )
 	)
     )
-    -- complex hashTable apply((lo+1)..hi,
-    -- 	i -> i => matrix table(toList(inf..sup), toList(inf..sup),
-    -- 	    (r,c) -> map(modules#(i-1)#(-r), modules#(i)#(-c),
-    -- 		if r == c   then (-1)^r * dd^(RRterms#(-inf-sup+r))_(-inf-sup+r+i) else
-    -- 		if r == c+1 then             (RRdiffs#(-inf-sup+c))_(-inf-sup+c+i) else 0)
-    -- 	    )
-    -- 	)
+
 -- LL(s**y) = (-1)^i LL(s**y) + s ** dd_D(y) for y \in D^{i-j}_j
 koszulLL ComplexMap := ComplexMap => opts -> phi -> ()
-
 
 --------------------------------------------------
 --- Stanley Reisner
@@ -613,6 +583,21 @@ TEST ///
     S = simplicialComplex {a*b*c, b*c*d, a*d}
     StanleyReisnerExterior(S, ZZ/19937)
     StanleyReisnerExterior(S, ZZ/101)
+///
+
+TEST ///
+  (S,E) = koszulPair(2, ZZ/101)
+
+  assert isWellDefined koszulLL(freeResolution(coker vars E, LengthLimit => 3), Concentration => (-5,5))
+  assert isWellDefined koszulRR(freeResolution(coker vars S, LengthLimit => 3), Concentration => (-5,5))
+  assert isWellDefined koszulRR(koszulComplex vars S, Concentration => (-5,5))
+  -- FIXME: isWellDefined koszulLL(koszulComplex vars E, Concentration => (-5,5))
+
+  C = koszulLL(E^1, Concentration => (-3, 0))
+  D = koszulRR(S^1, Concentration => (-5, 0))
+
+  assert(complex E == naiveTruncation(prune HH koszulRR(C, Concentration => (-5,0)), -4, 0))
+  assert(complex comodule truncate(6, S) == prune HH koszulLL(D, Concentration => (-2, 4)))
 ///
 
 end--
