@@ -120,6 +120,7 @@ getTemplate(RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     H0 := getH0(a, B, J, o);
     shifts := new ShiftSet from apply(numgens J, i -> monomials(H0^{i}));
     allMons := union(set \ flatten \ entries \ monomials \ shiftPolynomials(shifts, J));
+    if isEmpty(allMons) then error "allMons is empty!";
     monsB := set flatten entries(lift(B, ring J));
     monsR := set flatten entries(a * lift(B, ring J)) - set flatten entries(lift(B, ring J));
     monsE := allMons - union(monsR, monsB);
@@ -454,9 +455,8 @@ assert(all(sort eigenvalues Mx, {-2,0,1}, (e1, e2) -> abs(e1-e2) < 1e-4))
 ///
 
 TEST ///
-R = QQ[x,y]
-J = ideal(x^3 + y^2 - 1, x - y - 1)
-J=ideal(x^3+y^3+z^3-4,x^2-y-z-1,x-y^2+z-3)
+R = QQ[x,y,z]
+J = ideal(x^3+y^3+z^3-4,x^2-y-z-1,x-y^2+z-3)
 E = eliminationTemplate(x, J)
 --H0 = getH0(x,J,Strategy=>"Larsson")
 --H0 = getH0(x,J,Strategy=> null)
@@ -466,7 +466,7 @@ eigenvalues getActionMatrix E
 ///
 
 TEST ///
-R = QQ[x,y]
+R = QQ[x,y,z]
 --J = ideal(x^3 + y^2 - 1, x - y - 1)
 J=ideal(x^3+y^3+z^3-4,x^2-y-z-1,x-y^2+z-3)
 E1 = eliminationTemplate(x, J)
@@ -511,6 +511,7 @@ copyTemplate(E,J)
 
 uninstallPackage "EliminationTemplates"
 restart
+check "EliminationTemplates"
 debug needsPackage "EliminationTemplates"
 R = QQ[x,y]
 J = ideal(x^3 + y^2 - 1, x - y - 1)
