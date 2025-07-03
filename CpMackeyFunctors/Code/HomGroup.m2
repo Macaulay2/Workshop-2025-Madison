@@ -25,6 +25,7 @@ Hom(CpMackeyFunctor, CpMackeyFunctor) := Module => opts -> (M,N) -> (
     result
 )
 
+-- Covariant Hom
 Hom(CpMackeyFunctor, MackeyFunctorHomomorphism) := Matrix => opts -> (M,f) -> (
     if not M.PrimeOrder === (source f).PrimeOrder then error "-- Mackey functors must have the same prime";
     T := getFixedModule(M);
@@ -36,6 +37,7 @@ Hom(CpMackeyFunctor, MackeyFunctorHomomorphism) := Matrix => opts -> (M,f) -> (
     inducedMap(Hom(M,target(f)), Hom(M, source(f)), psi ++ phi) 
 )
 
+-- Contravariant Hom
 Hom(MackeyFunctorHomomorphism, CpMackeyFunctor) := Matrix => opts -> (f,N) -> (
     if not (source f).PrimeOrder === N.PrimeOrder then error "-- Mackey functors must have the same prime";
     T := getFixedModule(N);
