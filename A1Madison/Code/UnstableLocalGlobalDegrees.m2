@@ -81,30 +81,60 @@ getGlobalUnstableA1Degree RingElement := (Matrix,Number) => q -> (
     	bezDetR = lift(bezDet, R);
 	);
 
+----------------
+-- test example
+----------------
+
+R := QQ[x]
+
+f = x^2 + x - 2
+g = 3*x + 5
+
+S := QQ[X,Y]
+
+fX = sub(f,{x => X})
+
+fY = sub(f,{x => Y})
+
+gX = sub(g,{x => X})
+
+gY = sub(g,{x => Y})
+
+bez = sub((fX * gY - fY * gX)/(X-Y),S)
+
+    -- Create the Bezoutian matrix B for the symmetric bilinear form by reading off the coefficients. 
+    -- B is an (m x m) matrix. The coefficient B_(i,j) is the coefficient of the (ith basis vector x jth basis vector) in the tensor product.
+    -- phi0 maps the coefficient to kk
+    (M,C) := coefficients bez;
+    B := mutableMatrix id_(QQ^2);
+    for i from 0 to 1 do (
+        for j from 0 to 1 do
+           if i == 0 then B_(i,j) = coefficient(M_(i,3-j),bez) else B_(i,j) = coefficient(M_(1-i,1-j),bez);
+        );
+    
+    makeGWClass matrix B
+    
+----------------
+
     -- Define formal variables X_i and Y_i that replace x_i
-    RX := kk[X_1..X_n | 1/g(X_1)..1/g(X_n)]; 
-    RY := kk[Y_1..Y_n];
+    RX := QQ[X,s]/(s*g-1); 
+    RY := QQ[Y,t]/(t*f-1);
 
     -- mapxtoX replaces all instances of x_i with X_i; mapxtoY replaces all instances of y_i with Y_i
-    mapxtoX := map(RX,S,toList(X_1..X_n)); 
-    mapxtoY := map(RY,S,toList(Y_1..Y_n));
-
--- need to `update' this for rational functions
--- Compute a monomial basis for the k-agebra k[x,1/g]/(f/g)
-    standBasisX := basis (RX/)
+    mapxtoX := map(RX,R,toList(X))
+    mapxtoY := map(RY,R,toList(Y))
 
     -- Compute the standard basis of kk[X_1,...,X_n]/(f_1,...,f_n)
-    standBasisX := basis (RX/(ideal (leadTerm (mapxtoX ideal {f})))); 
-    standBasisY := basis (RY/(ideal (leadTerm (mapxtoY ideal {f})))); 
+    standBasisX := basis (RX/(ideal (leadTerm (mapxtoX ideal f)))) 
+    standBasisY := basis (RY/(ideal (leadTerm (mapxtoY ideal f)))); 
+ 
+    -- Define an ideal (f_1(X),...,f_n(X))
+    id1 := ideal apply(toList(0..n-1), i-> mapxtoX(Endo_i)); 
+    -- Define an ideal (f_1(Y),...,f_n(Y))
+    id2 := ideal apply(toList(0..n-1), i-> mapxtoY(Endo_i)); 
 
-    -- Define an ideal (f_1(X)/g_1(X))
-    id1 := ideal apply(toList(0..n-1), i-> mapxtoX({f}_i/{g}_i)); 
-    -- Define an ideal (f_1(Y)/g_1(Y))
-    id2 := ideal apply(toList(0..n-1), i-> mapxtoY({f}_i/{g}_i)); 
-
-
-
-
+    -- Take the sum of ideals (f_1(X),...,f_n(X)) + (f_1(Y),...,f_n(Y)) in the ring kk[X_1..Y_n]
+    promotedEndo := sub(id1, R) + sub(id2, R); 
 
     -- Take the sum of ideals (f_1(X),...,f_n(X)) + (f_1(Y),...,f_n(Y)) in the ring kk[X_1..Y_n]
     promotedEndo := sub(id1, R) + sub(id2, R); 
