@@ -1,10 +1,10 @@
--------------------------------------
+\-------------------------------------
 -- unstable A1-Brouwer degree methods (task 3.12 from Overleaf)
 -------------------------------------
 
 -- Input: A rational function q = f/g
 
--- Output: A pair (M,a) where M is a matrix and a is a scalar
+-- Output: A pair (M,a) where M is a matrix and a is a scalar (the determinant of M)
 
 getGlobalUnstableA1Degree = method()
 getGlobalUnstableA1Degree RingElement := (Matrix,Number) => q -> (
