@@ -187,10 +187,10 @@ koszulRR Complex    := Complex    => opts -> C -> (
     complex hashTable apply((lo+1)..hi,
 	i -> i => matrix table(sup-inf+1, sup-inf+1,
 	    (r,c) -> map(modules#(i-1)#(inf+r), modules#i#(inf+c),
-		if r == c   then (-1)^r * dd^(RRterms#(inf+r))_(-inf-r+i) else
-		if r == c-1 then             (RRdiffs#(inf+c))_(-inf-c+i) else 0)
-	    )
-	)
+            if r == c   then (-1)^r * dd^(RRterms#(inf+r))_(-inf-r+i) else
+            if r == c-1 then             (RRdiffs#(inf+c))_(-inf-c+i) else 0)
+            )
+        )
     )
 -- ???
 koszulRR ComplexMap := ComplexMap => opts -> f -> (
@@ -207,12 +207,12 @@ koszulRR ComplexMap := ComplexMap => opts -> f -> (
     map(tar := koszulRR(D, opts), src := koszulRR(C, opts),
 	hashTable apply(lo..hi,
 	    i -> i => map(tar_i, src_i,
-		matrix table(toList(inf..sup), toList(inf..sup),
-		    (r, c) -> if r == c then (RRmaps#(-inf-sup+r))_(-inf-sup+r+i) else 0)
-		)
+            matrix table(toList(inf..sup), toList(inf..sup),
+                (r, c) -> if r == c then (RRmaps#(-inf-sup+r))_(-inf-sup+r+i) else 0)
+            )
 	    )
 	)
-    )
+)
 
 
 -- LL: Com(E) -> Com(S) is the left-adjoint functor
@@ -265,14 +265,33 @@ koszulLL Complex := Complex => opts -> D -> (
     complex hashTable apply((lo+1)..hi,
 	i -> i => matrix table(sup-inf+1, sup-inf+1,
 	    (r,c) -> map(modules#(i-1)#(inf+r), modules#i#(inf+c),
-		if r == c   then (-1)^r * dd^(LLterms#(inf+r))_(-inf-r+i) else
-		if r == c-1 then             (LLdiffs#(inf+c))_(-inf-c+i) else 0)
-	    )
-	)
+            if r == c   then (-1)^r * dd^(LLterms#(inf+r))_(-inf-r+i) else
+            if r == c-1 then             (LLdiffs#(inf+c))_(-inf-c+i) else 0)
+            )
+        )
     )
 
 -- LL(s**y) = (-1)^i LL(s**y) + s ** dd_D(y) for y \in D^{i-j}_j
-koszulLL ComplexMap := ComplexMap => opts -> phi -> ()
+koszulLL ComplexMap := ComplexMap => opts -> f -> (
+    (lo, hi) := opts.Concentration;
+    C := source f;
+    D := target f;
+    (infC, supC) := concentration C;
+    (infD, supD) := concentration D;
+    (inf, sup) := (min{infC, infD},max{supC, supD});
+    
+    LLmaps := hashTable apply(inf..sup,
+	k -> -k => koszulLL(f_k, Concentration => (k-hi,k-lo)));
+    
+    map(tar := koszulLL(D, opts), src := koszulLL(C, opts),
+	hashTable apply(lo..hi,
+	    i -> i => map(tar_i, src_i,
+            matrix table(toList(inf..sup), toList(inf..sup),
+                (r, c) -> if r == c then (LLmaps#(-inf-sup+r))_(-inf-sup+r+i) else 0)
+            )
+	    )
+	)
+)
 
 --------------------------------------------------
 --- Stanley Reisner
