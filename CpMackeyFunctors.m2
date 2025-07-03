@@ -150,7 +150,7 @@ load "./CpMackeyFunctors/Documentation/AbelianCategoryDoc.m2"
 load "./CpMackeyFunctors/Documentation/HomomorphismsDoc.m2"
 load "./CpMackeyFunctors/Documentation/BoxProductDoc.m2"
 load "./CpMackeyFunctors/Documentation/RandomMackeyFunctorDoc.m2"
- 
+ load "./CpMackeyFunctors/Documentation/InternalHomDoc.m2"
 ----------------------------
 ----------------------------
 -- Testing
