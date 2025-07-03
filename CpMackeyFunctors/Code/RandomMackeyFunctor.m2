@@ -27,14 +27,14 @@ makeRandomCpMackeyFunctor(ZZ, List):= CpMackeyFunctor => opts -> (p, L) -> (
     A := makeBurnsideMackeyFunctor p;
     B := makeUnderlyingFreeMackeyFunctor p;
     
-    -- Build the Macky functor A^n + B^m
-    X := directSum ((for i to n-1 list A) | (for j to m-1 list B));
+    -- Build the Macky functor B^n + A^m
+    X := directSum ((for i to n-1 list B) | (for j to m-1 list A));
 
     XUnderlying := getUnderlyingModule X;
     XFixed := getFixedModule X;
 
     -- Pick random elements in the underlying and fixed modules,
-    -- yielding a random map from A^k + B^l
+    -- yielding a random map from B^k + A^l
     RandomUnderlyingElements := getRandomElementsInModule(XUnderlying, k);
     RandomFixedElements := getRandomElementsInModule(XFixed, l);
 
