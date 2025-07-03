@@ -278,6 +278,14 @@ doc ///
 
 doc ///
     Key
+        isEffective
+        (isEffective, RingElement)
+    Headline
+        whether an equivariant $H^*$-series is effective
+///
+
+doc ///
+    Key
         isSymmetric
         (isSymmetric, Polyhedron, Matrix)
         (isSymmetric, Polyhedron, List)

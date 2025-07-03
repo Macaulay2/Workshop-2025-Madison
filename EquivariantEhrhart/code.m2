@@ -345,14 +345,72 @@ orbitPolytope Matrix := Polyhedron => p -> (
 
 isEffective = method()
 isEffective RingElement := Boolean => f -> (
-	-- todo error when f has w
-	getCoefficients := g -> apply(flatten entries last coefficients g, c -> sub(c, coefficientRing ring c));
-	-- getCoefficients := L -> apply(flatten apply(L, g -> flatten entries last coefficients g), g -> sub(g, coefficientRing ring g))
-	checkPositivity := g -> all(getCoefficients g, i-> i >= 0);
+	-- expected ring: (QQ[w]/(p(w)))[X_1..X_n][t]
+	if not isInRepresentationRing f then error("invalid input");
+
+	checkPositivity := g -> (
+		-- g is either in QQ or ZZ, or a polynomial in some quotient ring
+		k := ring g;
+		if k === QQ or k === ZZ then g >= 0 else all(getCoefficients g, a -> a >= 0)
+		);
 	all(getCoefficients f, c -> all(getCoefficients c, i -> checkPositivity(i)))
 )
 
+-- isEffective helper method, gets coefficients and removes outer-most nesting of polynomial rings
+getCoefficients = method()
+getCoefficients RingElement := g -> apply(flatten entries last coefficients g, c -> sub(c, coefficientRing ring c));
+
+-- isEffective error handling
+isInRepresentationRing = method()
+isInRepresentationRing RingElement := f -> (
+	R1 := ring f;
+	if not instance(R1, PolynomialRing) or #(gens R1) > 1 then (
+		return false;
+	);
+	R2 := coefficientRing R1;
+	if not instance(R2, PolynomialRing) then (
+		return false;
+	);
+
+	-- check whether all coefficients of f are rational
+	R3 := coefficientRing R2;
+	-- expect: R3 to be a quotient ring with coefficient ring either QQ or ZZ
+	if R3 === QQ or R3 === ZZ then (
+		return true;
+	);
+	if instance(R3, QuotientRing) or instance(R3, PolynomialRing) then (
+		-- check that coefficients in R3 do not involve any variables
+		k := coefficientRing R3;
+		if k =!= ZZ and k =!= QQ then (
+			return false;
+			);
+		all(getCoefficients f, c -> all(getCoefficients c, g -> coefficientRing ring g === k))
+	) else (
+		false
+		)
+	)
+
+
 end ---
+
+restart 
+
+P = convexHull transpose matrix "1,0,0,0;0,1,0,0;0,0,1,0"
+g = matrix "0,1,0,0;1,0,0,0;0,0,1,0;0,0,0,1"
+
+gList = {g}
+H = equivariantEhrhartSeries(P, gList)
+isEffective H
+
+---
+
+permutohedron := n -> convexHull transpose matrix permutations n
+
+P = permutohedron 3;
+L = equivariantEhrhartSeries P
+H = first L
+isEffective H
+
 
 -- Todo: add some of these examples into the doc + tests
 
