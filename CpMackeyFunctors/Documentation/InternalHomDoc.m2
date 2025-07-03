@@ -39,6 +39,7 @@ doc ///
             InternalHom(makeRealRepresentationMackeyFunctor(5), complexLinearizationMap(5))
 ///
 
+--this last doesn't work
 
 -- doc ///          
 --     Key
