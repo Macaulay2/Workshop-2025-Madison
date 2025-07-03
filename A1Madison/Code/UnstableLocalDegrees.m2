@@ -13,6 +13,12 @@ getLocalUnstableA1Degree (RingElement, Number) := (UnstableGrothendieckWittClass
     if not (kk === QQ or (instance(kk, GaloisField) and kk.char != 2)) then 
         error "only implemented over QQ and finite fields of characteristic not 2";
 
+   -- If the base field is QQ, allow the root to be integer or rational
+    if kk === QQ and not (ring r === QQ or ring r === ZZ) then error "root not from the base field of the polynomial";
+
+    -- If the base field is a finite field, allow the root to be integer, rational, or from the same finite field
+    if instance(kk, GaloisField) and not (ring r === QQ or ring r === ZZ or (instance(ring r, GaloisField) and kk.order == (ring r).order)) then error "root not from the base field of the polynomial";
+
     if numgens ring q != 1 then error "must input function of one variable";
 
     x := (gens ring q)#0;
@@ -49,6 +55,12 @@ getLocalUnstableA1Degree (RingElement, RingElement) := (UnstableGrothendieckWitt
 
     if not (kk === QQ or (instance(kk, GaloisField) and kk.char != 2)) then 
         error "only implemented over QQ and finite fields of characteristic not 2";
+
+   -- If the base field is QQ, allow the root to be integer or rational
+    if kk === QQ and not (ring r === QQ or ring r === ZZ) then error "root not from the base field of the polynomial";
+
+    -- If the base field is a finite field, allow the root to be integer, rational, or from the same finite field
+    if instance(kk, GaloisField) and not (ring r === QQ or ring r === ZZ or (instance(ring r, GaloisField) and kk.order == (ring r).order)) then error "root not from the base field of the polynomial";
 
     if numgens ring q != 1 then error "must input function of one variable";
 
