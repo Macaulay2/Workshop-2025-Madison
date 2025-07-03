@@ -74,7 +74,7 @@ getH0 (RingElement, Ideal) := o -> (a, J) -> (
     if (o.Strategy === null) then H0 else if (o.Strategy == "Larsson") then (
 	    print("Using Larsson's strategy to compute H0.");
         --H0%module(syz(H0))
-        H0;
+        H0
 	) else (error "Strategy not yet implemented.") 
 )    
 getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
@@ -96,7 +96,7 @@ getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     H0 = sub(H0, ring J);
     if (o.Strategy === null) then H0 else if (o.Strategy == "Larsson") then (
 	    print("Using Larsson's strategy to compute H0.(detailed getH0 method)");
-        H0;
+        H0
     ) else (error "Strategy not yet implemented.") 
 )
 
