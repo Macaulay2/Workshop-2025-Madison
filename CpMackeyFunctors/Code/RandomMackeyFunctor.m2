@@ -52,40 +52,38 @@ makeRandomCpMackeyFunctor(ZZ):= CpMackeyFunctor => opts -> p-> (
 )
 
 
-makeRandomABMap = method()
-makeRandomABMap(ZZ, List):= MackeyFunctorHomomorphism => (p, L) -> (
+-- makeRandomABMap = method()
+-- makeRandomABMap(ZZ, List):= MackeyFunctorHomomorphism => (p, L) -> (
     
-    if not isPrime p then error " -- p is not prime!";
-    if not (length L === 4) then error " -- expected a list of length 4.";
+--     if not isPrime p then error " -- p is not prime!";
+--     if not (length L === 4) then error " -- expected a list of length 4.";
 
-    n := L#0;
-    m := L#1;
-    k := L#2;
-    l := L#3;
+--     n := L#0;
+--     m := L#1;
+--     k := L#2;
+--     l := L#3;
 
-    if not (class n === ZZ and class m === ZZ and class k === ZZ and class l === ZZ) then error " -- not a list of integers.";
+--     if not (class n === ZZ and class m === ZZ and class k === ZZ and class l === ZZ) then error " -- not a list of integers.";
 
-    A := makeBurnsideMackeyFunctor p;
-    B := makeUnderlyingFreeMackeyFunctor p;
+--     A := makeBurnsideMackeyFunctor p;
+--     B := makeUnderlyingFreeMackeyFunctor p;
 
-    X := directSum ((for i to n-1 list A) | (for j to m-1 list B));
+--     X := directSum ((for i to n-1 list A) | (for j to m-1 list B));
 
-    XUnderlying := getUnderlyingModule X;
-    XFixed := getFixedModule X;
+--     XUnderlying := getUnderlyingModule X;
+--     XFixed := getFixedModule X;
 
-    -- Pick random elements in the underlying and fixed modules,
-    -- yielding a random map from A^k + B^l
-    RandomUnderlyingElements := getRandomElementsInModule(XUnderlying, k);
-    RandomFixedElements := getRandomElementsInModule(XFixed, l);
+--     -- Pick random elements in the underlying and fixed modules,
+--     -- yielding a random map from A^k + B^l
+--     RandomUnderlyingElements := getRandomElementsInModule(XUnderlying, k);
+--     RandomFixedElements := getRandomElementsInModule(XFixed, l);
 
-    return makeUniversalMap(X, RandomFixedElements, RandomUnderlyingElements)
+--     return makeUniversalMap(X, RandomFixedElements, RandomUnderlyingElements)
 
-)
+-- )
 
 makeRandomMackeyFunctorsHomomorphism = method()
 makeRandomMackeyFunctorsHomomorphism(CpMackeyFunctor, CpMackeyFunctor) := MackeyFunctorHomomorphism => (M,N) -> (
-
-    if getPrimeOrder(M) != getPrimeOrder(N) then error " -- prime orders are not the same!";
-
-    return homomorphism(random(Hom(M,N)))
+    if not getPrimeOrder(M) === getPrimeOrder(N) then error " -- prime orders are not the same!";
+    homomorphism(random(Hom(M,N)))
 )
