@@ -85,7 +85,7 @@ objHelper := (M,n) -> (
     arrowShift := floor((max {f,u})/2) - 1;
     fShift := if f >= u then 0 else floor((u-f)/2)+1;
     uShift := if u >= f then 0 else floor((f-u)/2)+1;
-    arrows := horzSpace(arrowShift) | ("| ^ " || extraLines(n) || "v | ");
+    arrows := horzSpace(arrowShift) | ("^ | " || extraLines(n) || "| v ");
     loopArrow := horzSpace(arrowShift) | ("^ | " || "└-┘ ");
     str := (horzSpace(fShift) | (net M.Fixed)) || arrows || (horzSpace(uShift) | (net M.Underlying)) || loopArrow;
     str
