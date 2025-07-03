@@ -116,9 +116,9 @@ diagonalizeViaCongruence Matrix := Matrix => AnonMut -> (
 diagonalizeAndSimplifyViaCongruence = method()
 diagonalizeAndSimplifyViaCongruence Matrix := Matrix => AnonMut -> (
     k := ring AnonMut;
-    if not (instance(k, ComplexField) or instance(k, RealField) or k === QQ or (instance(k, GaloisField) and k.char != 2)) then (
-        error "Base field not supported; only implemented over QQ, RR, CC, and finite fields of characteristic not 2";
-        );
+   -- if not (instance(k, ComplexField) or instance(k, RealField) or k === QQ or (instance(k, GaloisField) and k.char != 2)) then (
+     --   error "Base field not supported; only implemented over QQ, RR, CC, and finite fields of characteristic not 2";
+       -- );
     if not isSquareAndSymmetric AnonMut then error "matrix is not symmetric";
 
     A := mutableMatrix diagonalizeViaCongruence AnonMut;
