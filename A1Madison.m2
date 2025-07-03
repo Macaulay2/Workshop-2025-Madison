@@ -75,6 +75,7 @@ export{
     --"fieldsAreCompatible",  --Exported only for testing purposes
     "makeStableGWClass",
     "UnstableGrothendieckWittClass",
+    "getLocalUnstableA1Degree",
     
     --BuildingForms.m2
     "makeDiagonalForm",
@@ -159,6 +160,7 @@ load "./A1Madison/Code/Decomposition.m2"
 
 -- Unstable Grothendieck-Witt classes 
 load "./A1Madison/Code/UnstableGrothendieckWittClasses.m2"
+load "./A1Madison/Code/UnstableLocalDegrees.m2"
 
 ----------------------------
 ----------------------------

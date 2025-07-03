@@ -56,6 +56,27 @@ makeDiagonalForm (InexactFieldFamily, Sequence) := GrothendieckWittClass => (kk,
     makeGWClass matrix A
     )
 
+makeAntidiagonalUnstableForm = method()
+makeAntidiagonalUnstableForm (Ring, RingElement, ZZ) := UnstableGrothendieckWittClass => (kk, res, n) -> (
+    
+    -- Build an n x n mutable identity matrix
+    A := mutableMatrix(kk, n,n);
+    for i from 0 to n - 1 do A_(i,n-1-i) = sub(res, kk);
+    
+    -- A is mutable so we take matrix A and form a Grothendieck-Witt class
+    makeGWuClass matrix A
+    )
+
+makeAntidiagonalUnstableForm (Ring, Number, ZZ) := UnstableGrothendieckWittClass => (kk, res, n) -> (
+    
+    -- Build an n x n mutable identity matrix
+    A := mutableMatrix(kk, n,n);
+    for i from 0 to n - 1 do A_(i,n-1-i) = sub(res, kk);
+    
+    -- A is mutable so we take matrix A and form a Grothendieck-Witt class
+    makeGWuClass matrix A
+    )
+
 -- Input: A field kk of characteristic not 2, and an optional even rank n (default is n = 2)
 -- Output: A Grothendieck-Witt class over kk represented by a totally hyperbolic form of rank n
 
