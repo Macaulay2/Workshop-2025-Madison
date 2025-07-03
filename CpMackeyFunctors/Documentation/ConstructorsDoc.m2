@@ -5,17 +5,48 @@ doc ///
         info about how to construct explicit Mackey functors
     Description
         Text
-            New Mackey functors can be built using @TO "makeCpMackeyFunctor"@, which constructs a Mackey functor out of a restriction, transfer, and conjugation @TO "matrix"@, in that order. For instance:
-            
-            todo - example here
-            
-            There are other constructors for various types of Mackey functors, including the @TO2(makeBurnsideMackeyFunctor,"Burnside Mackey functor")@, the @TO2(makeRealRepresentationMackeyFunctor,"real")@ and @TO2(makeComplexRepresentationMackeyFunctor,"complex representation")@ Mackey functors, @TO2(makeFixedPointMackeyFunctor,"fixed point")@ and @TO2(makeOrbitMackeyFunctor,"orbit")@ Mackey functors, {\em free} Mackey functors on an @TO2(makeUnderlyingFreeMackeyFunctor,"underlying element")@, and of course the @TO2(makeZeroMackeyFunctor,"zero Mackey functor")@. 
+            {\bf The general constructor:} New Mackey functors can be built using @TO "makeCpMackeyFunctor"@, which constructs a Mackey functor out of a restriction, transfer, and conjugation @TO "matrix"@, in that order. It takes as input a prime, and three matrices. For example, we can construct $\mathbb{F}_4$ as a $C_2$-Galois Mackey functor as follows:
 
         Example
-            makeZeroMackeyFunctor(5)
+            U:=cokernel(matrix({{2,0},{0,2}}));
+            C:=inducedMap(U,U,matrix({{1,1},{0,1}}));
+            F:=kernel(C - id_U);
+            R:=inducedMap(U,F,matrix({{1,0},{0,1}}));
+            T:=inducedMap(F,U,matrix({{0,1},{0,0}}));
+            M:=makeCpMackeyFunctor(2,R,T,C)
+        
+        Text
+            The output of the @TO("makeCpMackeyFunctor")@ method is a @TO("CpMackeyFunctor")@, which is a new @TO2(Type,"type")@ implemented in this package. Under the hood it is a @TO2("Macaulay2Doc :: hash tables","hash table")@, encoding all the data of the Mackey functor. The underlying and fixed modules can be recovered with the @TO("getUnderlyingModule")@ and @TO("getFixedModule")@ methods, and the homomorphisms in the data can be recovered from @TO("getRestriction")@, @TO("getTransfer")@, and @TO("getConjugation")@.
+        
+        Example
+            getRestriction M
 
         Text
-            Furthermore we have {\bf random constructors} which allow us to build a @TO2(makeRandomCpMackeyFunctor,"random Mackey functor")@ over the group $C_p$.
+            {\bf Pruning:} Any time we might need a nicer, more readable form of a Mackey functor, we can use the @TO2((prune,CpMackeyFunctor),"prune")@ method to simplify the presentation of the underlying/fixed modules.
+
+            {\bf Algebraic constructors:} We provide specific methods for constructing common examples of $C_p$-Mackey functors coming from algebra and representation theory. The @TO2(makeBurnsideMackeyFunctor,"Burnside Mackey functor")@ is a prototypical example -- its underlying module is $\ZZ$ with trivial conjugation action, and its fixed module is the {\em Burnside ring} $A(C_p)$, which is the group completion of the monoid of isomorphism classes of finite $C_p$-sets.
+
+            Another example from algebra are the @TO2(makeRealRepresentationMackeyFunctor,"real")@ and @TO2(makeComplexRepresentationMackeyFunctor,"complex representation")@ Mackey functors. Similarly to the Burnside Mackey functor, their underlying module is $\ZZ$, however their fixed module is the representation ring of $C_p$. Any finite $C_p$-set has an associated permutation representation, which induces what are called the @TO2(realLinearizationMap,"real")@ and @TO2(complexLinearizationMap,"complex linearization maps")@ from the Burnside Mackey functor to the representation Mackey functor. 
+
+            {\bf Fixed point and orbit Mackey functors:} todo
+
+            {\bf Free constructors:} Analogous to how a free module can be constructed on a generator or set of generators, we can construct free Mackey functors. For $C_p$-Mackey functors, there are two modules, which lead to two different ideas of a "free" Mackey functor, namely a free $C_p$-Mackey functor on a generator in the {\em underlying} module, and a free $C_p$-Mackey functor on a generator in the {\em fixed} module. The @TO2(,"free Mackey functor on a single underlying generator")@ can be accessed as follows:
+        
+        Example
+            makeUnderlyingFreeMackeyFunctor(3)
+        
+        Text
+            We often call this $\underline{B}$. Trying to construct a free Mackey functor on a single generator in the fixed module, we see that it recovers a similar construction, namely the @TO2(makeBurnsideMackeyFunctor,"Burnside Mackey functor")@, which we often denote by $\underline{A}$.
+        
+        Example
+            makeFixedFreeMackeyFunctor(5)
+            makeBurnsideMackeyFunctor(5)
+
+        Text
+            These two Mackey functors $\underline{A}$ and $\underline{B}$ are very special - they are the projective generators of the category $\text{Mack}_G$, and they play an important role in @TO2((getResolution,CpMackeyFunctor,ZZ),"constructing resolutions")@.
+
+            {\bf Random constructor:}
+            Furthermore we have {\bf random constructors} which allow us to build a @TO2(makeRandomCpMackeyFunctor,"random Mackey functor")@ over the group $C_p$...todo
 
     SeeAlso
         "background on Mackey functors"
