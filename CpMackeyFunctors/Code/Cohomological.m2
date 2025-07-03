@@ -61,3 +61,28 @@ resolutionCohomological(CpMackeyFunctor,ZZ) := List => (M,n) -> (
     M.cache#"CohProjRes"_(for i to n list i)
 )
 
+-- will resolve first argument
+TorCoh = method()
+TorCoh(ZZ,CpMackeyFunctor,CpMackeyFunctor) := CpMackeyFunctor => (i,M,N) -> (
+    if not isCohomological(N) then error "second Mackey functor not cohomological";
+    d := resolutionCohomological(M,i+1);
+    if i == 0 then (
+        coker ((d_1)**N)
+    ) else (
+        computeHomology((d_i)**N,((d_(i+1))**N))
+    )
+)
+
+-- will resolve first argument
+ExtCoh = method()
+ExtCoh(ZZ,CpMackeyFunctor,CpMackeyFunctor) := CpMackeyFunctor => (i,M,N) -> (
+    if not isCohomological(N) then error "second Mackey functor not cohomological";
+    d := resolutionCohomological(M,i+1);
+    if i == 0 then (
+        -- it's a cochain complex, so ker instead of coker
+        ker InternalHom(d_1, N)
+    ) else (
+        computeHomology(InternalHom(d_(i+1), N),InternalHom(d_i, N))
+    )
+)
+

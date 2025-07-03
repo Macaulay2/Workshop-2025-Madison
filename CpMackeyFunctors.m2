@@ -128,7 +128,9 @@ export{
     "makeUniversalMapFixedCohomological",
     "makeUniversalMapCohomological",
     "makeFreeModuleSurjectionCohomological",
-    "resolutionCohomological"
+    "resolutionCohomological",
+    "TorCoh",
+    "ExtCoh"
 }
 
 beginDocumentation()
