@@ -7,8 +7,8 @@ newPackage("ExteriorResolutions",
 	{Name => "Michael K. Brown",     Email => "mkb0096@auburn.edu",          HomePage => "http://webhome.auburn.edu/~mkb0096/" },
 	{Name => "Caitlin M. Davis",     Email => "cmdavis22@wisc.edu",          HomePage => "https://sites.google.com/wisc.edu/caitlindavis/home" },
 	{Name => "Andrew Karsten",       Email => "akk0071@auburn.edu",          HomePage => "https://www.auburn.edu/cosam/departments/math/students/grad/graduate-students.htm" },
-	{Name => "Jiaheng Li",           Email => "jli3440@gatech.edu",          HomePage => "" },
-	{Name => "Jianuo Zhou",          Email => "jzhou632@gatech.edu",         HomePage => "https://math.gatech.edu/people/jianuo-zhou"},
+	{Name => "Jiaheng Li",           Email => "henryli@gatech.edu",          HomePage => "" },
+	{Name => "Jianuo Zhou",          Email => "jzhou632@gatech.edu",         HomePage => "https://math.gatech.edu/people?field_job_type_tid=14"},
 	{Name => "Boyana Martinova",     Email => "boyana.martinova@gmail.com",  HomePage => "https://sites.google.com/view/bmartinova/home"},
 	{Name => "Mahrud Sayrafi",       Email => "mahrud@umn.edu",              HomePage => "https://mahrud.github.io/" },
 	{Name => "Gregory G. Smith",     Email => "ggsmith@mast.queensu.ca",     HomePage => "https://mast.queensu.ca/~ggsmith/" },
@@ -506,11 +506,19 @@ needsPackage "ExteriorResolutions"
 
 (S,E)= koszulPair(1, ZZ/101)
 
-M = E^1
-
 C = koszulComplex vars S
 
 f = koszulRR(id_C, Concentration=>(-5,5))
+
+
+C = S^1/(image vars S)
+
+koszulLL(koszulRR(C, Concentration=>(-5,5)), Concentration=>(-5,5))
+
+
+
+
+M = S^1
 
 koszulRR(koszulComplex vars S, Concentration=>(-5,5))
 
@@ -527,17 +535,3 @@ P = priddyComplex(vars E, S, LengthLimit=>3)
 M = coker matrix{{x_0}}
 E = ZZ/101[e_0,e_1,e_2, SkewCommutative=>true]
 
--- the following was pasted and modified from the BGG package
-S := ring(M)
-numvarsE := numgens E
-ev := map(E,S,vars E) 
-f0 := basis(i,M)
-f1 := basis(i+1,M)
--- we construct the differential by factoring it through (vars S)**f0
-g := ((vars S)**f0)//f1 -- g is a map from source (vars S)**f0 to source f1 making the traingle involving (vars S)**f0 and f1 commute
-b := (ev g)*((transpose vars E)**(ev source f0))
---correct the degrees (which are otherwise wrong in the transpose)
-map(E^{(rank target b):i+1},E^{(rank source b):i}, b)
-
-methods koszulComplex
-code 0 
