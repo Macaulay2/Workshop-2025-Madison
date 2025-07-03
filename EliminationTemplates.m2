@@ -22,6 +22,7 @@ newPackage(
 	    Email => "inometa@hawaii.edu"}	
     },
     Headline => "elimination templates",
+    PackageImports => {"EigenSolver", "NumericalAlgebraicGeometry"},
     Keywords => {"Documentation"},
     DebuggingMode => false
     )
@@ -154,7 +155,6 @@ net EliminationTemplate := E -> (
     str
     )
 
-needsPackage "NumericalLinearAlgebra"
 getActionMatrix = method(Options => {MonomialOrder => null})
 getActionMatrix(RingElement, MonomialPartition, Matrix) := o -> (actVar, mp, M) -> (
     a := length mp#0; -- number of "excessive monomials"
@@ -224,12 +224,25 @@ doc ///
   Key
    EliminationTemplates
   Headline
-     an example Macaulay2 package
+     zero-dimensional polynomial solvers based on linear algebra
   Description
    Text
-    {\em EliminationTemplates} is a basic package to be used as an example.
+    {\em EliminationTemplates} is a package that supports solvers for the following problem: given a zero-dimensional radical ideal $I \subset R := \mathbb{C} [x_1, \ldots , x_n]$, find approximate values for the isolated solutions $(p_1, \ldots , p_n ) \in V_{\mathbb{C}} (I).$
+    The main applications occur when the ideal $I$ occur in a parametric family of problems with similar structure.
+
+    Following the references below, the package is geared twowards implementing a "two-stage" approach, consisting of (1) offline stage and (2) an online stage.
+
+    In the offline stage, the structure of a "template matrix" for $I$ is determined using Groebner basis computations.
+
+    In the online stage, prior knowledge of the template matrix can be used to construct a multiplication matrix for the quotient ring $R/I.$
+    From this multiplication matrix, solutions can be extracted using eigenvector methods, such as the ones implemented in the package @TO EigenSolver@.
   Caveat
-    Still trying to figure this out.
+    This package is a work-in-progress!
+  References
+    @UL {
+	{"Optimizing Elimination Templates by Greedy Parameter Search, Martyushev-Vrablikova-Pajdla", EM "CVPR 2022"},
+	{"Efficient solvers for minimal problems by syzygy-based reduction, Larsson-Oskarsson-Astrom", EM "CVPR 2017"}
+	}@
 ///
 
 doc ///
@@ -309,7 +322,6 @@ end--
 -* Development section *-
 restart
 loadPackage "EliminationTemplates"
-needsPackage "NumericalAlgebraicGeometry"
 R=QQ[x,y,z]
 J=ideal(x^3+y^3+z^3-4,x^2-y-z-1,x-y^2+z-3)
 B=basis(R/J)
