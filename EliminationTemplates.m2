@@ -190,8 +190,12 @@ getActionMatrix(EliminationTemplate) := o -> E -> (
 )
 
 templateSolve = method(Options => {MonomialOrder => null})
-templateSolve(EliminationTemplate) := o -> (template) -> (
+templateSolve(EliminationTemplate) := o -> (E) -> (
+    Ma := getActionMatrix(E);
+    (svals, P) := eigenvectors Ma;
+    cleanEvecs := clean_(1e-10) (P * inverse diagonalMatrix(P^{numColumns P - 1}));
 
+    (transpose rsort B, cleanEvecs)
 )
 templateSolve(Ideal) := o -> (I) -> (
 
