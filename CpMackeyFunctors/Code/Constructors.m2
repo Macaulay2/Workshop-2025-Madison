@@ -76,14 +76,10 @@ makeFixedTrivMackeyFunctor(ZZ) := CpMackeyFunctor => (p) -> (
     makeFixedPointMackeyFunctor(p, id_U)
 )
 
+-- p = 2!
 makeFixedSignMackeyFunctor = method(Dispatch => Thing)   --takes no argument so write makeFixedSignMackeyFunctor()
 makeFixedSignMackeyFunctor Sequence := x -> (
-    F := ker matrix id_ZZ;
-    U := module(ZZ);
-    R := map(U,F,0);
-    T := map(F,U,0);
-    C := map(U,U,matrix({{-1}}));
-    makeCpMackeyFunctor(2,R,T,C)
+    makeFixedPointMackeyFunctor(2, -id_(ZZ^1))
 )
 
 makeZeroOnUnderlyingMackeyFunctor = method()

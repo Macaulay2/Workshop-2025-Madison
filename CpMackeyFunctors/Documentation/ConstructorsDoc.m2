@@ -272,6 +272,18 @@ doc ///
 
 doc ///
     Key
+        makeFixedSignMackeyFunctor
+    Headline
+        constructs the fixed-point Mackey functor for the sign action of $C_2$ on $\mathbb{Z}$
+    Usage
+        makeFixedSignMackeyFunctor()
+    Description
+        Example
+            makeFixedSignMackeyFunctor()
+///
+
+doc ///
+    Key
         makeZeroOnUnderlyingMackeyFunctor
         (makeZeroOnUnderlyingMackeyFunctor, ZZ, Module)
     Headline
