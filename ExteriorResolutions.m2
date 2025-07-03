@@ -335,6 +335,22 @@ Node
 Node
    Key
      koszulLL
+Node
+   Key
+       StanleyReisnerExterior
+      (StanleyReisnerExterior, SimplicialComplex, Ring)
+   Headline
+       computes the exterior algebra version of the Stanley Reisner face ideal of a simplicial complex
+   Usage
+       StanleyReisnerExterior(S, K)
+   Inputs
+       S:SimplicialComplex
+	   given as an ideal in a polynomial ring
+   Outputs
+       :Ideal
+   Description
+       Text
+           The exterior algebra version of the Stanley Reisner face ideal is defined using the same generators as the ordinary Stanley Reisner face ideal, but over an exterior algebra instead of a polynomial ring.
 ///
 
 --------------------------------------------------
@@ -501,6 +517,14 @@ TEST ///
     f = koszulLL(id_M, Concentration=>(-5,5))
     
     assert( f == id_(koszulLL(M, Concentration=>(-5,5))))
+///
+
+TEST ///
+needsPackage "SimplicialComplexes"
+R = ZZ/19937[a,b,c,d]
+S = simplicialComplex {a*b*c, b*c*d, a*d}
+StanleyReisnerExterior(S, ZZ/19937)
+StanleyReisnerExterior(S, ZZ/101)
 ///
 
 end--
