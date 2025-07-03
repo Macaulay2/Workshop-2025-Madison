@@ -174,9 +174,9 @@ koszulRR Complex    := Complex    => opts -> C -> (
     (inf, sup) := concentration C;  -- bounds for homological degrees k in C
 
     RRterms := hashTable apply(inf..sup,
-	k -> -k => koszulRR(C_k,    Concentration => (k-hi, k-lo)));
+	k -> -k => koszulRR(C_k,    Concentration => (lo-k, hi-k)));
     RRdiffs := hashTable apply((inf+1)..sup,
-	k -> -k => koszulRR(C.dd_k, Concentration => (k-hi, k-lo)));
+	k -> -k => koszulRR(C.dd_k, Concentration => (lo-k, hi-k)));
 
     modules := hashTable apply(lo..hi,
 	i -> i => hashTable apply(inf..sup,
@@ -187,8 +187,8 @@ koszulRR Complex    := Complex    => opts -> C -> (
     complex hashTable apply((lo+1)..hi,
 	i -> i => matrix table(toList(inf..sup), toList(inf..sup),
 	    (r,c) -> map(modules#(i-1)#(-r), modules#(i)#(-c),
-		if r == c   then (-1)^r * dd^(RRterms#(-sup+r))_(-sup+r+i) else
-		if r == c+1 then             (RRdiffs#(-sup+c))_(-sup+c+i) else 0)
+		if r == c   then (-1)^r * dd^(RRterms#(-inf-sup+r))_(-inf-sup+r+i) else
+		if r == c+1 then             (RRdiffs#(-inf-sup+c))_(-inf-sup+c+i) else 0)
 	    )
 	)
     )
@@ -208,7 +208,7 @@ koszulRR ComplexMap := ComplexMap => opts -> f -> (
 	hashTable apply(lo..hi,
 	    i -> i => map(tar_i, src_i,
 		matrix table(toList(inf..sup), toList(inf..sup),
-		    (r, c) -> if r == c then (RRmaps#(-sup+r))_(-sup+r+i) else 0)
+		    (r, c) -> if r == c then (RRmaps#(-inf-sup+r))_(-inf-sup+r+i) else 0)
 		)
 	    )
 	)
@@ -252,9 +252,9 @@ koszulLL Complex := Complex => opts -> D -> (
     (inf, sup) := concentration D;  -- bounds for homological degrees k in D
 
     LLterms := hashTable apply(inf..sup,
-	k -> -k => koszulLL(D_k,    Concentration => (k-hi, k-lo)));
+	k -> -k => koszulLL(D_k,    Concentration => (lo-k, hi-k)));
     LLdiffs := hashTable apply((inf+1)..sup,
-	k -> -k => koszulLL(D.dd_k, Concentration => (k-hi, k-lo)));
+	k -> -k => koszulLL(D.dd_k, Concentration => (lo-k, hi-k)));
 
     modules := hashTable apply(lo..hi,
 	i -> i => hashTable apply(inf..sup,
@@ -266,25 +266,39 @@ koszulLL Complex := Complex => opts -> D -> (
 restart
 needsPackage "ExteriorResolutions"
   (S,E) = koszulPair(1, ZZ/101)
-  koszulRR(S^1, Concentration => (-3, 1))
-  C = koszulLL(E^1, Concentration => (-2, 0))
-  koszulRR(C, Concentration => (-5,5))
 
-  D = koszulRR(complex { matrix {{x_0}} }, Concentration => (-5,5))
+  koszulRR(koszulComplex vars S, Concentration => (-5,5))
+  koszulRR(complex { matrix {{x_0}} }, Concentration => (-5,5))
+
+  koszulLL(freeResolution(coker vars E, LengthLimit => 3), Concentration => (-5,5))
+
+  C = koszulLL(E^1, Concentration => (-2, 0))
+  D = koszulRR(S^1, Concentration => (-5, 0))
+
+  assert(complex E == naiveTruncation(prune HH koszulRR(C, Concentration => (-5,0)), -4, 0))
+  --assert(complex S ==
+      koszulLL(D, Concentration => (-5,5))
+
   koszulLL(D, Concentration => (-5, 5))
 
   koszulLL(E^1, Concentration => (-3, 1))
 ///;
 
-
     complex hashTable apply((lo+1)..hi,
 	i -> i => matrix table(toList(inf..sup), toList(inf..sup),
 	    (r,c) -> map(modules#(i-1)#(-r), modules#(i)#(-c),
-		if r == c   then (-1)^r * dd^(LLterms#(-sup+r))_(-sup+r+i) else
-		if r == c+1 then             (LLdiffs#(-sup+c))_(-sup+c+i) else 0)
+		if r == c   then (-1)^r * dd^(LLterms#(-inf-sup+r))_(-inf-sup+r+i) else
+		if r == c+1 then             (LLdiffs#(-inf-sup+c))_(-inf-sup+c+i) else 0)
 	    )
 	)
     )
+    -- complex hashTable apply((lo+1)..hi,
+    -- 	i -> i => matrix table(toList(inf..sup), toList(inf..sup),
+    -- 	    (r,c) -> map(modules#(i-1)#(-r), modules#(i)#(-c),
+    -- 		if r == c   then (-1)^r * dd^(RRterms#(-inf-sup+r))_(-inf-sup+r+i) else
+    -- 		if r == c+1 then             (RRdiffs#(-inf-sup+c))_(-inf-sup+c+i) else 0)
+    -- 	    )
+    -- 	)
 -- LL(s**y) = (-1)^i LL(s**y) + s ** dd_D(y) for y \in D^{i-j}_j
 koszulLL ComplexMap := ComplexMap => opts -> phi -> ()
 
@@ -517,13 +531,13 @@ TEST ///
     (S,E)= koszulPair(2, ZZ/101)
     M = S^1
     
-    C = koszulRR(M, Concentration=>(0,3))
+    C = koszulRR(M, Concentration=>(-3,0))
     P = priddyComplex(vars E, S, LengthLimit=>3)
     
     assert(C == P)
 
     F = koszulLL(HH_0 C, Concentration=>(-5,5))
-    assert( F_0 == M)
+    assert(F == complex M)
 ///
 
 TEST ///
