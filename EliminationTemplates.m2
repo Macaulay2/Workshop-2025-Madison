@@ -121,7 +121,8 @@ getTemplate(EliminationTemplate) := o -> E -> (
 	    aVar := actionVariable E;
 	    J := ideal E;
 	    R := ring J;
-	    (sh, mp) := getTemplate(aVar, basis(R/J), J, o);
+	    E.cache#basis = basis(R/J);
+	    (sh, mp) := getTemplate(aVar, E.cache#basis, J, o);
 	    E.cache#"shifts" = sh;
 	    E.cache#"monomialPartition" = mp;
 	    (sh, mp)
@@ -189,12 +190,14 @@ getActionMatrix(EliminationTemplate) := o -> E -> (
     )
 )
 
+basis(EliminationTemplate) := o -> E -> E.cache#basis
+
 templateSolve = method(Options => {MonomialOrder => null})
 templateSolve(EliminationTemplate) := o -> (E) -> (
     Ma := getActionMatrix(E);
     (svals, P) := eigenvectors Ma;
     cleanEvecs := clean_(1e-10) (P * inverse diagonalMatrix(P^{numColumns P - 1}));
-
+    B := basis E;
     (transpose rsort B, cleanEvecs)
 )
 templateSolve(Ideal) := o -> (I) -> (
