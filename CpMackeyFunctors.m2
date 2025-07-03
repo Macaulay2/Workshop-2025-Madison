@@ -112,7 +112,8 @@ export{
 
 load "./CpMackeyFunctors/Code/Resolutions.m2"
 export{
-    "makeFreeModuleSurjection"
+    "makeFreeModuleSurjection",
+    "makeResolution"
 }
 
 load "./CpMackeyFunctors/Code/RandomMackeyFunctor.m2"

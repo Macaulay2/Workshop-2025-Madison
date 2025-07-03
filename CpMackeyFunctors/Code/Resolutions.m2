@@ -3,3 +3,23 @@ makeFreeModuleSurjection = method()
 makeFreeModuleSurjection(CpMackeyFunctor) := MackeyFunctorHomomorphism => (M) -> (
     return makeUniversalMap(M, gens(M.Underlying), gens(M.Fixed))
 )
+
+makeResolution = method()
+makeResolution(CpMackeyFunctor,ZZ) := List => (M,n) -> (
+    k := 0;
+    if M.cache#?"ProjRes" then (
+        k = length M.cache#"ProjRes";
+    ) else (
+        M.cache#"ProjRes" = {makeFreeModuleSurjection M};
+        k = 1
+    );
+
+    while k <= n do (
+        -- add differential d_k to cache
+        d := (M.cache#"ProjRes")#(k-1);
+        M.cache#"ProjRes" |= {inducedMap(source d, kernel d) * (makeFreeModuleSurjection (kernel d))};
+        k += 1
+    );
+
+    M.cache#"ProjRes"_(for i to n list i)
+)
