@@ -67,12 +67,12 @@ export{
 
     --UnstableGrothendieckWittClasses.m2
     "makeGWuClass",
-    "isWellDefinedGWu", -- Leave exported for now
+    --"isWellDefinedGWu", -- Leave exported for now
     "getScalar",
     "addGWu",
     "scalar", -- To avoid error about unexported symbol
     "addGWuDivisorial",
-    "fieldsAreCompatible",  --Exported only for testing purposes
+    --"fieldsAreCompatible",  --Exported only for testing purposes
     "makeStableGWClass",
     "UnstableGrothendieckWittClass",
     
