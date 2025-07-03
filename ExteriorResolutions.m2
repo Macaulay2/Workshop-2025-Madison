@@ -62,11 +62,20 @@ injectiveResolutionMap Module := ComplexMap => opts -> M -> (
     )
 injectiveResolutionMap Complex := ComplexMap => opts -> C -> (
     D := injectiveResolution(C, opts);
+    (lo,hi) := concentration C;
+    tempHash := new MutableHashTable;
+    tempHash#hi = map(D_hi, C_hi, transpose syz transpose presentation C_hi);
+    for i in reverse toList(lo..(hi-1)) do (
+        tempHash#i = (dd^C_(i + 1))\\(dd^D_(i+1) * tempHash#(i + 1));
+    );
+    map(D, C, tempHash)
+    -*
     map(D, C, i -> (
 	    if isFreeModule C_i then map(D_i,C_i, id_(C_i))
 	    else map(D_i, C_i, transpose syz transpose presentation C_i)
 	    )
 	)
+    *-
     )
 
 coaugmentationMap = method()
@@ -479,7 +488,6 @@ TEST ///
     assert isWellDefined P
     assert isFree P
     f = injectiveResolutionMap C -- bug
-    f = coaugmentationMap P
     assert isWellDefined f
     assert isQuasiIsomorphism f
     assert isComplexMorphism f
@@ -488,7 +496,10 @@ TEST ///
     prune ker Mat
     CMat=complex Mat
     P=injectiveResolution(CMat,LengthLimit=>5)
-    f=coaugmentationMap P
+    f = resolutionMap CMat
+    assert isQuasiIsomorphism f
+    assert isComplexMorphism f
+    
 ///
 
 TEST ///
