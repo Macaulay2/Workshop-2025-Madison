@@ -4,6 +4,7 @@ makeFreeModuleSurjection(CpMackeyFunctor) := MackeyFunctorHomomorphism => (M) ->
     return makeUniversalMap(M, gens(M.Underlying), gens(M.Fixed))
 )
 
+-- get resolution up to F_(n-1) <-- F_n
 getResolution = method()
 getResolution(CpMackeyFunctor,ZZ) := List => (M,n) -> (
     if n < 0 then return {};
