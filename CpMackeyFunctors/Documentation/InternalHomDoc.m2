@@ -1,5 +1,6 @@
 doc ///
     Key
+        InternalHom
         (InternalHom, CpMackeyFunctor, CpMackeyFunctor)
     Headline
         returns the internal hom Mackey functor between two Mackey functors.
@@ -13,9 +14,16 @@ doc ///
             the internal hom Mackey functor from M to N.
     Description
         Text
-            Mackey functors form a closed symmetric monoidal category.  This method returns the internal hom Mackey functor.
+            Given any two Mackey functors $M$ and $N$, we can form their {\em internal hom}, which is a Mackey functor which we denote by $\underline{\text{Hom}}(M,N)$. For example:
         Example
             InternalHom(makeRealRepresentationMackeyFunctor 5, makeComplexRepresentationMackeyFunctor 5)
+    
+        Text
+            The underlying @TO2((Hom, CpMackeyFunctor,CpMackeyFunctor),"group of homomorphisms")@ between any two Mackey functors can be recovered as the @TO2(getFixedModule,"fixed module")@ of the internal hom.
+
+    SeeAlso
+        "the abelian category of Mackey functors"
+        boxProduct
 ///
 
 doc ///          
@@ -38,4 +46,7 @@ doc ///
             The internal hom of Mackey functors is functorial in each variable.  This method returns the induced maps.
         Example
             InternalHom(makeRealRepresentationMackeyFunctor(5), complexLinearizationMap(5))
+    SeeAlso
+        "the abelian category of Mackey functors"
+        InternalHom
 ///
