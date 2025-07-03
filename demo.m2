@@ -26,7 +26,7 @@ vertices P
 #latticePoints(P) -- might be slow on big polytopes
 #latticePoints(4*P)
 
-QP = ehrhartQP P -- compute the Ehrhart Polynomial of P 
+QP = ehrhartQP P -- compute the Ehrhart Polynomial of P
 period QP
 QP(0)
 QP(4)
@@ -36,8 +36,14 @@ QP(4) == #latticePoints(4*P)
 P2 = convexHull transpose matrix {{-1,0}, {1,0}, {0,1/2}, {0,-1/2}}
 vertices P2
 QP2 = ehrhartQP P2 -- note period collapse
-period QP2 
+period QP2
 QP2(7)
+
+-- a small example with negative coefficients
+q = 12
+ReeveTetrahedron = convexHull transpose matrix {{0,0,0},{1,0,0},{0,1,0},{1,q,q+1}}
+ehrhartQP ReeveTetrahedron
+
 
 --- (3) h*-polynomial and Ehrhart Series
 -- Ehrhart series is the generating function for the Ehrhart polynomial
