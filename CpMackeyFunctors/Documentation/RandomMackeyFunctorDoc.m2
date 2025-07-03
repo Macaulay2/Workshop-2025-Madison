@@ -20,12 +20,12 @@ doc ///
 
 doc ///
     Key
-        makeRandomMackeyFunctorsHomomorphism
-        (makeRandomMackeyFunctorsHomomorphism, CpMackeyFunctor, CpMackeyFunctor)
+        makeRandomMackeyFunctorHomomorphism
+        (makeRandomMackeyFunctorHomomorphism, CpMackeyFunctor, CpMackeyFunctor)
     Headline
         generate a random Cp-Macky functor homomorphism
     Usage
-        makeRandomMackeyFunctorsHomomorphism(M,N)
+        makeRandomMackeyFunctorHomomorphism(M,N)
     Inputs
         M : CpMackeyFunctor
         N : CpMackeyFunctor

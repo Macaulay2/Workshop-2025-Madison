@@ -17,3 +17,7 @@ for i to (length d) - 2 do (
     comp = d#i * d#(i+1);
     assert(getUnderlyingMap(comp) == 0 and getFixedMap(comp) == 0)
 )
+
+
+
+

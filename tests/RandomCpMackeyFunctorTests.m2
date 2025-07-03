@@ -12,15 +12,15 @@ assert isWellDefined makeRandomCpMackeyFunctor(3,GenBound=>6)
 assert isWellDefined (makeRandomCpMackeyFunctor(2,{1,2,3,4}) ++ makeRandomCpMackeyFunctor(2,{4,3,2,6}))
 assert isWellDefined (makeRandomCpMackeyFunctor(5,GenBound=>6) ++ makeRealRepresentationMackeyFunctor(5))
 
-assert isWellDefined (makeRandomMackeyFunctorsHomomorphism(makeRealRepresentationMackeyFunctor(7), makeComplexRepresentationMackeyFunctor(7)))
-assert isWellDefined (makeRandomMackeyFunctorsHomomorphism(makeRandomCpMackeyFunctor(2,{1,2,3,4}), makeRandomCpMackeyFunctor(2,GenBound=>6) ))
-assert isWellDefined (coker (makeRandomMackeyFunctorsHomomorphism(makeRandomCpMackeyFunctor(2,{1,2,3,4}), makeRandomCpMackeyFunctor(2,GenBound=>6) )))
+assert isWellDefined (makeRandomMackeyFunctorHomomorphism(makeRealRepresentationMackeyFunctor(7), makeComplexRepresentationMackeyFunctor(7)))
+assert isWellDefined (makeRandomMackeyFunctorHomomorphism(makeRandomCpMackeyFunctor(2,{1,2,3,4}), makeRandomCpMackeyFunctor(2,GenBound=>6) ))
+assert isWellDefined (coker (makeRandomMackeyFunctorHomomorphism(makeRandomCpMackeyFunctor(2,{1,2,3,4}), makeRandomCpMackeyFunctor(2,GenBound=>6) )))
 
 M = makeBurnsideMackeyFunctor(5);
 N = makeUnderlyingFreeMackeyFunctor(5);
 P = makeComplexRepresentationMackeyFunctor(5);
-f = makeRandomMackeyFunctorsHomomorphism(M,N);
-g = makeRandomMackeyFunctorsHomomorphism(N,P);
+f = makeRandomMackeyFunctorHomomorphism(M,N);
+g = makeRandomMackeyFunctorHomomorphism(N,P);
 assert isWellDefined(g*f)
 assert (source(g*f) == M)
 assert (target(g*f) == P)

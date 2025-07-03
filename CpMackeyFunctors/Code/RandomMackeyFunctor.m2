@@ -82,8 +82,8 @@ makeRandomCpMackeyFunctor(ZZ):= CpMackeyFunctor => opts -> p-> (
 
 -- )
 
-makeRandomMackeyFunctorsHomomorphism = method()
-makeRandomMackeyFunctorsHomomorphism(CpMackeyFunctor, CpMackeyFunctor) := MackeyFunctorHomomorphism => (M,N) -> (
+makeRandomMackeyFunctorHomomorphism = method()
+makeRandomMackeyFunctorHomomorphism(CpMackeyFunctor, CpMackeyFunctor) := MackeyFunctorHomomorphism => (M,N) -> (
     if not getPrimeOrder(M) === getPrimeOrder(N) then error " -- prime orders are not the same!";
     homomorphism(random(Hom(M,N)))
 )
