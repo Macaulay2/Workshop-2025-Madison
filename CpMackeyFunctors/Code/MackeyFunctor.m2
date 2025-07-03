@@ -141,3 +141,8 @@ getConjugation = method()
 getConjugation CpMackeyFunctor := Matrix => M ->(
     M.Conj
 )
+
+isCohomological = method()
+isCohomological CpMackeyFunctor := Boolean => M -> (
+    M.Tr * M.Res == map(M.Fixed, M.Fixed, M.PrimeOrder)
+)

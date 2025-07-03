@@ -6,6 +6,7 @@ makeFreeModuleSurjection(CpMackeyFunctor) := MackeyFunctorHomomorphism => (M) ->
 
 getResolution = method()
 getResolution(CpMackeyFunctor,ZZ) := List => (M,n) -> (
+    if n < 0 then return {};
     k := 0;
     if M.cache#?"ProjRes" then (
         k = length M.cache#"ProjRes";

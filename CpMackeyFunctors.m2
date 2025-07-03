@@ -57,7 +57,8 @@ export{
     "getFixedModule",
     "getRestriction",
     "getTransfer",
-    "getConjugation"
+    "getConjugation",
+    "isCohomological",
 }
 
 -- Constructor files for making various Mackey functors
@@ -72,7 +73,8 @@ export{
     "makeFixedPointMackeyFunctor",
     "makeOrbitMackeyFunctor",
     "makeFixedTrivMackeyFunctor",
-    "makeFixedSignMackeyFunctor"
+    "makeFixedSignMackeyFunctor",
+    "makeZeroOnBottomMackeyFunctor"
 }
 
 -- Methods for working with homomorphisms between Mackey functors

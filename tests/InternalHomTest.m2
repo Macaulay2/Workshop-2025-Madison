@@ -4,7 +4,6 @@ p := 5;
 A := makeBurnsideMackeyFunctor p;
 B := makeUnderlyingFreeMackeyFunctor p;
 RO := makeRealRepresentationMackeyFunctor p;
-RU := makeComplexRepresentationMackeyFunctor p;
 
 assert(rank getUnderlyingModule InternalHom(A,B) == rank Hom(getUnderlyingModule A, getUnderlyingModule B))
 assert(rank getFixedModule InternalHom(A,B) == rank Hom(A, B))
