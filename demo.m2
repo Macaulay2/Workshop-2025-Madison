@@ -1,6 +1,8 @@
 needsPackage "ExteriorResolutions"
 
 (S, E) = koszulPair(4, ZZ/101)
+isCommutative S
+isSkewCommutative E
 
 f = map(S^{-1}^4, S^4, matrix { { S_0, S_1, S_2, S_3 }, {S_3, S_0, S_1, S_2}, {S_2, S_3, S_0, S_1}, {S_1, S_2, S_3, S_0} })
 
@@ -24,22 +26,24 @@ betti C == betti P
 
 koszulLL(complex(coker vars E), Concentration => (-5,5))
 
-(S, E) = koszulPair(2, ZZ/101)
-
-C = koszulLL(complex E, Concentration => (-5,5))
+C = prune koszulLL(complex E, Concentration => (-5,5))
 
 koszulComplex(vars S)
 
 betti C == betti (koszulComplex(vars S)[5]**S^{5})
 
-D = koszulRR(C, Concentration => (-5,5))
-
-prune HH D == complex E
-
-
---
+----
 
 (S,E) = koszulPair(2, ZZ/101)
+
+C = complex {map(S^{1}, S^1, S_0)}
+
+D = koszulRR(C, Concentration=>(-5,5))
+
+D.dd_1
+D.dd_0
+
+----
 
 C = koszulLL(E^1, Concentration => (-3, 0))
 D = koszulRR(S^1, Concentration => (-5, 0))
