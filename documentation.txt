@@ -1,0 +1,22 @@
+method: getTemplate
+Usage:getTemplate a B J
+Inputs:
+* a, a ring element as action
+* B, a matrix as the stand basis
+* J, an ideal
+Optional inputs:
+* MonomialOrder => ..., default value is the monomial order of the coefficient ring.
+Outputs:
+* shifts: a list containing the shifts determined by the action of a on the quotient ring modulo J.
+* monomialPartition: a list partitioning all relevant monomials into three subsets:
+    * excessive monomials,
+    * reducible monomials,
+    * basic monomials.
+    
+Description:
+
+i1 : R = QQ[x,y]
+i2 : J = ideal(x^2+y^2-1, x^2+x*y+y^2-1)
+i3 : actVar = x
+i4 : B = lift(basis(R/J), R)
+i5 : (sh, mp) = getTemplate(actVar, B, J)
