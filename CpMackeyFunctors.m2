@@ -91,6 +91,8 @@ export{
     "getFixedMap",
     "isTrivialMackeyFunctor",
     "concatBlocks",
+    "makeUniversalMapFixedCohomological",
+    "makeUniversalMapCohomolgical"
 }
 
 -- Methods for working in the abelian category Mack_p.
