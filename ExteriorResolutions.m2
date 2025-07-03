@@ -638,7 +638,7 @@ C = koszulLL(M, Concentration=>(0,5))
 
 P = priddyComplex(vars E, S, LengthLimit=>3)
 
-)
+
 M = coker matrix{{x_0}}
 E = ZZ/101[e_0,e_1,e_2, SkewCommutative=>true]
 
