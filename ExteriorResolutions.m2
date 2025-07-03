@@ -525,7 +525,7 @@ TEST ///
     f = map(S^{-1}^4, S^4, M)
     N = matrix { { 0, 0, 0, S_0 }, {0, 0, S_1, 0}, {0, S_2, 0, 0}, {S_3, 0, 0, 0} }
     g = map(S^4, S^{1}^4, N)
-    koszulRR(f, Concentration=>(-5,5)) * koszulRR(g, Concentration=>(-5,5)) == koszulRR(f * g, Concentration=>(-5,5))  
+    assert(koszulRR(f, Concentration=>(-5,5)) * koszulRR(g, Concentration=>(-5,5)) == koszulRR(f * g, Concentration=>(-5,5))) 
 ///
 
 TEST ///
@@ -534,7 +534,7 @@ TEST ///
     f = map(E^{-1}^4, E^4, M)
     N = matrix { { 0, 0, 0, E_0 }, {0, 0, E_1, 0}, {0, E_2, 0, 0}, {E_3, 0, 0, 0} }
     g = map(E^4, E^{1}^4, N)
-    koszulLL(f, Concentration=>(-5,5)) * koszulLL(g, Concentration=>(-5,5)) == koszulLL(f * g, Concentration=>(-5,5)) 
+    assert(koszulLL(f, Concentration=>(-5,5)) * koszulLL(g, Concentration=>(-5,5)) == koszulLL(f * g, Concentration=>(-5,5)))
 ///
 
 TEST ///
