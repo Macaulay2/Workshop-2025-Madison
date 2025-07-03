@@ -5,4 +5,4 @@ He needs the folder.
 
 You can stay in this folder, or leave this folder when you want to.
 
-###### Goodbye.
+#### Goodbye.
