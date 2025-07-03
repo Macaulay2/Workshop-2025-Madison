@@ -26,6 +26,7 @@ doc ///
         equivariantEhrhartSeries
         fixedPolytope
         generateGroup
+        isEffective
         isSymmetric
         orbitPolytope
         representationRing
@@ -350,6 +351,34 @@ doc ///
         Example
             representationRing 7
             representationRing(7, ReturnTable => true)
+    SeeAlso
+        EquivariantEhrhart
+///
+
+doc ///
+    Key
+        isEffective
+        (isEffective, RingElement)
+    Headline
+        method to check if an Ehrhart series is effective
+    Usage
+        result = isEffective(f)
+    Inputs
+        f : RingElement
+            Ehrhart series
+    Outputs
+        result : Boolean
+            whether or not f is effective
+    Description
+        Text
+            An Ehrhart series is effective if each coefficient is a genuine
+            representation. In other words, each coefficient is a non-negative 
+            integer combination of irreducible characters.
+        Example
+            P = convexHull matrix {{1, 1, 0, 1, 0, 0, 1, 0, 0, 0}, {1, 0, 1, 0, 1, 0, 0, 1, 0, 0}, {0, 1, 1, 0, 0, 1, 0, 0, 1, 0}, {0, 0, 0, 1, 1, 1, 0, 0, 0, 1},{0, 0, 0, 0, 0, 0, 1, 1, 1, 1}}
+            g = matrix {{0, 1, 0, 0, 0}, {1, 0, 0, 0, 0}, {0, 0, 0, 0, 1}, {0, 0, 1, 0, 0}, {0, 0, 0, 1, 0}}
+            ES = (equivariantEhrhartSeries(P,{g}))_0
+            isEffective ES
     SeeAlso
         EquivariantEhrhart
 ///
