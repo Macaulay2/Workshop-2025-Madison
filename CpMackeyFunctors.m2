@@ -44,9 +44,6 @@ importFrom_Core {
     "isMorphism", "isAbelianCategory",
     }
 
-load "./CpMackeyFunctors/Code/Helpers.m2"
--- helper commands are internal only, and not exported
-
 -- Code for the CpMackeyFunctor type
 load "./CpMackeyFunctors/Code/MackeyFunctor.m2"
 export{
