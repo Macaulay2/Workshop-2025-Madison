@@ -38,4 +38,6 @@ assert(getRestriction M == R);
 assert(getTransfer M == T);
 assert(getConjugation M == C);
 
-
+assert(not isCohomological makeBurnsideMackeyFunctor 7);
+assert(isCohomological makeFixedPointMackeyFunctor(2,id_(ZZ^1)));
+assert(isCohomological makeUnderlyingFreeMackeyFunctor 5);
