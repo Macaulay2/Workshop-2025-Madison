@@ -87,6 +87,8 @@ makeCpMackeyFunctor(ZZ,Matrix,Matrix,Matrix) := CpMackeyFunctor => (p,R,T,C) ->(
 lineAbove := (s, n) -> concatenate(n : "-") || s
 lineBelow := (s, n) -> s || concatenate(n : "-")
 vertSpace := n -> (s := ""; if n == 1 then return "" else for i to n-2 do s = s || ""; s) 
+horSpace := n -> (s := " "; if n == 1 then return s else for i to n-2 do s = s | " "; s) 
+vertArrows := n -> (s := "^ |"; if n > 1 then for i to n-1 do s = s || "| |"; s || "| V")
 
 net CpMackeyFunctor := M -> (
     n := max {width ("Res : " | net M.Res), width ("Tr : " | net M.Tr)};
@@ -97,7 +99,25 @@ net CpMackeyFunctor := M -> (
 	vertSpace(h) || "--> " || "-- ", vertSpace(h) || net M.Underlying,
 	vertSpace(h) || "  -┐" || "   |" || "  <┘", vertSpace(h+1) || " Conj : ", vertSpace(h+1) || net M.Conj
 	)
-    )
+)
+
+drawVerticalCpMackeyFunctor = method()
+drawVerticalCpMackeyFunctor(CpMackeyFunctor) := Net => M -> (
+    hMid := 1 + max {depth net M.Res, depth net M.Tr};
+    hTop := depth net M.Fixed + 1;
+	firstCol := vertSpace(hTop) || " Res" || (net M.Res);
+    w1 := width net M.Fixed;
+    w2 := width net M.Underlying;
+    w3 := width net M.Conj;
+    wm := max{w1, w2, w3};
+    w := round(wm / 2)-1;
+    w1 = if w1 == wm then 0 else round((wm-w1)/2);
+    w2 = if w2 == wm then 0 else round((wm-w2)/2);
+    w3 = if w3 == wm then 0 else round((wm-w3)/2);
+    secondCol := horizontalJoin(horSpace(w1),net M.Fixed) || horizontalJoin(horSpace(w),vertArrows(hMid)) || horizontalJoin(horSpace(w2),net M.Underlying) || horizontalJoin(horSpace(w), "  ^") || horizontalJoin(horSpace(w), "└-┘") || horizontalJoin(horSpace(w), " c") || horizontalJoin(horSpace(w3),net M.Conj);
+    thirdCol := vertSpace(hTop) || " Tr" || (net M.Tr);
+    return horizontalJoin(firstCol, " ", secondCol, " ", thirdCol)
+)
 
 
 -- Equality
