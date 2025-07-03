@@ -3,7 +3,6 @@ doc ///
         CpMackeyFunctor
     Headline
         The type of Cp Mackey functors
-
     Description
         Text
             This documents the @TO2(Type,"type")@ of $C_p$-Mackey functors. A $C_p$-Mackey functor is encoded as a @TO2(HashTable, "hash table")@ with keys through which we can pull various parts of the data.
@@ -48,13 +47,30 @@ doc ///
                 ("the ", TO2(directSum,"direct sum")," of two Mackey functors, as ", TT"M++N"),
                 ("the ", TO2(InternalHom,"internal hom"), " of two Mackey functors")
             }@
-    ///
+    SeeAlso
+        "background on Mackey functors"
+        CpMackeyFunctor
+///
 
 doc ///
     Key
         getPrimeOrder
     Headline
         getPrimeOrder
+    Usage
+        getPrimeOrder M
+    Inputs
+        M : CpMackeyFunctor
+    Outputs
+        p : ZZ
+            the order of the cyclic group $C_p$ over which $M$ is defined
+    Description
+        Text
+            Given a Mackey functor $M$ defined over $C_p$, this method returns $p$.
+    
+    SeeAlso
+        "background on Mackey functors"
+        CpMackeyFunctor
 ///
 
 doc ///
@@ -62,6 +78,20 @@ doc ///
         getUnderlyingModule
     Headline
         getUnderlyingModule
+    Usage
+        getUnderlyingModule M
+    Inputs
+        M : CpMackeyFunctor
+    Outputs
+        : Module
+            the underlying module $M(C_p/e)$
+    Description
+        Text
+            Returns the underlying module $M(C_p/e)$ of any Mackey functor $M$.
+    SeeAlso
+        "background on Mackey functors"
+        CpMackeyFunctor
+        getFixedModule
 ///
 
 doc ///
@@ -69,6 +99,20 @@ doc ///
         getFixedModule
     Headline
         getFixedModule
+    Usage
+        getFixedModule M
+    Inputs
+        M : CpMackeyFunctor
+    Outputs
+        : Module
+            the fixed module $M(C_p/C_p)$
+    Description
+        Text
+            Returns the underlying fixed module $M(C_p/C_p)$ of any Mackey functor $M$.
+    SeeAlso
+        "background on Mackey functors"
+        CpMackeyFunctor
+        getUnderlyingModule
 ///
 
 doc ///
@@ -76,6 +120,21 @@ doc ///
         getRestriction
     Headline
         getRestriction
+    Usage
+        getRestriction M
+    Inputs
+        M : CpMackeyFunctor
+    Outputs
+        : Matrix
+            the restriction map in $M$
+    Description
+        Text
+            Returns the restriction homomorphism in $M$.
+    SeeAlso
+        "background on Mackey functors"
+        CpMackeyFunctor
+        getTransfer
+        getConjugation
 ///
 
 doc ///
@@ -83,6 +142,21 @@ doc ///
         getTransfer
     Headline
         getTransfer
+    Usage
+        getTransfer M
+    Inputs
+        M : CpMackeyFunctor
+    Outputs
+        : Matrix
+            the transfer map in $M$
+    Description
+        Text
+            Returns the transfer homomorphism in $M$.
+    SeeAlso
+        "background on Mackey functors"
+        CpMackeyFunctor
+        getRestriction
+        getConjugation
 ///
 
 doc ///
@@ -90,6 +164,21 @@ doc ///
         getConjugation
     Headline
         getConjugation
+    Usage
+        getConjugation M
+    Inputs
+        M : CpMackeyFunctor
+    Outputs
+        : Matrix
+            the conjugation map in $M$
+    Description
+        Text
+            Returns the conjugation homomorphism in $M$.
+    SeeAlso
+        "background on Mackey functors"
+        CpMackeyFunctor
+        getRestriction
+        getTransfer
 ///
 
 doc ///
@@ -98,6 +187,9 @@ doc ///
         (makeCpMackeyFunctor,ZZ,Matrix,Matrix,Matrix)
     Headline
         make a Cp Mackey functor
+    SeeAlso
+        "background on Mackey functors"
+        CpMackeyFunctor
 ///
 
 doc ///
@@ -105,4 +197,7 @@ doc ///
         (prune,CpMackeyFunctor)
     Headline
         prune a CpMackeyFunctor
+    SeeAlso
+        "background on Mackey functors"
+        CpMackeyFunctor
 ///
