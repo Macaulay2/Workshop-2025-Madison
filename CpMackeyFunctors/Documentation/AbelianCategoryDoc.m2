@@ -8,8 +8,11 @@ doc ///
             {\bf The category of Mackey functors:} Fixing a finite group $G$ (always cyclic of prime order in this package), we obtain a {\em category} $\text{Mack}_G$, whose objects are @TO2(CpMackeyFunctor,"Mackey functors")@ and whose morphisms are @TO2(MackeyFunctorHomomorphism,"Mackey functor homomorphisms")@. Given any Mackey functor $M$ we can take its {\em identity homomorphism} as follows:
         
         Example
-            M = makeRandomCpMackeyFunctor(3,GenBound=>2)
+            M = makeRandomCpMackeyFunctor(3,GenBound=>2);
             id_M
+        
+        Text
+            @TO2((symbol *, MackeyFunctorHomomorphism,MackeyFunctorHomomorphism),"Composition")@  of Mackey functor homomorphisms is done exactly the same as for composition of maps. If $f\colon M \to N$ and $g \colon N \to Q$ are two Mackey functor homomorphisms, their composite $g\circ f \colon M \to Q$ can be accessed as @TT("g*f")@.
         
         Text
             {\bf The abelian category structure:} Given any two Mackey functors $M$ and $N$, we can form the set $\text{Hom}_{\text{Mack}_G}(M,N)$ of homomorphisms from $M$ to $N$. Since we can @TO2((symbol ++, MackeyFunctorHomomorphism,MackeyFunctorHomomorphism),"add")@ any two homomorphisms, we have that $\text{Hom}_{\text{Mack}_G}(M,N)$ is really an @TO2((Hom,CpMackeyFunctor,CpMackeyFunctor) ,"abelian group of homomorphisms")@. Composition is moreover $\ZZ$-linear, hence we can say that the category $\text{Mack}_G$ is {\em pre-additive}.
@@ -23,10 +26,24 @@ doc ///
             
             Moreover, any Mackey functor homomorphism admits a @TO2((kernel,MackeyFunctorHomomorphism),"kernel")@ and a @TO2((cokernel,MackeyFunctorHomomorphism),"cokernel")@. All this data we've collected so far is often called a {\em pre-abelian} structure. Finally, one can prove that images and coimages agree, hence $\text{Mack}_G$ is an {\em abelian category}.
 
+            {\bf Enough projectives:} The category $\text{Mack}_{G}$ has {\em exactly two} projective objects, which we denote by $\underline{A}$ and $\underline{B}$. These are the @TO2(makeBurnsideMackeyFunctor, "Burnside Mackey functor")@ and the @TO2(makeUnderlyingFreeMackeyFunctor,"underlying free Mackey functor")@, respectively. The category $\text{Mack}_G$ has {\em enough projectives}, meaning in particular that we can take projective resolutions in order to compute ext and tor groups.
+
+            {\bf Free resolutions:} Given any Mackey functor we can take its {\em free resolution}. The projective dimension of an object of $\text{Mack}_G$ is generally infinite, so we cannot provide all of the data of a resolution -- nevertheless we can provide a computation that holds in a range. This is accomplished using the @TO(getResolution)@ method, which inputs a Mackey functor $M$ and an integer $n$, and outputs a free resolution of the form
+            \[M \leftarrow F_0 \leftarrow F_1 \leftarrow \cdots \leftarrow F_n\]
+
+        Example
+            M = prune makeRandomCpMackeyFunctor(3,GenBound=>2);
+            class getResolution(M,2)
+            length getResolution(M,2)
+        Text
+            In the notation above, the element @TT("getResolution(M,2)")@ will be a @TO2(List,"list")@ of differentials $(M \leftarrow F_0, F_0 \leftarrow F_1, F_1 \leftarrow F_2)$, where each entry in the list is a @TO2(MackeyFunctorHomomorphism,"Mackey functor homomorphism")@.
+            
+            When a resolution is computed, this is @TO2(cache,"cached")@ in the Mackey functor itself, and can be accessed as @TT("M.ProjRes")@. This makes computations less costly, and moreover the cache helps us expand resolutions. For instance if we have already computed @TT("getResolution(M,10)")@ and want to compute @TT("getResolution(M,20)")@, it will access the cached 10-term resolution to shorten the computation for the 20-term resolution.
+
             {\bf The monoidal structure:} The category $\text{Mack}_G$ furthermore has a {\em symmetric monoidal structure}, given by the @TO2(boxProduct,"box product")@ of two Mackey functors. Taking the box product admits a right adjoint, in other words there is an @TO2(InternalHom,"internal hom")@. More explicitly, there is a natural isomorphism of abelian groups, natural in any three Mackey functors $M$, $N$, and $P$:
             \[\text{Hom}_{\text{Mack}_G}(M \square N, P) \cong \text{Hom}_{\text{Mack}_G}(M, [N,P]).\]
 
-            {\bf Free resolutions:} todo
+            
 
             {\bf Ext and Tor:} todo
 
