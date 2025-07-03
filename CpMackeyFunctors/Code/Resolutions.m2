@@ -4,8 +4,8 @@ makeFreeModuleSurjection(CpMackeyFunctor) := MackeyFunctorHomomorphism => (M) ->
     return makeUniversalMap(M, gens(M.Underlying), gens(M.Fixed))
 )
 
-makeResolution = method()
-makeResolution(CpMackeyFunctor,ZZ) := List => (M,n) -> (
+getResolution = method()
+getResolution(CpMackeyFunctor,ZZ) := List => (M,n) -> (
     k := 0;
     if M.cache#?"ProjRes" then (
         k = length M.cache#"ProjRes";
