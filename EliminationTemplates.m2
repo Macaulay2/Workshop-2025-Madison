@@ -183,14 +183,13 @@ getActionMatrix(EliminationTemplate) := o -> E -> (
     )
 )
 
-templateSolve = method(Options => {MonomialOrder => null})
-templateSolve(EliminationTemplate) := o -> (template) -> (
+getEigenMatrix = method(Options => {MonomialOrder => null})
+getEigenMatrix(EliminationTemplate) := o -> (template) -> (
 
 )
-templateSolve(Ideal) := o -> (I) -> (
-
+getEigenMatrix(Ideal) := o -> (I) -> (
 )
-templateSolve(RingElement, Ideal) := o -> (a, J) -> (
+getEigenMatrix(RingElement, Ideal) := o -> (a, J) -> (
     R := ring J;
     K := coefficientRing R;
     ringVars := flatten entries vars R;
@@ -207,6 +206,79 @@ templateSolve(RingElement, Ideal) := o -> (a, J) -> (
 
     (transpose rsort B, cleanEvecs)
 )
+
+templateSolve = method(Options => {MonomialOrder => null})
+templateSolve(EliminationTemplate) := o -> (template) -> (
+
+)
+templateSolve(Ideal) := o -> (I) -> (
+
+)
+
+
+templateSolve(RingElement, Ideal) := o -> (a, J) -> (
+    (B, evmat) := getEigenMatrix(a, J);
+    print(B);
+    -- Grobner basis way 
+    -- step 0: set up hashtable 1
+    --         monomial : value
+    --         set up hashtable 2
+    --         solved_variable : value
+
+    -- step 1: first check the variable in B, get the corresponding a_i (skip)
+    -- step 2: start with the smallest variables say x_n, check if x_n is in B
+    --          if yes, take the value of x_n from the corresponding position in hashtable 1; check next variable
+    --          if not, do r := x_n % J, by definition, r can be expressed as a linear combination of the basis elements in B we have find the value of
+    --          x_n, so we can update the hashtable 2 with the value of x_n
+    --         repeat this process until all variables are solved
+    -- step 3:  output the hashtable 2 as the solution
+    basisMons := B;
+    numRoots := numColumns evmat;
+
+    solutionList := {};
+
+    for rootIndex from 0 to numRoots-1 do (
+        -- 0.1 monomial-to-value hash table
+        monomialValues := new MutableHashTable;
+        for i from 0 to numRows basisMons - 1 do (
+            m := basisMons_(i,0);
+            monomialValues#m = evmat_(i, rootIndex);
+        );
+        -- 0.2 variable-to-value hash table
+        variableValues := new MutableHashTable;
+        varsList := flatten entries vars ring J;
+        root := {};
+
+        for v in varsList do (
+            -- If the variable is in the basis, use directly
+            if monomialValues#?v then (
+              root = append(root, monomialValues#v);
+            )
+            else (
+                -- Otherwise, reduce modulo ideal: x_i mod J
+                r := sub(v % J, ring J);
+
+                -- write r as linear combination of basis monomials
+                bmons := apply(flatten entries basisMons, m -> sub(m, ring J));
+                coeffs := last coefficients(r, Monomials => bmons);
+                value := 0;
+                for i from 0 to numRows basisMons - 1 do (
+                    m := basisMons_(i,0);
+                    if monomialValues#?m then (
+                      value += sub(coeffs_(i,0), coefficientRing ring J) * monomialValues#m;
+                    )
+                );
+
+
+                root = append(root, value);
+            );
+
+        );
+        solutionList = append(solutionList, root);
+    );
+    solutionList
+)
+
 
 beginDocumentation()
 
@@ -355,8 +427,8 @@ needsPackage "NumericalAlgebraicGeometry"
 R=QQ[x,y,z]
 J=ideal(x^3+y^3+z^3-4,x^2-y-z-1,x-y^2+z-3)
 B=basis(R/J)
-templateSolve(z,J)
-templateSolve(x,J)
+getEigenMatrix(x,J)
+templateSolve(x, J)
 templateSolve(x+2*y+3*z,J)
 templateSolve(x,J)
 netList solveSystem J_*
@@ -369,13 +441,21 @@ check "EliminationTemplates"
 
 uninstallPackage "EliminationTemplates"
 restart
-installPackage "EliminationTemplates"
+debug needsPackage "EliminationTemplates"
+R = QQ[x,y]
+J = ideal(x^3 + y^2 - 1, x - y - 1)
+templateSolve(x, J)
+actVar = x
+getEigenMatrix(x, J)
+
 viewHelp "EliminationTemplates"
 
+
+restart
+debug needsPackage "EliminationTemplates"
 R = QQ[x,y]
-E = eliminationTemplate(x, ideal(x^3 + y^2 - 1, x - y - 1))
-getActionMatrix E
-net E
+J = ideal(x^3 + y^2 - 1, x - y - 1)
+templateSolve(x, J)
 
 uninstallPackage "EliminationTemplates"
 restart
