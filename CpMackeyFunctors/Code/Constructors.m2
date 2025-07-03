@@ -72,11 +72,8 @@ makeOrbitMackeyFunctor (ZZ,Matrix) := CpMackeyFunctor => (p,C) -> (
 
 makeFixedTrivMackeyFunctor = method()
 makeFixedTrivMackeyFunctor(ZZ) := CpMackeyFunctor => (p) -> (
-    U := cokernel(matrix({{p}}));
-    R := inducedMap(U,U);
-    T := inducedMap(U,U,matrix({{0}}));
-    C := inducedMap(U,U);
-    return makeCpMackeyFunctor(p,R,T,C)
+    U := coker matrix {{p}};
+    makeFixedPointMackeyFunctor(p, id_U)
 )
 
 makeFixedSignMackeyFunctor = method(Dispatch => Thing)   --takes no argument so write makeFixedSignMackeyFunctor()

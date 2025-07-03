@@ -253,6 +253,25 @@ doc ///
 
 doc ///
     Key
+        makeFixedTrivMackeyFunctor
+        (makeFixedTrivMackeyFunctor, ZZ)
+    Headline
+        constructs the fixed-point Mackey functor for the trivial action of $C_p$ on $\mathbb{Z}/p$
+    Usage
+        makeFixedTrivMackeyFunctor(p)
+    Inputs
+        p : ZZ
+            a prime number $p$
+    Outputs
+        : CpMackeyFunctor
+            the fixed-point Mackey functor for the trivial action of $C_p$ on $\mathbb{Z}/p$
+    Description
+        Example
+            makeFixedTrivMackeyFunctor(5)
+///
+
+doc ///
+    Key
         makeZeroOnUnderlyingMackeyFunctor
         (makeZeroOnUnderlyingMackeyFunctor, ZZ, Module)
     Headline
