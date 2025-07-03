@@ -202,11 +202,19 @@ MackeyFunctorHomomorphism + MackeyFunctorHomomorphism := MackeyFunctorHomomorphi
     if source f != source g then error("-- sources of maps must agree");
     if target f != target g then error("-- targets of maps must agree");
     map(target f, source g, f.UnderlyingMap + g.UnderlyingMap, f.FixedMap + g.FixedMap)
-    )
+)
 
 ZZ * MackeyFunctorHomomorphism := MackeyFunctorHomomorphism => (n, f) -> (
     map(target f, source f, n * f.UnderlyingMap, n * f.FixedMap)
-    )
+)
+
+- MackeyFunctorHomomorphism := MackeyFunctorHomomorphism => f -> (
+    (-1)*f
+)
+
+MackeyFunctorHomomorphism - MackeyFunctorHomomorphism := MackeyFunctorHomomorphism => (f,g) -> (
+    f + (-g)
+)
 
 -- Function composition
 MackeyFunctorHomomorphism * MackeyFunctorHomomorphism := MackeyFunctorHomomorphism => (G,F) ->(
