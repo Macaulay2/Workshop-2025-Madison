@@ -232,6 +232,38 @@ doc ///
     Still trying to figure this out.
 ///
 
+doc ///
+ Node
+  Key
+   getTemplate
+   (getTemplate, RingElement, Matrix, Ideal)
+   (getTemplate, EliminationTemplate)
+  Headline
+     extracts a "sparse" representation of an elimination template
+  Usage
+    (sh, mp) = getTemplate(a, B, J)
+  Inputs
+    a:RingElement
+    B:Matrix
+    J:Ideal
+  Outputs
+    shifts:ShiftSet
+    monomialPartition:MonomialPartition
+  Description
+   Text
+     This method builds an elimination template. It returns a Sequence of length two, which can be used to recover the template matrix.
+
+     The elements of this sequence encode the rows and columns of a Macaulay matrix (the template matrix.)
+     The last element consists of lists of three monomials supported on equations indexing the rows of the template matrix.
+     These are called excessive monomials, reducible monomials, and basic monomials.
+   Example
+     R = QQ[x,y];
+     J = ideal(x^2+y^2-1, x^2+x*y+y^2-1);    
+     actVar = x;
+     B = lift(basis(R/J), R);
+     (sh, mp) = getTemplate(actVar, B, J)
+///
+
 TEST ///
 R = QQ[x,y]
 J = ideal(x^2+y^2-1,x^2+x*y+y^2-1)
