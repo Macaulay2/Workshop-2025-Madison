@@ -72,8 +72,9 @@ getH0 (RingElement, Ideal) := o -> (a, J) -> (
     B := basis(R/J);
     H0 := getH0(a, B, J, o);
     if (o.Strategy === null) then H0 else if (o.Strategy == "Larsson") then (
-	print("Using Larsson's strategy to compute H0.");
-    --H0%module(syz(H0))
+	    print("Using Larsson's strategy to compute H0.");
+        --H0%module(syz(H0))
+        H0;
 	) else (error "Strategy not yet implemented.") 
 )    
 getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
@@ -92,7 +93,11 @@ getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     assert(gens G * HVG - V == 0);
     assert(gens F * HGF - gens G == 0);
     H0 := HGF * HVG;
-    sub(H0, ring J)
+    H0 = sub(H0, ring J);
+    if (o.Strategy === null) then H0 else if (o.Strategy == "Larsson") then (
+	    print("Using Larsson's strategy to compute H0.(detailed getH0 method)");
+        H0;
+    ) else (error "Strategy not yet implemented.") 
 )
 
 shiftPolynomials = (shifts, J) -> (
@@ -103,8 +108,6 @@ shiftPolynomials = (shifts, J) -> (
 getTemplate = method(Options => {MonomialOrder => null, Strategy => null})
 getTemplate(RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     H0 := getH0(a, B, J, o);
-    print(o);
-    --print("Strategy in getTemplate" | toString(o.Strategy);
     shifts := new ShiftSet from apply(numgens J, i -> monomials(H0^{i}));
     allMons := union(set \ flatten \ entries \ monomials \ shiftPolynomials(shifts, J));
     monsB := set flatten entries(lift(B, ring J));
@@ -364,11 +367,9 @@ getTemplateMatrix E
 getTemplateMatrix(E, Strategy => "Larsson")
 
 getTemplate(E, Strategy => "Larsson")
+
 getH0(x, J, Strategy => "Larsson")
 getH0(x, J, Strategy => null)
-
-theH0 = getH0(x,J)
-theH0%module(syz(theH0))
 
 getActionMatrix E
 eigenvalues getActionMatrix E
