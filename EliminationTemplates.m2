@@ -48,7 +48,8 @@ export {
     "shifts",
     "monomialPartition",
     "templateMatrix",
-    "actionVariable"
+    "actionVariable",
+    "copyTemplate"
 }
 
 EliminationTemplate = new Type of HashTable
@@ -218,6 +219,7 @@ getEigenMatrix(RingElement, Ideal) := o -> (a, J) -> (
     (transpose rsort B, cleanEvecs)
 )
 
+<<<<<<< Updated upstream
 templateSolve = method(Options => {MonomialOrder => null})
 templateSolve(EliminationTemplate) := o -> (template) -> (
 
@@ -263,6 +265,15 @@ templateSolve(RingElement, Ideal) := o -> (a, J) -> (
         solutions = append(solutions, root);
     );
     solutions
+=======
+copyTemplate=method(Options => {})
+copyTemplate(EliminationTemplate, Ideal) := o -> (E,J) -> (
+    F := eliminationTemplate(E#"actionVariable", J);
+    F.cache#"shifts"=E.cache#"shifts";
+    F.cache#"monomialPartition"=E.cache#"monomialPartition";
+    F.cache#"basis"=basis(E);
+    F
+>>>>>>> Stashed changes
 )
 
 beginDocumentation()
@@ -463,6 +474,15 @@ netList solveSystem J_*
 restart
 debug needsPackage "EliminationTemplates"
 check "EliminationTemplates"
+
+restart
+loadPackage "EliminationTemplates"
+R=QQ[x,y]
+I=ideal(x^2+y^2-1,x^2+y^3+x*y-2)
+J=ideal(x^2+y^2-2,x^2+y^3+3*x*y-5)
+B=basis(R/I)
+E=getTemplate(x+4*y, B, I)
+copyTemplate(E,J)
 
 
 
