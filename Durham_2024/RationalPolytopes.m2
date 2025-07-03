@@ -605,8 +605,10 @@ doc ///
       Computes the period of a quasipolynomial
     Example
       period(quasiPolynomial(matrix{{1,2,3},{1,4,5}}))
-      period(quasiPolynomial(matrix{{1,1},{1,2},{1,1},{1,2}}))
-      period(quasiPolynomial(matrix{{3,6,7,2},{3,4,4,2},{3,2,5,6}}))
+      QP1 = quasiPolynomial(matrix{{1,1},{1,2},{1,1},{1,2}})
+      period QP1
+      QP2 = quasiPolynomial(matrix{{1,1},{1,2},{1,1},{1,1}})
+      period QP2
   SeeAlso
     RationalPolytopes
 ///
@@ -669,11 +671,9 @@ doc ///
   ///
   
 
-  
-
 
 -* Test section *-
-TEST /// -- (1)
+TEST /// -- (hStarPolynomial)
 R = QQ[t]
 assert(1_R == hStarPolynomial(convexHull transpose matrix "0,0,0;1,0,0;0,1,0;0,0,1",R))
 assert(t^5+3*t^4+4*t^3+4*t^2+3*t+1 == hStarPolynomial(convexHull transpose matrix "1,0;-1,0;0,1/2;0,-1/2",R, Strategy => "Normaliz"))
@@ -681,9 +681,17 @@ assert(t+1 == hStarPolynomial(convexHull transpose matrix "0; 1/2",R, Strategy =
 assert(t^5+t^3+t^2+1 == hStarPolynomial(convexHull transpose matrix "1/4; 1/2",R))
 ///
 
+TEST /// -- (isPeriod)
+assert(true == isPeriod(matrix "1,1;2,2;1,1;2,2",2))
+///
 
+TEST /// -- (period)
+assert(2 == period(quasiPolynomial(matrix{{1,1},{1,2},{1,1},{1,2}})))
+///
 
-end--
+TEST /// -- (coefficientMonomial)
+assert(matrix{{1},{1}} == coefficientMonomial(quasiPolynomial(matrix{{1,2,3},{1,4,5}}),2))
+///
 
 ----
 
