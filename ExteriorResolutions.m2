@@ -521,18 +521,18 @@ TEST ///
 
 TEST ///
     (S, E) = koszulPair(4, ZZ/19937)
-    M = matrix { { S_0, 0, 0, 0 }, {0, S_1, 0, 0}, {0, 0, S_2, 0}, {0, 0, 0, S_3} }
+    M = matrix { { S_0, S_1, S_2, S_3 }, {S_3, S_0, S_1, S_2}, {S_2, S_3, S_0, S_1}, {S_1, S_2, S_3, S_0} }
     f = map(S^{-1}^4, S^4, M)
-    N = matrix { { 0, 0, 0, S_0 }, {0, 0, S_1, 0}, {0, S_2, 0, 0}, {S_3, 0, 0, 0} }
+    N = matrix { { S_0, S_1, S_2, S_3 }, {S_1, S_2, S_3, S_0}, {S_2, S_3, S_0, S_1}, {S_3, S_0, S_1, S_2} }
     g = map(S^4, S^{1}^4, N)
     assert(koszulRR(f, Concentration=>(-5,5)) * koszulRR(g, Concentration=>(-5,5)) == koszulRR(f * g, Concentration=>(-5,5))) 
 ///
 
 TEST ///
     (S, E) = koszulPair(4, ZZ/19937)
-    M = matrix { { E_0, 0, 0, 0 }, {0, E_1, 0, 0}, {0, 0, E_2, 0}, {0, 0, 0, E_3} }
+    M = matrix { { E_0, E_1, E_2, E_3 }, {E_3, E_0, E_1, E_2}, {E_2, E_3, E_0, E_1}, {E_1, E_2, E_3, E_0} }
     f = map(E^{-1}^4, E^4, M)
-    N = matrix { { 0, 0, 0, E_0 }, {0, 0, E_1, 0}, {0, E_2, 0, 0}, {E_3, 0, 0, 0} }
+    N = matrix { { E_0, E_1, E_2, E_3 }, {E_1, E_2, E_3, E_0}, {E_2, E_3, E_0, E_1}, {E_3, E_0, E_1, E_2} }
     g = map(E^4, E^{1}^4, N)
     assert(koszulLL(f, Concentration=>(-5,5)) * koszulLL(g, Concentration=>(-5,5)) == koszulLL(f * g, Concentration=>(-5,5)))
 ///
