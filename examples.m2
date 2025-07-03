@@ -1,5 +1,13 @@
 restart
+
+uninstallPackage "EquivariantEhrhart"
+
+restart
 path = append(path, "./Durham_2024/")
+
+installPackage "EquivariantEhrhart"
+
+
 needsPackage "EquivariantEhrhart"
 
 -- Ex 1
