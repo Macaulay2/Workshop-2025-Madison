@@ -26,31 +26,6 @@ assert isWellDefined(F)
 assert isWellDefined(complexLinearizationMap(5))
 assert isWellDefined(realLinearizationMap(5))
 
--- verifying some universal maps are well-defined
-
-RO := makeRealRepresentationMackeyFunctor 5;
-assert isWellDefined(makeUniversalMapFixed(RO, vector (matrix {{4},{1},{-7}})))
-assert isWellDefined(makeUniversalMapFixed(RO, gens(getFixedModule RO)))
-
-B := makeUnderlyingFreeMackeyFunctor 3;
-assert isWellDefined(makeUniversalMapUnderlying(B, vector (matrix {{0},{1},{0}})))
-assert isWellDefined(makeUniversalMapUnderlying(B, gens(getUnderlyingModule B)))
-
-assert isWellDefined(makeUniversalMap(B, gens(getUnderlyingModule B), gens(getFixedModule B)))
-
--- cursedMackeyFunctor
-F = cokernel matrix {{84}}
-U = (cokernel matrix {{2}}) ++ module ZZ
-r = map(U,F, matrix {{1},{0}})
-t = map(F,U, matrix {{42,42}})
-c = map(U,U, matrix {{1, 0}, {0,-1}})
-cursedMackeyFunctor := makeCpMackeyFunctor(2,r,t,c)
-x = gens getFixedModule cursedMackeyFunctor
-f1 = makeUniversalMapFixed(cursedMackeyFunctor,x)
-x' = (gens getUnderlyingModule cursedMackeyFunctor)
-f2 = makeUniversalMapUnderlying(cursedMackeyFunctor, x')
-assert(matrix f1.FixedMap == matrix {{1,42}} and matrix f1.UnderlyingMap == matrix{{1},{0}})
-assert(matrix f2.FixedMap == matrix {{42,42}} and matrix f2.UnderlyingMap == matrix{{1,1,0,0},{0,0,1,-1}})
 
 
 -- verify composition does what we want it to do ?

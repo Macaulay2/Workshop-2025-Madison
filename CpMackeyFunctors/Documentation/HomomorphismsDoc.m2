@@ -143,48 +143,6 @@ doc ///
 
 doc ///
     Key
-        makeUniversalMapFixed
-        (makeUniversalMapFixed, CpMackeyFunctor, Vector)
-    Headline
-        constructs a homomorphism out of the Burnside Mackey functor
-    Usage
-        makeUniversalMapFixed(M,x)
-    Inputs
-        M : CpMackeyFunctor
-        x : Vector
-    Outputs
-        : MackeyFunctorHomomorphism
-            the homomorphism $\underline{A}\to M$ induced by the vector $x$.
-    Description
-        Text
-            The Burnside Mackey functor $\underline{A}$ is the free Mackey functor on a fixed generator, meaning there is a natural isomorphism $\text{Hom}_{\text{Mack}_{C_p}}(\underline{A},M)\cong M(C_p/C_p)$ for any $C_p$-Mackey functor $M$. This method implements this correspondence: for an element $x\in M(C_p/C_p)$ it returns the induced homomorphism of Mackey functors $\underline{A}\to M$. The homomorphism is determined by sending $1\mapsto x$ where $1\in\underline{A}(C_p/C_p)$ represents the singleton $C_p$-set.
-        Example
-            makeUniversalMapFixed(makeRealRepresentationMackeyFunctor(5), vector (matrix {{1},{2},{3}}))
-///
-
-doc ///
-    Key
-        makeUniversalMapUnderlying
-        (makeUniversalMapUnderlying, CpMackeyFunctor, Vector)
-    Headline
-        constructs a homomorphism out of the free Mackey functor on an underling generator
-    Usage
-        makeUniversalMapUnderlying(M,x)
-    Inputs
-        M : CpMackeyFunctor
-        x : Vector
-    Outputs
-        : MackeyFunctorHomomorphism
-            the homomorphism $\underline{B}\to M$ induced by the vector $x$.
-    Description
-        Text
-            "The free Mackey functor $\underline{B}$ on an underlying generator has the property there is a natural isomorphism $\text{Hom}_{\text{Mack}_{C_p}}(\underline B,M)\cong M(C_p/e)$ for any $C_p$-Mackey functor $M$ This method implements this correspondence: for an element $x\in M(C_p/e)$ it returns the induced homomorphism of Mackey functors $\underline B\to M$ The homomorphism is determined by sending $1\mapsto x$ where $1\in\underline B(C_p/e)$ represents the identity element $1\in C_p/e = \{1,\gamma,\ldots,\gamma^{p-1}\}$.
-        Example
-            makeUniversalMapUnderlying(makeUnderlyingFreeMackeyFunctor(3), vector (matrix {{1},{2},{3}}))
-///
-
-doc ///
-    Key
         (symbol |, MackeyFunctorHomomorphism,MackeyFunctorHomomorphism)
     Headline
         Horizontal concatenation of Mackey functor homomorphisms
