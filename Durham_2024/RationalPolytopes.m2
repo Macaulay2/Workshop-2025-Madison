@@ -693,6 +693,7 @@ TEST /// -- (coefficientMonomial)
 assert(matrix{{1},{1}} == coefficientMonomial(quasiPolynomial(matrix{{1,2,3},{1,4,5}}),2))
 ///
 
+end
 ----
 
 restart
