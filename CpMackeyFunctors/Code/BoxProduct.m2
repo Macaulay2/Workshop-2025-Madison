@@ -99,7 +99,9 @@ boxProductConjugation (CpMackeyFunctor,CpMackeyFunctor) := Matrix => (M,N) ->(
 boxProduct = method()
 boxProduct (CpMackeyFunctor,CpMackeyFunctor) := CpMackeyFunctor => (M,N) ->(
     if getPrimeOrder(M) != getPrimeOrder(N) then error("-- Primes not the same (incompatable)");
-    return makeCpMackeyFunctor(getPrimeOrder(M),boxProductRestriction(M,N), boxProductTransfer(M,N),boxProductConjugation(M,N))
+    result := makeCpMackeyFunctor(getPrimeOrder(M),boxProductRestriction(M,N), boxProductTransfer(M,N),boxProductConjugation(M,N));
+    result.cache.formation = FunctionApplication{boxProduct, (M, N)};
+    result
 )
 
 -- Get induced maps on box products
