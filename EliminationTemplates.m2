@@ -134,7 +134,9 @@ getTemplate(EliminationTemplate) := o -> E -> (
 	    aVar := actionVariable E;
 	    J := ideal E;
 	    R := ring J;
-	    (sh, mp) := getTemplate(aVar, basis(R/J), J, o);
+	    B := lift(basis(R/J), R);
+	    E.cache#basis = B;
+	    (sh, mp) := getTemplate(aVar, B, J, o);
 	    E.cache#"shifts" = sh;
 	    E.cache#"monomialPartition" = mp;
 	    (sh, mp)
@@ -202,13 +204,11 @@ getActionMatrix(EliminationTemplate) := o -> E -> (
     )
 )
 
-getEigenMatrix = method(Options => {MonomialOrder => null})
-getEigenMatrix(EliminationTemplate) := o -> (template) -> (
+basis EliminationTemplate := o -> E -> E.cache#basis
 
-)
-getEigenMatrix(Ideal) := o -> (I) -> (
-    
-)
+getEigenMatrix = method(Options => {MonomialOrder => null})
+getEigenMatrix(EliminationTemplate) := o -> (E) -> getEigenMatrix(actionVariable E, ideal E, o)
+getEigenMatrix(Ideal) := o -> (I) -> getActionMatrix(random(1, ring I), I, o)
 getEigenMatrix(RingElement, Ideal) := o -> (a, J) -> (
     R := ring J;
     K := coefficientRing R;
