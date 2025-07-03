@@ -132,7 +132,7 @@ koszulDual Ring := A -> A.cache.koszulDual ??= (
 -- TODO: doesn't work over E yet
 degreeSupport = M -> (
     if hilbertPolynomial M != 0 then error "expected a range provided as Concentration => {lo, hi}";
-    (min degrees source generators M, max degrees source relations M))
+    (-first max degrees source relations M, -first min degrees source generators M))
 
 -- RR: Com(S) -> Com(E) is the right-adjoint functor
 koszulRR = method(Options => { Concentration => null })
@@ -143,7 +143,7 @@ koszulRR Module := Complex => opts -> M -> M.cache#(koszulRR, opts) ??= (
     n := numgens S - 1;
     E := koszulDual S;
     ev := map(E,S,vars E); -- not a map of algebras, just substiuting variables
-    (lo, hi) := try opts.Concentration else degreeSupport M;
+    (lo, hi) := if opts.Concentration =!= null then opts.Concentration else degreeSupport M;
     modules := hashTable apply(lo..hi, i -> i => E^{n+1-i} ** (E ** part(-i, M)));
     if lo == hi
     then complex(modules#lo, Base => lo)
@@ -223,7 +223,7 @@ koszulLL Module := Complex  => opts -> N -> N.cache#(koszulLL, opts) ??= (
     n := numgens E - 1;
     S := koszulDual E;
     ev := map(S,E,vars S); -- not a map of algebras, just substiuting variables
-    (lo, hi) := try opts.Concentration else degreeSupport N;
+    (lo, hi) := if opts.Concentration =!= null then opts.Concentration else degreeSupport N;
     modules := hashTable apply(lo..hi, i -> i => S^{-i} ** (S ** part(-i, N)));
     if lo == hi
     then complex(modules#lo, Base => lo)
@@ -610,13 +610,26 @@ TEST ///
   assert isWellDefined koszulLL(freeResolution(coker vars E, LengthLimit => 3), Concentration => (-5,5))
   assert isWellDefined koszulRR(freeResolution(coker vars S, LengthLimit => 3), Concentration => (-5,5))
   assert isWellDefined koszulRR(koszulComplex vars S, Concentration => (-5,5))
-  -- FIXME: isWellDefined koszulLL(koszulComplex vars E, Concentration => (-5,5))
+  -- Note: koszulComplex vars E does not make sense
 
   C = koszulLL(E^1, Concentration => (-3, 0))
   D = koszulRR(S^1, Concentration => (-5, 0))
 
   assert(complex E == naiveTruncation(prune HH koszulRR(C, Concentration => (-5,0)), -4, 0))
   assert(complex comodule truncate(6, S) == prune HH koszulLL(D, Concentration => (-2, 4)))
+
+  -- LL(RR(finite length module)) is identity
+  (S,E) = koszulPair(2, ZZ/101)
+  M = comodule truncate(5, S)
+  assert(complex M == prune HH koszulLL(koszulRR M, Concentration => (0,5)))
+  -- FIXME: complex M == koszulLL(koszulRR M, Concentration => (0,5))
+
+  -- RR(LL(perfect complex)) is identity
+  N = coker matrix {{e_0}}
+  D = freeResolution(N, LengthLimit => 4)
+  C = canonicalTruncation(koszulRR(koszulLL(D, Concentration => (-5,5)), Concentration => (-3,3)), (-2, 2));
+  assert(complex N == prune HH C)
+  -- FIXME: complex N == C
 ///
 
 end--
