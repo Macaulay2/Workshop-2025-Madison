@@ -407,7 +407,7 @@ TEST ///
     m = matrix{{e_0, e_0*e_1*e_2}}
     D = priddyDifferential(-2, m, S)
     C = priddyComplex(m, S, LengthLimit=>3)
-    assert(D == map(E^{{3}, {5}, {7}, {9}},E^{{2}, {4}, {6}},{{e_0, 0, 0}, {e_0*e_1*e_2, e_0, 0}, {0, e_0*e_1*e_2, e_0}, {0, 0, e_0*e_1*e_2}}))
+    assert(D == map(E^{{6}, {8}, {10}, {12}},E^{{5}, {7}, {9}},{{e_0, 0, 0}, {e_0*e_1*e_2, e_0, 0}, {0, e_0*e_1*e_2, e_0}, {0, 0, e_0*e_1*e_2}}))
     assert isWellDefined C
     assert isHomogeneous C
     assert(C.dd_(-2) == D)
