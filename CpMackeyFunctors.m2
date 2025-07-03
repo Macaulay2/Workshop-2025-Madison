@@ -57,7 +57,8 @@ export{
     "getFixedModule",
     "getRestriction",
     "getTransfer",
-    "getConjugation"
+    "getConjugation",
+    "isCohomological",
 }
 
 -- Constructor files for making various Mackey functors
