@@ -33,6 +33,7 @@ export {
     "equivariantEhrhartSeries",
     "fixedPolytope",
     "generateGroup",
+    "isEffective",
     "isSymmetric",
     "orbitPolytope",
     "representationRing",

@@ -338,7 +338,14 @@ orbitPolytope Matrix := Polyhedron => p -> (
     convexHull V
     )
 
-
+isEffective = method()
+isEffective RingElement := Boolean => f -> (
+	-- todo error when f has w
+	getCoefficients := g -> apply(flatten entries last coefficients g, c -> sub(c, coefficientRing ring c));
+	-- getCoefficients := L -> apply(flatten apply(L, g -> flatten entries last coefficients g), g -> sub(g, coefficientRing ring g))
+	checkPositivity := g -> all(getCoefficients g, i-> i >= 0);
+	all(getCoefficients f, c -> all(getCoefficients c, i -> checkPositivity(i)))
+)
 
 end ---
 
