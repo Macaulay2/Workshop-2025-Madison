@@ -89,8 +89,8 @@ makeFixedSignMackeyFunctor Sequence := x -> (
     makeCpMackeyFunctor(2,R,T,C)
 )
 
-makeZeroOnBottomMackeyFunctor = method()
-makeZeroOnBottomMackeyFunctor(ZZ,Module) := CpMackeyFunctor => (p,M) -> (
+makeZeroOnUnderlyingMackeyFunctor = method()
+makeZeroOnUnderlyingMackeyFunctor(ZZ,Module) := CpMackeyFunctor => (p,M) -> (
     U := ZZ^0;
     F := M;
     R := map(U,F,map(U,F,0));

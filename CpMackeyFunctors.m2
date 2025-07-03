@@ -74,7 +74,7 @@ export{
     "makeOrbitMackeyFunctor",
     "makeFixedTrivMackeyFunctor",
     "makeFixedSignMackeyFunctor",
-    "makeZeroOnBottomMackeyFunctor"
+    "makeZeroOnUnderlyingMackeyFunctor"
 }
 
 -- Methods for working with homomorphisms between Mackey functors

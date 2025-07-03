@@ -193,3 +193,27 @@ doc ///
     SeeAlso
         makeComplexRepresentationMackeyFunctor
 ///
+
+doc ///
+    Key
+        makeZeroOnUnderlyingMackeyFunctor
+        (makeZeroOnUnderlyingMackeyFunctor, ZZ, Module)
+    Headline
+        constructs a Mackey functor which is zero on underlying
+    Usage
+        makeZeroOnUnderlyingMackeyFunctor(p,M)
+    Inputs
+        p : ZZ
+            a prime number $p$
+        M : Module
+            An abelian group
+    Outputs
+        : CpMackeyFunctor
+            A Mackey functor with underlying level 0 and fixed level M.
+    
+    Description
+        Text
+            Every abelian group $M$ determines a $C_p$-Mackey functor which is zero on underlying and $M$ on fixed level.
+        Example
+            makeZeroOnUnderlyingMackeyFunctor(5,ZZ^3)
+///
