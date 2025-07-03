@@ -40,12 +40,22 @@ doc ///
             
             When a resolution is computed, this is @TO2(cache,"cached")@ in the Mackey functor itself, and can be accessed as @TT("M.ProjRes")@. This makes computations less costly, and moreover the cache helps us expand resolutions. For instance if we have already computed @TT("getResolution(M,10)")@ and want to compute @TT("getResolution(M,20)")@, it will access the cached 10-term resolution to shorten the computation for the 20-term resolution.
 
-            {\bf The monoidal structure:} The category $\text{Mack}_G$ furthermore has a {\em symmetric monoidal structure}, given by the @TO2(boxProduct,"box product")@ of two Mackey functors. Taking the box product admits a right adjoint, in other words there is an @TO2(InternalHom,"internal hom")@. More explicitly, there is a natural isomorphism of abelian groups, natural in any three Mackey functors $M$, $N$, and $P$:
-            \[\text{Hom}_{\text{Mack}_G}(M \square N, P) \cong \text{Hom}_{\text{Mack}_G}(M, [N,P]).\]
+            {\bf The monoidal structure:} The category $\text{Mack}_G$ furthermore has a {\em symmetric monoidal structure}, given by the @TO2(boxProduct,"box product")@ of two Mackey functors. Taking the box product admits a right adjoint, in other words there is an @TO2(InternalHom,"internal hom")@, which is a functor
+            
+            \[\underline{\text{Hom}} \colon \text{Mack}_G^{\text{op}} \times \text{Mack}_G \to \text{Mack}_G,\]
+
+            whose @TO2(getFixedModule,"fixed point module")@ is the @TO2((Hom,CpMackeyFunctor,CpMackeyFunctor),"abelian group of homomorphisms")@ from $M$ to $N$. The category $\text{Mack}_G$ is {\em closed symmetric monoidal}, meaning the internal hom and box product fit together into a natural isomorphism of abelian groups, natural in any three Mackey functors $M$, $N$, and $P$:
+            \[\text{Hom}_{\text{Mack}_G}(M \square N, P) \cong \text{Hom}_{\text{Mack}_G}(M, \underline{\text{Hom}}(N,P)).\]
 
             
 
-            {\bf Ext and Tor:} todo
+            {\bf Ext and Tor:} With free resolutions in mind, we can define internal @TO2((Ext,ZZ,CpMackeyFunctor,CpMackeyFunctor),"ext")@ and @TO2((Tor,ZZ,CpMackeyFunctor,CpMackeyFunctor),"tor")@ groups as the derived functors of the internal hom and box product, respectively:
+
+            \[\underline{\text{Ext}}^i(-,M):= \mathbf{R}^i \underline{\text{Hom}}_{\text{Mack}_G}(-,M),\]
+
+            \[\underline{\text{Tor}}^i(-,M) := \mathbf{L}_i (- \square M).\]
+
+            These are {\em internal} incarnations of $\text{Ext}$ and $\text{Tor}$. We can recover the abelian groups $\text{Ext}^i(M,N)$ and $\text{Tor}_i(M,N)$ as the @TO2(getFixedModule,"fixed point module")@ of the internal Ext and Tor.
 
     SeeAlso
         "background on Mackey functors"
