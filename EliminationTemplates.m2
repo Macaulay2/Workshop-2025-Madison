@@ -41,6 +41,7 @@ export {
     "getTemplate",
     "getTemplateMatrix",
     "getActionMatrix",
+    "getEigenMatrix",
     "templateSolve",
     "EliminationTemplate",
     "eliminationTemplate",
@@ -197,6 +198,7 @@ getEigenMatrix(EliminationTemplate) := o -> (template) -> (
 
 )
 getEigenMatrix(Ideal) := o -> (I) -> (
+    
 )
 getEigenMatrix(RingElement, Ideal) := o -> (a, J) -> (
     R := ring J;
@@ -223,41 +225,20 @@ templateSolve(EliminationTemplate) := o -> (template) -> (
 templateSolve(Ideal) := o -> (I) -> (
 
 )
-
-
 templateSolve(RingElement, Ideal) := o -> (a, J) -> (
-    (B, evmat) := getEigenMatrix(a, J);
-    print(B);
-    -- Grobner basis way 
-    -- step 0: set up hashtable 1
-    --         monomial : value
-    --         set up hashtable 2
-    --         solved_variable : value
+    (B, M) := getEigenMatrix(a, J);
+    basisMons := apply(flatten entries B, m -> sub(m, ring J));
+    solutions := {};
+    varsList := flatten entries vars ring J;
 
-    -- step 1: first check the variable in B, get the corresponding a_i (skip)
-    -- step 2: start with the smallest variables say x_n, check if x_n is in B
-    --          if yes, take the value of x_n from the corresponding position in hashtable 1; check next variable
-    --          if not, do r := x_n % J, by definition, r can be expressed as a linear combination of the basis elements in B we have find the value of
-    --          x_n, so we can update the hashtable 2 with the value of x_n
-    --         repeat this process until all variables are solved
-    -- step 3:  output the hashtable 2 as the solution
-    basisMons := B;
-    numRoots := numColumns evmat;
-
-    solutionList := {};
-
-    for rootIndex from 0 to numRoots-1 do (
-        -- 0.1 monomial-to-value hash table
+    for rootIndex from 0 to numColumns M - 1 do (
         monomialValues := new MutableHashTable;
-        for i from 0 to numRows basisMons - 1 do (
-            m := basisMons_(i,0);
-            monomialValues#m = evmat_(i, rootIndex);
+        for i from 0 to #basisMons - 1 do (
+            m := basisMons#i;
+            monomialValues#m = M_(i, rootIndex);
         );
-        -- 0.2 variable-to-value hash table
-        variableValues := new MutableHashTable;
-        varsList := flatten entries vars ring J;
-        root := {};
 
+        root := {};
         for v in varsList do (
             -- If the variable is in the basis, use directly
             if monomialValues#?v then (
@@ -268,26 +249,21 @@ templateSolve(RingElement, Ideal) := o -> (a, J) -> (
                 r := sub(v % J, ring J);
 
                 -- write r as linear combination of basis monomials
-                bmons := apply(flatten entries basisMons, m -> sub(m, ring J));
-                coeffs := last coefficients(r, Monomials => bmons);
+                coeffs := last coefficients(r, Monomials => basisMons);
                 value := 0;
-                for i from 0 to numRows basisMons - 1 do (
-                    m := basisMons_(i,0);
+                for i from 0 to #basisMons - 1 do (
+                    m := basisMons#i;
                     if monomialValues#?m then (
                       value += sub(coeffs_(i,0), coefficientRing ring J) * monomialValues#m;
                     )
                 );
-
-
                 root = append(root, value);
             );
-
         );
-        solutionList = append(solutionList, root);
+        solutions = append(solutions, root);
     );
-    solutionList
+    solutions
 )
-
 
 beginDocumentation()
 
