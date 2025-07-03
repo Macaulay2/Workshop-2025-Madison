@@ -35,3 +35,14 @@ betti C == betti (koszulComplex(vars S)[5]**S^{5})
 D = koszulRR(C, Concentration => (-5,5))
 
 prune HH D == complex E
+
+
+--
+
+(S,E) = koszulPair(2, ZZ/101)
+
+C = koszulLL(E^1, Concentration => (-3, 0))
+D = koszulRR(S^1, Concentration => (-5, 0))
+
+complex E == naiveTruncation(prune HH koszulRR(C, Concentration => (-5,0)), -4, 0)
+complex comodule truncate(6, S) == prune HH koszulLL(D, Concentration => (-2, 4))
