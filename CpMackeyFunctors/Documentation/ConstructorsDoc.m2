@@ -43,7 +43,7 @@ doc ///
             makeBurnsideMackeyFunctor(5)
 
         Text
-            These two Mackey functors $\underline{A}$ and $\underline{B}$ are very special - they are the projective generators of the category $\text{Mack}_G$, and they play an important role in @TO2((getResolution,CpMackeyFunctor,ZZ),"constructing resolutions")@.
+            These two Mackey functors $\underline{A}$ and $\underline{B}$ are very special - they are the projective generators of the category $\text{Mack}_G$, and they play an important role in @TO2((resolution,CpMackeyFunctor,ZZ),"constructing resolutions")@.
 
             {\bf Random constructor:}
             Furthermore we have {\bf random constructors} which allow us to build a @TO2(makeRandomCpMackeyFunctor,"random Mackey functor")@ over the group $C_p$...todo

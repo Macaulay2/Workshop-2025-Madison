@@ -11,7 +11,7 @@ doc ///
 
             @UL{
                 ("free resolutions of ", TEX"$C_p$","-Mackey functors"),
-                ("ext and tor computations"),
+                (TEX"$\\mathrm{Ext}$", " and ", TEX"$\\mathrm{Tor}$", " computations"),
                 ("the ", TO2(boxProduct,"box product"), " and ", TO2(InternalHom,"internal hom")),
                 (TO2("constructing examples of Mackey functors", "constructions")," of various common examples of Mackey functors"),
                 ("the ability to generate ", TO2(makeRandomCpMackeyFunctor,"random Mackey functors")," over ", TEX"$C_p$"),

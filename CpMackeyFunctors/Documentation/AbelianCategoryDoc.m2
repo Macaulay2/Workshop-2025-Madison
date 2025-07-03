@@ -28,17 +28,17 @@ doc ///
 
             {\bf Enough projectives:} The category $\text{Mack}_{G}$ has {\em exactly two} projective objects, which we denote by $\underline{A}$ and $\underline{B}$. These are the @TO2(makeBurnsideMackeyFunctor, "Burnside Mackey functor")@ and the @TO2(makeUnderlyingFreeMackeyFunctor,"underlying free Mackey functor")@, respectively. The category $\text{Mack}_G$ has {\em enough projectives}, meaning in particular that we can take projective resolutions in order to compute ext and tor groups.
 
-            {\bf Free resolutions:} Given any Mackey functor we can take its {\em free resolution}. The projective dimension of an object of $\text{Mack}_G$ is generally infinite, so we cannot provide all of the data of a resolution -- nevertheless we can provide a computation that holds in a range. This is accomplished using the @TO(getResolution)@ method, which inputs a Mackey functor $M$ and an integer $n$, and outputs a free resolution of the form
+            {\bf Free resolutions:} Given any Mackey functor we can take its {\em free resolution}. The projective dimension of an object of $\text{Mack}_G$ is generally infinite, so we cannot provide all of the data of a resolution -- nevertheless we can provide a computation that holds in a range. This is accomplished using the @TO(resolution)@ (aka @TO(res)@) method, which inputs a Mackey functor $M$ and an integer $n$, and outputs a free resolution of the form
             \[M \leftarrow F_0 \leftarrow F_1 \leftarrow \cdots \leftarrow F_n\]
 
         Example
             M = prune makeRandomCpMackeyFunctor(3,GenBound=>2);
-            class getResolution(M,2)
-            length getResolution(M,2)
+            class res(M,2)
+            length resolution(M,2)
         Text
-            In the notation above, the element @TT("getResolution(M,2)")@ will be a @TO2(List,"list")@ of differentials $(M \leftarrow F_0, F_0 \leftarrow F_1, F_1 \leftarrow F_2)$, where each entry in the list is a @TO2(MackeyFunctorHomomorphism,"Mackey functor homomorphism")@.
+            In the notation above, the element @TT("res(M,2)")@ will be a @TO2(List,"list")@ of differentials $(M \leftarrow F_0, F_0 \leftarrow F_1, F_1 \leftarrow F_2)$, where each entry in the list is a @TO2(MackeyFunctorHomomorphism,"Mackey functor homomorphism")@.
             
-            When a resolution is computed, this is @TO2(cache,"cached")@ in the Mackey functor itself, and can be accessed as @TT("M.ProjRes")@. This makes computations less costly, and moreover the cache helps us expand resolutions. For instance if we have already computed @TT("getResolution(M,10)")@ and want to compute @TT("getResolution(M,20)")@, it will access the cached 10-term resolution to shorten the computation for the 20-term resolution.
+            When a resolution is computed, this is @TO2(cache,"cached")@ in the Mackey functor itself, and can be accessed as @TT("M.ProjRes")@. This makes computations less costly, and moreover the cache helps us expand resolutions. For instance if we have already computed @TT("res(M,10)")@ and want to compute @TT("res(M,20)")@, it will access the cached 10-term resolution to shorten the computation for the 20-term resolution.
 
             {\bf The monoidal structure:} The category $\text{Mack}_G$ furthermore has a {\em symmetric monoidal structure}, given by the @TO2(boxProduct,"box product")@ of two Mackey functors. Taking the box product admits a right adjoint, in other words there is an @TO2(InternalHom,"internal hom")@, which is a functor
             

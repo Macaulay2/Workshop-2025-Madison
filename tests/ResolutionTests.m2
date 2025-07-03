@@ -12,7 +12,7 @@ assert(isTrivialMackeyFunctor (cokernel (makeFreeModuleSurjection makeRealRepres
 assert(isTrivialMackeyFunctor (cokernel (makeFreeModuleSurjection cursedMF)))
 
 -- verify free resolutions are in fact complexes
-d = getResolution(cursedMF,3)
+d = res(cursedMF,3)
 for i to (length d) - 2 do (
     comp = d#i * d#(i+1);
     assert(getUnderlyingMap(comp) == 0 and getFixedMap(comp) == 0)

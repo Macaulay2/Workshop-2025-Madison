@@ -12,7 +12,7 @@ computeHomology(MackeyFunctorHomomorphism,MackeyFunctorHomomorphism) := CpMackey
 
 -- will resolve first argument
 Tor(ZZ,CpMackeyFunctor,CpMackeyFunctor) := CpMackeyFunctor => opts -> (i,M,N) -> (
-    d := getResolution(M,i+1);
+    d := res(M,i+1);
     if i == 0 then (
         coker ((d_1)**N)
     ) else (
@@ -22,7 +22,7 @@ Tor(ZZ,CpMackeyFunctor,CpMackeyFunctor) := CpMackeyFunctor => opts -> (i,M,N) ->
 
 -- will resolve first argument
 Ext(ZZ,CpMackeyFunctor,CpMackeyFunctor) := CpMackeyFunctor => opts -> (i,M,N) -> (
-    d := getResolution(M,i+1);
+    d := res(M,i+1);
     if i == 0 then (
         -- it's a cochain complex, so ker instead of coker
         ker InternalHom(d_1, N)

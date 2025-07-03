@@ -32,7 +32,8 @@ newPackage(
     HomePage=>"",   -- this is needed to avoid the following error:
                     -- Warning: The "CpMackeyFunctors" package provides insufficient citation data: howpublished.
     Headline=>"for working with Mackey functors for cyclic groups of prime order",
-    PackageImports=>{},
+    PackageImports=>{"OldChainComplexes"},
+    -- OldChainComplexes needed to overload `res`
     -- One day: export Complexes and use that framework for computing derived functors
     PackageExports=>{},
     AuxiliaryFiles => true,
@@ -41,7 +42,7 @@ newPackage(
 
 importFrom_Core {
     "concatBlocks", "concatCols", "concatRows",
-    "isMorphism", "isAbelianCategory",
+    "isMorphism", "isAbelianCategory"
     }
 
 -- Code for the CpMackeyFunctor type
@@ -111,8 +112,7 @@ export{
 
 load "./CpMackeyFunctors/Code/Resolutions.m2"
 export{
-    "makeFreeModuleSurjection",
-    "getResolution"
+    "makeFreeModuleSurjection"
 }
 
 load "./CpMackeyFunctors/Code/HomAlg.m2"

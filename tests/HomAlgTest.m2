@@ -7,7 +7,7 @@ t = map(F,U, matrix {{42,42}, {0,14}})
 c = map(U,U, matrix {{1, 0}, {0,-1}})
 cursedMF := makeCpMackeyFunctor(2,r,t,c)
 
-d = getResolution(cursedMF,10);
+d = res(cursedMF,10);
 
 -- check that the homology of a free resolution is zero
 for i to 9 do (
