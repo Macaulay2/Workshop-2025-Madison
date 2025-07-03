@@ -57,6 +57,7 @@ export{
     "getTransfer",
     "getConjugation",
     "isCohomological",
+    "drawVerticalCpMackeyFunctor"
 }
 
 -- Constructor files for making various Mackey functors
