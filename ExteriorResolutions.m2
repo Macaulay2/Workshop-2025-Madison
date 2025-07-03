@@ -139,20 +139,20 @@ koszulRR Module := Complex => opts -> M -> M.cache#(koszulRR, opts) ??= (
     E := koszulDual S;
     ev := map(E,S,vars E); -- not a map of algebras, just substiuting variables
     (lo, hi) := try opts.Concentration else degreeSupport M;
-    modules := hashTable apply(lo..hi, i -> i => E^{n+1+i} ** (E ** part(i, M)));
+    modules := hashTable apply(lo..hi, i -> i => E^{n+1-i} ** (E ** part(-i, M)));
     if lo == hi
-    then complex(modules#lo, Base => -lo)
-    else complex hashTable apply(lo..hi-1,
-	i -> -i => (
-	    src := basis(i, M);
-	    tar := basis(i+1, M);
+    then complex(modules#lo, Base => lo)
+    else complex hashTable apply(lo+1..hi,
+	i -> i => (
+	    src := basis(-i, M);
+	    tar := basis(-i+1, M);
 	    
 	    -- we construct the differential by factoring it through (vars S)**src
 	    g := ((vars S)**src)//tar; -- g is a map from source (vars S)**src to source tar making the traingle involving (vars S)**src and tar commute
 	    b := (ev g)*((transpose vars E)**(ev source src));
 	    -- the above 2 lines  were pasted and modified from the BGG package
 	    
-	    map(modules#(i+1), modules#i, b)
+	    map(modules#(i-1), modules#i, b)
 	    )))
 -- RR(y**s) = \sum_{l=0}^n y*e_l ** s*x_l
 koszulRR Matrix := ComplexMap => opts -> f -> f.cache#(koszulRR, opts) ??= (
@@ -219,31 +219,67 @@ koszulLL Module := Complex  => opts -> N -> N.cache#(koszulLL, opts) ??= (
     S := koszulDual E;
     ev := map(S,E,vars S); -- not a map of algebras, just substiuting variables
     (lo, hi) := try opts.Concentration else degreeSupport N;
-    modules := hashTable apply(lo..hi, i -> i => S^{i} ** (S ** part(i, N)));
+    modules := hashTable apply(lo..hi, i -> i => S^{-i} ** (S ** part(-i, N)));
     if lo == hi
-    then complex(modules#lo, Base => -lo)
-    else complex hashTable apply(lo..hi-1,
-	i -> -i => (
-	    src := basis(i, N);
-	    tar := basis(i+1, N);
+    then complex(modules#lo, Base => lo)
+    else complex hashTable apply(lo+1..hi,
+	i -> i => (
+	    src := basis(-i, N);
+	    tar := basis(-i+1, N);
 	    
 	    -- we construct the differential by factoring it through (vars S)**src
 	    g := ((vars E)**src)//tar; -- g is a map from source (vars S)**src to source tar making the traingle involving (vars S)**src and tar commute
 	    b := (ev g)*((transpose vars S)**(ev source src));
 	    -- the above 2 lines  were pasted and modified from the BGG package
 	    
-	    map(modules#(i+1), modules#i, (-1)^i*b)
+	    map(modules#(i-1), modules#i, (-1)^i*b)
 	    )))
 -- LL(s**y) = (-1)^i \sum_{l=0}^n x_l*s \otimes y*e_l
 koszulLL Matrix := ComplexMap => opts -> f -> f.cache#(koszulLL, opts) ??= (
+    S := koszulDual ring f;
     src := koszulLL(source f, opts);
     tar := koszulLL(target f, opts);
-    S := koszulDual ring f;
-    map(tar, src, i -> map(tar_i, src_i, S**part(-i, f)))
-)
+    map(tar, src, i -> map(tar_i, src_i, S ** part(-i, f))))
 
 -- LL(D)^i = \bigoplus_{j\in\ZZ} S(j) \otimes_k D^{i-j}_j
-koszulLL Complex    := Complex    => opts -> D   -> ()
+koszulLL Complex := Complex => opts -> D -> (
+    (lo, hi) := opts.Concentration; -- bounds for homological degrees i in LL(D)
+    (inf, sup) := concentration D;  -- bounds for homological degrees k in D
+
+    LLterms := hashTable apply(inf..sup,
+	k -> -k => koszulLL(D_k,    Concentration => (k-hi, k-lo)));
+    LLdiffs := hashTable apply((inf+1)..sup,
+	k -> -k => koszulLL(D.dd_k, Concentration => (k-hi, k-lo)));
+
+    modules := hashTable apply(lo..hi,
+	i -> i => hashTable apply(inf..sup,
+	    k -> -k => (LLterms#(-k))_(i-k)));
+
+    if lo == hi then return complex(directSum values modules#lo, Base => lo);
+
+///
+restart
+needsPackage "ExteriorResolutions"
+  (S,E) = koszulPair(1, ZZ/101)
+  koszulRR(S^1, Concentration => (-3, 1))
+  C = koszulLL(E^1, Concentration => (-2, 0))
+  koszulRR(C, Concentration => (-5,5))
+
+  D = koszulRR(complex { matrix {{x_0}} }, Concentration => (-5,5))
+  koszulLL(D, Concentration => (-5, 5))
+
+  koszulLL(E^1, Concentration => (-3, 1))
+///;
+
+
+    complex hashTable apply((lo+1)..hi,
+	i -> i => matrix table(toList(inf..sup), toList(inf..sup),
+	    (r,c) -> map(modules#(i-1)#(-r), modules#(i)#(-c),
+		if r == c   then (-1)^r * dd^(LLterms#(-sup+r))_(-sup+r+i) else
+		if r == c+1 then             (LLdiffs#(-sup+c))_(-sup+c+i) else 0)
+	    )
+	)
+    )
 -- LL(s**y) = (-1)^i LL(s**y) + s ** dd_D(y) for y \in D^{i-j}_j
 koszulLL ComplexMap := ComplexMap => opts -> phi -> ()
 
@@ -504,7 +540,8 @@ TEST ///
     
     assert( f == id_(koszulRR(M, Concentration=>(-5,5))))
 
-    koszulRR(koszulComplex matrix {{x_0}}, Concentration => (-2,0))
+    (S,E)= koszulPair(1, ZZ/101)
+    koszulRR(complex { matrix {{x_0}} }, Concentration => (-5,0))
     koszulRR(koszulComplex vars S, Concentration => (-5,0))
 ///
 
