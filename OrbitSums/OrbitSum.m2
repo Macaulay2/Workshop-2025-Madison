@@ -32,7 +32,7 @@ newPackage("OrbitSum",
     
     DebuggingMode => true,
     Reload => true
-    )
+)
 
 --Description => "This package computes orbit sums of special monomials under the action of a permutation group. It includes functions to generate check special monomials, and compute orbit sums for special monomials. The package is designed for use in invariant theory and related fields."
 
