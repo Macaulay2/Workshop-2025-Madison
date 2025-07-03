@@ -23,6 +23,7 @@ newPackage("ExteriorResolutions",
 export {
     --methods
     "injectiveResolution",
+    "injectiveResolutionMap",
     "coaugmentationMap",
     "priddyComplex",
     "priddyDifferential",
@@ -38,39 +39,43 @@ export {
 --------------------------------------------------
 
 injectiveResolution = method(Options => options freeResolution)
-injectiveResolution Module := Complex => opts -> M -> (
+injectiveResolution Module := Complex => opts -> M -> M.cache.injectiveResolution ??= (
     E := ring M;
-    n := numgens E;
-    if not isSkewCommutative E then error "expected underlying ring to be skew commutative";
+    if not isSkewCommutative E then error "expected underlying ring to be skew-commutative";
     P := Hom(freeResolution(Hom(M, E), opts), E);
-    P.cache.Module = M;
+    P.cache.injectiveResolution = M;
     P)
     
-injectiveResolution Complex := Complex => opts -> C -> (
-    E:=ring C;
-    if not isSkewCommutative E then error "expected underlying ring to skew commutative";
-    tempHom := Hom(C,E);
-    fC := resolutionMap(tempHom,opts);
-    P:= Hom(freeResolution(tempHom, opts), E);
-    hfC := Hom(fC,E);
-    P.cache.resolutionMap = fC;
-    P
+injectiveResolution Complex := Complex => opts -> C -> C.cache.injectiveResolution ??= (
+    E := ring C;
+    if not isSkewCommutative E then error "expected underlying ring to skew-commutative";
+    D := Hom(freeResolution(Hom(C, E), opts), E);
+    D.cache.injectiveResolution = C;
+    D
+    )
+
+
+injectiveResolutionMap = method(Options => options freeResolution)
+injectiveResolutionMap Module := ComplexMap => opts -> M -> (
+    C := injectiveResolution(M, opts);
+    map(C, complex M, i -> if i === 0 then map(C_0, M, transpose syz transpose presentation M))
+    )
+injectiveResolutionMap Complex := ComplexMap => opts -> C -> (
+    D := injectiveResolution(C, opts);
+    map(D, C, i -> (
+	    if isFreeModule C_i then map(D_i,C_i, id_(C_i))
+	    else map(D_i, C_i, transpose syz transpose presentation C_i)
+	    )
+	)
     )
 
 coaugmentationMap = method()
-coaugmentationMap Complex := ComplexMap => C -> C.cache.coaugmentationMap ??= (
-    if C.cache.?Module then (
-        M := C.cache.Module;
-        map(C, complex M, i -> if i === 0 then map(C_0, M, transpose syz transpose presentation M))
+coaugmentationMap Complex := ComplexMap => P ->  (
+    if not P.cache.?injectiveResolution then
+	error "expected input to be constructed as an injective resolution";
+    C := P.cache.injectiveResolution;
+    injectiveResolutionMap C
     )
-    else if C.cache.?resolutionMap then (
-        hfC := C.cache.resolutionMap;
-        D := source hfC;
-        --tempMap := map(D, C, i -> map(D_i, C_i, transpose syz transpose presentation C_i));
-        hfC
-    )
-    else error "Expected an injective resolution"
-)
 
 --------------------------------------------------
 --- Priddy complex
@@ -318,17 +323,20 @@ Node
 --------------------------------------------------
 
 -*
+XXX
 restart
 needsPackage "ExteriorResolutions"
 *-
 TEST ///
     E = ZZ/101[e_0..e_3,SkewCommutative => true]
-    Res = injectiveResolution(E^2, LengthLimit => 4)
-    assert(Res == complex E^2)
+    M = E^2
+    Res = injectiveResolution(M, LengthLimit => 4)
+    assert(Res == complex M)
     assert isWellDefined Res
     f = coaugmentationMap Res
     assert isWellDefined f
     assert isQuasiIsomorphism f
+    assert(f == injectiveResolutionMap M)
 
     I = ideal vars E
     k = E^1/I
@@ -342,7 +350,9 @@ TEST ///
     S = ZZ/101[x_0..x_3]
     for i to 10 list hilbertFunction(i,S)
     assert all (11,i -> rank P_(-i) === hilbertFunction(i,S))
+///
 
+TEST ///
     needsPackage "HyperplaneArrangements"
     A=typeA(2)
     I=orlikSolomon(A)
@@ -371,7 +381,9 @@ TEST ///
     assert isWellDefined f
     assert isQuasiIsomorphism f
     assert isComplexMorphism f
+///
 
+TEST ///
     --testing on complexes--
     E = ZZ/101[e_0..e_3,SkewCommutative => true]
     C= complex E
@@ -382,12 +394,12 @@ TEST ///
     assert isWellDefined f
     assert isQuasiIsomorphism f
 
-    I=ideal (e_0+e_1,e_0*e_2)
-    C=Hom(freeResolution(I,LengthLimit=>5),comodule I)
-    prune HH C
-    P=injectiveResolution(C,LengthLimit=>5)
+    I = ideal (e_0+e_1,e_0*e_2)
+    C = Hom(freeResolution(I, LengthLimit => 5), comodule I);
+    P = injectiveResolution(C, LengthLimit => 5)
     assert isWellDefined P
     assert isFree P
+    f = injectiveResolutionMap C -- bug
     f = coaugmentationMap P
     assert isWellDefined f
     assert isQuasiIsomorphism f
@@ -398,7 +410,6 @@ TEST ///
     CMat=complex Mat
     P=injectiveResolution(CMat,LengthLimit=>5)
     f=coaugmentationMap P
-
 ///
 
 TEST ///
@@ -476,6 +487,7 @@ TEST ///
 
 end--
 
+check ExteriorResolutions
 --------------------------------------------------
 --- Development
 --------------------------------------------------
