@@ -67,6 +67,24 @@ doc ///
 
 doc ///
     Key
+        (symbol *,MackeyFunctorHomomorphism,MackeyFunctorHomomorphism)
+    Headline
+        composition of Mackey functor homomorphisms
+    Usage
+        f * g
+    Inputs
+        f : MackeyFunctorHomomorphism
+        g : MackeyFunctorHomomorphism
+    Outputs
+        : MackeyFunctorHomomorphism
+            the composition $f \circ g$
+    Description
+        Text
+            Given two @TO2(MackeyFunctorHomomorphism,"Mackey functor homomorphisms")@ $f$ and $g$, we can form their composition, which is a new @TO2(MackeyFunctorHomomorphism,"Mackey functor homomorphism")@.
+///
+
+doc ///
+    Key
         (symbol ++,CpMackeyFunctor,CpMackeyFunctor)
     Headline
         direct sum of Cp-Mackey functors
