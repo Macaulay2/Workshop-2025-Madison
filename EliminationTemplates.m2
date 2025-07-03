@@ -79,11 +79,11 @@ getH0 (RingElement, Ideal) := o -> (a, J) -> (
     R := ring J;
     B := basis(R/J);
     H0 := getH0(a, B, J, o);
-    if (o.Strategy === null) then H0 else if (o.Strategy == "Larsson") then (
-	    print("Using Larsson's strategy to compute H0.");
+    --if (o.Strategy === null) then H0 else if (o.Strategy == "Larsson") then (
+--	    print("Using Larsson's strategy to compute H0.");
         --H0%module(syz(H0))
-        H0
-	) else (error "Strategy not yet implemented.") 
+  --      H0
+--	) else (error "Strategy not yet implemented.") 
 )    
 getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     R := ring J;
@@ -103,8 +103,8 @@ getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     H0 := HGF * HVG;
     H0 = sub(H0, ring J);
     if (o.Strategy === null) then H0 else if (o.Strategy == "Larsson") then (
-	    print("Using Larsson's strategy to compute H0.(detailed getH0 method)");
-        H0
+	print("Using Larsson's strategy to compute H0.(detailed getH0 method)");
+        H0%image(syz(gens(J)))
     ) else (error "Strategy not yet implemented.") 
 )
 
@@ -469,19 +469,10 @@ assert(all(sort eigenvalues Mx, {-2,0,1}, (e1, e2) -> abs(e1-e2) < 1e-4))
 
 TEST ///
 R = QQ[x,y]
-J = ideal(x^3 + y^2 - 1, x - y - 1)
+J=ideal(x^3+y^3+z^3-4,x^2-y-z-1,x-y^2+z-3)
 E = eliminationTemplate(x, J)
-
-getTemplateMatrix E
-getTemplateMatrix(E, Strategy => "Larsson")
-
-getTemplate(E, Strategy => "Larsson")
-
-getH0(x, J, Strategy => "Larsson")
-getH0(x, J, Strategy => null)
-
-getActionMatrix E
-eigenvalues getActionMatrix E
+H0 = getH0(x,J,Strategy=>"Larsson")
+image(syz(gens(J)))
 ///
 
 end--
