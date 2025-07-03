@@ -188,7 +188,7 @@ fixedPolytope(Polyhedron, Matrix) := Polyhedron => (P, g) -> (
 representationRing = method(Options => {ReturnTable => false})
 representationRing ZZ := opts -> n -> (
     a := getSymbol "a";
-    x := getSymbol "x";
+    x := getSymbol "X";
     R := QQ[a_1 .. a_n];
     T := symmetricGroupTable R;
     M := sub(T.table, QQ);
@@ -212,8 +212,8 @@ representationRing ZZ := opts -> n -> (
 equivariantEhrhartSeries = method(
     Options => {
 	ReturnTable => true,
-	ReturnPartitionList => true,
-	ReturnHStarList => true
+	ReturnHStarList => true,
+	ReturnClassReps => true
 	})
 equivariantEhrhartSeries Polyhedron := opts -> P -> (
 		n := numRows vertices P;
@@ -243,7 +243,7 @@ equivariantEhrhartSeries Polyhedron := opts -> P -> (
 		H := (matrix {ehrhartHStarList} * (inverse T) * transpose matrix {gens R})_(0,0);
 		result := {H};
 		if opts.ReturnTable then result = result | {T};
-		if opts.ReturnPartitionList then result = result | {toList \ partitions n};
+		if opts.ReturnClassReps then result = result | {toList \ partitions n};
 		if opts.ReturnHStarList then result = result | {ehrhartHStarList};
 		result
 		)
@@ -306,7 +306,12 @@ equivariantEhrhartSeries (Polyhedron, List) := opts -> (userP, userGList) -> (
 						);
 				(hStarNum * detRep) // hStarDenom
 				); -- list of Ehrhart H* polynomials note that denominator is det(I - tg)
-		(matrix {ehrhartHStarList} * (inverse T) * transpose matrix {gens R})_(0,0)
+		H := (matrix {ehrhartHStarList} * (inverse T) * transpose matrix {gens R})_(0,0);
+		result := {H};
+		if opts.ReturnTable then result = result | {T};
+		if opts.ReturnClassReps then result = result | {groupElements};
+		if opts.ReturnHStarList then result = result | {ehrhartHStarList};
+		result
 	  )
 
 

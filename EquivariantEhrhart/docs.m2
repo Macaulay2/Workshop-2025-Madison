@@ -32,7 +32,7 @@ doc ///
         -- Optional arguments
         OnlyListRepresentatives
         ReturnHStarList
-        ReturnPartitionList
+        ReturnClassReps
         ReturnTable
 ///
 
@@ -128,7 +128,7 @@ doc ///
         (equivariantEhrhartSeries, Polyhedron, List)
         (equivariantEhrhartSeries, Polyhedron, Matrix)
         [equivariantEhrhartSeries, ReturnHStarList]
-        [equivariantEhrhartSeries, ReturnPartitionList]
+        [equivariantEhrhartSeries, ReturnClassReps]
         [equivariantEhrhartSeries, ReturnTable]
     Headline
         computes the equivariant Ehrhart series of a polytope
@@ -145,12 +145,11 @@ doc ///
             A matrix that leaves the polytope invariant
         ReturnHStarList => Boolean
             whether to return the list of $h^*$ polynomials of fixed polytopes
-            or $S_n$
-        ReturnPartitionList => Boolean
-            whether to return the list of cycle-types of conjugacy classes of
-            symmetric group $S_n$
+        ReturnClassReps => Boolean
+            whether to return the list of cycle-types or class representatives
+            of conjugacy classes of the cyclic group or $S_n$
         ReturnTable => Boolean
-            whether to return the charactr table of $S_n
+            whether to return the character table of the cyclic group or $S_n$
     Outputs
         HF : List
             The equivariant Ehrhart series of P with respect to symmetric group
@@ -197,13 +196,13 @@ doc ///
         Example
             P = convexHull transpose matrix "1,0,0,0;0,1,0,0;0,0,1,0"
             G = {matrix "0,1,0,0;1,0,0,0;0,0,1,0;0,0,0,1"}
-            equivariantEhrhartSeries(P, G)
+            netList equivariantEhrhartSeries(P, G)
 
             -- for the hypersimplex(2,5)
             V = transpose matrix for s in subsets(5, 2) list for i from 0 to 4 list if isMember(i, s) then 1 else 0;
             P = convexHull V;
             G = {matrix "0,1,0,0,0;1,0,0,0,0;0,0,0,0,1;0,0,1,0,0;0,0,0,1,0"}; --an order 6 symmetry
-            equivariantEhrhartSeries(P, G)
+            netList equivariantEhrhartSeries(P, G)
         Text
             The equivariant Ehrhart polynomial is defined a cyclotomic extension of $\QQ$
             with variables $X_1, \dots, X_m$ denoting the irreducible characters of

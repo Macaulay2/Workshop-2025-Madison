@@ -40,8 +40,8 @@ export {
     -- options
     "OnlyListRepresentatives",
     "ReturnHStarList",
-    "ReturnPartitionList",
-    "ReturnTable"
+    "ReturnTable",
+    "ReturnClassReps"
 }
 
 -* Code section *-
