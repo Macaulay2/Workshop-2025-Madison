@@ -31,7 +31,7 @@ export {
     "koszulLL",
     "koszulPair",
     "koszulDual",
-    "StanleyReisnerExterior",
+    "exteriorStanleyReisner",
 }
 
 --------------------------------------------------
@@ -299,8 +299,8 @@ koszulLL ComplexMap := ComplexMap => opts -> f -> (
 
 needsPackage "SimplicialComplexes"
 
-StanleyReisnerExterior = method()
-StanleyReisnerExterior(SimplicialComplex, Ring) := (S, K) -> (
+exteriorStanleyReisner = method()
+exteriorStanleyReisner(SimplicialComplex, Ring) := (S, K) -> (
 
     n := dim S;
 
@@ -381,12 +381,12 @@ Node
      koszulLL
 Node
    Key
-       StanleyReisnerExterior
-      (StanleyReisnerExterior, SimplicialComplex, Ring)
+       exteriorStanleyReisner
+      (exteriorStanleyReisner, SimplicialComplex, Ring)
    Headline
        computes the exterior algebra version of the Stanley Reisner face ideal of a simplicial complex
    Usage
-       StanleyReisnerExterior(S, K)
+       exteriorStanleyReisner(S, K)
    Inputs
        S:SimplicialComplex
 	   given as an ideal in a polynomial ring
@@ -600,8 +600,8 @@ TEST ///
     needsPackage "SimplicialComplexes"
     R = ZZ/19937[a,b,c,d]
     S = simplicialComplex {a*b*c, b*c*d, a*d}
-    StanleyReisnerExterior(S, ZZ/19937)
-    StanleyReisnerExterior(S, ZZ/101)
+    exteriorStanleyReisner(S, ZZ/19937)
+    exteriorStanleyReisner(S, ZZ/101)
 ///
 
 TEST ///
