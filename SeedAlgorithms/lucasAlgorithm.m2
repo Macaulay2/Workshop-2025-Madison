@@ -75,7 +75,7 @@ genseeds (PolynomialRing,Matrix,List) := (R,W,ZList) ->(
         M = M | {(modVars#i)^(modDegree)};
     );
 
-    for i to (modDegree - 1) do (
+    for i to (modDegree - 1) when (m' != 0) do (
         -- First we add m' to our M
         M = M | {m'};
         -- Then, we multiply out a power. 
