@@ -90,7 +90,6 @@ export{
     "getUnderlyingMap",
     "getFixedMap",
     "isTrivialMackeyFunctor",
-    "concatBlocks"
 }
 
 -- Methods for working in the abelian category Mack_p.
