@@ -80,39 +80,70 @@ doc ///
         (equivariantEhrhartSeries, Polyhedron)
 ///
 
+-- doc ///
+--     Key
+--         equivariantEhrhartSeries
+--     Headline
+--         computes the equivariant Ehrhart series of a polytope
+--     Subnodes
+--         (equivariantEhrhartSeries, Polyhedron)
+--         (equivariantEhrhartSeries, Polyhedron, Matrix)
+--         (equivariantEhrhartSeries, Polyhedron, List)
+-- ///
+-- 
+-- doc ///
+--     Key
+--         (equivariantEhrhartSeries, Polyhedron)
+--     Headline
+--         computes the equivariant Ehrhart series of a polytope
+-- ///
+-- 
+-- doc ///
+--     Key
+--         (equivariantEhrhartSeries, Polyhedron, Matrix)
+--     Headline
+--         computes the equivariant Ehrhart series of a polytope
+-- ///
+
 doc ///
     Key
         equivariantEhrhartSeries
+        (equivariantEhrhartSeries, Polyhedron)
+        (equivariantEhrhartSeries, Polyhedron, List)
+        (equivariantEhrhartSeries, Polyhedron, Matrix)
         [equivariantEhrhartSeries, ReturnHStarList]
         [equivariantEhrhartSeries, ReturnPartitionList]
         [equivariantEhrhartSeries, ReturnTable]
     Headline
         computes the equivariant Ehrhart series of a polytope
-    Subnodes
-        (equivariantEhrhartSeries, Polyhedron)
-        (equivariantEhrhartSeries, Polyhedron, Matrix)
-        (equivariantEhrhartSeries, Polyhedron, List)
-///
-
-doc ///
-    Key
-        (equivariantEhrhartSeries, Polyhedron)
-    Headline
-        computes the equivariant Ehrhart series of a polytope
-///
-
-doc ///
-    Key
-        (equivariantEhrhartSeries, Polyhedron, Matrix)
-    Headline
-        computes the equivariant Ehrhart series of a polytope
-///
-
-doc ///
-    Key
-        (equivariantEhrhartSeries, Polyhedron, List)
-    Headline
-        computes the equivariant Ehrhart series of a polytope
+    -- Subnodes
+    --     (equivariantEhrhartSeries, Polyhedron)
+    --     (equivariantEhrhartSeries, Polyhedron, List)
+    --     (equivariantEhrhartSeries, Polyhedron, Matrix)
+    Usage
+        L = equivariantEhrhartSeries(P)
+        L = equivariantEhrhartSeries(P, L')
+        L = equivariantEhrhartSeries(P, M)
+    Inputs
+        P : Polyhedron
+            The polytope to calculate the equivariantEhrhartSeries for.
+        L' : List
+            List of the elements of a cyclic group that the polytope is acted on by
+        M : Matrix
+            An element of GLn. This is used to compute the equivariantEhrhartSeries of the fixed polytope of P by M.
+    Outputs
+        L : List
+            List of coeficients of the Ehrhart series
+    Description
+        Text
+            computes the equivariant Ehrhart series of a polytope
+        Example
+            P = convexHull transpose matrix "1,0,0,0;0,1,0,0;0,0,1,0"
+            g = matrix "0,1,0,0;1,0,0,0;0,0,1,0;0,0,0,1"
+            gList = {g}
+            equivariantEhrhartSeries(P, gList)
+    SeeAlso
+        EquivariantEhrhart
 ///
 
 doc ///
@@ -121,6 +152,23 @@ doc ///
         (fixedPolytope, Polyhedron, Matrix)
     Headline
         computes the points of a polytope fixed by an invertible matrix
+    Usage
+        F = fixedPolytope(P,M)
+    Inputs
+        P : Polyhedron
+        M : Matrix
+            an invertable matrix with the same number of rows as the dimension of the ambient space of P
+    Outputs
+        F : Polyhedron
+            the polyhderon formed from the subset of points of P that are fixed by g
+    Description
+        Text
+            computes the points of a polytope fixed by an invertible matrix
+        Example
+            P = orbitPolytope(transpose matrix{{1/2,0,1}})
+            fixedPolytope(P, matrix{{0,1,0},{1,0,0},{0,0,1}})
+    SeeAlso
+        EquivariantEhrhart
 ///
 
 doc ///
@@ -166,6 +214,25 @@ doc ///
         (isSymmetric, Polyhedron, List)
     Headline
         whether a polytope is symmetric
+    Usage
+        B = isSymmetric(P,M)
+        B = isSymmetric(P,L)
+    Inputs
+        P : Polyhedron
+        M : Matrix
+            a square matrix with the same number of rows as the dimension of the ambient space of P
+        L : List
+            a list of square matrix with the same number of rows as the dimension of the ambient space of P
+    Outputs
+        B : Boolean
+    Description
+        Text
+            checks that P is invariant under M or under each matrix in L
+        Example
+            P = orbitPolytope(transpose matrix{{1/2,0,1}})
+            isSymmetric(P, matrix{{0,1,0},{1,0,0},{0,0,1}})
+    SeeAlso
+        EquivariantEhrhart
 ///
 
 doc ///
@@ -173,7 +240,22 @@ doc ///
         orbitPolytope
         (orbitPolytope, Matrix)
     Headline
-        computes the polytope obtained from the orbit of a point under the action of the symmetric group
+        the polytope formed by the orbit of a point by Sn
+    Usage
+        P = orbitPolytope(M)
+    Inputs
+        M : Matrix
+            a single column matrix: a point in QQ^n
+    Outputs
+        P : Polyhedron
+            the polytope obtained from the orbit of a point under the action of the symmetric group
+    Description
+        Text
+            computes the polytope obtained from the orbit of a point under the action of the symmetric group
+        Example
+            orbitPolytope(transpose matrix{{1/2,0,1}})
+    SeeAlso
+        EquivariantEhrhart
 ///
 
 doc ///
