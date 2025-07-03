@@ -161,5 +161,8 @@ getConjugation CpMackeyFunctor := Matrix => M ->(
 
 isCohomological = method()
 isCohomological CpMackeyFunctor := Boolean => M -> (
-    M.Tr * M.Res == map(M.Fixed, M.Fixed, M.PrimeOrder)
+    if not M.cache#?"isCohomological" then (
+        M.cache#"isCohomological" = (M.Tr * M.Res == map(M.Fixed, M.Fixed, M.PrimeOrder));
+    );
+    M.cache#"isCohomological"
 )
