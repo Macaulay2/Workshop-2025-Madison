@@ -39,6 +39,7 @@ genseeds (PolynomialRing,Matrix,List) := (R,W,ZList) ->(
     gR = gens R;
     -- Then, we apply the variables of our polynomialRing to a subring.
     modVars = apply(gR, m -> sub(m, ring T));
+    print modVars;
 
     -- Now, we need to find the first element of S1 that isn't a pure power:
     -- First we make a guiding list of all the possible combinations of modded variables.
@@ -141,6 +142,10 @@ document {
         "Seeds" => List => {"A list of the generating seeds."},
     },
 
+    PARA {"This function returns the generating seeds that can be used to find all invariants under a group action."},
+
+    SUBSECTION "Examples",
+    PARA {"We can use this algorithm in rings of any number of variables. For example, "},
     EXAMPLE {
         "R = QQ[x_0..x_2];",
         "W = matrix{{0,1,1},{1,0,1}};",
@@ -148,6 +153,13 @@ document {
         "genseeds(R,W,ZList)"
     },
 
-    PARA {"This function returns the generating seeds that can be used to find all invariants under a group action."}
+    Caveat => {
+        "This function is reliant on the ", TT "InvariantRing", " package, and may overwrite variables in the ", TT "z", " dimension due to the behavior of the ", TT "diagonalAction", " function."
+    },
+
+    SUBSECTION {"Ways to use ", TT "genseeds", "."},
+    UL {
+        CODE {"genseeds(R, W, ZList)"}
+    }
 
 }
