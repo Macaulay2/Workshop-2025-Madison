@@ -78,12 +78,7 @@ getH0 = method(Options => {MonomialOrder => null, Strategy => null})
 getH0 (RingElement, Ideal) := o -> (a, J) -> (
     R := ring J;
     B := basis(R/J);
-    H0 := getH0(a, B, J, o);
-    --if (o.Strategy === null) then H0 else if (o.Strategy == "Larsson") then (
---	    print("Using Larsson's strategy to compute H0.");
-        --H0%module(syz(H0))
-  --      H0
---	) else (error "Strategy not yet implemented.") 
+    H0 := getH0(a, B, J, o)
 )    
 getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     R := ring J;
