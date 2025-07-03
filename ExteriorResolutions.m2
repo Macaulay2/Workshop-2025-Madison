@@ -520,11 +520,29 @@ TEST ///
 ///
 
 TEST ///
-needsPackage "SimplicialComplexes"
-R = ZZ/19937[a,b,c,d]
-S = simplicialComplex {a*b*c, b*c*d, a*d}
-StanleyReisnerExterior(S, ZZ/19937)
-StanleyReisnerExterior(S, ZZ/101)
+    (S, E) = koszulPair(4, ZZ/19937)
+    M = matrix { { S_0, 0, 0, 0 }, {0, S_1, 0, 0}, {0, 0, S_2, 0}, {0, 0, 0, S_3} }
+    f = map(S^{-1}^4, S^4, M)
+    N = matrix { { 0, 0, 0, S_0 }, {0, 0, S_1, 0}, {0, S_2, 0, 0}, {S_3, 0, 0, 0} }
+    g = map(S^4, S^{1}^4, N)
+    koszulRR(f, Concentration=>(-5,5)) * koszulRR(g, Concentration=>(-5,5)) == koszulRR(f * g, Concentration=>(-5,5))  
+///
+
+TEST ///
+    (S, E) = koszulPair(4, ZZ/19937)
+    M = matrix { { E_0, 0, 0, 0 }, {0, E_1, 0, 0}, {0, 0, E_2, 0}, {0, 0, 0, E_3} }
+    f = map(E^{-1}^4, E^4, M)
+    N = matrix { { 0, 0, 0, E_0 }, {0, 0, E_1, 0}, {0, E_2, 0, 0}, {E_3, 0, 0, 0} }
+    g = map(E^4, E^{1}^4, N)
+    koszulLL(f, Concentration=>(-5,5)) * koszulLL(g, Concentration=>(-5,5)) == koszulLL(f * g, Concentration=>(-5,5)) 
+///
+
+TEST ///
+    needsPackage "SimplicialComplexes"
+    R = ZZ/19937[a,b,c,d]
+    S = simplicialComplex {a*b*c, b*c*d, a*d}
+    StanleyReisnerExterior(S, ZZ/19937)
+    StanleyReisnerExterior(S, ZZ/101)
 ///
 
 end--
