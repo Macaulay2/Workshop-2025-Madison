@@ -507,8 +507,12 @@ R=QQ[x,y]
 I=ideal(x^2+y^2-1,x^2+y^3+x*y-2)
 J=ideal(x^2+y^2-2,x^2+y^3+3*x*y-5)
 B=basis(R/I)
-E=getTemplate(x+4*y, B, I)
-copyTemplate(E,J)
+E=eliminationTemplate(x+4*y,I)
+getTemplate(E)
+getEigenMatrix(E)
+F=copyTemplate(E,J)
+getEigenMatrix(F)
+
 
 
 
