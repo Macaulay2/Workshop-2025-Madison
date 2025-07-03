@@ -81,9 +81,9 @@ getGlobalUnstableA1Degree RingElement := (Matrix,Number) => q -> (
     	bezDetR = lift(bezDet, R);
 	);
 
-----------------
--- test example
-----------------
+-----------------------------------
+-- test example, need to generalize
+-----------------------------------
 
 R := QQ[x]
 
@@ -112,8 +112,10 @@ bez = sub((fX * gY - fY * gX)/(X-Y),S)
            if i == 0 then B_(i,j) = coefficient(M_(i,3-j),bez) else B_(i,j) = coefficient(M_(1-i,1-j),bez);
         );
     
-    makeGWClass matrix B
-    
+    (makeGWClass matrix B, det matrix B) -- need correct class here
+        
+----------------
+-- end here
 ----------------
 
     -- Define formal variables X_i and Y_i that replace x_i
@@ -168,3 +170,4 @@ bez = sub((fX * gY - fY * gX)/(X-Y),S)
     makeGWClass matrix B
       
 )
+
