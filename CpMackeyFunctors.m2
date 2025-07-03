@@ -140,6 +140,9 @@ load "./CpMackeyFunctors/Documentation/MainPageDoc.m2"
 -- Mathematical background
 load "./CpMackeyFunctors/Documentation/BackgroundDoc.m2"
 
+-- List of common Mackey functors
+load "./CpMackeyFunctors/Documentation/ListOfCommonMFsDoc.m2"
+
 -- Worked-out applications
 load "./CpMackeyFunctors/Documentation/ApplicationsDoc.m2"
 

@@ -10,4 +10,5 @@ doc ///
         "background on Mackey functors"
         "the abelian category of Mackey functors"
         "constructing examples of Mackey functors"
+        "list of common Mackey functors"
 ///

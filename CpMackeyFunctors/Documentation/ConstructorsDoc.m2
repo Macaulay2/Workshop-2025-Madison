@@ -20,6 +20,7 @@ doc ///
     SeeAlso
         "background on Mackey functors"
         "the abelian category of Mackey functors"
+        "list of common Mackey functors"
         "explicit applications of the CpMackeyFunctors package"
 ///
 

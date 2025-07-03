@@ -33,6 +33,7 @@ doc ///
     SeeAlso
         "background on Mackey functors"
         "constructing examples of Mackey functors"
+        "list of common Mackey functors"
         "explicit applications of the CpMackeyFunctors package"
 
 ///
