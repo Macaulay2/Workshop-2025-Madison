@@ -24,3 +24,14 @@ assert(prune B === A)
 f = (prune B).cache.pruningMap;
 assert isWellDefined f
 assert isWellDefined inverse f
+
+-- Test induced map on box products
+for i to 5 do (
+    p = (random {2,3,5,7,11,13})#0;
+    n = (random toList (0..20))#0;
+    M = makeRandomCpMackeyFunctor(p);
+    A = makeBurnsideMackeyFunctor(p);
+    timesn = map(A,A,n);
+    assert (M**timesn == map(M**A,M**A,n));
+    assert (timesn**M == map(A**M,A**M,n));
+);
