@@ -174,21 +174,21 @@ koszulRR Complex    := Complex    => opts -> C -> (
     (inf, sup) := concentration C;  -- bounds for homological degrees k in C
 
     RRterms := hashTable apply(inf..sup,
-	k -> -k => koszulRR(C_k,    Concentration => (lo-k, hi-k)));
+	k -> k => koszulRR(C_k,    Concentration => (lo-k, hi-k)));
     RRdiffs := hashTable apply((inf+1)..sup,
-	k -> -k => koszulRR(C.dd_k, Concentration => (lo-k, hi-k)));
+	k -> k => koszulRR(C.dd_k, Concentration => (lo-k, hi-k)));
 
     modules := hashTable apply(lo..hi,
 	i -> i => hashTable apply(inf..sup,
-	    k -> -k => (RRterms#(-k))_(i-k)));
+	    k -> k => (RRterms#k)_(i-k)));
 
     if lo == hi then return complex(directSum values modules#lo, Base => lo);
-    
+
     complex hashTable apply((lo+1)..hi,
-	i -> i => matrix table(toList(inf..sup), toList(inf..sup),
-	    (r,c) -> map(modules#(i-1)#(-r), modules#(i)#(-c),
-		if r == c   then (-1)^r * dd^(RRterms#(-inf-sup+r))_(-inf-sup+r+i) else
-		if r == c+1 then             (RRdiffs#(-inf-sup+c))_(-inf-sup+c+i) else 0)
+	i -> i => matrix table(sup-inf+1, sup-inf+1,
+	    (r,c) -> map(modules#(i-1)#(inf+r), modules#(i)#(inf+c),
+		if r == c   then (-1)^r * dd^(RRterms#(sup-r))_(i+r-sup) else
+		if r == c+1 then             (RRdiffs#(sup-c))_(i+c-sup) else 0)
 	    )
 	)
     )
@@ -267,8 +267,9 @@ restart
 needsPackage "ExteriorResolutions"
   (S,E) = koszulPair(1, ZZ/101)
 
-  koszulRR(koszulComplex vars S, Concentration => (-5,5))
+  errorDepth=2
   koszulRR(complex { matrix {{x_0}} }, Concentration => (-5,5))
+  koszulRR(koszulComplex vars S, Concentration => (-5,5))
 
   koszulLL(freeResolution(coker vars E, LengthLimit => 3), Concentration => (-5,5))
 
