@@ -95,7 +95,10 @@ getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     H0 = sub(H0, ring J);
     if (o.Strategy === null) then H0 else if (o.Strategy == "Larsson") then (
 	    print("Using Larsson's strategy to compute H0.(detailed getH0 method)");
-        H0%image(syz(gens(J)))
+        --H0%image(syz(gens(J)))
+        H1 := lift(basis(R/J), R);
+        Theta := random(QQ^(numrows H0), QQ^(numrows H1));
+        H0 + Theta*H1
     ) else (error "Strategy not yet implemented.") 
 )
 
@@ -139,7 +142,7 @@ getTemplateMatrix(ShiftSet, MonomialPartition, Ideal) := o -> (shifts, monomialP
 )
 getTemplateMatrix(EliminationTemplate) := o -> E -> (
     if E.cache#?"templateMatrix" then E.cache#"templateMatrix" else (
-	(shifts, monomialPartition) := getTemplate E;
+	(shifts, monomialPartition) := getTemplate(E, o);
 	J := ideal E;
 	ret := getTemplateMatrix(shifts, monomialPartition, J, o);
 	E.cache#"templateMatrix" = ret;
@@ -366,12 +369,10 @@ assert(all(sort eigenvalues Mx, {-2,0,1}, (e1, e2) -> abs(e1-e2) < 1e-4))
 
 TEST ///
 R = QQ[x,y]
---J = ideal(x^3 + y^2 - 1, x - y - 1)
-J=ideal(x^3+y^3+z^3-4,x^2-y-z-1,x-y^2+z-3)
+J = ideal(x^3 + y^2 - 1, x - y - 1)
 E = eliminationTemplate(x, J)
-H0 = getH0(x,J,Strategy=>"Larsson")
-image(syz(gens(J)))
-
+--H0 = getH0(x,J,Strategy=>"Larsson")
+--H0 = getH0(x,J,Strategy=> null)
 getTemplateMatrix(E, Strategy => "Larsson")
 getActionMatrix E
 eigenvalues getActionMatrix E
