@@ -76,38 +76,100 @@ P = convexHull transpose matrix{
     }
 
 isSymmetric(P, matrix permutation {2, 1, 3, 4})
-
 EES = equivariantEhrhartSeries(P)
-
 EES_0
-
 isEffective(EES_0)
 
 -- Orbit polytope
 
 P2 = orbitPolytope(transpose matrix {{0,1,2}})
-
 vertices P2
-
 EES2 = equivariantEhrhartSeries P2
-
 isEffective(EES2_0)
 
+
+
+
 -- Now do cyclic case
--- Permute the last two coordinates of hypersimplex(4,2)
+-- Permute the last two coordinates of hypersimplex(3,2)
 
-M = matrix {{1,0,0,0},{0,1,0,0},{0,0,0,1},{0,0,1,0}}
+-- Hypersimplex(3,2)
+P = convexHull transpose matrix {{1,1,0},{1,0,1},{0,1,1}}
+M = matrix {{1,0,0},{0,0,1},{0,1,0}}
 
+--Check invariance
 P2 = convexHull (M * vertices P)
-
 P == P2
 
-vertices convexHull(M * vertices P)
-
-EES3 = equivariantEhrhartSeries P2
+-- Compare with definition?
+Pg = fixedPolytope(P,M)
+vertices Pg
+ES = ehrhartSeries(Pg)
+EES = equivariantEhrhartSeries(P,{M})
 
 isEffective EES3_0
 
--- One 
 
---- (2) 
+-- Permute the last two coordinates of hypersimplex(4,2)
+
+-- Hypersimplex(4,2)
+P = convexHull transpose matrix{
+    {1,1,0,0},
+    {1,0,1,0},
+    {1,0,0,1},
+    {0,1,1,0},
+    {0,1,0,1},
+    {0,0,1,1}
+    }
+
+M = matrix {{1,0,0,0},{0,1,0,0},{0,0,0,1},{0,0,1,0}}
+
+--Check invariance
+P2 = convexHull (M * vertices P)
+P == P2
+
+-- Compare with definition
+Pg = fixedPolytope(P,M)
+vertices Pg
+ES = ehrhartSeries(Pg)
+
+-- Equivariant ES
+EES = equivariantEhrhartSeries(P,{M})
+
+isEffective EES3_0
+
+-- Permute three coordinates
+
+M = matrix {{1,0,0,0},{0,0,1,0},{0,0,0,1},{0,1,0,0}}
+
+--Check invariance
+P2 = convexHull (M * vertices P)
+P == P2
+
+-- Compare with definition
+Pg = fixedPolytope(P,M)
+vertices Pg
+ES = ehrhartSeries(Pg)
+
+-- Equivariant ES
+EES = equivariantEhrhartSeries(P,{M})
+
+isEffective EES3_0
+
+-- Permute all coordinates
+
+M = matrix {{0,1,0,0},{0,0,1,0},{0,0,0,1},{1,0,0,0}}
+
+--Check invariance
+P2 = convexHull (M * vertices P)
+P == P2
+
+-- Compare with definition
+Pg = fixedPolytope(P,M)
+vertices Pg
+ES = ehrhartSeries(Pg)
+
+-- Equivariant ES
+EES = equivariantEhrhartSeries(P,{M})
+
+isEffective EES3_0
