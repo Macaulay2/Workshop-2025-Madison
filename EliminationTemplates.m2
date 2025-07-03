@@ -5,23 +5,32 @@ newPackage(
     Date => "July 1, 2025",
     Authors => {
 	{Name => "Manav Batavia",
-	    Email => "manavbatavia@gmail.com"},
+	 Email => "manavbatavia@gmail.com",
+	 HomePage => ""},
 	{Name => "Cheng Chen",
-	    Email => "chengchen@math.wisc.edu"},
+	 Email => "chengchen@math.wisc.edu",
+	 HomePage => ""},
 	{Name => "Wanchun / Rosie Shen", 
-	    Email => "wshen@math.harvard.edu"},
+	 Email => "wshen@math.harvard.edu",
+	 HomePage => ""},
 	{Name => "Anna Natalie Chlopecki",
-	    Email => "achlopec@purdue.edu"},
+	 Email => "achlopec@purdue.edu",
+	 HomePage => ""},
 	{Name => "Tim Duff", 
-	    Email => "tduff@missouri.edu"},
+	 Email => "tduff@missouri.edu",
+	 HomePage => "https://timduff35.github.io/timduff35/"},
 	{Name => "Will Huang", 
-	    Email => "williamhuang5120@gmail.com"},
+	 Email => "williamhuang5120@gmail.com",
+	 HomePage => ""},
 	{Name => "Aolong Li", 
-	    Email => "lial0921.miu@gmail.com"},
+	 Email => "lial0921.miu@gmail.com",
+	 HomePage => ""},
 	{Name => "Ikenna Nometa", 
-	    Email => "inometa@hawaii.edu"}	
+	 Email => "inometa@hawaii.edu",
+	 HomePage => ""}	
     },
     Headline => "elimination templates",
+    PackageImports => {"EigenSolver", "NumericalAlgebraicGeometry"},
     Keywords => {"Documentation"},
     DebuggingMode => false
 )
@@ -70,10 +79,12 @@ getH0 (RingElement, Ideal) := o -> (a, J) -> (
     R := ring J;
     B := basis(R/J);
     H0 := getH0(a, B, J, o);
-    if (o.Strategy == null) then H0 else if (o.Strategy == "Larsson") then (
-	H0%ideal(syz(H0))
+    if (o.Strategy === null) then H0 else if (o.Strategy == "Larsson") then (
+	    print("Using Larsson's strategy to compute H0.");
+        --H0%module(syz(H0))
+        H0
 	) else (error "Strategy not yet implemented.") 
-)
+)    
 getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     R := ring J;
     FF := coefficientRing R;
@@ -90,7 +101,11 @@ getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     assert(gens G * HVG - V == 0);
     assert(gens F * HGF - gens G == 0);
     H0 := HGF * HVG;
-    sub(H0, ring J)
+    H0 = sub(H0, ring J);
+    if (o.Strategy === null) then H0 else if (o.Strategy == "Larsson") then (
+	    print("Using Larsson's strategy to compute H0.(detailed getH0 method)");
+        H0
+    ) else (error "Strategy not yet implemented.") 
 )
 
 shiftPolynomials = (shifts, J) -> (
@@ -98,7 +113,7 @@ shiftPolynomials = (shifts, J) -> (
     apply(shifts, J_*, (m, f) -> f * sub(m, ring J))
 )
 
-getTemplate = method(Options => {MonomialOrder => null})
+getTemplate = method(Options => {MonomialOrder => null, Strategy => null})
 getTemplate(RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     H0 := getH0(a, B, J, o);
     shifts := new ShiftSet from apply(numgens J, i -> monomials(H0^{i}));
@@ -114,14 +129,14 @@ getTemplate(EliminationTemplate) := o -> E -> (
 	    aVar := actionVariable E;
 	    J := ideal E;
 	    R := ring J;
-	    (sh, mp) := getTemplate(aVar, basis(R/J), J);
+	    (sh, mp) := getTemplate(aVar, basis(R/J), J, o);
 	    E.cache#"shifts" = sh;
 	    E.cache#"monomialPartition" = mp;
 	    (sh, mp)
     )
 )
 
-getTemplateMatrix = method(Options => {MonomialOrder => null})
+getTemplateMatrix = method(Options => {MonomialOrder => null, Strategy => null})
 getTemplateMatrix(RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     (shifts, monomialPartition) := getTemplate(a, B, J, o);
     getTemplateMatrix(shifts, monomialPartition, J, o)
@@ -132,11 +147,11 @@ getTemplateMatrix(ShiftSet, MonomialPartition, Ideal) := o -> (shifts, monomialP
 )
 getTemplateMatrix(EliminationTemplate) := o -> E -> (
     if E.cache#?"templateMatrix" then E.cache#"templateMatrix" else (
-        (shifts, monomialPartition) := getTemplate E;
-        J := ideal E;
-        ret := getTemplateMatrix(shifts, monomialPartition, J);
-        E.cache#"templateMatrix" = ret;
-        ret
+	(shifts, monomialPartition) := getTemplate E;
+	J := ideal E;
+	ret := getTemplateMatrix(shifts, monomialPartition, J, o);
+	E.cache#"templateMatrix" = ret;
+	ret
     )
 )
     
@@ -147,7 +162,6 @@ net EliminationTemplate := E -> (
     str
 )
 
-needsPackage "NumericalLinearAlgebra"
 getActionMatrix = method(Options => {MonomialOrder => null})
 getActionMatrix(RingElement, MonomialPartition, Matrix) := o -> (actVar, mp, M) -> (
     a := length mp#0; -- number of "excessive monomials"
@@ -287,12 +301,52 @@ doc ///
   Key
     EliminationTemplates
   Headline
-    an example Macaulay2 package
+     zero-dimensional polynomial solvers based on linear algebra
   Description
-    Text
-      {\em EliminationTemplates} is a basic package to be used as an example.
+   Text
+    {\em EliminationTemplates} is a package that supports solvers for the following problem: given a zero-dimensional radical ideal $I \subset R := \mathbb{C} [x_1, \ldots , x_n]$, find approximate values for the isolated solutions $(p_1, \ldots , p_n ) \in V_{\mathbb{C}} (I).$
+    The main applications occur when the ideal $I$ occur in a parametric family of problems with similar structure.
+
+    Following the references below, the package is geared twowards implementing a "two-stage" approach, consisting of (1) offline stage and (2) an online stage.
+
+    In the offline stage, the structure of a "template matrix" for $I$ is determined using Groebner basis computations.
+
+    In the online stage, prior knowledge of the template matrix can be used to construct a multiplication matrix for the quotient ring $R/I.$
+    From this multiplication matrix, solutions can be extracted using eigenvector methods, such as the ones implemented in the package @TO EigenSolver@.
   Caveat
-    Still trying to figure this out.
+    This package is a work-in-progress!
+  References
+    @UL {
+	{"Optimizing Elimination Templates by Greedy Parameter Search, Martyushev-Vrablikova-Pajdla", EM "CVPR 2022"},
+	{"Efficient solvers for minimal problems by syzygy-based reduction, Larsson-Oskarsson-Astrom", EM "CVPR 2017"}
+	}@
+///
+
+doc ///
+ Node
+    Key
+        eliminationTemplate
+        (eliminationTemplate, RingElement, Ideal)
+    Headline
+        Constructor for a EliminationTemplate object
+    Usage
+        E = eliminationTemplate(a, J)
+    Inputs
+        a:RingElement
+            the action polynomial defining a multiplication matrix
+        J:Ideal
+            a zero-dimensional ideal
+    Outputs
+        E:EliminationTemplate
+            An EliminationTemplate object encoding the data for elimination template computations
+    Description
+        Text
+            This function constructs an EliminationTemplate object, which stores the action variable and ideal, and provides a cache for storing computed template data.
+            The EliminationTemplate object can be used with other functions in this package to compute template matrices, action matrices, and solve polynomial systems.
+     Example
+            R = QQ[x,y]
+            J = ideal(x^2+y^2-1, x^2+x*y+y^2-1)
+            E = eliminationTemplate(x, J)
 ///
 
 doc ///
@@ -347,6 +401,8 @@ doc ///
       Other monomial orders can be used, such as `Eliminate 2` or `Eliminate 3`.
       See the documentation for `Macaulay2` for more information on monomial orders.
 ///
+
+
 
 doc ///
  Node
@@ -415,7 +471,17 @@ TEST ///
 R = QQ[x,y]
 J = ideal(x^3 + y^2 - 1, x - y - 1)
 E = eliminationTemplate(x, J)
+
 getTemplateMatrix E
+getTemplateMatrix(E, Strategy => "Larsson")
+
+getTemplate(E, Strategy => "Larsson")
+
+getH0(x, J, Strategy => "Larsson")
+getH0(x, J, Strategy => null)
+
+getActionMatrix E
+eigenvalues getActionMatrix E
 ///
 
 end--
@@ -423,7 +489,6 @@ end--
 -* Development section *-
 restart
 loadPackage "EliminationTemplates"
-needsPackage "NumericalAlgebraicGeometry"
 R=QQ[x,y,z]
 J=ideal(x^3+y^3+z^3-4,x^2-y-z-1,x-y^2+z-3)
 B=basis(R/J)

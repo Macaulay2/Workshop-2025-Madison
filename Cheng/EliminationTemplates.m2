@@ -38,6 +38,7 @@ shiftPolynomials = (shifts, J) -> (
 getTemplate = method(Options => {MonomialOrder => null})
 getTemplate(RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     H0 := getH0(a, B, J, o);
+    print("This is a test");
     shifts := new ShiftSet from apply(numgens J, i -> monomials(H0^{i}));
     allMons := union(set \ flatten \ entries \ monomials \ shiftPolynomials(shifts, J));
     monsB := set flatten entries(lift(B, ring J));
