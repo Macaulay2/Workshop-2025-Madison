@@ -113,7 +113,7 @@ export{
 load "./CpMackeyFunctors/Code/Resolutions.m2"
 export{
     "makeFreeModuleSurjection",
-    "makeResolution"
+    "getResolution"
 }
 
 load "./CpMackeyFunctors/Code/HomAlg.m2"
