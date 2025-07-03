@@ -116,9 +116,6 @@ export{
 }
 
 load "./CpMackeyFunctors/Code/HomAlg.m2"
-export{
-    "computeHomology"
-}
 
 load "./CpMackeyFunctors/Code/RandomMackeyFunctor.m2"
 export{
