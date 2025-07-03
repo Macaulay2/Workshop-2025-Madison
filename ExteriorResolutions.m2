@@ -156,33 +156,36 @@ koszulRR Module := Complex => opts -> M -> M.cache#(koszulRR, opts) ??= (
 	    )))
 -- RR(y**s) = \sum_{l=0}^n y*e_l ** s*x_l
 koszulRR Matrix := ComplexMap => opts -> f -> f.cache#(koszulRR, opts) ??= (
+    E := koszulDual ring f;
     src := koszulRR(source f, opts);
     tar := koszulRR(target f, opts);
-    E := koszulDual ring f;
-    map(tar, src, i -> map(tar_i, src_i, E**part(-i, f)))
-    )
+    map(tar, src, i -> map(tar_i, src_i, E ** part(-i, f))))
 
 -- RR(C)^i = \bigoplus_{j\in\ZZ} Hom_k(E(-j), C^{i-j}_j)
 --         = \bigoplus_{j\in\ZZ} (E(-j))^* \otimes_k C^{i-j}_j
 --         = \bigoplus_{j\in\ZZ} E^*(j)    \otimes_k C^{i-j}_j
 koszulRR Complex    := Complex    => opts -> C -> (
-    (lo,hi) := opts.Concentration; -- bounds for cohomological index i of RR(C)
-    (inf,sup) := concentration C; -- bounds for k (homological index)
+    (lo, hi) := opts.Concentration; -- bounds for homological degrees i in RR(C)
+    (inf, sup) := concentration C;  -- bounds for homological degrees k in C
 
-    RRterms := hashTable apply(inf..sup, k -> -k=>koszulRR(C_k, Concentration=>(lo+k,hi+k)));
-    RRdiffs := hashTable apply((inf+1)..sup, k -> -k=>koszulRR(C.dd_k, Concentration=>(lo+k,hi+k)));
+    RRterms := hashTable apply(inf..sup,
+	k -> -k => koszulRR(C_k,    Concentration => (k-hi, k-lo)));
+    RRdiffs := hashTable apply((inf+1)..sup,
+	k -> -k => koszulRR(C.dd_k, Concentration => (k-hi, k-lo)));
+
+    modules := hashTable apply(lo..hi,
+	i -> i => hashTable apply(inf..sup,
+	    k -> -k => (RRterms#(-k))_(i-k)));
+
+    if lo == hi then return complex(directSum values modules#lo, Base => lo);
     
-    modules := hashTable apply(lo..hi, i ->
-    	i => hashTable apply(inf..sup, k -> -k=>(RRterms#(-k))^(i+k))
-    	);
-
-    complex hashTable apply(lo..(hi-1), i->
-	i => matrix table(toList(inf..sup), toList(inf..sup),
-	    (r,c)->map(modules#(-i-1)#(-r), modules#(-i)#(-c),
-	    if r==c then (-1)^r * dd^(RRterms#(-r))_(-r+i)
-	    else if r==c+1 then (RRdiffs#(-r))_(-r+i)
-	    else 0
-	    )))
+    complex hashTable apply((lo+1)..hi,
+	i -> i => matrix table(toList(inf..sup), toList(inf..sup),
+	    (r,c) -> map(modules#(i-1)#(-r), modules#(i)#(-c),
+		if r == c   then (-1)^r * dd^(RRterms#(-sup+r))_(-sup+r+i) else
+		if r == c+1 then             (RRdiffs#(-sup+c))_(-sup+c+i) else 0)
+	    )
+	)
     )
 -- ???
 koszulRR ComplexMap := ComplexMap => opts -> f -> (
@@ -475,6 +478,7 @@ TEST ///
     F = koszulRR(HH_0 C, Concentration=>(-5,5))
     assert( F_0 == M)
 ///
+
 TEST ///
     (S,E)= koszulPair(2, ZZ/101)
 
@@ -484,7 +488,11 @@ TEST ///
     g = koszulRR(map(S^{1}, S^1, S_0), Concentration=>(-5,5))
     
     assert( f == id_(koszulRR(M, Concentration=>(-5,5))))
+
+    koszulRR(koszulComplex matrix {{x_0}}, Concentration => (-2,0))
+    koszulRR(koszulComplex vars S, Concentration => (-5,0))
 ///
+
 TEST ///
     (S,E)= koszulPair(2, ZZ/101)
 
@@ -506,13 +514,15 @@ needsPackage "ExteriorResolutions"
 
 (S,E)= koszulPair(1, ZZ/101)
 
+koszulRR(koszulComplex matrix {{x_0}}, Concentration=>(-5,5))
+koszulRR(koszulComplex vars S, Concentration=>(-5,5))
+
 M = E^1
 
 C = koszulComplex vars S
 
 f = koszulRR(id_C, Concentration=>(-5,5))
 
-koszulRR(koszulComplex vars S, Concentration=>(-5,5))
 
 C = koszulComplex matrix{{x_0}}
 koszulRR(C, Concentration=>(-5,5))
