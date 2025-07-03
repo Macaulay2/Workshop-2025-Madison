@@ -95,7 +95,7 @@ net MackeyFunctorHomomorphism := f -> (
     n := 6 + max ({f.FixedMap, f.UnderlyingMap}/net/width);
     h1 := if (f.FixedMap) == 0 then 1 else numRows (f.FixedMap);
     (s,t) := toSequence { (source f).Fixed, (target f).Fixed }/net/length;
-    h2 := max {h1 + max{s,t} - 1, 1};
+    h2 := 2 + max{s,t};
     hs := if s >= t then 1 else t - s + 1;
     ht := if t >= s then 1 else s - t + 1;
     horizontalJoin(
@@ -108,6 +108,7 @@ net MackeyFunctorHomomorphism := f -> (
 -*
 debug needsPackage "CpMackeyFunctors"
 makeRandomMackeyFunctorHomomorphism(makeRandomCpMackeyFunctor 3, makeRandomCpMackeyFunctor 3)
+f = complexLinearizationMap 3
 *-
 
 -- tries to induce from the identity 

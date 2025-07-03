@@ -84,6 +84,13 @@ makeCpMackeyFunctor(ZZ,Matrix,Matrix,Matrix) := CpMackeyFunctor => (p,R,T,C) ->(
 )
 
 -- printing behavior
+-- This is just some adhoc editing, sorry to anybody trying to decipher this!
+-- But the basics are: "string | string" will adjoin things horizontally, and
+-- "string || string" will adjoin things vertically. Everything done here is
+-- gluing strings together with whitespace depending on the width/heights of
+-- the modules/matrices here.
+-- For those trying to understand, worth pointing out that the HEIGHT of a string
+-- is obtained via "length" and NOT "height".
 lineAbove := (s, n) -> concatenate(n : "-") || s
 lineBelow := (s, n) -> s || concatenate(n : "-")
 vertSpace := n -> (s := ""; if n == 1 then return "" else for i to n-2 do s = s || ""; s) 
@@ -91,20 +98,20 @@ horSpace := n -> (s := " "; if n == 1 then return s else for i to n-2 do s = s |
 vertArrows := n -> (s := "^ |"; if n > 1 then for i to n-1 do s = s || "| |"; s || "| V")
 
 net CpMackeyFunctor := M -> (
-    n := max {width ("Res : " | net M.Res), width ("Tr : " | net M.Tr)};
+    n := 6 + max({M.Res,M.Tr}/net/width);
     h := if M.Res == 0 then 1 else numRows M.Res;
     horizontalJoin(
 	vertSpace(h) || net M.Fixed, vertSpace(h) || "  --" || " <--",
 	lineBelow("Res : " | net M.Res, n) || lineAbove( "Tr : " | net M.Tr, n),
 	vertSpace(h) || "--> " || "-- ", vertSpace(h) || net M.Underlying,
-	vertSpace(h) || "  -┐" || "   |" || "  <┘", vertSpace(h+1) || " Conj : ", vertSpace(h+1) || net M.Conj
+	vertSpace(h) || "  -┐" || "  <┘", vertSpace(h) || (" Conj : ", net M.Conj)
 	)
-)
+    )
 
 drawVerticalCpMackeyFunctor = method()
 drawVerticalCpMackeyFunctor(CpMackeyFunctor) := Net => M -> (
-    hMid := 1 + max {depth net M.Res, depth net M.Tr};
-    hTop := depth net M.Fixed + 1;
+    hMid := 1 + max {length net M.Res, length net M.Tr};
+    hTop := length net M.Fixed + 1;
 	firstCol := vertSpace(hTop) || " Res" || (net M.Res);
     w1 := width net M.Fixed;
     w2 := width net M.Underlying;
