@@ -113,7 +113,7 @@ gY = sub(g,{x => Y})
 bez = sub((fX * gY - fY * gX)/(X-Y),S)
 
 -- test
-b' = 3*X*Y + 5*X + 11 + 0*Y -- monomial Y does not show up in 'coefficiens'
+b' = 3*X*Y + 5*X + 11 + 0*Y -- monomial Y does not show up in 'coefficients'
 
     -- Create the Bezoutian matrix B for the symmetric bilinear form by reading off the coefficients. 
     -- B is an (m x m) matrix. The coefficient B_(i,j) is the coefficient of the (ith basis vector x jth basis vector) in the tensor product.
@@ -125,7 +125,7 @@ b' = 3*X*Y + 5*X + 11 + 0*Y -- monomial Y does not show up in 'coefficiens'
            if i == 0 then B_(i,j) = coefficient(M_(i,3-j),bez) else B_(i,j) = coefficient(M_(1-i,1-j),bez);
         );
     
-    (makeGWClass matrix B, det matrix B) -- need correct class here check makeGWuClass
+    (makeGWuClass matrix B, det matrix B) -- check makeGWuClass
         
 ----------------
 -- end here
