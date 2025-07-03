@@ -99,13 +99,15 @@ getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     assert(gens F * HGF - gens G == 0);
     H0 := HGF * HVG;
     H0 = sub(H0, ring J);
-    if (o.Strategy === null) then H0 else if (o.Strategy == "Larsson") then (
-	    print("Using Larsson's strategy to compute H0.(detailed getH0 method)");
+    if (o.Strategy === null) then H0 else if (o.Strategy == "Greedy") then (
+	    print("Using Greedy strategy to compute H0.");
         --H0%image(syz(gens(J)))
         H1 := lift(basis(R/J), R);
         Theta := random(QQ^(numrows H0), QQ^(numrows H1));
-        H0 + Theta*H1;
-	print("Using Larsson's strategy to compute H0.(detailed getH0 method)");
+        H0 + Theta*H1
+    )
+    else if (o.Strategy == "Larsson") then (
+	print("Using Larsson's strategy to compute H0.");
         H0%image(syz(gens(J)))
     ) else (error "Strategy not yet implemented.") 
 )
@@ -461,6 +463,7 @@ E = eliminationTemplate(x, J)
 --H0 = getH0(x,J,Strategy=>"Larsson")
 --H0 = getH0(x,J,Strategy=> null)
 getTemplateMatrix(E, Strategy => "Larsson")
+getTemplateMatrix(E, Strategy => "Greedy")
 getActionMatrix E
 eigenvalues getActionMatrix E
 ///
