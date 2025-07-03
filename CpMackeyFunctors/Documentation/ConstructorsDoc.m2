@@ -192,6 +192,9 @@ doc ///
             Perhaps the easiest Mackey functor is the ", EM "zero Mackey functor", " which has the zero-module as both the underlying and fixed modules. This is the zero object in the abelian category of Mackey functors, and is an important object to have for homological algebra.
         Example
             makeZeroMackeyFunctor(2)
+    SeeAlso
+        "background on Mackey functors"
+        isTrivialMackeyFunctor
 ///
 
 doc ///

@@ -182,3 +182,25 @@ doc ///
             A = makeBurnsideMackeyFunctor 2;
             id_A || id_A
 ///
+
+doc ///
+    Key
+        isTrivialMackeyFunctor
+        (isTrivialMackeyFunctor,CpMackeyFunctor)
+    Headline
+        checks if a Mackey functor is trivial or not
+    Usage
+        isTrivialMackeyFunctor M
+    Inputs
+        M : CpMackeyFunctor
+    Outputs
+        : Boolean
+            whether $M$ is trivial or not
+    Description
+        Text
+            Checks whether $M$ is {\em trivial} (meaning isomorphic to the @TO2(makeZeroMackeyFunctor,"zero Mackey functor")@).
+
+    SeeAlso
+        "background on Mackey functors"
+        makeZeroMackeyFunctor
+///

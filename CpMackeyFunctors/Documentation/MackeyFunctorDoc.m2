@@ -217,3 +217,24 @@ doc ///
         "background on Mackey functors"
         CpMackeyFunctor
 ///
+
+doc ///
+    Key
+        isCohomological
+        (isCohomological,CpMackeyFunctor)
+    Headline
+        checks if a CpMackeyFunctor is cohomological
+    Usage
+        isCohomological M
+    Inputs
+        M : CpMackeyFunctor
+    Outputs
+        : Boolean
+            whether $M$ is {\em cohomological} or not
+    Description
+        Text
+            A Mackey functor $M$ defined over $C_p$ is said to be {\em cohomological} if the composite of restriction followed by transfer is identical to multiplication by $p$ as a map from the @TO2(getFixedModule,"fixed module")@ of $M$ to itself.
+    SeeAlso
+        "background on Mackey functors"
+        CpMackeyFunctor
+///

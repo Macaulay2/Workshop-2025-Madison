@@ -85,9 +85,6 @@ export{
     "FixedMap",
     "complexLinearizationMap",
     "realLinearizationMap",
-    "makeUniversalMapFixed",
-    "makeUniversalMapUnderlying",
-    "makeUniversalMap",
     "getUnderlyingMap",
     "getFixedMap",
     "isTrivialMackeyFunctor",
@@ -111,9 +108,6 @@ export{
 }
 
 load "./CpMackeyFunctors/Code/Resolutions.m2"
-export{
-    "makeFreeModuleSurjection"
-}
 
 load "./CpMackeyFunctors/Code/HomAlg.m2"
 
@@ -128,7 +122,6 @@ load "./CpMackeyFunctors/Code/Cohomological.m2"
 export{
     "makeUniversalMapFixedCohomological",
     "makeUniversalMapCohomological",
-    "makeFreeModuleSurjectionCohomological",
     "resolutionCohomological",
     "TorCoh",
     "ExtCoh"
