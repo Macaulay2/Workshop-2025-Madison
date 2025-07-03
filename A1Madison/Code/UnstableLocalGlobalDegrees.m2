@@ -42,7 +42,7 @@ getGlobalUnstableA1Degree RingElement := (Matrix,Number) => q -> (
 
     -- Create internal rings/matrices
     
-    -- Initialize a polynomial ring in X_i's and Y_i's in which to compute the Bezoutian
+    -- Initialize a polynomial ring in X and Y in which to compute the Bezoutian
     X := local X;
     Y := local Y;
     R := kk[X,Y];
