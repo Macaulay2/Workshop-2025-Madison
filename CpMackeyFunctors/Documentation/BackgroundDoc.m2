@@ -9,7 +9,7 @@ doc ///
 
             {\bf Assumption:} In this package, we will work with cyclic groups of prime order. The reason for this reduction is the simple subgroup structure of $C_p$, which reduces our data structure dramatically. Furthermore, the theory of $C_p$-Mackey functors is already highly complicated - for example no classification result is known.
 
-            {\bf Definition}: Let $p$ be a prime. A $C_p${\em-Mackey functor} is the data of two abelian groups $M(C_p/e)$, called the {\em underlying} and $M(C_p/C_p)$ (called the {\em fixed}), together with three abelian group homomorphisms, called {\em restriction}, {\em transfer}, and {\em conjugation}, respectively:
+            {\bf Definition}: Let $p$ be a prime. A $C_p${\em-Mackey functor} is the data of two abelian groups $M(C_p/e)$ (called the {\em underlying}) and $M(C_p/C_p)$ (called the {\em fixed}), together with three abelian group homomorphisms, called {\em restriction}, {\em transfer}, and {\em conjugation}, respectively:
 
             \[\text{res} \colon M(C_p/C_p) \to M(C_p/e),\]
             \[\text{tr} \colon M(C_p/e) \to M(C_p/C_p),\]
@@ -18,14 +18,14 @@ doc ///
             subject to the following axioms:
 
             @OL{
-                (TEX "$\\text{conj}$", " is an automorphism of order ", TEX"$p$"),
+                (TEX "$\\text{conj}$", " is an automorphism of order dividing ", TEX"$p$", " (encoding an action of the cyclic group ", TEX"$C_p$", " on ", TEX"$M(C_p/e)$", ")"),
                 (TEX "$\\text{conj}\\circ\\text{res} = \\text{res}$", " and ", TEX"$\\text{tr}\\circ\\text{conj} = \\text{tr}$"),
                 (TEX "$\\text{res}(\\text{tr}(x)) = \\sum_{i=0}^{p-1}\\text{conj}^{i}(x)$", " for every ", TEX"$x\\in M(C_p/e)$")
             }@
 
             {\bf Example}: The easiest example is when all the abelian groups are the trivial group, and hence all maps are trivial. This is called the @TO2(makeZeroMackeyFunctor,"zero Mackey functor")@.
 
-            {\bf Example}: A prototypical example has fixed module $\ZZ$ and underlying module given by the representation ring of $C_p$, with transfer and restriction coming from restriction and transfer of $C_p$-representations. This is called the @TO2(makeComplexRepresentationMackeyFunctor,"representation Mackey functor")@.
+            {\bf Example}: A prototypical example has underlying module $\ZZ$ (i.e. the complex representation ring of the trivial group) and fixed module given by the complex representation ring of $C_p$, with transfer and restriction coming from restriction and transfer of $C_p$-representations. This is called the @TO2(makeComplexRepresentationMackeyFunctor,"representation Mackey functor")@.
 
             {\bf Note:} For general examples and their constructors, see @TO("constructing examples of Mackey functors")@ and for some common Mackey functors used over the group $C_p$, see @TO("list of common Mackey functors")@.
 
