@@ -5,21 +5,29 @@ newPackage(
     Date => "July 1, 2025",
     Authors => {
 	{Name => "Manav Batavia",
-	    Email => "manavbatavia@gmail.com"},
+	 Email => "manavbatavia@gmail.com",
+	 HomePage => ""},
 	{Name => "Cheng Chen",
-	    Email => "chengchen@math.wisc.edu"},
+	 Email => "chengchen@math.wisc.edu",
+	 HomePage => ""},
 	{Name => "Wanchun / Rosie Shen", 
-	    Email => "wshen@math.harvard.edu"},
+	 Email => "wshen@math.harvard.edu",
+	 HomePage => ""},
 	{Name => "Anna Natalie Chlopecki",
-	    Email => "achlopec@purdue.edu"},
+	 Email => "achlopec@purdue.edu",
+	 HomePage => ""},
 	{Name => "Tim Duff", 
-	    Email => "tduff@missouri.edu"},
+	 Email => "tduff@missouri.edu",
+	 HomePage => "https://timduff35.github.io/timduff35/"},
 	{Name => "Will Huang", 
-	    Email => "williamhuang5120@gmail.com"},
+	 Email => "williamhuang5120@gmail.com",
+	 HomePage => ""},
 	{Name => "Aolong Li", 
-	    Email => "lial0921.miu@gmail.com"},
+	 Email => "lial0921.miu@gmail.com",
+	 HomePage => ""},
 	{Name => "Ikenna Nometa", 
-	    Email => "inometa@hawaii.edu"}	
+	 Email => "inometa@hawaii.edu",
+	 HomePage => ""}	
     },
     Headline => "elimination templates",
     PackageImports => {"EigenSolver", "NumericalAlgebraicGeometry"},
@@ -33,13 +41,15 @@ export {
     "getTemplate",
     "getTemplateMatrix",
     "getActionMatrix",
+    "getEigenMatrix",
     "templateSolve",
     "EliminationTemplate",
     "eliminationTemplate",
     "shifts",
     "monomialPartition",
     "templateMatrix",
-    "actionVariable"
+    "actionVariable",
+    "copyTemplate"
 }
 
 EliminationTemplate = new Type of HashTable
@@ -70,11 +80,7 @@ getH0 = method(Options => {MonomialOrder => null, Strategy => null})
 getH0 (RingElement, Ideal) := o -> (a, J) -> (
     R := ring J;
     B := basis(R/J);
-    getH0(a, B, J, o)
-    --if (o.Strategy === null) then H0 else if (o.Strategy == "Larsson") then (
-	--print("Using Larsson's strategy to compute H0.");
-        --H0%image(syz(gens(J)))
-	--) else (error "Strategy not yet implemented.") 
+    H0 := getH0(a, B, J, o)
 )    
 getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     R := ring J;
@@ -99,6 +105,8 @@ getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
         H1 := lift(basis(R/J), R);
         Theta := random(QQ^(numrows H0), QQ^(numrows H1));
         H0 + Theta*H1
+	print("Using Larsson's strategy to compute H0.(detailed getH0 method)");
+        H0%image(syz(gens(J)))
     ) else (error "Strategy not yet implemented.") 
 )
 
@@ -123,8 +131,7 @@ getTemplate(EliminationTemplate) := o -> E -> (
 	    aVar := actionVariable E;
 	    J := ideal E;
 	    R := ring J;
-	    E.cache#basis = basis(R/J);
-	    (sh, mp) := getTemplate(aVar, E.cache#basis, J, o);
+	    (sh, mp) := getTemplate(aVar, basis(R/J), J, o);
 	    E.cache#"shifts" = sh;
 	    E.cache#"monomialPartition" = mp;
 	    (sh, mp)
@@ -192,20 +199,14 @@ getActionMatrix(EliminationTemplate) := o -> E -> (
     )
 )
 
-basis(EliminationTemplate) := o -> E -> E.cache#basis
-
-templateSolve = method(Options => {MonomialOrder => null})
-templateSolve(EliminationTemplate) := o -> (E) -> (
-    Ma := getActionMatrix(E);
-    (svals, P) := eigenvectors Ma;
-    cleanEvecs := clean_(1e-10) (P * inverse diagonalMatrix(P^{numColumns P - 1}));
-    B := basis E;
-    (transpose rsort B, cleanEvecs)
-)
-templateSolve(Ideal) := o -> (I) -> (
+getEigenMatrix = method(Options => {MonomialOrder => null})
+getEigenMatrix(EliminationTemplate) := o -> (template) -> (
 
 )
-templateSolve(RingElement, Ideal) := o -> (a, J) -> (
+getEigenMatrix(Ideal) := o -> (I) -> (
+    
+)
+getEigenMatrix(RingElement, Ideal) := o -> (a, J) -> (
     R := ring J;
     K := coefficientRing R;
     ringVars := flatten entries vars R;
@@ -221,6 +222,63 @@ templateSolve(RingElement, Ideal) := o -> (a, J) -> (
     cleanEvecs := clean_(1e-10) (P * inverse diagonalMatrix(P^{numColumns P - 1}));
 
     (transpose rsort B, cleanEvecs)
+)
+
+<<<<<<< Updated upstream
+templateSolve = method(Options => {MonomialOrder => null})
+templateSolve(EliminationTemplate) := o -> (template) -> (
+
+)
+templateSolve(Ideal) := o -> (I) -> (
+
+)
+templateSolve(RingElement, Ideal) := o -> (a, J) -> (
+    (B, M) := getEigenMatrix(a, J);
+    basisMons := apply(flatten entries B, m -> sub(m, ring J));
+    solutions := {};
+    varsList := flatten entries vars ring J;
+
+    for rootIndex from 0 to numColumns M - 1 do (
+        monomialValues := new MutableHashTable;
+        for i from 0 to #basisMons - 1 do (
+            m := basisMons#i;
+            monomialValues#m = M_(i, rootIndex);
+        );
+
+        root := {};
+        for v in varsList do (
+            -- If the variable is in the basis, use directly
+            if monomialValues#?v then (
+              root = append(root, monomialValues#v);
+            )
+            else (
+                -- Otherwise, reduce modulo ideal: x_i mod J
+                r := sub(v % J, ring J);
+
+                -- write r as linear combination of basis monomials
+                coeffs := last coefficients(r, Monomials => basisMons);
+                value := 0;
+                for i from 0 to #basisMons - 1 do (
+                    m := basisMons#i;
+                    if monomialValues#?m then (
+                      value += sub(coeffs_(i,0), coefficientRing ring J) * monomialValues#m;
+                    )
+                );
+                root = append(root, value);
+            );
+        );
+        solutions = append(solutions, root);
+    );
+    solutions
+=======
+copyTemplate=method(Options => {})
+copyTemplate(EliminationTemplate, Ideal) := o -> (E,J) -> (
+    F := eliminationTemplate(E#"actionVariable", J);
+    F.cache#"shifts"=E.cache#"shifts";
+    F.cache#"monomialPartition"=E.cache#"monomialPartition";
+    F.cache#"basis"=basis(E);
+    F
+>>>>>>> Stashed changes
 )
 
 beginDocumentation()
@@ -249,6 +307,33 @@ doc ///
 	{"Optimizing Elimination Templates by Greedy Parameter Search, Martyushev-Vrablikova-Pajdla", EM "CVPR 2022"},
 	{"Efficient solvers for minimal problems by syzygy-based reduction, Larsson-Oskarsson-Astrom", EM "CVPR 2017"}
 	}@
+///
+
+doc ///
+ Node
+    Key
+        eliminationTemplate
+        (eliminationTemplate, RingElement, Ideal)
+    Headline
+        Constructor for a EliminationTemplate object
+    Usage
+        E = eliminationTemplate(a, J)
+    Inputs
+        a:RingElement
+            the action polynomial defining a multiplication matrix
+        J:Ideal
+            a zero-dimensional ideal
+    Outputs
+        E:EliminationTemplate
+            An EliminationTemplate object encoding the data for elimination template computations
+    Description
+        Text
+            This function constructs an EliminationTemplate object, which stores the action variable and ideal, and provides a cache for storing computed template data.
+            The EliminationTemplate object can be used with other functions in this package to compute template matrices, action matrices, and solve polynomial systems.
+     Example
+            R = QQ[x,y]
+            J = ideal(x^2+y^2-1, x^2+x*y+y^2-1)
+            E = eliminationTemplate(x, J)
 ///
 
 doc ///
@@ -303,6 +388,8 @@ doc ///
       Other monomial orders can be used, such as `Eliminate 2` or `Eliminate 3`.
       See the documentation for `Macaulay2` for more information on monomial orders.
 ///
+
+
 
 doc ///
  Node
@@ -370,6 +457,7 @@ assert(all(sort eigenvalues Mx, {-2,0,1}, (e1, e2) -> abs(e1-e2) < 1e-4))
 TEST ///
 R = QQ[x,y]
 J = ideal(x^3 + y^2 - 1, x - y - 1)
+J=ideal(x^3+y^3+z^3-4,x^2-y-z-1,x-y^2+z-3)
 E = eliminationTemplate(x, J)
 --H0 = getH0(x,J,Strategy=>"Larsson")
 --H0 = getH0(x,J,Strategy=> null)
@@ -389,6 +477,8 @@ H0%image(syz(gens(J)))
 getTemplateMatrix(E1, Strategy => null)
 getActionMatrix E1
 eigenvalues getActionMatrix E1
+H0 = getH0(x,J,Strategy=>"Larsson")
+image(syz(gens(J)))
 ///
 
 end--
@@ -399,8 +489,8 @@ loadPackage "EliminationTemplates"
 R=QQ[x,y,z]
 J=ideal(x^3+y^3+z^3-4,x^2-y-z-1,x-y^2+z-3)
 B=basis(R/J)
-templateSolve(z,J)
-templateSolve(x,J)
+getEigenMatrix(x,J)
+templateSolve(x, J)
 templateSolve(x+2*y+3*z,J)
 templateSolve(x,J)
 netList solveSystem J_*
@@ -409,17 +499,34 @@ restart
 debug needsPackage "EliminationTemplates"
 check "EliminationTemplates"
 
+restart
+loadPackage "EliminationTemplates"
+R=QQ[x,y]
+I=ideal(x^2+y^2-1,x^2+y^3+x*y-2)
+J=ideal(x^2+y^2-2,x^2+y^3+3*x*y-5)
+B=basis(R/I)
+E=getTemplate(x+4*y, B, I)
+copyTemplate(E,J)
+
 
 
 uninstallPackage "EliminationTemplates"
 restart
-installPackage "EliminationTemplates"
+debug needsPackage "EliminationTemplates"
+R = QQ[x,y]
+J = ideal(x^3 + y^2 - 1, x - y - 1)
+templateSolve(x, J)
+actVar = x
+getEigenMatrix(x, J)
+
 viewHelp "EliminationTemplates"
 
+
+restart
+debug needsPackage "EliminationTemplates"
 R = QQ[x,y]
-E = eliminationTemplate(x, ideal(x^3 + y^2 - 1, x - y - 1))
-getActionMatrix E
-net E
+J = ideal(x^3 + y^2 - 1, x - y - 1)
+templateSolve(x, J)
 
 uninstallPackage "EliminationTemplates"
 restart
