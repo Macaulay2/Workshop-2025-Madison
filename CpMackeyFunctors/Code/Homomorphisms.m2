@@ -67,6 +67,13 @@ map(CpMackeyFunctor,CpMackeyFunctor,ZZ) := MackeyFunctorHomomorphism => opts -> 
 )
 
 -- Print behavior
+-- This is just some adhoc editing, sorry to anybody trying to decipher this!
+-- But the basics are: "string | string" will adjoin things horizontally, and
+-- "string || string" will adjoin things vertically. Everything done here is
+-- gluing strings together with whitespace depending on the width/heights of
+-- the modules/matrices here.
+-- For those trying to understand, worth pointing out that the HEIGHT of a string
+-- is obtained via "length" and NOT "height".
 lineAbove := (s, n) -> concatenate(n : "-") || s
 lineBelow := (s, n) -> s || concatenate(n : "-")
 horzSpace := n -> (s := " "; if n == 0 then return ""; if n == 1 then return s else for i to n-2 do s = s | " "; s)
@@ -97,6 +104,11 @@ net MackeyFunctorHomomorphism := f -> (
 	vertSpace(h1) || "-- " || vertSpace(h2) || "-- ", vertSpace(h1) || objHelper(target f, ht)   
 	)
     )
+
+-*
+debug needsPackage "CpMackeyFunctors"
+makeRandomMackeyFunctorHomomorphism(makeRandomCpMackeyFunctor 3, makeRandomCpMackeyFunctor 3)
+*-
 
 -- tries to induce from the identity 
 inducedMap(CpMackeyFunctor, CpMackeyFunctor) := MackeyFunctorHomomorphism => opts -> (N,M) -> (
@@ -320,7 +332,7 @@ makeUniversalMapFixedCohomological(CpMackeyFunctor,Matrix) := MackeyFunctorHomom
 -- return the universal map B^n ++ Z^m -> M
 makeUniversalMapCohomological = method()
 makeUniversalMapCohomological(CpMackeyFunctor,Matrix,Matrix) := MackeyFunctorHomomorphism => (M,X,Y) -> (
-    return makeUniversalMapUnderlying(M,X) | makeUniversalMapFixedCohomological(M,Y)
+    return makeUniversalMapUnderlying(M,X) | makeUniversalMapFixedCohomological(M,Y))
 --map--
 map(CpMackeyFunctor,CpMackeyFunctor,ZZ) := MackeyFunctorHomomorphism => opts -> (N,M,a) -> (
     if not M.PrimeOrder == N.PrimeOrder then error "Mackey functors for different primes";
