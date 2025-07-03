@@ -66,6 +66,38 @@ map(CpMackeyFunctor,CpMackeyFunctor,ZZ) := MackeyFunctorHomomorphism => opts -> 
     error "Mackey functors are not the same and integer is not zero."
 )
 
+-- Print behavior
+lineAbove := (s, n) -> concatenate(n : "-") || s
+lineBelow := (s, n) -> s || concatenate(n : "-")
+horzSpace := n -> (s := " "; if n == 0 then return ""; if n == 1 then return s else for i to n-2 do s = s | " "; s)
+vertSpace := n -> (s := ""; if n == 1 then return s else for i to n-2 do s = s || ""; s) 
+extraLines := n -> (s := "| | "; if n == 1 then return s else for i to n-2 do s = s || "| | "; s)
+
+objHelper := (M,n) -> (
+    (f,u) := toSequence { M.Fixed, M.Underlying }/net/width;
+    arrowShift := floor((max {f,u})/2) - 1;
+    fShift := if f >= u then 0 else floor((u-f)/2)+1;
+    uShift := if u >= f then 0 else floor((f-u)/2)+1;
+    arrows := horzSpace(arrowShift) | ("| ^ " || extraLines(n) || "v | ");
+    loopArrow := horzSpace(arrowShift) | ("^ | " || "└-┘ ");
+    str := (horzSpace(fShift) | (net M.Fixed)) || arrows || (horzSpace(uShift) | (net M.Underlying)) || loopArrow;
+    str
+)
+
+net MackeyFunctorHomomorphism := f -> (
+    n := 6 + max ({f.FixedMap, f.UnderlyingMap}/net/width);
+    h1 := if (f.FixedMap) == 0 then 1 else numRows (f.FixedMap);
+    (s,t) := toSequence { (source f).Fixed, (target f).Fixed }/net/length;
+    h2 := max {h1 + max{s,t} - 1, 1};
+    hs := if s >= t then 1 else t - s + 1;
+    ht := if t >= s then 1 else s - t + 1;
+    horizontalJoin(
+	vertSpace(h1) || objHelper(source f, hs), vertSpace(h1) || " <--" || vertSpace(h2) || " <--",
+	lineBelow("fix : " | net (f.FixedMap), n) || vertSpace(h2) || lineAbove("und : " | net (f.UnderlyingMap), n),
+	vertSpace(h1) || "-- " || vertSpace(h2) || "-- ", vertSpace(h1) || objHelper(target f, ht)   
+	)
+    )
+
 -- tries to induce from the identity 
 inducedMap(CpMackeyFunctor, CpMackeyFunctor) := MackeyFunctorHomomorphism => opts -> (N,M) -> (
     map(N,M,inducedMap(N.Underlying, M.Underlying), inducedMap(N.Fixed, M.Fixed))
@@ -289,4 +321,10 @@ makeUniversalMapFixedCohomological(CpMackeyFunctor,Matrix) := MackeyFunctorHomom
 makeUniversalMapCohomological = method()
 makeUniversalMapCohomological(CpMackeyFunctor,Matrix,Matrix) := MackeyFunctorHomomorphism => (M,X,Y) -> (
     return makeUniversalMapUnderlying(M,X) | makeUniversalMapFixedCohomological(M,Y)
+--map--
+map(CpMackeyFunctor,CpMackeyFunctor,ZZ) := MackeyFunctorHomomorphism => opts -> (N,M,a) -> (
+    if not M.PrimeOrder == N.PrimeOrder then error "Mackey functors for different primes";
+    if a==0 then return map(N,M,map(N.Underlying,M.Underlying,0),map(N.Fixed,M.Fixed,0));
+    if N==M then return map(N,M, map(N.Underlying,M.Underlying,a),map(N.Fixed,M.Fixed,a));
+    error "Mackey functors are not the same and integer is not zero."
 )

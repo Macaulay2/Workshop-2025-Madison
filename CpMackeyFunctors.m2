@@ -42,7 +42,7 @@ newPackage(
 
 importFrom_Core {
     "concatBlocks", "concatCols", "concatRows",
-    "isMorphism", "isAbelianCategory"
+    "isMorphism", "isAbelianCategory",
     }
 
 -- Code for the CpMackeyFunctor type
