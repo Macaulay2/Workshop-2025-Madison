@@ -83,6 +83,23 @@ makeCpMackeyFunctor(ZZ,Matrix,Matrix,Matrix) := CpMackeyFunctor => (p,R,T,C) ->(
 	)
 )
 
+-- printing behavior
+lineAbove := (s, n) -> concatenate(n : "-") || s
+lineBelow := (s, n) -> s || concatenate(n : "-")
+vertSpace := n -> (s := ""; if n == 1 then return "" else for i to n-2 do s = s || ""; s) 
+
+net CpMackeyFunctor := M -> (
+    n := max {width ("Res : " | net M.Res), width ("Tr : " | net M.Tr)};
+    h := if M.Res == 0 then 1 else numRows M.Res;
+    horizontalJoin(
+	vertSpace(h) || net M.Fixed, vertSpace(h) || "  --" || " <--",
+	lineBelow("Res : " | net M.Res, n) || lineAbove( "Tr : " | net M.Tr, n),
+	vertSpace(h) || "--> " || "-- ", vertSpace(h) || net M.Underlying,
+	vertSpace(h) || "  -┐" || "   |" || "  <┘", vertSpace(h+1) || " Conj : ", vertSpace(h+1) || net M.Conj
+	)
+    )
+
+
 -- Equality
 CpMackeyFunctor == CpMackeyFunctor := Boolean => (M,N) -> (
     if M.PrimeOrder != N.PrimeOrder then return false;
