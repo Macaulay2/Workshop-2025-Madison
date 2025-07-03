@@ -268,19 +268,12 @@ doc ///
     the monomial order used on the ambient ring, 
   Usage
     getTemplate(a, B, J, MonomialOrder => Eliminate 1)
-  Inputs
-    GRevLex:MonomialOrder
-      a monomial order such as Lex, GRevLex, Eliminate, etc.
-  Consquences
-   {"If this option is not provided, the default monomial order ", TT "Eliminate 1", " will be used to construct the ambient ring."}
-    The monomial order will be used to construct the ambient polynomial ring in which the elimination template is computed.
-    This affects the ordering of monomials in the basis and may change the resulting template matrix.
-  Example
-    R = QQ[x,y];
-    J = ideal(x^2+y^2-1, x^2+x*y+y^2-1);    
-    actVar = x;
-    B = lift(basis(R/J), R);
-    getTemplate(actVar, B, J, MonomialOrder => Eliminate 1)
+  Description
+    Text
+      The monomial order used on the ambient ring. This is used to determine the ordering of the columns of the template matrix.
+      The default is `Eliminate 1`, which is a monomial order that eliminates the first variable.
+      Other monomial orders can be used, such as `Eliminate 2` or `Eliminate 3`.
+      See the documentation for `Macaulay2` for more information on monomial orders.
 ///
 
 doc ///
