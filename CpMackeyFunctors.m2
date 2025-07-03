@@ -90,9 +90,7 @@ export{
     "getUnderlyingMap",
     "getFixedMap",
     "isTrivialMackeyFunctor",
-    "concatBlocks",
-    "makeUniversalMapFixedCohomological",
-    "makeUniversalMapCohomological"
+    "concatBlocks"
 }
 
 -- Methods for working in the abelian category Mack_p.
@@ -127,6 +125,12 @@ export{
     "makeRandomCpMackeyFunctor",
     "GenBound",
     "makeRandomMackeyFunctorHomomorphism",
+}
+
+load "./CpMackeyFunctors/Code/Cohomological.m2"
+export{
+    "makeUniversalMapFixedCohomological",
+    "makeUniversalMapCohomological"
 }
 
 beginDocumentation()
