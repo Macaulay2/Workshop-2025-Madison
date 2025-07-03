@@ -28,8 +28,18 @@ doc ///
 
             Another example from algebra are the @TO2(makeRealRepresentationMackeyFunctor,"real")@ and @TO2(makeComplexRepresentationMackeyFunctor,"complex representation")@ Mackey functors. Similarly to the Burnside Mackey functor, their underlying module is $\ZZ$, however their fixed module is the representation ring of $C_p$. Any finite $C_p$-set has an associated permutation representation, which induces what are called the @TO2(realLinearizationMap,"real")@ and @TO2(complexLinearizationMap,"complex linearization maps")@ from the Burnside Mackey functor to the representation Mackey functor. 
 
-            {\bf Fixed point and orbit Mackey functors:} todo
+            {\bf Fixed point and orbit Mackey functors:} If $M$ is a $\ZZ[C_p]$-module, the @TO2(,"fixed point Mackey functor")@ of $M$ has $M$ as its underlying module and the fixed points $M^{C_p}$ as its fixed module. The conjugation action on $M$ is the $C_p$-action, and the transfer sums along the orbits of an element.
 
+        Example
+            makeFixedPointMackeyFunctor(2,matrix{{0,1,0},{1,0,0},{0,0,1}})
+
+        Text
+            Similarly, given a $\ZZ[C_p]$-module $M$, we can form the @TO2(,"orbit Mackey functor")@, whose underlying module is again $M$ with $C_p$-action yielding conjugation. The fixed point module is now the {\em quotient module} $M/C_p$, transfer is the quotient map, and now {\em restriction} is defined by summing along the orbits.
+
+        Example
+            makeOrbitMackeyFunctor(2,matrix{{0,1,0},{1,0,0},{0,0,1}})
+
+        Text
             {\bf Free constructors:} Analogous to how a free module can be constructed on a generator or set of generators, we can construct free Mackey functors. For $C_p$-Mackey functors, there are two modules, which lead to two different ideas of a "free" Mackey functor, namely a free $C_p$-Mackey functor on a generator in the {\em underlying} module, and a free $C_p$-Mackey functor on a generator in the {\em fixed} module. The @TO2(,"free Mackey functor on a single underlying generator")@ can be accessed as follows:
         
         Example
@@ -46,7 +56,23 @@ doc ///
             These two Mackey functors $\underline{A}$ and $\underline{B}$ are very special - they are the projective generators of the category $\text{Mack}_G$, and they play an important role in @TO2((resolution,CpMackeyFunctor,ZZ),"constructing resolutions")@.
 
             {\bf Random constructor:}
-            Furthermore we have {\bf random constructors} which allow us to build a @TO2(makeRandomCpMackeyFunctor,"random Mackey functor")@ over the group $C_p$...todo
+            Furthermore we have a {\bf random constructor} which allow us to build a @TO2(makeRandomCpMackeyFunctor,"random Mackey functor")@ over the group $C_p$. To implement this, we recall that we have projective generators $\underline{A}$ and $\underline{B}$, hence any Mackey functor $M$ can be written as a cokernel of some @TO2((map,CpMackeyFunctor, CpMackeyFunctor, Matrix, Matrix),"map")@ of the form
+
+            \[ \underline{A}^k \oplus \underline{B}^\ell \to \underline{A}^n \oplus \underline{B}^m \to M \to 0.\]
+
+            We can specify $k$, $\ell$, $n$, and $m$ if we want, as the following example over $C_7$ shows:
+
+        Example
+            makeRandomCpMackeyFunctor(7,{2,2,3,3})
+
+        Text
+            If we don't want to specify this data, $n$ and $m$ will be chosen randomly between 1 and 10. To randomly choose between 1 and a higher number, we can use the @TT("GenBound")@ option.
+        
+        Example
+            makeRandomCpMackeyFunctor(3)
+            prune makeRandomCpMackeyFunctor(3,GenBound=>20)
+        Text
+            {\bf Remark:} What makes this possible is the fact that it is computationally very easy to cook up a random map $\underline{A}^k \oplus \underline{B}^\ell \to \underline{A}^n \oplus \underline{B}^m$ using the universal properties of the functors $\underline{A}$ and $\underline{B}$. Since $\underline{A}$ corepresents the @TO2(getFixedModule,"fixed module")@ functor and $\underline{B}$ corepresents the @TO2(getUnderlyingModule,"underlying module")@ functor, we can determine random maps of the form $\underline{A}^k \oplus \underline{B}^\ell \to M$ by picking a @TO2((random,List,Module),"random list of elements")@ from the fixed and underlying modules of any $M$.
 
     SeeAlso
         "background on Mackey functors"

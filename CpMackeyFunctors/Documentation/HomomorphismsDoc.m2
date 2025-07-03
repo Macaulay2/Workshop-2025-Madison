@@ -185,7 +185,7 @@ doc ///
 
 doc ///
     Key
-        (symbol |,MackeyFunctorHomomorphism,MackeyFunctorHomomorphism)
+        (symbol |, MackeyFunctorHomomorphism,MackeyFunctorHomomorphism)
     Headline
         Horizontal concatenation of Mackey functor homomorphisms
     Usage
@@ -206,7 +206,7 @@ doc ///
 
 doc ///
     Key
-        (symbol ||,MackeyFunctorHomomorphism,MackeyFunctorHomomorphism)
+        (symbol ||, MackeyFunctorHomomorphism,MackeyFunctorHomomorphism)
     Headline
         Vertical concatenation of Mackey functor homomorphisms
     Usage
