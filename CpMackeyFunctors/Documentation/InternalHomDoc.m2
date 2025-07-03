@@ -16,11 +16,9 @@ doc ///
         Text
             Given any two Mackey functors $M$ and $N$, we can form their {\em internal hom}, which is a Mackey functor which we denote by $\underline{\text{Hom}}(M,N)$. For example:
         Example
-            InternalHom(makeRealRepresentationMackeyFunctor 5, makeComplexRepresentationMackeyFunctor 5)
-    
+            InternalHom(makeRealRepresentationMackeyFunctor 3, makeComplexRepresentationMackeyFunctor 3)
         Text
             The underlying @TO2((Hom, CpMackeyFunctor,CpMackeyFunctor),"group of homomorphisms")@ between any two Mackey functors can be recovered as the @TO2(getFixedModule,"fixed module")@ of the internal hom.
-
     SeeAlso
         "the abelian category of Mackey functors"
         boxProduct
@@ -46,7 +44,11 @@ doc ///
             The internal hom of Mackey functors is functorial in each variable.  This method returns the induced maps.
         Example
             InternalHom(makeRealRepresentationMackeyFunctor(5), complexLinearizationMap(5))
+<<<<<<< HEAD
     SeeAlso
         "the abelian category of Mackey functors"
         InternalHom
 ///
+=======
+///
+>>>>>>> d146688 (fixing net on CpMackeyFunctor and editing doc node)

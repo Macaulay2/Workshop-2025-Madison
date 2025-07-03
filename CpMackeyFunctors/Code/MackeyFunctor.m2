@@ -101,10 +101,10 @@ net CpMackeyFunctor := M -> (
     n := 6 + max({M.Res,M.Tr}/net/width);
     h := if M.Res == 0 then 1 else numRows M.Res;
     horizontalJoin(
-	vertSpace(h) || net M.Fixed, vertSpace(h) || "  --" || " <--",
-	lineBelow("Res : " | net M.Res, n) || lineAbove( "Tr : " | net M.Tr, n),
-	vertSpace(h) || "--> " || "-- ", vertSpace(h) || net M.Underlying,
-	vertSpace(h) || "  -┐" || "  <┘", vertSpace(h) || (" Conj : ", net M.Conj)
+	vertSpace(h) || (net M.Fixed), vertSpace(h) || "  --" || " <--",
+	lineBelow("Res : " | (net M.Res), n) || lineAbove( "Tr : " | (net M.Tr), n),
+	vertSpace(h) || "--> " || "-- ", vertSpace(h) || (net M.Underlying),
+	vertSpace(h) || "  -┐" || "  <┘", vertSpace(h) || (" Conj : " | (net M.Conj))
 	)
     )
 
