@@ -104,7 +104,7 @@ getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
         --H0%image(syz(gens(J)))
         H1 := lift(basis(R/J), R);
         Theta := random(QQ^(numrows H0), QQ^(numrows H1));
-        H0 + Theta*H1
+        H0 + Theta*H1;
 	print("Using Larsson's strategy to compute H0.(detailed getH0 method)");
         H0%image(syz(gens(J)))
     ) else (error "Strategy not yet implemented.") 
@@ -224,7 +224,6 @@ getEigenMatrix(RingElement, Ideal) := o -> (a, J) -> (
     (transpose rsort B, cleanEvecs)
 )
 
-<<<<<<< Updated upstream
 templateSolve = method(Options => {MonomialOrder => null})
 templateSolve(EliminationTemplate) := o -> (template) -> (
 
@@ -270,7 +269,8 @@ templateSolve(RingElement, Ideal) := o -> (a, J) -> (
         solutions = append(solutions, root);
     );
     solutions
-=======
+)
+
 copyTemplate=method(Options => {})
 copyTemplate(EliminationTemplate, Ideal) := o -> (E,J) -> (
     F := eliminationTemplate(E#"actionVariable", J);
@@ -278,7 +278,6 @@ copyTemplate(EliminationTemplate, Ideal) := o -> (E,J) -> (
     F.cache#"monomialPartition"=E.cache#"monomialPartition";
     F.cache#"basis"=basis(E);
     F
->>>>>>> Stashed changes
 )
 
 beginDocumentation()
