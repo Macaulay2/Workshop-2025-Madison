@@ -77,7 +77,8 @@ coaugmentationMap Complex := ComplexMap => P ->  (
     injectiveResolutionMap C
     )
 
---------------------------------------------------
+------------------------------------------------
+--
 --- Priddy complex
 --------------------------------------------------
 
@@ -160,36 +161,58 @@ koszulRR Module := Complex => opts -> M -> M.cache#(koszulRR, opts) ??= (
 	    )))
 -- RR(y**s) = \sum_{l=0}^n y*e_l ** s*x_l
 koszulRR Matrix := ComplexMap => opts -> f -> f.cache#(koszulRR, opts) ??= (
+    E := koszulDual ring f;
     src := koszulRR(source f, opts);
     tar := koszulRR(target f, opts);
-    E := koszulDual ring f;
-    map(tar, src, i -> map(tar_i, src_i, E**part(-i, f)))
-    )
+    map(tar, src, i -> map(tar_i, src_i, E ** part(-i, f))))
 
 -- RR(C)^i = \bigoplus_{j\in\ZZ} Hom_k(E(-j), C^{i-j}_j)
 --         = \bigoplus_{j\in\ZZ} (E(-j))^* \otimes_k C^{i-j}_j
 --         = \bigoplus_{j\in\ZZ} E^*(j)    \otimes_k C^{i-j}_j
 koszulRR Complex    := Complex    => opts -> C -> (
-    (lo,hi) := opts.Concentration; -- bounds for cohomological index i of RR(C)
-    (inf,sup) := concentration C; -- bounds for k (homological index)
+    (lo, hi) := opts.Concentration; -- bounds for homological degrees i in RR(C)
+    (inf, sup) := concentration C;  -- bounds for homological degrees k in C
 
-    RRterms := hashTable apply(inf..sup, k -> -k=>koszulRR(C_k, Concentration=>(lo+k,hi+k)));
-    RRdiffs := hashTable apply((inf+1)..sup, k -> -k=>koszulRR(C.dd_k, Concentration=>(lo+k,hi+k)));
+    RRterms := hashTable apply(inf..sup,
+	k -> -k => koszulRR(C_k,    Concentration => (k-hi, k-lo)));
+    RRdiffs := hashTable apply((inf+1)..sup,
+	k -> -k => koszulRR(C.dd_k, Concentration => (k-hi, k-lo)));
+
+    modules := hashTable apply(lo..hi,
+	i -> i => hashTable apply(inf..sup,
+	    k -> -k => (RRterms#(-k))_(i-k)));
+
+    if lo == hi then return complex(directSum values modules#lo, Base => lo);
     
-    modules := hashTable apply(lo..hi, i ->
-    	i => hashTable apply(inf..sup, k -> -k=>(RRterms#(-k))^(i+k))
-    	);
-
-    complex hashTable apply(lo..(hi-1), i->
-	i => matrix table(toList(inf..sup), toList(inf..sup),
-	    (r,c)->map(modules#(-i-1)#(-r), modules#(-i)#(-c),
-	    if r==c then (-1)^r * dd^(RRterms#(-r))_(-r+i)
-	    else if r==c+1 then (RRdiffs#(-r))_(-r+i)
-	    else 0
-	    )))
+    complex hashTable apply((lo+1)..hi,
+	i -> i => matrix table(toList(inf..sup), toList(inf..sup),
+	    (r,c) -> map(modules#(i-1)#(-r), modules#(i)#(-c),
+		if r == c   then (-1)^r * dd^(RRterms#(-sup+r))_(-sup+r+i) else
+		if r == c+1 then             (RRdiffs#(-sup+c))_(-sup+c+i) else 0)
+	    )
+	)
     )
 -- ???
-koszulRR ComplexMap := ComplexMap => opts -> psi -> ()
+koszulRR ComplexMap := ComplexMap => opts -> f -> (
+    (lo, hi) := opts.Concentration;
+    C := source f;
+    D := target f;
+    (infC, supC) := concentration C;
+    (infD, supD) := concentration D;
+    (inf, sup) := (min{infC, infD},max{supC, supD});
+    
+    RRmaps := hashTable apply(inf..sup,
+	k -> -k => koszulRR(f_k, Concentration => (k-hi,k-lo)));
+    
+    map(tar := koszulRR(D, opts), src := koszulRR(C, opts),
+	hashTable apply(lo..hi,
+	    i -> i => map(tar_i, src_i,
+		matrix table(toList(inf..sup), toList(inf..sup),
+		    (r, c) -> if r == c then (RRmaps#(-sup+r))_(-sup+r+i) else 0)
+		)
+	    )
+	)
+    )
 
 
 -- LL: Com(E) -> Com(S) is the left-adjoint functor
@@ -316,6 +339,22 @@ Node
 Node
    Key
      koszulLL
+Node
+   Key
+       StanleyReisnerExterior
+      (StanleyReisnerExterior, SimplicialComplex, Ring)
+   Headline
+       computes the exterior algebra version of the Stanley Reisner face ideal of a simplicial complex
+   Usage
+       StanleyReisnerExterior(S, K)
+   Inputs
+       S:SimplicialComplex
+	   given as an ideal in a polynomial ring
+   Outputs
+       :Ideal
+   Description
+       Text
+           The exterior algebra version of the Stanley Reisner face ideal is defined using the same generators as the ordinary Stanley Reisner face ideal, but over an exterior algebra instead of a polynomial ring.
 ///
 
 --------------------------------------------------
@@ -465,6 +504,7 @@ TEST ///
     F = koszulRR(HH_0 C, Concentration=>(-5,5))
     assert( F_0 == M)
 ///
+
 TEST ///
     (S,E)= koszulPair(2, ZZ/101)
 
@@ -474,7 +514,11 @@ TEST ///
     g = koszulRR(map(S^{1}, S^1, S_0), Concentration=>(-5,5))
     
     assert( f == id_(koszulRR(M, Concentration=>(-5,5))))
+
+    koszulRR(koszulComplex matrix {{x_0}}, Concentration => (-2,0))
+    koszulRR(koszulComplex vars S, Concentration => (-5,0))
 ///
+
 TEST ///
     (S,E)= koszulPair(2, ZZ/101)
 
@@ -483,6 +527,40 @@ TEST ///
     f = koszulLL(id_M, Concentration=>(-5,5))
     
     assert( f == id_(koszulLL(M, Concentration=>(-5,5))))
+///
+TEST ///
+    (S,E)= koszulPair(1, ZZ/101)
+
+    C = koszulComplex vars S
+    
+    -- RR(id_C) == id_(RR(C))
+    assert( koszulRR(id_C, Concentration=>(-5,5)) == id_(koszulRR(C, Concentration=>(-5,5))) )
+///
+
+TEST ///
+    (S, E) = koszulPair(4, ZZ/19937)
+    M = matrix { { S_0, S_1, S_2, S_3 }, {S_3, S_0, S_1, S_2}, {S_2, S_3, S_0, S_1}, {S_1, S_2, S_3, S_0} }
+    f = map(S^{-1}^4, S^4, M)
+    N = matrix { { S_0, S_1, S_2, S_3 }, {S_1, S_2, S_3, S_0}, {S_2, S_3, S_0, S_1}, {S_3, S_0, S_1, S_2} }
+    g = map(S^4, S^{1}^4, N)
+    assert(koszulRR(f, Concentration=>(-5,5)) * koszulRR(g, Concentration=>(-5,5)) == koszulRR(f * g, Concentration=>(-5,5))) 
+///
+
+TEST ///
+    (S, E) = koszulPair(4, ZZ/19937)
+    M = matrix { { E_0, E_1, E_2, E_3 }, {E_3, E_0, E_1, E_2}, {E_2, E_3, E_0, E_1}, {E_1, E_2, E_3, E_0} }
+    f = map(E^{-1}^4, E^4, M)
+    N = matrix { { E_0, E_1, E_2, E_3 }, {E_1, E_2, E_3, E_0}, {E_2, E_3, E_0, E_1}, {E_3, E_0, E_1, E_2} }
+    g = map(E^4, E^{1}^4, N)
+    assert(koszulLL(f, Concentration=>(-5,5)) * koszulLL(g, Concentration=>(-5,5)) == koszulLL(f * g, Concentration=>(-5,5)))
+///
+
+TEST ///
+    needsPackage "SimplicialComplexes"
+    R = ZZ/19937[a,b,c,d]
+    S = simplicialComplex {a*b*c, b*c*d, a*d}
+    StanleyReisnerExterior(S, ZZ/19937)
+    StanleyReisnerExterior(S, ZZ/101)
 ///
 
 end--
@@ -497,15 +575,25 @@ needsPackage "ExteriorResolutions"
 
 (S,E)= koszulPair(1, ZZ/101)
 
+koszulRR(koszulComplex matrix {{x_0}}, Concentration=>(-5,5))
+koszulRR(koszulComplex vars S, Concentration=>(-5,5))
+
+C = koszulComplex matrix {{x_0}}
+koszulRR(id_C, Concentration=>(-5,5))
+
 M = E^1
 
-f = koszulLL(id_M, Concentration=>(-5,5))
+C = koszulComplex vars S
 
-koszulRR(koszulComplex vars S, Concentration=>(-5,5))
+f = koszulRR(id_C, Concentration=>(-5,5))
+f == id_(koszulRR(C, Concentration=>(-5,5)))
+
+
+koszulRR(koszulLL(E^1, Concentration=>(-5,5)), Concentration=>(-5,5))
+
 
 C = koszulComplex matrix{{x_0}}
 koszulRR(C, Concentration=>(-5,5))
->>>>>>> bf9227e (implemented koszulRR Complex, but did not finish debugging)
 
 assert( f == id_(koszulLL(M, Concentration=>(-5,5))))
 
