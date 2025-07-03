@@ -9,6 +9,7 @@ installPackage "EquivariantEhrhart"
 
 
 needsPackage "EquivariantEhrhart"
+viewHelp EquivariantEhrhart
 
 -- Ex 1
 
@@ -43,7 +44,7 @@ ehrhartSeries P
 
 end
 
--- other examples 
+-- other examples
 
 
 Example [Reeve tetrahedra; 2.4 https://arxiv.org/pdf/2307.10852]
@@ -70,6 +71,3 @@ hStarVector = {1,1,2,1,2,1}
 
 Example:[Section 2, https://arxiv.org/pdf/2110.10204]
 P = [-1, 2/3] in RR^1
-
-
-
