@@ -1,7 +1,11 @@
--- most naive approach, produces really big free modules
+-- first make sure we hit everything on the bottom
 makeFreeModuleSurjection = method()
 makeFreeModuleSurjection(CpMackeyFunctor) := MackeyFunctorHomomorphism => (M) -> (
-    return makeUniversalMap(M, gens(M.Underlying), gens(M.Fixed))
+    gensUnderlying0 := mingens cokernel (id_(M.Underlying) - M.Conj);
+    gensUnderlying := inducedMap(M.Underlying, source gensUnderlying0, gensUnderlying0);
+    gensFixed0 := mingens cokernel (M.Tr * gensUnderlying);
+    gensFixed := inducedMap(M.Fixed, source gensFixed0, gensFixed0);
+    makeUniversalMap(M, gensUnderlying, gensFixed)
 )
 
 -- get resolution up to F_(n-1) <-- F_n
