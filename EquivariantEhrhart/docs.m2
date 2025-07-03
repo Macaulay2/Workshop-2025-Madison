@@ -143,6 +143,14 @@ doc ///
             List of matrices that leaves the polytope invariant
         M : Matrix
             A matrix that leaves the polytope invariant
+        ReturnHStarList => Boolean
+            whether to return the list of $h^*$ polynomials of fixed polytopes
+            or $S_n$
+        ReturnPartitionList => Boolean
+            whether to return the list of cycle-types of conjugacy classes of
+            symmetric group $S_n$
+        ReturnTable => Boolean
+            whether to return the charactr table of $S_n
     Outputs
         HF : List
             The equivariant Ehrhart series of P with respect to symmetric group
@@ -225,7 +233,9 @@ doc ///
             computes the points of a polytope fixed by an invertible matrix
         Example
             P = orbitPolytope(transpose matrix{{1/2,0,1}})
-            fixedPolytope(P, matrix{{0,1,0},{1,0,0},{0,0,1}})
+            vertices P
+            PM = fixedPolytope(P, matrix{{0,1,0},{1,0,0},{0,0,1}})
+            vertices PM
     SeeAlso
         EquivariantEhrhart
 ///
