@@ -50,3 +50,16 @@ D = koszulRR(S^1, Concentration => (-5, 0))
 
 complex E == naiveTruncation(prune HH koszulRR(C, Concentration => (-5,0)), -4, 0)
 complex comodule truncate(6, S) == prune HH koszulLL(D, Concentration => (-2, 4))
+
+---
+
+-- LL(RR(finite length module)) is identity
+(S,E) = koszulPair(2, ZZ/101)
+M = comodule truncate(5, S)
+assert(complex M == prune HH koszulLL(koszulRR M, Concentration => (0,5)))
+
+-- RR(LL(perfect complex)) is identity
+N = coker matrix {{e_0}}
+= freeResolution(N, LengthLimit => 4)
+C = canonicalTruncation(koszulRR(koszulLL(D, Concentration => (-5,5)), Concentration => (-3,3)), (-2, 2));
+assert(complex N == prune HH C)
