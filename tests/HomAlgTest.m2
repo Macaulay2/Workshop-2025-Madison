@@ -35,9 +35,3 @@ for i from 1 to 5 do (
     assert(isTrivialMackeyFunctor Ext^i(A,cursedMF));
     assert(isTrivialMackeyFunctor Ext^i(B,cursedMF))
 )
-
--- check that Tor_i(O(Z),O(Z)) is group homology of C2
-OZ = makeOrbitMackeyFunctor(2, id_(ZZ^1));
-OF2 = makeOrbitMackeyFunctor(2, id_(coker(matrix{{2}})))
-
--- TODO
