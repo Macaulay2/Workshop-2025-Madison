@@ -62,13 +62,24 @@ injectiveResolutionMap Module := ComplexMap => opts -> M -> (
     )
 injectiveResolutionMap Complex := ComplexMap => opts -> C -> (
     D := injectiveResolution(C, opts);
-    (lo,hi) := concentration C;
-    tempHash := new MutableHashTable;
-    tempHash#hi = map(D_hi, C_hi, transpose syz transpose presentation C_hi);
-    for i in reverse toList(lo..(hi-1)) do (
-        tempHash#i = (dd^C_(i + 1))\\(dd^D_(i+1) * tempHash#(i + 1));
-    );
-    map(D, C, tempHash)
+    W := ring C;
+    CDoubleDual:= Hom(Hom(C,W^1),W^1);
+    DDualMap := map(CDoubleDual, C, i -> (
+	    gensMatrix := gens C_i;
+	    h :=map(C_i, source gensMatrix, id_(source gensMatrix));
+	    ddh := Hom(Hom(h,W^1),W^1);
+	    map(CDoubleDual_i, C_i, matrix ddh)
+	    )
+	);
+    Hom(resolutionMap(Hom(C,W^1)),W^1)* DDualMap
+    --Found this code in Divisor package, seems to work, need to cache hfC in injRes --Sreehari
+    --(lo,hi) := concentration C;
+    --tempHash := new MutableHashTable;
+    --tempHash#hi = map(D_hi, C_hi, transpose syz transpose presentation C_hi);
+    --for i in reverse toList(lo..(hi-1)) do (
+        --tempHash#i = (dd^C_(i + 1))\\(dd^D_(i+1) * tempHash#(i + 1));
+    --);
+   -- map(D, C, tempHash)
     -*
     map(D, C, i -> (
 	    if isFreeModule C_i then map(D_i,C_i, id_(C_i))
@@ -444,7 +455,7 @@ TEST ///
     Res = injectiveResolution(C, LengthLimit => 4)
     assert(Res == C)
     assert isWellDefined Res
-    f = coaugmentationMap Res
+    f = injectiveResolutionMap(C,LengthLimit=>5)-- new code introduces a bug here, cache hfC
     assert isWellDefined f
     assert isQuasiIsomorphism f
 
@@ -453,7 +464,7 @@ TEST ///
     P = injectiveResolution(C, LengthLimit => 5)
     assert isWellDefined P
     assert isFree P
-    f = injectiveResolutionMap C -- bug
+    f = injectiveResolutionMap C -- bug  --new code fixed this bug
     assert isWellDefined f
     assert isQuasiIsomorphism f
     assert isComplexMorphism f
@@ -462,7 +473,7 @@ TEST ///
     prune ker Mat
     CMat=complex Mat
     P=injectiveResolution(CMat,LengthLimit=>5)
-    f = resolutionMap CMat
+    f = injectiveResolutionMap CMat
     assert isQuasiIsomorphism f
     assert isComplexMorphism f
     
