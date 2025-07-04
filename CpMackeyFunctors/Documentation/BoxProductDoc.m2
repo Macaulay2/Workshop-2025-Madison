@@ -66,4 +66,7 @@ doc ///
             A map $F\colon P\to Q$ of Mackey functors can be tesnored with a Mackey functor $M$ to form a map $M ⊠ F\colon M ⊠ P\to M ⊠ Q$.
         Example
             boxProduct(makeUnderlyingFreeMackeyFunctor(3),complexLinearizationMap(3))
+    SeeAlso
+        "the abelian category of Mackey functors"
+        boxProduct
 ///

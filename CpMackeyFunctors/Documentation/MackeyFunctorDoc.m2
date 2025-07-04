@@ -82,6 +82,9 @@ doc ///
         (prune,CpMackeyFunctor)
     Headline
         prune a CpMackeyFunctor
+    Description
+        Text
+            Outputs a more user-friendly version of a @TO2(CpMackeyFunctor,"Mackey functor")@.
     SeeAlso
         "background on Mackey functors"
         CpMackeyFunctor

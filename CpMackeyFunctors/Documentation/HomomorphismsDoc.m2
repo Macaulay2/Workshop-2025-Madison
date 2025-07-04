@@ -109,6 +109,9 @@ doc ///
             A morphisms of $C_p$-Mackey functors consists of a group homomorphism on the fixed and underlying levels which commutes with the transfer, restriction, and conjugation morphisms.  This method will throw an error if the morphism is not well defined.
         Example
             map(makeComplexRepresentationMackeyFunctor 3, makeBurnsideMackeyFunctor 3, matrix {{1}}, matrix {{1,1},{0,1},{0,1}})
+    SeeAlso
+        "background on Mackey functors"
+        MackeyFunctorHomomorphism
 ///
 
 doc ///
@@ -128,6 +131,10 @@ doc ///
     Outputs
         : MackeyFunctorHomomorphism
             the map $n*\mathrm{id}$ from M to N, if such a thing exists.
+    SeeAlso
+        "background on Mackey functors"
+        MackeyFunctorHomomorphism
+        (map,CpMackeyFunctor, CpMackeyFunctor, Matrix, Matrix)
 ///
 
 
@@ -335,10 +342,11 @@ doc ///
             a Mackey functor homomorphism from M to N
     Description
         Text
-            If a homomorphism is given (either as a @TO(MackeyFunctorHomomorphism)@ or as a pair of matrices), this method will try to induce a map between the provided mackey functors. If no homomorphism is given, the identity morophism on the source is used. A common use for this method to produce the natural inclusion of a subobject or the natural projection to a quotient object.
+            If a homomorphism is given (either as a @TO(MackeyFunctorHomomorphism)@ or as a pair of matrices), this method will try to induce a map between the provided Mackey functors. If no homomorphism is given, the identity morphism on the @TO2((source,MackeyFunctorHomomorphism),"source")@ is used. A common use for this method to produce the natural inclusion of a subobject or the natural projection to a quotient object.
         Example
             f := complexLinearizationMap(3);
             inducedMap(coker f, target f)
     SeeAlso
+        MackeyFunctorHomomorphism
         inducedMap
 ///

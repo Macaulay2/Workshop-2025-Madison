@@ -23,8 +23,11 @@ Node
             N = makeUnderlyingFreeMackeyFunctor(2);
             Hom(M,N)
     SeeAlso
+        "the abelian category of Mackey functors"
+        MackeyFunctorHomomorphism
         (Hom, CpMackeyFunctor, MackeyFunctorHomomorphism)
         (Hom, MackeyFunctorHomomorphism, CpMackeyFunctor)
+        InternalHom
 Node
     Key
         (Hom, CpMackeyFunctor, MackeyFunctorHomomorphism)
@@ -49,4 +52,9 @@ Node
             f = makeRandomMackeyFunctorHomomorphism(M,N);
             Hom(M,f)
             Hom(f,N)
+    SeeAlso
+        "the abelian category of Mackey functors"
+        MackeyFunctorHomomorphism
+        (Hom, CpMackeyFunctor, CpMackeyFunctor)
+        InternalHom
 ///

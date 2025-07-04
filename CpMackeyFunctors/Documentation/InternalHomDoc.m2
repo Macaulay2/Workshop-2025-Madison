@@ -43,7 +43,7 @@ doc ///
         Text
             The internal hom of Mackey functors is functorial in each variable.  This method returns the induced maps.
         Example
-            InternalHom(makeRealRepresentationMackeyFunctor(5), complexLinearizationMap(5))
+            prune InternalHom(makeRealRepresentationMackeyFunctor(3), complexLinearizationMap(3))
     SeeAlso
         "the abelian category of Mackey functors"
         InternalHom

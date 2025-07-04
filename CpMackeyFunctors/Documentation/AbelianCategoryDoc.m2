@@ -81,6 +81,9 @@ doc ///
     Description
         Text
             Given two @TO2(MackeyFunctorHomomorphism,"Mackey functor homomorphisms")@ $f$ and $g$, we can form their composition, which is a new @TO2(MackeyFunctorHomomorphism,"Mackey functor homomorphism")@.
+    SeeAlso
+        "background on Mackey functors"
+        MackeyFunctorHomomorphism
 ///
 
 doc ///
@@ -99,6 +102,10 @@ doc ///
     Description
         Text
             Given two @TO2((CpMackeyFunctor),"Cp-Mackey Functors")@ $M$ and $N$, we can form their {\em direct sum}, defined by taking the levelwise direct sum of the underlying and fixed modules.
+    SeeAlso
+        "the abelian category of Mackey functors"
+        MackeyFunctorHomomorphism
+
 ///
 
 doc ///
@@ -116,6 +123,9 @@ doc ///
     Outputs
         : CpMackeyFunctor
             the kernel of the homomorphism f
+    SeeAlso
+        "the abelian category of Mackey functors"
+        MackeyFunctorHomomorphism
 ///
 
 doc ///
@@ -130,4 +140,7 @@ doc ///
     Outputs
         : CpMackeyFunctor
             the cokernel of the homomorphism f
+    SeeAlso
+        "the abelian category of Mackey functors"
+        MackeyFunctorHomomorphism
 ///
