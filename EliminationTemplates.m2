@@ -4,30 +4,30 @@ newPackage(
     Version => "1",
     Date => "July 1, 2025",
     Authors => {
-	{Name => "Manav Batavia",
-	 Email => "manavbatavia@gmail.com",
-	 HomePage => ""},
-	{Name => "Cheng Chen",
-	 Email => "chengchen@math.wisc.edu",
-	 HomePage => ""},
-	{Name => "Wanchun / Rosie Shen", 
-	 Email => "wshen@math.harvard.edu",
-	 HomePage => ""},
-	{Name => "Anna Natalie Chlopecki",
-	 Email => "achlopec@purdue.edu",
-	 HomePage => ""},
-	{Name => "Tim Duff", 
-	 Email => "tduff@missouri.edu",
-	 HomePage => "https://timduff35.github.io/timduff35/"},
-	{Name => "Will Huang", 
-	 Email => "williamhuang5120@gmail.com",
-	 HomePage => ""},
-	{Name => "Aolong Li", 
-	 Email => "lial0921.miu@gmail.com",
-	 HomePage => ""},
-	{Name => "Ikenna Nometa", 
-	 Email => "inometa@hawaii.edu",
-	 HomePage => ""}	
+    {Name => "Manav Batavia",
+    Email => "manavbatavia@gmail.com",
+    HomePage => ""},
+    {Name => "Cheng Chen",
+    Email => "chengchen@math.wisc.edu",
+    HomePage => ""},
+    {Name => "Wanchun / Rosie Shen", 
+    Email => "wshen@math.harvard.edu",
+    HomePage => ""},
+    {Name => "Anna Natalie Chlopecki",
+    Email => "achlopec@purdue.edu",
+    HomePage => ""},
+    {Name => "Tim Duff", 
+    Email => "tduff@missouri.edu",
+    HomePage => "https://timduff35.github.io/timduff35/"},
+    {Name => "Will Huang", 
+    Email => "williamhuang5120@gmail.com",
+    HomePage => ""},
+    {Name => "Aolong Li", 
+    Email => "lial0921.miu@gmail.com",
+    HomePage => ""},
+    {Name => "Ikenna Nometa", 
+    Email => "inometa@hawaii.edu",
+    HomePage => ""}	
     },
     Headline => "elimination templates",
     PackageImports => {"EigenSolver", "NumericalAlgebraicGeometry"},
@@ -67,7 +67,7 @@ eliminationTemplate (RingElement, Ideal) := o -> (aVar, J) -> (
         -- templateMatrix => M,
         "actionVariable" => aVar,
         ideal => J,
-	    cache => new CacheTable from {}
+	      cache => new CacheTable from {}
     }
 )
 
@@ -99,6 +99,7 @@ getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     assert(gens F * HGF - gens G == 0);
     H0 := HGF * HVG;
     H0 = sub(H0, ring J);
+
     if (o.Strategy === null) then H0 else if (o.Strategy == "Greedy") then (
 	    print("Using Greedy strategy to compute H0.");
         --H0%image(syz(gens(J)))
@@ -107,7 +108,7 @@ getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
         H0 + Theta*H1
     )
     else if (o.Strategy == "Larsson") then (
-	print("Using Larsson's strategy to compute H0.");
+	      print("Using Larsson's strategy to compute H0.");
         H0%image(syz(gens(J)))
     ) else (error "Strategy not yet implemented.") 
 )
@@ -131,15 +132,15 @@ getTemplate(RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
 )
 getTemplate(EliminationTemplate) := o -> E -> (
     if (E.cache#?"shifts" and E.cache#?"monomialPartition") then (E.cache#"shifts", E.cache#"monomialPartition") else (
-	    aVar := actionVariable E;
-	    J := ideal E;
-	    R := ring J;
-	    B := lift(basis(R/J), R);
-	    E.cache#basis = B;
-	    (sh, mp) := getTemplate(aVar, B, J, o);
-	    E.cache#"shifts" = sh;
-	    E.cache#"monomialPartition" = mp;
-	    (sh, mp)
+        aVar := actionVariable E;
+        J := ideal E;
+        R := ring J;
+        B := lift(basis(R/J), R);
+        E.cache#basis = B;
+        (sh, mp) := getTemplate(aVar, B, J, o);
+        E.cache#"shifts" = sh;
+        E.cache#"monomialPartition" = mp;
+        (sh, mp)
     )
 )
 
@@ -154,11 +155,11 @@ getTemplateMatrix(ShiftSet, MonomialPartition, Ideal) := o -> (shifts, monomialP
 )
 getTemplateMatrix(EliminationTemplate) := o -> E -> (
     if E.cache#?"templateMatrix" then E.cache#"templateMatrix" else (
-	(shifts, monomialPartition) := getTemplate(E, o);
-	J := ideal E;
-	ret := getTemplateMatrix(shifts, monomialPartition, J, o);
-	E.cache#"templateMatrix" = ret;
-	ret
+        (shifts, monomialPartition) := getTemplate(E, o);
+        J := ideal E;
+        ret := getTemplateMatrix(shifts, monomialPartition, J, o);
+        E.cache#"templateMatrix" = ret;
+        ret
     )
 )
     
@@ -199,8 +200,8 @@ getActionMatrix(EliminationTemplate) := o -> E -> (
         (sh, mp) := getTemplate E;
         templateMatrix := getTemplateMatrix E;
         ret := getActionMatrix(actVar, mp, templateMatrix);
-	    E.cache#"actionMatrix" = ret;
-	    ret
+	      E.cache#"actionMatrix" = ret;
+	      ret
     )
 )
 
@@ -387,8 +388,6 @@ doc ///
       See the documentation for `Macaulay2` for more information on monomial orders.
 ///
 
-
-
 doc ///
  Node
   Key
@@ -434,8 +433,8 @@ B = lift(basis(R/J), R)
 (sh, mp) = getTemplate(actVar, B, J)
 M = getTemplateMatrix(sh, mp, J)
 Ma = getActionMatrix(actVar, mp, M) 
-eigenvalues Ma
--- TODO: add assertion
+evals = eigenvalues Ma
+-- TODO: assert something
 ///
 
 
@@ -447,9 +446,8 @@ getH0(x, B, J)
 (sh, mp) = getTemplate(x, B, J)
 M = getTemplateMatrix(x, B, J)
 Mx = getActionMatrix(x, mp, M)
-eigenvalues Mx
-assert(all(sort eigenvalues Mx, {-2,0,1}, (e1, e2) -> abs(e1-e2) < 1e-4))
--- TODO: add assertion
+evals = eigenvalues Mx
+assert(all(sort evals, {-2,0,1}, (e1, e2) -> abs(e1-e2) < 1e-4))
 ///
 
 TEST ///
@@ -483,7 +481,7 @@ end--
 
 -* Development section *-
 restart
-loadPackage "EliminationTemplates"
+debug needsPackage "EliminationTemplates"
 R=QQ[x,y,z]
 J=ideal(x^3+y^3+z^3-4,x^2-y-z-1,x-y^2+z-3)
 B=basis(R/J)
@@ -495,10 +493,6 @@ netList solveSystem J_*
 
 restart
 debug needsPackage "EliminationTemplates"
-check "EliminationTemplates"
-
-restart
-loadPackage "EliminationTemplates"
 R=QQ[x,y]
 I=ideal(x^2+y^2-1,x^2+y^3+x*y-2)
 J=ideal(x^2+y^2-2,x^2+y^3+3*x*y-5)
@@ -511,11 +505,7 @@ F=copyTemplate(E,J)
 getEigenMatrix(F)
 templateSolve(F)
 
-
-
-uninstallPackage "EliminationTemplates"
 restart
-check "EliminationTemplates"
 debug needsPackage "EliminationTemplates"
 R = QQ[x,y]
 J = ideal(x^3 + y^2 - 1, x - y - 1)
@@ -523,18 +513,17 @@ templateSolve(x, J)
 actVar = x
 getEigenMatrix(x, J)
 
-viewHelp "EliminationTemplates"
-
-
 restart
 debug needsPackage "EliminationTemplates"
 R = QQ[x,y]
 J = ideal(x^3 + y^2 - 1, x - y - 1)
 templateSolve(x, J)
 
+
 uninstallPackage "EliminationTemplates"
 restart
 installPackage "EliminationTemplates"
+check "EliminationTemplates"
 help EliminationTemplates
 help getTemplate
 
