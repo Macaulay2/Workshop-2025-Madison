@@ -34,3 +34,13 @@ doc ///
         Text
             Generates a @TO2((MackeyFunctorHomomorphism), "Mackey functor homomorphism")@ $f$ between two @TO2((CpMackeyFunctor),"Cp-Mackey Functors")@ $M$ and $N$ (for the same prime $p$)
 ///
+
+
+doc ///
+    Key
+        GenBound
+    Headline
+        optional input for generating random Mackey functors
+    SeeAlso
+        makeRandomCpMackeyFunctor
+///

@@ -10,8 +10,8 @@ doc ///
             This {\em Macaulay2} package implements basic homological algebra for {\em Mackey functors} of a cyclic group $C_p$ of prime order. Some highlights of our functionality include:
 
             @UL{
-                ("free resolutions of ", TEX"$C_p$","-Mackey functors"),
-                (TEX"$\\mathrm{Ext}$", " and ", TEX"$\\mathrm{Tor}$", " computations for (cohomological) Mackey functors"),
+                ("free ", TO2((resolution,CpMackeyFunctor,ZZ),"resolutions"), " of ", TEX"$C_p$","-Mackey functors"),
+                (TO2((Ext,ZZ,CpMackeyFunctor,CpMackeyFunctor),"Ext"), " and ", TO2((Tor,ZZ,CpMackeyFunctor,CpMackeyFunctor),"Tor"), " computations for (cohomological) Mackey functors"),
                 ("the ", TO2(boxProduct,"box product"), " and ", TO2(InternalHom,"internal hom")),
                 (TO2("constructing examples of Mackey functors", "constructions")," of various common examples of Mackey functors"),
                 ("the ability to generate ", TO2(makeRandomCpMackeyFunctor,"random Mackey functors")," over ", TEX"$C_p$"),

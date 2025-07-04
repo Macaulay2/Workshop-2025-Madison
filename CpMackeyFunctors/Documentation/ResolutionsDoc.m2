@@ -27,10 +27,13 @@ Node
             a list containing the morphisms in the free resolution
     Description
         Text
-            This method returns a free resolution of the Mackey functor M up to the n-th term.  The resolution is implemented as a list of Mackey functor homomorphisms.
+            This method returns a free resolution of the Mackey functor $M$ up to the $n$th term.  The resolution is implemented as a list of Mackey functor homomorphisms.
         Example
             M = makeZeroOnUnderlyingMackeyFunctor(3,ZZ^1);
             resolution(M,3)
+    Caveat
+        Text
+            The optional inputs listed on this page are coming from overloading the @TO("OldChainComplexes :: resolution")@ method, and don't have any effect on computing resolutions for Mackey functors.
 
 Node
     Key
