@@ -94,7 +94,7 @@ doc ///
             whether $M$ is {\em cohomological} or not
     Description
         Text
-            A Mackey functor $M$ defined over $C_p$ is said to be {\em cohomological} if the composite of restriction followed by transfer is identical to multiplication by $p$ as a map from the @TO2(getFixedModule,"fixed module")@ of $M$ to itself.
+            A Mackey functor $M$ defined over $C_p$ is said to be {\em cohomological} if the composite of restriction followed by transfer is identical to multiplication by $p$ as a map from the @TO2(Fixed,"fixed module")@ of $M$ to itself.
     SeeAlso
         "background on Mackey functors"
         CpMackeyFunctor
