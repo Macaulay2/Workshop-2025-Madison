@@ -233,8 +233,8 @@ slnCasimir(2,2,S,f2) -- n=2, d=2, F is a polynomial in S
 
 
 --******** Reynolds Operator for the represention Sym^d(QQ^n) of sln (Algorithm 4.5.20) ********
---with Gordie Novak
 
+--ver1: with Gordie Novak
 slnReynolds = (n,d,S,f) -> (
     fList = {f};
     gList = fList;
@@ -294,6 +294,38 @@ slnReynolds = (n,d,S,f) -> (
     print "\n--------";
     print "Printing Rf;";
     return Rf;
+)
+
+--ver2: with Kisun Lee
+slnReynolds = (n,d,S,f) -> (
+    fList = {f};
+    gList = fList;
+    l = 0;
+    Rf = 0;
+    while last gList != 0 do (
+	if gList_(l) !=0 then(
+	    b_(l,l) = 1;
+	    apply(l, i -> b_(l,i) = 0);
+	    a = leadCoefficient(gList_(l));
+	    apply(l, i -> (
+		    if  leadMonomial(gList_(l)) == leadMonomial(gList_(i))
+		    then (
+			gList = replace(l, gList_(l)-a*(gList_(i)), gList);
+			apply(i+1, j -> b_(l,j) = b_(l,j)-a*b_(i,j));
+			a=leadCoefficient(gList_(l));
+			); 
+		    ));
+	    if a != 0 then(
+		gList = replace(l, (gList_(l))/a, gList);
+		apply(l+1, j -> b_(l,j) = b_(l,j)/a);
+		l = l+1;
+		fList = append(fList, slnCasimir(n,d,S,fList_(l-1)));
+		gList = append(gList, fList_(l));
+		);
+	    );
+    );
+    if gList_(l) == 0 then ( if b_(l,0) != 0 then Rf = 0 else Rf = ( sum for j from 1 to l list b_(l,j)*fList_(j-1) ) / b_(l,1); );
+Rf
 )
 
 --******** Example 4.5.21 ********
