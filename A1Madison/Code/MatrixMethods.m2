@@ -15,7 +15,7 @@ isSquare Matrix := Boolean => M -> (
 
 isSquareAndSymmetric = method()
 isSquareAndSymmetric Matrix := Boolean => M -> (
-    transpose(M) == M
+    entries transpose M == entries M
     )
 
 -- Input: A symmetric matrix
