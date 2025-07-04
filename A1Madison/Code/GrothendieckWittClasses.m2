@@ -11,7 +11,7 @@ isWellDefinedGW Matrix := Boolean => M -> (
     if isDegenerate M then return false;
 
     -- Return false if the matrix isn't defined over a field
-    if not isField ring M then return false;
+    if not (isField ring M or (instance(ring M, QuotientRing) and isField coefficientRing ring M and dim ring M == 0 and isPrime ideal(0_(ring M)))) then return false;
     
     -- Returns false if the matrix is defined over a field of characteristic 2
     if char(ring M) == 2 then return false;
@@ -24,7 +24,7 @@ isWellDefinedGW Matrix := Boolean => M -> (
 -- of a nondegenerate symmetric bilinear form over a field of characteristic not 2
 
 GrothendieckWittClass = new Type of HashTable
-GrothendieckWittClass.synonym = "Grothendieck-Witt Class"
+GrothendieckWittClass.synonym = "Grothendieck-Witt Class over algebra"
 
 -- Input: A matrix M representing a nondegenerate symmetric bilinear form over a field of characteristic not 2
 -- Output: The GrothendieckWittClass representing the symmetric bilinear form determined by M
@@ -34,7 +34,7 @@ makeGWClass Matrix := GrothendieckWittClass => M -> (
    if isWellDefinedGW M then (
         new GrothendieckWittClass from {
             symbol matrix => M,
-            symbol cache => new CacheTable
+            symbol cache => new CacheTable,
             }
         )
     else (
@@ -56,11 +56,17 @@ texMath GrothendieckWittClass := String => alpha -> (
     texMath getMatrix alpha
     )
 
+getAlgebra = method()
+getAlgebra GrothendieckWittClass := Ring => beta -> (
+    ring getMatrix beta
+    )
+
 -- Input: A Grothendieck-Witt class beta, the isomorphism class of a symmetric bilinear form
 -- Output: The base field of beta
 
 getBaseField = method()
 getBaseField GrothendieckWittClass := Ring => beta -> (
+    if not isField ring getMatrix beta then return toField ring getMatrix beta;
     ring getMatrix beta
     )
 

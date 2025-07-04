@@ -24,11 +24,7 @@ isSquareAndSymmetric Matrix := Boolean => M -> (
 isDegenerate = method()
 isDegenerate Matrix := Boolean => M -> (
     if not isSquareAndSymmetric M then error "matrix is not symmetric";
-    if numRows(M) == 0 then (
-	return false;
-	)
-    else
-	return det(M) == 0;
+    det(M) == 0
     )
 
 -- Input: A symmetric matrix
@@ -64,16 +60,25 @@ isDiagonal Matrix := Boolean => M -> (
 diagonalizeViaCongruence = method()
 diagonalizeViaCongruence Matrix := Matrix => AnonMut -> (
     k := ring AnonMut;
-    if not isField k then error "expected matrix over a field";
+    --if not isField k then error "expected matrix over a field";
+
     if not isSquareAndSymmetric AnonMut then
 	error "matrix is not symmetric";
-    
+
+    -- Return false if the matrix isn't defined over a field
+    if not (isField k or (instance(k, QuotientRing) and isField coefficientRing k and dim k == 0 and isPrime ideal(0_(k)))) then error "the base ring of the matrix is not the algebra presentation of a field";
+
+    kk := k;
+    if not isField k then kk = toField k;
+
     -- If the matrix is already diagonal, then return it
     if isDiagonal AnonMut then return AnonMut;
     
     -- Otherwise, we iterate through positions below the diagonal, performing row operations followed by the corresponding
     -- column operations in order to obtain a diagonal matrix congruent to the original
-    A := mutableMatrix AnonMut;
+    B := sub(AnonMut, kk);
+    A := mutableMatrix B;
+
     n := numRows A;
     for col from 0 to n - 1 do (
 	-- If diagonal entry in column "col" is zero
@@ -107,7 +112,7 @@ diagonalizeViaCongruence Matrix := Matrix => AnonMut -> (
                 );
             );
         );
-    matrix A 
+    sub(matrix A,k) 
     )
 
 -- Input: A symmetric matrix over QQ, RR, CC, and finite fields of characteristic not 2

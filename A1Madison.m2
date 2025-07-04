@@ -48,6 +48,10 @@ newPackage (
     Headline => "for working with A1-Brouwer degree computations"
     )
 
+    PackageImports=>{
+	"MinimalPrimes",
+	},
+
 export{
     
     -- ArithmeticMethods.m2
@@ -60,36 +64,27 @@ export{
     --GrothendieckWittClasses.m2    
     "makeGWClass",
     "GrothendieckWittClass",
+    "getAlgebra",
     "getBaseField",
     "getMatrix",
     "addGW",
     "multiplyGW",
 
-    --GrothendieckWittClassesOverAlgebra.m2  --proposed replacements for functions in version 1.1  
-    "makeGWClassOverAlgebra",
-    "GrothendieckWittClassOverAlgebra",
-    "getDiagonalClassOverAlgebra",
-    "getDiagonalEntriesOverAlgebra",
-    "getRing",
-    "diagonalizeViaCongruenceOverAlgebra",
-
     --GWTransfer.m2
     "transferGW",
 
     --TraceAndNorm.m2
-    "AlgebraicTrace",
-    "AlgebraicNorm",
-    "MultiplicationMatrix",
+    "algebraicTrace",
+    "algebraicNorm",
+    "multiplicationMatrix",
 
     --UnstableGrothendieckWittClasses.m2
     "makeGWuClass",
-    --"isWellDefinedGWu", -- Leave exported for now
     "getScalar",
     "addGWu",
     "scalar", -- To avoid error about unexported symbol
     "addGWuDivisorial",
-    --"fieldsAreCompatible",  --Exported only for testing purposes
-    "makeStableGWClass",
+    "getGWClass",
     "UnstableGrothendieckWittClass",
     "getLocalUnstableA1Degree",
     
@@ -104,7 +99,7 @@ export{
     "getDiagonalClass",
     "getDiagonalEntries",
     
-    --getHilbertSymbols.m2
+    --HilbertSymbols.m2
     "getHilbertSymbolReal",
     "getHilbertSymbol",
     
@@ -176,13 +171,9 @@ load "./A1Madison/Code/Decomposition.m2"
 
 -- Unstable Grothendieck-Witt classes 
 load "./A1Madison/Code/UnstableGrothendieckWittClasses.m2"
-load "./A1Madison/Code/multiplicity.m2"
 load "./A1Madison/Code/UnstableLocalDegrees.m2"
 load "./A1Madison/Code/TraceAndNorm.m2"
---load "./A1Madison/Code/GWTransfer.m2"
-
--- File for testing proposed changes; extends Grothendieck-Witt classes to be defined over dimension-0 algebras (is this the right generality?)
-load "./A1Madison/Code/GrothendieckWittClassOverAlgebra.m2"
+load "./A1Madison/Code/GWTransfer.m2"
 
 
 ----------------------------

@@ -5,23 +5,26 @@ isWellDefinedGWu = method()
 -- First version of this function treats the case where a is a Number, (eg. an element of CC_53, RR_53, QQ, or ZZ)
 isWellDefinedGWu (Matrix, Number) := Boolean => (M, a) -> (
 
-    -- Return false if the matrix isn't defined over a field
-    if not isField ring M then return false;
-
     -- Return false if a is zero in the field
     if a == 0 then return false;
 
     -- If matrix is defined over the complex numbers, allow scalar to be one of complex, real, rational, or integral. 
-    if instance(ring M, ComplexField) and not (instance(ring a, ComplexField) or instance(ring a, RealField) or ring a === QQ or ring a === ZZ) then return false;
+    if instance(ring M, ComplexField) and not (instance(ring a, ComplexField) or instance(ring a, RealField) or ring a === QQ or ring a === ZZ) then return false
 
     -- If matrix is defined over the real numbers, allow scalar to be one of real, rational, or integral. 
-    if instance(ring M, RealField) and not ((instance(ring a, RealField) or ring a === QQ or ring a === ZZ) and (sign(a) == sign(det(M)))) then return false;
+    else if instance(ring M, RealField) and not ((instance(ring a, RealField) or ring a === QQ or ring a === ZZ) and (sign(a) == sign(det(M)))) then return false
 
     -- If matrix is defined over the rationals, allow scalar to be one of rational, or integral. 
-    if ring M === QQ and not ((ring a === QQ or ring a === ZZ) and (getSquarefreePart det M == getSquarefreePart a)) then return false;
+    else if ring M === QQ and not ((ring a === QQ or ring a === ZZ) and (getSquarefreePart det M == getSquarefreePart a)) then return false
 
     -- If matrix is defined over a finite field, allow scalar then the only scalars allowed are integral. The case of the scalar being over the same Galois field is treated in the next variant. 
-    if instance(ring M, GaloisField) and not ((ring a === QQ or ring a === ZZ) and isGFSquare(det M) == isGFSquare(sub(a, ring M))) then return false;
+    else if instance(ring M, GaloisField) and not ((ring a === QQ or ring a === ZZ) and isGFSquare(det M) == isGFSquare(sub(a, ring M))) then return false
+
+    else (
+        if ring a =!= ring M then return false;
+        -- If matrix is defined over an arbitrary field, scalars being equal to the determinant of the matrix are allowed automatically. 
+        if ring a === ring M and det(M) =!= a then print "Warning, the function is not able to verify if the determinant of M and a agree up to squares.";
+    );
 
     -- Then check that M is a well-defined element of GW(k)
     isWellDefinedGW M
@@ -29,9 +32,6 @@ isWellDefinedGWu (Matrix, Number) := Boolean => (M, a) -> (
 
 -- Second version of this function treats the case where a is a RingElement (eg. an element of a Galois field)
 isWellDefinedGWu (Matrix, RingElement) := Boolean => (M, a) -> (
-
-    -- Return false if the matrix isn't defined over a field
-    if not isField ring M then return false;
 
     -- Return false if a is zero in the field
     if a == 0 then return false;
@@ -42,11 +42,12 @@ isWellDefinedGWu (Matrix, RingElement) := Boolean => (M, a) -> (
     -- If matrix is defined over a finite field, allow scalar to be an element of that Galois field. The case of a being an integer is treated in the previous variant. 
     if instance(ring M, GaloisField) and not (instance(ring a, GaloisField) and (ring M).order == (ring a).order and isGFSquare(det M) == isGFSquare(a)) then return false
 
+    else if not instance(ring M, GaloisField) then (
+        if ring a =!= ring M then return false;
+
     -- If matrix is defined over an arbitrary field, scalars being equal to the determinant of the matrix are allowed automatically. 
-    else if ring a === ring M and det(M) =!= a then print "Warning, the function is not able to verify if the determinant of M and a agree up to squares."
-
-    else if not instance(ring M, GaloisField) and ring a =!= ring M then return false;
-
+        if ring a === ring M and det(M) =!= a then print "Warning, the function is not able to verify if the determinant of M and a agree up to squares.";
+    );
     -- Then check that M is a well-defined element of GW(k)
     isWellDefinedGW M
     )
@@ -163,11 +164,10 @@ makeGWuClass (GrothendieckWittClass) := UnstableGrothendieckWittClass => (alpha)
 -- Input: An unstable Grothendieck-Witt class
 -- Output: Its stable part
 
-makeStableGWClass = method()
-makeStableGWClass (UnstableGrothendieckWittClass) := GrothendieckWittClass => alpha -> (
+getGWClass = method()
+getGWClass (UnstableGrothendieckWittClass) := GrothendieckWittClass => alpha -> (
     makeGWClass getMatrix alpha
 )
-
 
 -- Input: An UnstableGrothendieckWittClass
 -- Output: A string for printing the underlying scalar

@@ -1,8 +1,7 @@
 transferGW = method()
-transferGW (GrothendieckWittClassOverAlgebra) := GrothendieckWittClass => (alpha) -> (
-    -- Catch all the errors
+transferGW (GrothendieckWittClass) := GrothendieckWittClass => (alpha) -> (
 
-    kk := coefficientRing getRing alpha;
+    kk := coefficientRing getAlgebra alpha;
 
-    makeDiagonalForm(kk, toSequence apply(getDiagonalEntriesOverAlgebra(alpha), i -> AlgebraicTrace(getRing alpha, i)))
+    makeDiagonalForm(kk, toSequence apply(getDiagonalEntries(alpha), i -> algebraicTrace(getAlgebra alpha, i)))
 )
