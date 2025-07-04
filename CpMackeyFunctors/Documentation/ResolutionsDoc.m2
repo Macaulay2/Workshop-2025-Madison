@@ -32,8 +32,10 @@ Node
             M = makeZeroOnUnderlyingMackeyFunctor(3,ZZ^1);
             resolution(M,3)
     Caveat
-        Text
-            The optional inputs listed on this page are coming from overloading the @TO("OldChainComplexes :: resolution")@ method, and don't have any effect on computing resolutions for Mackey functors.
+        The optional inputs listed on this page are coming from overloading the @TO("OldChainComplexes :: resolution")@ method, and don't have any effect on computing resolutions for Mackey functors.
+    SeeAlso
+        "the abelian category of Mackey functors"
+        resolutionCohomological
 
 Node
     Key
@@ -53,9 +55,12 @@ Node
             a list containing the morphisms in the free resolution
     Description
         Text
-            This method returns a free resolution of a cohomological Mackey functor by free cohomological Mackey functors.  The resolution is implemented as a list of Mackey functor homomorphisms.
+            This method returns a free resolution of a @TO2(isCohomological,"cohomological")@ Mackey functor by free cohomological Mackey functors.  The resolution is implemented as a list of Mackey functor homomorphisms.
         Example
             N = cokernel(matrix({{3}}));
             M = makeZeroOnUnderlyingMackeyFunctor (3,N);
             resolutionCohomological(M,4)
+    SeeAlso
+        "the abelian category of Mackey functors"
+        (resolution,CpMackeyFunctor,ZZ)
 ///

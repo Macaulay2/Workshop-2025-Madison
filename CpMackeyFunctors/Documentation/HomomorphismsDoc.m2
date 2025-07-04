@@ -35,13 +35,19 @@ doc ///
         Example
             id_(M)
         Text
-            We have implemented some unary and binary operations on Mackey functor homomorphisms, including
+            The only $0$-ary operation implemented for Mackey functor homomorphisms is:
 
             @UL{
-                (TO2("==","equality"), " of two Mackey functors homomorphisms, via ", TT"f==g"),
-                (BOLD "powers:", " given an endomorphism of a Mackey functor ", TEX"$f\\colon M \\to M$", " we can take iterated composition of it as ", TT"f^n"),
+                (TO2((isIsomorphism,MackeyFunctorHomomorphism),"isIsomorphism"), " checking if a morphism is an isomorphism")
+            }@
+
+            The unary, binary, and $n$-ary operations are as follows:
+
+            @UL{
                 (BOLD "inversion:", " if ", TEX"$f$", " is an ", TO2((isIsomorphism,MackeyFunctorHomomorphism),"isomorphism"), " we can invert it via ", TT"f^-1", " or using ", TT"inverse(f)"),
                 (BOLD "negating:", " we can take the negative of any Mackey functor homomorphism as ", TT"-f"),
+                (TO2("==","equality"), " of two Mackey functors homomorphisms, via ", TT"f==g"),
+                (BOLD "powers:", " given an endomorphism of a Mackey functor ", TEX"$f\\colon M \\to M$", " we can take iterated composition of it as ", TT"f^n"),             
                 (BOLD "addition:", " we can add two Mackey functor homomorphisms with the same domain and codomain via ", TT"f+g"),
                 (BOLD "subtraction:", " we can subtract two Mackey functor homomorphisms with the same domain and codomain via ", TT"f-g"),
                 (BOLD "iterated addition:", " we can add a Mackey functor homomorphism ", TT"f", " with itself ", TT"n", " times via ", TT"n*f"),
@@ -188,6 +194,7 @@ doc ///
         Example
             complexLinearizationMap(5)
     SeeAlso
+        MackeyFunctorHomomorphism
         realLinearizationMap
 ///
 
@@ -210,6 +217,7 @@ doc ///
         Example
             realLinearizationMap(5)
     SeeAlso
+        MackeyFunctorHomomorphism
         complexLinearizationMap
 ///
 
@@ -232,6 +240,9 @@ doc ///
         Example
             A = makeBurnsideMackeyFunctor 2;
             id_A | id_A
+    SeeAlso
+        MackeyFunctorHomomorphism
+        (symbol ||, MackeyFunctorHomomorphism,MackeyFunctorHomomorphism)
 ///
 
 doc ///
@@ -253,6 +264,9 @@ doc ///
         Example
             A = makeBurnsideMackeyFunctor 2;
             id_A || id_A
+    SeeAlso
+        MackeyFunctorHomomorphism
+        (symbol |, MackeyFunctorHomomorphism,MackeyFunctorHomomorphism)
 ///
 
 doc ///

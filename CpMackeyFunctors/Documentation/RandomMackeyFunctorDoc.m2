@@ -16,7 +16,10 @@ doc ///
             a list of four integers, where $n$ is the number of underlying generators, $m$ is the number of fixed generators, $k$ is the number of underlying relations, and $l$ is the number of fixed relations
     Description
         Text
-            Generates a @TO2((CpMackeyFunctor),"Cp-Mackey Functor")@ $M$ of prime $p$ with at most GenBound underlying generators and at most GenBound fixed generators.
+            Generates a @TO2((CpMackeyFunctor),"Cp-Mackey Functor")@ $M$ of prime $p$ with at most @TO("GenBound")@ underlying generators.
+    SeeAlso
+        "constructing examples of Mackey functors"
+        makeRandomMackeyFunctorHomomorphism
 ///
 
 doc ///
@@ -33,6 +36,9 @@ doc ///
     Description
         Text
             Generates a @TO2((MackeyFunctorHomomorphism), "Mackey functor homomorphism")@ $f$ between two @TO2((CpMackeyFunctor),"Cp-Mackey Functors")@ $M$ and $N$ (for the same prime $p$)
+    SeeAlso
+        "constructing examples of Mackey functors"
+        makeRandomCpMackeyFunctor
 ///
 
 

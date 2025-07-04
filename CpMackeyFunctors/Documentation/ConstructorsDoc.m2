@@ -92,9 +92,11 @@ doc ///
             the $C_p$-Mackey functor $\underline{A}$
     Description
         Text
-            The {\em Burnside Mackey functor} of a group $G$ is defined by sending $G/H$ to the Burnside ring $A(H)$, with transfer and restriction coming from transfer and restriction of finite $G$-sets. When $G$ is a cyclic group of prime order, these maps admit a particularly nice form. The underlying module is given by $\mathbb{Z}$, with trivial conjugation actin=on, while the fixed module is $\mathbb{Z}\{1,t\}$. Restriction is defined as $$\text{res}_e^{C_p} \colon \mathbb{Z}\{1,t\} \to \mathbb{Z}$$ by sending $t\mapsto p$. Transfer is of the form $$\text{tr}_e^{C_p} \colon \mathbb{Z} \to \mathbb{Z}\{1,t\}$$ by sending $x\mapsto xt$.
+            The {\em Burnside Mackey functor} of a group $G$ is defined by sending $G/H$ to the Burnside ring $A(H)$, with transfer and restriction coming from transfer and restriction of finite $G$-sets. When $G$ is a cyclic group of prime order, these maps admit a particularly nice form. The underlying module is given by $\mathbb{Z}$, with trivial conjugation action, while the fixed module is $\mathbb{Z}\{1,t\}$. Restriction is defined as $$\text{res}_e^{C_p} \colon \mathbb{Z}\{1,t\} \to \mathbb{Z}$$ by sending $t\mapsto p$. Transfer is of the form $$\text{tr}_e^{C_p} \colon \mathbb{Z} \to \mathbb{Z}\{1,t\}$$ by sending $x\mapsto xt$.
         Example
             makeBurnsideMackeyFunctor(5)
+    SeeAlso
+        "constructing examples of Mackey functors"
 ///                                                                       
 
 doc ///
@@ -113,11 +115,14 @@ doc ///
             the free Mackey functor on an underlying generator
     Description
         Text
-            The free $C_p$-Mackey functor on an underlying generator represents the functor $\text{Mack}_{C_p} \to \text{Ab}$ which sends a Mackey functor $M$ to its underlying level $M(C_p/e)$. This means there is a natural isomorphism $$\text{Hom}_{\text{Mack}_{C_p}}\left(\underline{B},M \right) \cong M(C_p/e).$$
+            The free $C_p$-Mackey functor on an underlying generator represents the functor $\text{Mack}_{C_p} \to \text{Ab}$ which sends a Mackey functor $M$ to its @TO2("Underlying","underlying")@ level $M(C_p/e)$. This means there is a natural isomorphism $$\text{Hom}_{\text{Mack}_{C_p}}\left(\underline{B},M \right) \cong M(C_p/e).$$
         Text
-            In components, the underlying module is the free module on the $C_p$-set  $C_p/e=\{1,\gamma,\gamma^2,\ldots,\gamma^{p-1}\}$, with conjugation induced by the $C_p$-action of left multiplication. The fixed module is the module $\ZZ$. Restriction is the map $$\text{res}_e^{C_p} \colon \ZZ \to \ZZ\{1,\gamma,\ldots,\gamma^{p-1}\}$$ by sending $1\mapsto 1+\gamma+\cdots+\gamma^{p-1}$. The transfer is the map $$\text{tr}_e^{C_p} \colon \ZZ\{1,\gamma,\ldots,\gamma^{p-1}\} \to \ZZ$$ by sending $\gamma^i\mapsto 1$ for all $i$.
+            In components, the @TO2("Underlying","underlying")@ module is the free module on the $C_p$-set  $C_p/e=\{1,\gamma,\gamma^2,\ldots,\gamma^{p-1}\}$, with conjugation induced by the $C_p$-action of left multiplication. The @TO2("Fixed","fixed")@ module is the module $\ZZ$. Restriction is the map $$\text{res}_e^{C_p} \colon \ZZ \to \ZZ\{1,\gamma,\ldots,\gamma^{p-1}\}$$ by sending $1\mapsto 1+\gamma+\cdots+\gamma^{p-1}$. The transfer is the map $$\text{tr}_e^{C_p} \colon \ZZ\{1,\gamma,\ldots,\gamma^{p-1}\} \to \ZZ$$ by sending $\gamma^i\mapsto 1$ for all $i$.
         Example
             makeUnderlyingFreeMackeyFunctor(5)
+    SeeAlso
+        "constructing examples of Mackey functors"
+        makeBurnsideMackeyFunctor
 ///
 
 doc ///
@@ -141,6 +146,10 @@ doc ///
             Given a module $M$ with $C_p$-action specified by an automorphism $\text{c}\colon M\to M$, there is a naturally associated {\em fixed-point Mackey functor} $\text{FP}(M)$. The underlying module is the module $M$ with conjugation given by $\text{c}$. The fixed module is the module $M^{C_p}$ of fixed points of the action, represented as the kernel of $1-\text{c}$. The restriction is the map $$\text{res}_e^{C_p} \colon M^{C_p} \to M$$ induced by the inclusion of fixed-points. The transfer is the map $$\text{tr}_e^{C_p} \colon M\to M^{C_p}$$ given by $1+\text{c}+\text{c}^2+\cdots+\text{c}^{p-1}$.
         Example
             makeFixedPointMackeyFunctor(2,matrix{{0,1,0},{1,0,0},{0,0,1}})
+
+    SeeAlso
+        "constructing examples of Mackey functors"
+        makeOrbitMackeyFunctor
 ///
 
 doc ///
@@ -164,6 +173,10 @@ doc ///
             Given a module $M$ with $C_p$-action specified by an automorphism $\text{c}\colon M\to M$, there is a naturally associated {\em orbit Mackey functor} $\text{O}(M)$. The underlying module is the module $M$ with conjugation given by $\text{c}$. The fixed module is the quotient module $M_{C_p}$ of the action, represented as the cokernel of $1-\text{c}$. The restriction is the map $$\text{res}_e^{C_p} \colon M_{C_p} \to M$$ given by $1+\text{c}+\text{c}^2+\cdots+\text{c}^{p-1}$. The transfer is the map $$\text{tr}_e^{C_p} \colon M\to M_{C_p}$$ induced by the projection to the quotient.
         Example
             makeOrbitMackeyFunctor(2,matrix{{0,1,0},{1,0,0},{0,0,1}})
+
+    SeeAlso
+        "constructing examples of Mackey functors"
+        makeFixedPointMackeyFunctor
 ///
 
 doc ///
@@ -182,11 +195,11 @@ doc ///
             the zero Mackey functor for $C_p$
     Description
         Text
-            Perhaps the easiest Mackey functor is the ", EM "zero Mackey functor", " which has the zero-module as both the underlying and fixed modules. This is the zero object in the abelian category of Mackey functors, and is an important object to have for homological algebra.
+            Perhaps the easiest Mackey functor is the {\em zero Mackey functor} which has the zero-module as both the @TO2("Underlying","underlying")@ and @TO2("Fixed","fixed")@ modules. This is the zero object in @TO("the abelian category of Mackey functors")@, and is therefore important to implement for homological algebra computations.
         Example
             makeZeroMackeyFunctor(2)
     SeeAlso
-        "background on Mackey functors"
+        "constructing examples of Mackey functors"
         isTrivialMackeyFunctor
 ///
 
@@ -214,6 +227,7 @@ doc ///
         Example
             makeComplexRepresentationMackeyFunctor(5)
     SeeAlso
+        "constructing examples of Mackey functors"
         makeRealRepresentationMackeyFunctor
 ///
 
@@ -244,6 +258,7 @@ doc ///
         Example
             makeRealRepresentationMackeyFunctor(5)
     SeeAlso
+        "constructing examples of Mackey functors"
         makeComplexRepresentationMackeyFunctor
 ///
 
@@ -264,6 +279,8 @@ doc ///
     Description
         Example
             makeFixedTrivMackeyFunctor(5)
+    SeeAlso
+        "constructing examples of Mackey functors"
 ///
 
 doc ///
@@ -277,6 +294,8 @@ doc ///
     Description
         Example
             makeFixedSignMackeyFunctor()
+    SeeAlso
+        "constructing examples of Mackey functors"
 ///
 
 doc ///
@@ -301,4 +320,6 @@ doc ///
             Every abelian group $M$ determines a $C_p$-Mackey functor which is zero on underlying and $M$ on fixed level.
         Example
             makeZeroOnUnderlyingMackeyFunctor(5,ZZ^3)
+    SeeAlso
+        "constructing examples of Mackey functors"
 ///

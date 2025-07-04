@@ -20,6 +20,12 @@ Node
         Example
             RU = makeComplexRepresentationMackeyFunctor(3);
             Tor_3(RU,RU)
+
+    SeeAlso
+        "the abelian category of Mackey functors"
+        (TorCoh,ZZ,CpMackeyFunctor,CpMackeyFunctor)
+        (Ext,ZZ,CpMackeyFunctor,CpMackeyFunctor)
+        (ExtCoh,ZZ,CpMackeyFunctor,CpMackeyFunctor)
 Node
     Key
         TorCoh
@@ -42,6 +48,11 @@ Node
             N = cokernel(matrix({{3}}));
             M = makeZeroOnUnderlyingMackeyFunctor (3,N);
             TorCoh(3,M,M)
+    SeeAlso
+        "the abelian category of Mackey functors"
+        (Tor,ZZ,CpMackeyFunctor,CpMackeyFunctor)
+        (Ext,ZZ,CpMackeyFunctor,CpMackeyFunctor)
+        (ExtCoh,ZZ,CpMackeyFunctor,CpMackeyFunctor)
 ///
 
 
@@ -67,6 +78,12 @@ Node
         Example
             RU = makeComplexRepresentationMackeyFunctor(3);
             prune Ext^4(RU,RU)
+
+    SeeAlso
+        "the abelian category of Mackey functors"
+        (ExtCoh,ZZ,CpMackeyFunctor,CpMackeyFunctor)
+        (Tor,ZZ,CpMackeyFunctor,CpMackeyFunctor)
+        (TorCoh,ZZ,CpMackeyFunctor,CpMackeyFunctor)
 Node
     Key
         ExtCoh
@@ -89,4 +106,9 @@ Node
             N = cokernel(matrix({{3}}));
             M = makeZeroOnUnderlyingMackeyFunctor (3,N);
             prune ExtCoh(3,M,M)
+    SeeAlso
+        "the abelian category of Mackey functors"
+        (Ext,ZZ,CpMackeyFunctor,CpMackeyFunctor)
+        (Tor,ZZ,CpMackeyFunctor,CpMackeyFunctor)
+        (TorCoh,ZZ,CpMackeyFunctor,CpMackeyFunctor)
 ///

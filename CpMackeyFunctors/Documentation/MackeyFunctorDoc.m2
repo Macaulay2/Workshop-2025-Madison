@@ -22,15 +22,22 @@ doc ///
                 TEX"$M(C_p/C_p) \\to M(C_p/e)$",". See ", TO("Res")),
                 (TT ".Trans",
                 " encodes the transfer ", TO2("Macaulay2Doc :: module homomorphisms","homomorphism")," ",
-                TEX"$M(C_p/e) \\to M(C_p/C_p)$",". See", TO("Trans")),
+                TEX"$M(C_p/e) \\to M(C_p/C_p)$",". See ", TO("Trans")),
                 (TT ".Conj",
                 " encodes the conjugation ", TO2("Macaulay2Doc :: module homomorphisms","homomorphism")," ",
                 TEX"$M(C_p/e) \\to M(C_p/e)$",". See ", TO("Conj")),
             }@
 
-            {\bf Constructing new Mackey functors:}
+            {\bf Constructing new Mackey functors:} See @TO("constructing examples of Mackey functors")@.
 
-            {\bf Operations with Mackey functor types:} One of the first operations to know about is @TO2((prune,CpMackeyFunctor),"pruning")@ a $C_p$-Mackey functor. There is more information at the prune command, but this basically takes the data of a Mackey functor and attempts to simplify it and make it more reader-friendly. Pruning is the only unary operation on $C_p$-Mackey functors that we consider. In terms of binary (and $n$-ary) operations, there are a few, including:
+            {\bf Operations with Mackey functor types:} One of the first operations to know about is @TO2((prune,CpMackeyFunctor),"pruning")@ a $C_p$-Mackey functor. This basically takes the data of a Mackey functor and attempts to simplify it and make it more reader-friendly. Pruning is the only unary operation on $C_p$-Mackey functors that we consider. The $0$-ary (@TO("Boolean")@-valued) operations are
+            
+            @UL{
+                (TO("isTrivialMackeyFunctor")," checks if a Mackey functor is trivial"),
+                (TO("isCohomological")," checks if a Mackey functor is ", EM "cohomological")
+            }@
+            
+            For binary (and $n$-ary) operations, there are a few, including:
 
             @UL {
                 (TO2("==","equality"), " of two Mackey functors, via ", TT"M==N"),
