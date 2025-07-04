@@ -8,7 +8,9 @@ diff(cayleyDet, random(3, R))
 
 --******** omega constant c_p,n*************
 
-cayleyConstant = (p,n) -> (
+
+cayleyConstant = method()
+cayleyConstant (ZZ, ZZ) := (p,n) -> (
     RRRR = QQ[x_(1,1)..x_(n,n)];
     M = genericMatrix(RRRR, x_(1,1), n, n);
     detM = det M;
@@ -17,10 +19,10 @@ cayleyConstant = (p,n) -> (
     for i from 1 to p do (
         cpn = diff(detM, cpn)
     );
-    cpn
+    sub(cpn, ZZ)
 )
 
-cayleyConstant(2,3)
+cayleyConstant(2,2)
 
 --******** reynolds GLn (4.5.27)*************
 
@@ -40,7 +42,30 @@ cpn = cayleyConstant(p,n)
 omegaf / 144
 
 
+reynoldsGLnMap = method()
+reynoldsGLnMap RingElement := f -> (
+    R = ring f;
+    n = floor(sqrt(numgens R));
+    M = genericMatrix(R, n, n);
+    d = (degree f)#0;
+    if d % n != 0 then (
+        error "degree of f must be divisible by the number of variables"
+    );
+    p = floor(d / n);
+    detM = det M;
+    omegaf = f * (detM)^p;
+    for i from 1 to p do (
+        omegaf = diff(detM, omegaf)
+    );
+    cpn = cayleyConstant(p, n);
+    omegaf / sub(cpn, R)
+)
+
+
+
+
 --******** reynolds SLn (4.5.28)*************
+
 
 n = 3
 r = 2
@@ -63,51 +88,51 @@ phi(detM^(r-p)) * omegaf / phi(crn)
 
 --******** SL2 invariants of Sym2 (4.5.31)*************
 
-n = 2 --SLn
-d = 2 --Sym^d
+actionBySLn = method()
 
-N = binomial(n+d-1, d) -- number of coefficients in the polynomial
+actionBySLn (ZZ, ZZ) := (n, d) -> (
+    N = binomial(n+d-1, d); -- number of coefficients in the polynomial
+
+    -- Building the set of general coefficients
+    U = QQ[X_1..X_n, MonomialOrder => Lex];
+    allMonomials = (entries basis(d, U))#0;
+    aVars = apply(exponents(sum(allMonomials)), p -> a_p);
+
+    -- Building the polynomial ring with the coefficients
+    S = QQ[aVars, X_1..X_n];
+
+    -- Mapping the set of monomials into the polynomial ring
+    fromUtoS = map(S, U, take(gens S, -n));
+    allMonomials = allMonomials / fromUtoS;
+
+    -- Building the universal form of the polynomial of degree d in n variables
+    allMonomialsMatrix = matrix {allMonomials};
+    aVarsMatrix = matrix {(gens S)_{0..N-1}};
+    universaldForm = (allMonomialsMatrix * transpose(aVarsMatrix))_0_0;
+
+    -- ****** linear change of variables & extract coefficients ******
+
+    zVars = z_(1,1)..z_(n,n);
+
+    R = QQ[aVars, zVars, X_1..X_n];
+    R' = QQ[aVars, zVars][X_1..X_n];
+
+    fromStoR = map(R, S, join(take(gens R, N),take(gens R, -n)));
+    universaldForm = fromStoR(universaldForm);
+    aVarsMatrix = matrix {(gens S)_{0..N-1} / fromStoR};
+    fromRtoR' = map(R', R, gens coefficientRing R' | gens R');
+
+    zVarsMatrix = genericMatrix(R, (z_(1,1))_R, n, n);
+    XVarsMatrix = genericMatrix(R, (X_1)_R, n, 1);
+
+    SLnLinearChangeofVars = map(R,R, aVarsMatrix | matrix mutableMatrix(R, 1, n^2) | transpose(zVarsMatrix * XVarsMatrix));
+    transformeddForm = SLnLinearChangeofVars(universaldForm)
+)
+
+g = actionBySLn(2, 2)
 
 
-U = QQ[X_1..X_n]
-allMonomials = (entries basis(d, U))#0
-aVars = apply(exponents(sum(allMonomials)), p -> a_(p#0, p#1));
-aVars
-S = QQ[aVars, X_1..X_n]
-gens S
 
-fromUtoS = map(S, U, take(gens S, -n))
---ring (allMonomials/fromUtoS)#1
-allMonomials = allMonomials / fromUtoS
-
-allMonomialsMatrix = matrix {allMonomials}
-aVarsMatrix = matrix {(gens S)_{0..N-1}}
-
-universaldForm = (allMonomialsMatrix * transpose(aVarsMatrix))_0_0
-
--- ****** linear change of variables & extract coefficients ******
-
-zVars = z_(1,1)..z_(n,n)
-
-R = QQ[aVars, zVars, X_1..X_n]
-R' = QQ[aVars, zVars][X_1..X_n]
-
-fromStoR = map(R, S, join(take(gens R, N),take(gens R, -n)))
-universaldForm = fromStoR(universaldForm)
-aVarsMatrix = matrix {(gens S)_{0..N-1} / fromStoR}
-fromRtoR' = map(R', R, gens coefficientRing R' | gens R')
-f = fromRtoR' universaldForm
-coefficient(X_1*X_2,f)
-
-
-zVarsMatrix = genericMatrix(R, (z_(1,1))_R, n, n)
-XVarsMatrix = genericMatrix(R, (X_1)_R, n, 1)
-
-SLnLinearChangeofVars = map(R,R, aVarsMatrix | matrix mutableMatrix(R, 1, n^2) | transpose(zVarsMatrix * XVarsMatrix))
-
-
-
-transformeddForm = SLnLinearChangeofVars(universaldForm)
 
 a0image = coefficient(X_1^2,fromRtoR'(transformeddForm)) -- see page 197
 a1image = coefficient(X_1*X_2,fromRtoR'(transformeddForm))
@@ -119,7 +144,8 @@ a1sqimage = a1image^2
 
 omegaf = a1sqimage
 for i from 1 to 2 do (
-    omegaf = diff(zVarsMatrix, omegaf)
+    omegaf = diff(det zVarsMatrix, sub(omegaf, R))
 );
-
+cayleyConstant(2,2)
+omegaf / sub(cayleyConstant(2,2), R)
 -- need the map from R to QQ[...]

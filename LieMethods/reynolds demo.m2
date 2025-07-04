@@ -16,8 +16,9 @@ CasimirOperator = v -> (
 
 ------------------------------------------------------------
 -- The Reynolds operator algorithm following Algorithm 4.5.19.
+
 reynoldsOperatorDemo = v -> (
-    vList := {v};  -- initialize with v₀ = v.
+    vList = new MutableList from {v};  -- initialize with v₀ = v.
     while not any (vList, v -> v == matrix {{0}, {0}}) do (
         print("Iteration " | toString(#vList - 1) | ": Last vector = " | toString(last vList));
         
@@ -54,7 +55,7 @@ reynoldsOperatorDemo = v -> (
         );
 
         if (iszero Cas(last vList)) then
-            break;
+            vList#-1 = 0 * vList#0
         -- No dependence. Compute the next iterate.
         vList = append(vList, Cas(last vList))
     )
