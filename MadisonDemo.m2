@@ -42,10 +42,10 @@ reynoldsGLnMap RingElement := f -> (
     omegaf / sub(cpn, R)
 )
 
-n = 2
-r = 2
+n = 2;
+r = 2;
 R = QQ[x_(1,1)..x_(n,n)];
-f = random (r*n, R)
+f = random (r*n, R);
 reynoldsGLnMap(f)
 
 
@@ -71,9 +71,9 @@ reynoldsSLnMap (RingElement, ZZ) := (f, p) -> (
     phi(sub(detM^(r-p), R)) * omegaf / phi(sub(crn, R))
 )
 
-n = 2
-r = 2
-p = 1
+n = 2;
+r = 2;
+p = 1;
 R = QQ[x_(1,1)..x_(n,n)];
-f = random (r*n, R)
+f = random (r*n, R);
 reynoldsSLnMap(f, p)
