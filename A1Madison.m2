@@ -179,7 +179,7 @@ load "./A1Madison/Code/UnstableGrothendieckWittClasses.m2"
 load "./A1Madison/Code/multiplicity.m2"
 load "./A1Madison/Code/UnstableLocalDegrees.m2"
 load "./A1Madison/Code/TraceAndNorm.m2"
-load "./A1Madison/Code/GWTransfer.m2"
+--load "./A1Madison/Code/GWTransfer.m2"
 
 -- File for testing proposed changes; extends Grothendieck-Witt classes to be defined over dimension-0 algebras (is this the right generality?)
 load "./A1Madison/Code/GrothendieckWittClassOverAlgebra.m2"
@@ -270,6 +270,7 @@ load "./A1Madison/Documentation/DecompositionDoc.m2"
 
 load "./A1Madison/Documentation/UnstableGrothendieckWittClassesDoc.m2"
 
+load "./A1Madison/Documentation/TraceAndNormDoc.m2"
 
 ----------------------------
 ----------------------------

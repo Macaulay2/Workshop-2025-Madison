@@ -1,5 +1,5 @@
 document {
-	Key => {MultiplicationMatrix, (MultiplicationMatrix, Ring, Thing), (MultiplicationMatrix, Ring, Ideal, Thing) )},
+	Key => {MultiplicationMatrix, (MultiplicationMatrix, Ring, Thing), (MultiplicationMatrix, Ring, Ideal, Thing) },
 	Headline => "Computes the matrix over a ",TEX///$\mathbb{K}$///," -basis for multiplication by an element in a finite dimensional ",TEX///$\mathbb{K}$///,"-algebra",
 	Usage => "MultiplicationMatrix(C,a)
               MultiplicationMatrix(S,I,b)",
@@ -29,7 +29,7 @@ document {
      	}
 
 document {
-	Key => {AlgebraicTrace, (AlgebraicTrace, Ring, Thing), (AlgebraicTrace, Ring, Ideal, Thing) )},
+	Key => {AlgebraicTrace, (AlgebraicTrace, Ring, Thing), (AlgebraicTrace, Ring, Ideal, Thing) },
 	Headline => "Computes the algrbraic trace over ",TEX///$\mathbb{K}$///," for an element in a finite dimensional ",TEX///$\mathbb{K}$///,"-algebra",
 	Usage => "AlgebraicTrace(C,a)
               AlgebraicTrace(S,I,b)",
@@ -59,7 +59,7 @@ document {
      	}
 
 		document {
-	Key => {AlgebraicNorm, (AlgebraicNorm, Ring, Thing), (AlgebraicNorm, Ring, Ideal, Thing) )},
+	Key => {AlgebraicNorm, (AlgebraicNorm, Ring, Thing), (AlgebraicNorm, Ring, Ideal, Thing) },
 	Headline => "Computes the algrbraic norm over ",TEX///$\mathbb{K}$///," for an element in a finite dimensional ",TEX///$\mathbb{K}$///,"-algebra",
 	Usage => "AlgebraicNorm(C,a)
               AlgebraicNorm(S,I,b)",
