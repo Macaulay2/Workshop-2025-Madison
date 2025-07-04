@@ -308,3 +308,13 @@ doc ///
     SeeAlso
         inducedMap
 ///
+
+doc ///
+    Key
+        (ring, MackeyFunctorHomomorphism)
+    Headline
+        returns @TT("ZZ")@
+    Description
+        Text
+            This is a hack needed to make @TO(matrix)@ work correctly.
+///

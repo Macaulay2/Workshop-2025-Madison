@@ -269,6 +269,7 @@ doc ///
 doc ///
     Key
         makeFixedSignMackeyFunctor
+        (makeFixedSignMackeyFunctor, Sequence)
     Headline
         constructs the fixed-point Mackey functor for the sign action of $C_2$ on $\mathbb{Z}$
     Usage
