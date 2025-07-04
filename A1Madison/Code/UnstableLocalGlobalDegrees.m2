@@ -45,7 +45,7 @@ getGlobalUnstableA1Degree RingElement := (Matrix,Number) => q -> (
     -- Initialize a polynomial ring in X and Y in which to compute the Bezoutian
     X := local X;
     Y := local Y;
-    R := kk[X,Y];
+    R' := kk[X,Y];
     
 fX = sub(f,{x => X})
 
@@ -55,11 +55,11 @@ gX = sub(g,{x => X})
 
 gY = sub(g,{x => Y})
 
-D = lift((fX * gY - fY * gX)/(X-Y),R)
+D = lift((fX * gY - fY * gX)/(X-Y),R')
 
     -- Create an (n x n) matrix D to be populated by \Delta_{ij} from the Brazelton-McKean-Pauli paper
     D := "";
-    try D = mutableMatrix id_((frac R)^n) else D = mutableMatrix id_(R^n);
+    try D = mutableMatrix id_((frac R')^n) else D = mutableMatrix id_(R^n);
     
     for i from 0 to n - 1 do (
 	for j from 0 to n - 1 do (
@@ -82,13 +82,13 @@ D = lift((fX * gY - fY * gX)/(X-Y),R)
     bezDetR:="";
       
     -- The determinant of D is interpreted as an element of Frac(k[x_1..x_n]), so we can try to lift it to k[x_1..x_n]           
-    if liftable(D, R) then bezDetR = lift(D, R);
+    if liftable(D, R') then bezDetR = lift(D, R');
     
     -- In some computations, applying lift(-,R) doesn't work, so we instead lift the numerator and
     -- then divide by a lift of the denominator (which will be a scalar) to the coefficient ring kk
-    if not liftable(D, R) then (
-	bezDet = lift(numerator D, R) / lift(denominator D, coefficientRing R);
-    	bezDetR = lift(bezDet, R);
+    if not liftable(D, R') then (
+	bezDet = lift(numerator D, R') / lift(denominator D, coefficientRing R');
+    	bezDetR = lift(bezDet, R');
 	);
 
 -----------------------------------
@@ -112,8 +112,8 @@ gY = sub(g,{x => Y})
 
 bez = sub((fX * gY - fY * gX)/(X-Y),S)
 
--- test
-b' = 3*X*Y + 5*X + 11 + 0*Y -- monomial Y does not show up in 'coefficients'
+
+-- test UGHHHH
 
     -- Create the Bezoutian matrix B for the symmetric bilinear form by reading off the coefficients. 
     -- B is an (m x m) matrix. The coefficient B_(i,j) is the coefficient of the (ith basis vector x jth basis vector) in the tensor product.
@@ -125,7 +125,7 @@ b' = 3*X*Y + 5*X + 11 + 0*Y -- monomial Y does not show up in 'coefficients'
            if i == 0 then B_(i,j) = coefficient(M_(i,3-j),bez) else B_(i,j) = coefficient(M_(1-i,1-j),bez);
         );
     
-    (makeGWuClass matrix B, det matrix B) -- check makeGWuClass
+    (makeGWClass matrix B, det matrix B) -- check makeGWuClass
         
 ----------------
 -- end here
@@ -140,10 +140,14 @@ b' = 3*X*Y + 5*X + 11 + 0*Y -- monomial Y does not show up in 'coefficients'
     RY := T/(t*gYt-1)
 
     -- mapxtoX replaces all instances of x with X; mapxtoY replaces all instances of x with Y
-    mapxtoX := map(RX,R,X)
-    mapxtoY := map(RY,R,Y)
+    mapxtoX := map(RX,R,{X})
+    mapxtoY := map(RY,R,{Y})
 
-    -- Compute the standard basis of kk[X_1,...,X_n]/(f_1,...,f_n)
+    -- Compute the standard basis of kk[X,s]/(s*g(X) - 1, s*f(X))
+    
+    -- f/g
+    f' = (mapxtoX f)*s
+    
     standBasisX := basis (RX/(ideal (leadTerm (mapxtoX ideal f)))) 
     standBasisY := basis (RY/(ideal (leadTerm (mapxtoY ideal f)))); 
  
