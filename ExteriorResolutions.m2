@@ -68,39 +68,39 @@ binarySearch(ZZ, ZZ, Function) := (low, high, test) -> (
 -- TODO: move to Complexes
 hilbertPolynomial Complex := o -> C -> sum(pairs C.module, (i, M) -> (-1)^i * hilbertPolynomial(M, o))
 
---------------------------------------------------
---- Injective resolutions
---------------------------------------------------
+----------------------------------------------------
+--- Injective resolutions and its coaugmentationMap
+----------------------------------------------------
 
 injectiveResolution = method(Options => options freeResolution)
 injectiveResolution Module := Complex => opts -> M -> M.cache.injectiveResolution ??= (
     E := ring M;
     if not isSkewCommutative E then error "expected underlying ring to be skew-commutative";
-    P := Hom(freeResolution(Hom(M, E), opts), E);
-    P.cache.injectiveResolution = M;
-    P)
+    D := dual M;
+    I := Hom(freeResolution(D, opts), E);
+    I.cache.formation = FunctionApplication { injectiveResolution, M };
+    I)
 
 injectiveResolution Complex := Complex => opts -> C -> C.cache.injectiveResolution ??= (
     E := ring C;
-    if not isSkewCommutative E then error "expected underlying ring to skew-commutative";
-    tempHom := Hom(C,E);
-    fC := resolutionMap(tempHom, opts);
-    hfC := Hom(fC,E);
-    D := Hom(freeResolution(tempHom, opts), E);
-    D.cache.injectiveResolution = C;
-    D.cache.resolutionMap =hfC;
-    D
-    )
-
+    if not isSkewCommutative E then error "expected underlying ring to be skew-commutative";
+    D := dual C;
+    f := Hom(resolutionMap(D, opts), E);
+    I := Hom(freeResolution(D, opts), E);
+    I.cache.injectiveResolutionMap = f;
+    I.cache.formation = FunctionApplication { injectiveResolution, C };
+    I)
 
 injectiveResolutionMap = method(Options => options freeResolution)
 injectiveResolutionMap Module := ComplexMap => opts -> M -> (
     C := injectiveResolution(M, opts);
-    map(C, complex M, i -> if i === 0 then map(C_0, M, transpose syz transpose presentation M))
-    )
-injectiveResolutionMap Complex := ComplexMap => opts -> C -> (
+    map(C, complex M, i -> if i === 0 then
+	map(C_0, M, transpose syz transpose presentation M)))
+
+-- TODO: shouldn't this just C.cache.injectiveResolutionMap?
+injectiveResolutionMap Complex := ComplexMap => opts -> C -> ( -- C.cache.injectiveResolutionMap ??= (
     D := injectiveResolution(C, opts);
-    hfC := D.cache.resolutionMap;
+    hfC := D.cache.injectiveResolutionMap;
     W := ring C;
     CDoubleDual:= source hfC;
     DDualMap := map(CDoubleDual, C, i -> (
@@ -114,12 +114,10 @@ injectiveResolutionMap Complex := ComplexMap => opts -> C -> (
     )
 
 coaugmentationMap = method()
-coaugmentationMap Complex := ComplexMap => P ->  (
-    if not P.cache.?injectiveResolution then
-	error "expected input to be constructed as an injective resolution";
-    C := P.cache.injectiveResolution;
-    injectiveResolutionMap C
-    )
+coaugmentationMap Complex := ComplexMap => I ->  (
+    C := if I.cache.?formation and I.cache.formation#0 === injectiveResolution
+    then I.cache.formation#1 else error "expected input to be constructed as an injective resolution";
+    injectiveResolutionMap C)
 
 ------------------------------------------------
 --- Priddy complex
@@ -335,21 +333,11 @@ koszulLL ComplexMap := ComplexMap => opts -> (koszulDualityFunctorComplexMap kos
 --------------------------------------------------
 
 exteriorStanleyReisner = method()
-exteriorStanleyReisner(SimplicialComplex, Ring) := (S, K) -> (
-
-    n := dim S;
-
-    R := ring S;
-    E := K[gens R, SkewCommutative => true];
-
-    L := {};
-    for m in facets S do (
-        L = append(L, sub(m, E));
-    );
-
-    ideal L
-
-)
+exteriorStanleyReisner(SimplicialComplex, Ring) := (C, K) -> (
+    S := ring C;
+    E := koszulDual S;
+    ev := map(E, S, vars E); -- not a map of algebras, just substitutes variables
+    ideal apply(facets C, m -> ev m))
 
 --------------------------------------------------
 --- Documentation
