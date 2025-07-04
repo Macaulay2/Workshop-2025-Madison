@@ -318,3 +318,13 @@ doc ///
         Text
             This is a hack needed to make @TO(matrix)@ work correctly.
 ///
+
+doc ///
+    Key
+        (promote, MackeyFunctorHomomorphism, ZZ)
+    Headline
+        returns the same Mackey functor with no change
+    Description
+        Text
+            This is a hack needed to make @TO(matrix)@ work correctly.
+///
