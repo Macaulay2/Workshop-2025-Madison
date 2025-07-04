@@ -208,7 +208,7 @@ basis EliminationTemplate := o -> E -> E.cache#basis
 
 getEigenMatrix = method(Options => {MonomialOrder => null})
 getEigenMatrix(EliminationTemplate) := o -> (E) -> getEigenMatrix(actionVariable E, ideal E, o)
-getEigenMatrix(Ideal) := o -> (I) -> getActionMatrix(random(1, ring I), I, o)
+getEigenMatrix(Ideal) := o -> (I) -> getEigenMatrix(random(1, ring I), I, o)
 getEigenMatrix(RingElement, Ideal) := o -> (a, J) -> (
     R := ring J;
     K := coefficientRing R;
@@ -228,12 +228,8 @@ getEigenMatrix(RingElement, Ideal) := o -> (a, J) -> (
 )
 
 templateSolve = method(Options => {MonomialOrder => null})
-templateSolve(EliminationTemplate) := o -> (template) -> (
-
-)
-templateSolve(Ideal) := o -> (I) -> (
-
-)
+templateSolve(EliminationTemplate) := o -> (E) -> templateSolve(actionVariable E, ideal E, o)
+templateSolve(Ideal) := o -> (I) -> getEigenMatrix(random(1,ring I), I, o)
 templateSolve(RingElement, Ideal) := o -> (a, J) -> (
     (B, M) := getEigenMatrix(a, J);
     basisMons := apply(flatten entries B, m -> sub(m, ring J));
@@ -510,9 +506,10 @@ B=basis(R/I)
 E=eliminationTemplate(x+4*y,I)
 getTemplate(E)
 getEigenMatrix(E)
+templateSolve(E)
 F=copyTemplate(E,J)
 getEigenMatrix(F)
-
+templateSolve(F)
 
 
 
