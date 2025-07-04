@@ -107,6 +107,26 @@ doc ///
 
 doc ///
     Key
+        (map, CpMackeyFunctor, CpMackeyFunctor, ZZ)
+    Headline
+        constructs the zero map between two Mackey functors, or a multiple of the identity map
+    Usage
+        map(N,M,0)
+        map(M,M,n)
+    Inputs
+        N : CpMackeyFunctor
+            target
+        M : CpMackeyFunctor
+            source
+        n : ZZ
+    Outputs
+        : MackeyFunctorHomomorphism
+            the map $n*\mathrm{id}$ from M to N, if such a thing exists.
+///
+
+
+doc ///
+    Key
         (source, MackeyFunctorHomomorphism)
     Headline
         returns the source of a Mackey functor homomorphism
@@ -307,24 +327,4 @@ doc ///
             inducedMap(coker f, target f)
     SeeAlso
         inducedMap
-///
-
-doc ///
-    Key
-        (ring, MackeyFunctorHomomorphism)
-    Headline
-        returns ZZ
-    Description
-        Text
-            This is a hack needed to make @TO(matrix)@ work correctly.
-///
-
-doc ///
-    Key
-        (promote, MackeyFunctorHomomorphism, ZZ)
-    Headline
-        returns the same Mackey functor with no change
-    Description
-        Text
-            This is a hack needed to make @TO(matrix)@ work correctly.
 ///
