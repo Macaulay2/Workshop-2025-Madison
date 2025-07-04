@@ -21,10 +21,10 @@ period Q2
 --- (2) Ehrhart Polynomial
 -- a way to count the number of lattice points in a (rational) polytope
 -- a (quasi)polynomial in T where T is the level of dilation of the polytope
-P = convexHull transpose matrix {{0,0},{1,0},{0,1/2}}
+P = convexHull transpose matrix {{0,0},{2,0},{0,3/2}}
 vertices P
 #latticePoints(P) -- might be slow on big polytopes
-#latticePoints(4*P)
+#latticePoints(3*P)
 
 QP = ehrhartQP P -- compute the Ehrhart Polynomial of P
 period QP
