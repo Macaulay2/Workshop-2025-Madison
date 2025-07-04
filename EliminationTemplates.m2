@@ -101,11 +101,10 @@ getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     H0 = sub(H0, ring J);
 
     if (o.Strategy === null) then H0 else if (o.Strategy == "Greedy") then (
-	    print("Using Greedy strategy to compute H0.");
-        --H0%image(syz(gens(J)))
-        H1 := lift(basis(R/J), R);
-        Theta := random(QQ^(numrows H0), QQ^(numrows H1));
-        H0 + Theta*H1
+        print("Using Greedy strategy to compute H0.");
+        H1 := sub(syz(gens G), ring J);
+        Theta = random(QQ^(numcols H1), QQ^(numcols H0));
+        H0 + H1*Theta -- every matrix in getH0 seems a transpose of the one in the paper
     )
     else if (o.Strategy == "Larsson") then (
 	      print("Using Larsson's strategy to compute H0.");
