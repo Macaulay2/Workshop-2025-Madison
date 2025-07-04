@@ -105,7 +105,18 @@ doc ///
             whether $M$ is {\em cohomological} or not
     Description
         Text
-            A Mackey functor $M$ defined over $C_p$ is said to be {\em cohomological} if the composite of restriction followed by transfer is identical to multiplication by $p$ as a map from the @TO2(Fixed,"fixed module")@ of $M$ to itself.
+            A Mackey functor $M$ defined over $C_p$ is said to be {\em cohomological} if the composite of restriction followed by transfer is identical to multiplication by $p$ as a map from the @TO2(Fixed,"fixed module")@ of $M$ to itself. We consider the {\em category of cohomological Mackey functors} to be the full subcategory on cohomological Mackey functors. An important result is the following:
+
+            {\bf Theorem:} [TW95, 16.3] Every cohomological Mackey functor is a module over the @TO2(makeFixedPointMackeyFunctor,"fixed point Mackey functor")@ $\underline{\ZZ}$, and every @TO2(MackeyFunctorHomomorphism,"homomorphism")@ between cohomological Mackey functors is a $\underline{\ZZ}$-module homomorphism.
+
+            Another way to say this is that the category of cohomological Mackey functors is the abelian subcategory $\text{Mod}_{\underline{\ZZ}}\subseteq \text{Mack}_{C_p}$. Carrying out computations (for instance Ext and Tor) internal to the abelian subcategory $\text{Mod}_{\underline{\ZZ}}$ leads to what are called @TO2(ExtCoh,"cohomological Ext")@ and @TO2(TorCoh,"cohomological Tor")@.
+
+            {\bf References:}
+
+            @UL{
+                ("[TW95] J. Thevenaz & P. Webb, ", EM"The structure of Mackey functors", " Trans. Amer. Math. Soc., 1995.")
+            }@
+
     SeeAlso
         "background on Mackey functors"
         CpMackeyFunctor

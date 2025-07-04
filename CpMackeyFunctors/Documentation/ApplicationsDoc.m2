@@ -5,9 +5,9 @@ doc ///
         info about how this package can be applied to real-life examples
     Description
         Text
-            This package can be used to perform Tor and Ext computations for $C_p$-Mackey functors.  It also implements Tor and Ext in the abelian subcateogry of cohomological $C_p$-Mackey functors.
+            This package can be used to perform Tor and Ext computations for $C_p$-Mackey functors.  It also implements Tor and Ext in the abelian subcategory of cohomological $C_p$-Mackey functors.
             Computations of Tor and Ext groups for (cohomological) Mackey functors are important for work in equivariant homotopy theory.  As a demonstration, we present some computations which appear in the work of Mingcong Zeng [Zeng18].
-            As setup, let $B_1$ be the $C_p$-Mackey functor with fixed module $\mathbb{Z}/p$ and underlying module $0$.  Let $Z$ denote the Mackey functor which is $\mathbb{Z}$ at fixed and underlying, restriction and conjugation are the identity, and transfer is multiplication by $p$. 
+            As setup, let $B_1$ be the $C_p$-Mackey functor with fixed module $\mathbb{Z}/p$ and underlying module $0$.  Let $Z$ denote the @TO2(makeFixedPointMackeyFunctor,"fixed point Mackey functor")@ for $\ZZ$ as a trivial $C_p$-module (called $\square$ on the @TO2("list of common Mackey functors","list here")@).
             
             {\bf Proposition:} For any prime number $p$ we have  
             \[
