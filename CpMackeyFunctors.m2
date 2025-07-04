@@ -64,7 +64,6 @@ export{
 load "./CpMackeyFunctors/Code/Constructors.m2"
 export{
     "makeBurnsideMackeyFunctor",
-    "makeFixedFreeMackeyFunctor",
     "makeUnderlyingFreeMackeyFunctor",
     "makeComplexRepresentationMackeyFunctor",
     "makeRealRepresentationMackeyFunctor",
@@ -120,8 +119,6 @@ export{
 
 load "./CpMackeyFunctors/Code/Cohomological.m2"
 export{
-    "makeUniversalMapFixedCohomological",
-    "makeUniversalMapCohomological",
     "resolutionCohomological",
     "TorCoh",
     "ExtCoh"

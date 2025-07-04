@@ -238,3 +238,26 @@ doc ///
         "background on Mackey functors"
         CpMackeyFunctor
 ///
+
+doc ///
+    Key
+        drawVerticalCpMackeyFunctor
+        (drawVerticalCpMackeyFunctor,CpMackeyFunctor)
+    Headline
+        reorients the net of a Mackey functor vertically
+    Usage
+        drawVerticalCpMackeyFunctor M
+    Inputs
+        M : CpMackeyFunctor
+    Outputs
+        : Net
+    Description
+        Text
+            Reorients the @TO2(Net,"net")@ of a Mackey functor vertically
+        Example
+            M = makeRandomCpMackeyFunctor(2)
+            drawVerticalCpMackeyFunctor M
+    SeeAlso
+        "background on Mackey functors"
+        CpMackeyFunctor
+///

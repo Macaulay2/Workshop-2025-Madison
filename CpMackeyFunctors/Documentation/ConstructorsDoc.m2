@@ -46,10 +46,9 @@ doc ///
             makeUnderlyingFreeMackeyFunctor(3)
         
         Text
-            We often call this $\underline{B}$. Trying to construct a free Mackey functor on a single generator in the fixed module, we see that it recovers a similar construction, namely the @TO2(makeBurnsideMackeyFunctor,"Burnside Mackey functor")@, which we often denote by $\underline{A}$.
+            We often call this $\underline{B}$. Trying to construct a free Mackey functor on a single generator in the fixed module, we can verify that it recovers a similar construction, namely the @TO2(makeBurnsideMackeyFunctor,"Burnside Mackey functor")@, which we often denote by $\underline{A}$.
         
         Example
-            makeFixedFreeMackeyFunctor(5)
             makeBurnsideMackeyFunctor(5)
 
         Text
@@ -85,7 +84,6 @@ doc ///
     Key 
         makeBurnsideMackeyFunctor
         (makeBurnsideMackeyFunctor, ZZ)
-        makeFixedFreeMackeyFunctor
     Headline
         constructs the Burnside Mackey functor
     Usage

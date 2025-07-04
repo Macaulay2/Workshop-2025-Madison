@@ -2,7 +2,7 @@ needsPackage "CpMackeyFunctors"
 
 -- Test constructors
 assert(isWellDefined makeBurnsideMackeyFunctor(17));
-assert(isWellDefined makeFixedFreeMackeyFunctor(19));
+-- assert(isWellDefined makeFixedFreeMackeyFunctor(19));
 assert(isWellDefined makeUnderlyingFreeMackeyFunctor(23));
 
 assert(isWellDefined makeComplexRepresentationMackeyFunctor(29));
