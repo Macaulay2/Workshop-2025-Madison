@@ -202,3 +202,7 @@ elapsedTime H=hilbertIdeal(L)
 elapsedTime invariants(L,1)
 elapsedTime invariants(L,2)
 elapsedTime invariants(L,3)
+
+
+installPackage "OrbitSum" -- runs all checks
+viewHelp "OrbitSum" -- opens documentation in browser
