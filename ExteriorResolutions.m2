@@ -143,6 +143,8 @@ degreeSupport = M -> (
     if hilbertPolynomial M != 0 then error "expected a range provided as Concentration => {lo, hi}";
     (-first max degrees source relations M, -first min degrees source generators M))
 
+--------------------------------------------------
+
 -- RR: Com(S) -> Com(E) is the right-adjoint functor
 koszulRR = method(Options => { Concentration => null })
 -- RR(M)^i = E^*(i) \otimes_k M_i
@@ -175,54 +177,7 @@ koszulRR Matrix := ComplexMap => opts -> f -> f.cache#(koszulRR, opts) ??= (
     tar := koszulRR(target f, opts);
     map(tar, src, i -> map(tar_i, src_i, E ** part(-i, f))))
 
--- RR(C)^i = \bigoplus_{j\in\ZZ} Hom_k(E(-j), C^{i-j}_j)
---         = \bigoplus_{j\in\ZZ} (E(-j))^* \otimes_k C^{i-j}_j
---         = \bigoplus_{j\in\ZZ} E^*(j)    \otimes_k C^{i-j}_j
-koszulRR Complex    := Complex    => opts -> C -> (
-    (lo, hi) := opts.Concentration; -- bounds for homological degrees i in RR(C)
-    (inf, sup) := concentration C;  -- bounds for homological degrees k in C
-
-    RRterms := hashTable apply(inf..sup,
-	k -> k => koszulRR(C_k,    Concentration => (lo-k, hi-k)));
-    RRdiffs := hashTable apply((inf+1)..sup,
-	k -> k => koszulRR(C.dd_k, Concentration => (lo-k, hi-k)));
-
-    modules := hashTable apply(lo..hi,
-	i -> i => hashTable apply(inf..sup,
-	    k -> k => (RRterms#k)_(-k+i)));
-
-    if lo == hi then return complex(directSum values modules#lo, Base => lo);
-
-    complex hashTable apply((lo+1)..hi,
-	i -> i => matrix table(sup-inf+1, sup-inf+1,
-	    (r,c) -> map(modules#(i-1)#(inf+r), modules#i#(inf+c),
-            if r == c   then (-1)^r * dd^(RRterms#(inf+r))_(-inf-r+i) else
-            if r == c-1 then             (RRdiffs#(inf+c))_(-inf-c+i) else 0)
-            )
-        )
-    )
--- ???
-koszulRR ComplexMap := ComplexMap => opts -> f -> (
-    (lo, hi) := opts.Concentration;
-    C := source f;
-    D := target f;
-    (infC, supC) := concentration C;
-    (infD, supD) := concentration D;
-    (inf, sup) := (min{infC, infD},max{supC, supD});
-    
-    RRmaps := hashTable apply(inf..sup,
-	k -> -k => koszulRR(f_k, Concentration => (k-hi,k-lo)));
-    
-    map(tar := koszulRR(D, opts), src := koszulRR(C, opts),
-	hashTable apply(lo..hi,
-	    i -> i => map(tar_i, src_i,
-            matrix table(toList(inf..sup), toList(inf..sup),
-                (r, c) -> if r == c then (RRmaps#(-inf-sup+r))_(-inf-sup+r+i) else 0)
-            )
-	    )
-	)
-)
-
+--------------------------------------------------
 
 -- LL: Com(E) -> Com(S) is the left-adjoint functor
 koszulLL = method(Options => options koszulRR)
@@ -255,52 +210,69 @@ koszulLL Matrix := ComplexMap => opts -> f -> f.cache#(koszulLL, opts) ??= (
     tar := koszulLL(target f, opts);
     map(tar, src, i -> map(tar_i, src_i, S ** part(-i, f))))
 
--- LL(D)^i = \bigoplus_{j\in\ZZ} S(j) \otimes_k D^{i-j}_j
-koszulLL Complex := Complex => opts -> D -> (
-    (lo, hi) := opts.Concentration; -- bounds for homological degrees i in LL(D)
-    (inf, sup) := concentration D;  -- bounds for homological degrees k in D
+--------------------------------------------------
 
-    LLterms := hashTable apply(inf..sup,
-	k -> k => koszulLL(D_k,    Concentration => (lo-k, hi-k)));
-    LLdiffs := hashTable apply((inf+1)..sup,
-	k -> k => koszulLL(D.dd_k, Concentration => (lo-k, hi-k)));
+-- while koszulRR(Module) and koszulLL(Module) are different,
+-- the implementations of koszulRR(Complex) and koszulLL(Complex)
+-- are identical, hence we combine them as follows.
+koszulDualityFunctorComplex = functor -> opts -> C -> (
+    try (lo, hi) := opts.Concentration -- bounds for homological degrees i
+    else error "expected a range provided as Concentration => {lo, hi}";
+    (inf, sup) := concentration C; -- bounds for homological degrees k in C
+
+    terms := hashTable apply(inf..sup,
+	k -> k => functor(C_k,    Concentration => (lo-k, hi-k)));
+    diffs := hashTable apply((inf+1)..sup,
+	k -> k => functor(C.dd_k, Concentration => (lo-k, hi-k)));
 
     modules := hashTable apply(lo..hi,
 	i -> i => hashTable apply(inf..sup,
-	    k -> k => (LLterms#k)_(-k+i)));
+	    k -> k => (terms#k)_(-k+i)));
 
     if lo == hi then return complex(directSum values modules#lo, Base => lo);
 
     complex hashTable apply((lo+1)..hi,
 	i -> i => matrix table(sup-inf+1, sup-inf+1,
 	    (r,c) -> map(modules#(i-1)#(inf+r), modules#i#(inf+c),
-            if r == c   then (-1)^r * dd^(LLterms#(inf+r))_(-inf-r+i) else
-            if r == c-1 then             (LLdiffs#(inf+c))_(-inf-c+i) else 0)
-            )
-        )
-    )
-
--- LL(s**y) = (-1)^i LL(s**y) + s ** dd_D(y) for y \in D^{i-j}_j
-koszulLL ComplexMap := ComplexMap => opts -> f -> (
-    (lo, hi) := opts.Concentration;
-    C := source f;
-    D := target f;
-    (infC, supC) := concentration C;
-    (infD, supD) := concentration D;
-    (inf, sup) := (min{infC, infD},max{supC, supD});
-    
-    LLmaps := hashTable apply(inf..sup,
-	k -> -k => koszulLL(f_k, Concentration => (k-hi,k-lo)));
-    
-    map(tar := koszulLL(D, opts), src := koszulLL(C, opts),
-	hashTable apply(lo..hi,
-	    i -> i => map(tar_i, src_i,
-            matrix table(toList(inf..sup), toList(inf..sup),
-                (r, c) -> if r == c then (LLmaps#(-inf-sup+r))_(-inf-sup+r+i) else 0)
-            )
+		if r == c   then (-1)^r * dd^(terms#(inf+r))_(-inf-r+i) else
+		if r == c-1 then             (diffs#(inf+c))_(-inf-c+i) else 0)
 	    )
 	)
-)
+    )
+
+koszulDualityFunctorComplexMap = functor -> opts -> f -> (
+    src := functor(C := source f, opts);
+    tar := functor(D := target f, opts);
+
+    try (lo, hi) := opts.Concentration
+    else error "expected a range provided as Concentration => {lo, hi}";
+    concentrations := apply({C, D}, concentration);
+    inf := concentrations / first // min;
+    sup := concentrations / last  // max;
+
+    maps := hashTable apply(inf..sup,
+	k -> k => functor(f_k, Concentration => (lo-k, hi-k)));
+
+    map(tar, src, hashTable apply(lo..hi,
+	    i -> i => map(tar_i, src_i,
+		matrix table(sup-inf+1, sup-inf+1,
+		    (r,c) -> if r == c then (maps#(inf+r))_(-inf-r+i) else 0)
+		)
+	    )
+	)
+    )
+
+-- RR(C)^i = \bigoplus_{j\in\ZZ} Hom_k(E(-j), C^{i-j}_j)
+--         = \bigoplus_{j\in\ZZ} (E(-j))^* \otimes_k C^{i-j}_j
+--         = \bigoplus_{j\in\ZZ} E^*(j)    \otimes_k C^{i-j}_j
+koszulRR Complex := Complex => opts -> (koszulDualityFunctorComplex koszulRR) opts
+-- LL(D)^i = \bigoplus_{j\in\ZZ} S(j) \otimes_k D^{i-j}_j
+koszulLL Complex := Complex => opts -> (koszulDualityFunctorComplex koszulLL) opts
+
+-- RR(y**s) = (-1)^i RR(y**s) + y ** dd^C(s) for s \in C^{i-j}_j
+koszulRR ComplexMap := ComplexMap => opts -> (koszulDualityFunctorComplexMap koszulRR) opts
+-- LL(s**y) = (-1)^i LL(s**y) + s ** dd^D(y) for y \in D^{i-j}_j
+koszulLL ComplexMap := ComplexMap => opts -> (koszulDualityFunctorComplexMap koszulLL) opts
 
 --------------------------------------------------
 --- Stanley Reisner
