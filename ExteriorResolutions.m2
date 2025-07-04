@@ -16,7 +16,7 @@ newPackage("ExteriorResolutions",
 	},
     Keywords => {"Commutative Algebra"},
     PackageExports => { "Complexes", "SimplicialComplexes" },
-    AuxiliaryFiles => true,
+    --AuxiliaryFiles => true,
     DebuggingMode  => true
     )
 
