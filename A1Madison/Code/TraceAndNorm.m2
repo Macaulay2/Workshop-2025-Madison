@@ -4,7 +4,7 @@ restart
 
 MultiplicationMatrix=method()
 
---This applies the method by accepting a K-algebra and an element as inputs
+--This applies the method by accepting a K-algebra C and an element a as inputs
 
 MultiplicationMatrix(Ring,Thing):= (C,a) -> (
 	B:=basis(C);
@@ -15,7 +15,7 @@ MultiplicationMatrix(Ring,Thing):= (C,a) -> (
 	    (M=M|(toVector (q*B_(0,i))) ; i=i+1); M);
 	lift(Matrep a, coefficientRing C))
 
---This applies the method by accepting a polynomial ring, an ideal and an element as input to find matrix representation of multiplication by the element over the corresponding quotient ring 
+--This applies the method by accepting a polynomial ring C, an ideal I and an element a as input to find matrix representation of multiplication by the element over the corresponding quotient ring 
 
 MultiplicationMatrix(Ring,Ideal,Thing):= (C,I,a) -> (
 	B:=basis(C/I);
