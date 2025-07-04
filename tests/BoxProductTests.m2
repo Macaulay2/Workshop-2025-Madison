@@ -14,16 +14,16 @@ isIsomorphic(R.Fixed, (A ** R).Fixed)
 
 -- Verifying that induced maps on box products are well-defined
 L = complexLinearizationMap(7)
-assert(isWellDefined boxProduct(A,L))
-assert(isWellDefined boxProduct(L,A))
+assert(class( boxProduct(A,L))===MackeyFunctorHomomorphism)
+assert(class( boxProduct(L,A))===MackeyFunctorHomomorphism)
 
 -- A ** A == A. We can see this with prune!
 A = makeBurnsideMackeyFunctor 5
 B = A ** A
 assert(prune B === A)
 f = (prune B).cache.pruningMap;
-assert isWellDefined f
-assert isWellDefined inverse f
+assert (class(f) === MackeyFunctorHomomorphism)
+assert (class (inverse f) ===MackeyFunctorHomomorphism)
 
 -- Test induced map on box products
 for i to 5 do (

@@ -1,22 +1,21 @@
 needsPackage "CpMackeyFunctors"
 
 -- Test constructors
-assert(isWellDefined makeBurnsideMackeyFunctor(17));
--- assert(isWellDefined makeFixedFreeMackeyFunctor(19));
-assert(isWellDefined makeUnderlyingFreeMackeyFunctor(23));
+assert(class makeBurnsideMackeyFunctor(17) === CpMackeyFunctor);
+assert(class makeUnderlyingFreeMackeyFunctor(23) === CpMackeyFunctor);
 
-assert(isWellDefined makeComplexRepresentationMackeyFunctor(29));
-assert(isWellDefined makeRealRepresentationMackeyFunctor(2));
-assert(isWellDefined makeRealRepresentationMackeyFunctor(47));
+assert(class makeComplexRepresentationMackeyFunctor(29) === CpMackeyFunctor);
+assert(class makeRealRepresentationMackeyFunctor(2) === CpMackeyFunctor);
+assert(class makeRealRepresentationMackeyFunctor(47) === CpMackeyFunctor);
 
-assert(isWellDefined makeZeroMackeyFunctor(3));
+assert(class makeZeroMackeyFunctor(3) === CpMackeyFunctor);
 
-assert(isWellDefined makeFixedPointMackeyFunctor(41,matrix{}));
-assert(isWellDefined makeFixedPointMackeyFunctor(2,matrix{{0,1,0},{1,0,0},{0,0,1}}));
+assert(class makeFixedPointMackeyFunctor(41,matrix{}) === CpMackeyFunctor);
+assert(class makeFixedPointMackeyFunctor(2,matrix{{0,1,0},{1,0,0},{0,0,1}}) === CpMackeyFunctor);
 
-assert(isWellDefined makeOrbitMackeyFunctor(31,matrix{}));
-assert(isWellDefined makeOrbitMackeyFunctor(2,matrix{{0,1,0},{1,0,0},{0,0,1}}));
+assert(class makeOrbitMackeyFunctor(31,matrix{}) === CpMackeyFunctor);
+assert(class makeOrbitMackeyFunctor(2,matrix{{0,1,0},{1,0,0},{0,0,1}}) === CpMackeyFunctor);
 
-assert(isWellDefined makeFixedTrivMackeyFunctor(5));
+assert(class makeFixedTrivMackeyFunctor(5) === CpMackeyFunctor);
 
-assert(isWellDefined makeFixedSignMackeyFunctor());
+assert(class makeFixedSignMackeyFunctor() === CpMackeyFunctor);

@@ -124,6 +124,8 @@ export{
 
 beginDocumentation()
 undocumented{
+    (isWellDefined,CpMackeyFunctor),
+    (isWellDefined,MackeyFunctorHomomorphism)
     }
 
 -- Main homepage documentation

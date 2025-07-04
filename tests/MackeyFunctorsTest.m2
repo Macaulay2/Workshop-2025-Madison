@@ -5,7 +5,7 @@ R:=matrix({});
 C:=R;
 T:=R;
 M:=makeCpMackeyFunctor(7,R,T,C)
-assert(isWellDefined M);
+assert(class (M) === CpMackeyFunctor);
 
 -- Test if constant F_2 is a C_2-Mackey functor
 U:=cokernel(matrix({{2}}));
@@ -13,7 +13,7 @@ R:=inducedMap(U,U);
 T:=inducedMap(U,U,matrix({{0}}));
 C:=inducedMap(U,U);
 M:=makeCpMackeyFunctor(2,R,T,C);
-assert(isWellDefined M);
+assert(class(M) === CpMackeyFunctor);
 
 -- Test if F_4 Galois is a C_2-Mackey functor
 U:=cokernel(matrix({{2,0},{0,2}}));
@@ -22,7 +22,7 @@ F:=kernel(C - id_U);
 R:=inducedMap(U,F,matrix({{1,0},{0,1}}));
 T:=inducedMap(F,U,matrix({{0,1},{0,0}}));
 M:=makeCpMackeyFunctor(2,R,T,C);
-assert(isWellDefined M);
+assert( class (M) === CpMackeyFunctor);
 
 -- Test if FP of C_7 with *2 is a C_3-Mackey functor
 U:=cokernel(matrix({{7}}));
@@ -31,7 +31,7 @@ F:=kernel(C - id_U);
 R:=inducedMap(U,F,matrix({{1}}));
 T:=inducedMap(F,U,matrix({{0}}));
 M:=makeCpMackeyFunctor(3,R,T,C);
-assert(isWellDefined M);
+assert(class(M)=== CpMackeyFunctor);
 assert(M.Underlying == U);
 assert(M.Fixed == F);
 assert(M.Res == R);

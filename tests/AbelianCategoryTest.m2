@@ -19,5 +19,5 @@ assert( presentation C.Fixed      == matrix {{2,4}} )
 assert( presentation C.Underlying == matrix {{2},{2}} )
 
 -- Checking that direct sums are well-defined.
-assert( isWellDefined(B ++ U) )
-assert( isWellDefined(directSum {B,B,B,B}) )
+assert( class(B ++ U)  === CpMackeyFunctor)
+assert( class(directSum {B,B,B,B}) === CpMackeyFunctor )

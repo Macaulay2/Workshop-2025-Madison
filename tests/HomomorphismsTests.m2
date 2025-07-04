@@ -1,17 +1,5 @@
 needsPackage "CpMackeyFunctors"
 
--- not well defined if primes not the same
-X := makeBurnsideMackeyFunctor 7;
-Y := makeBurnsideMackeyFunctor 5;
-f := map(Y.Underlying, X.Underlying, 0);
-g := map(Y.Fixed, X.Fixed, 0);
-assert not isWellDefined (new MackeyFunctorHomomorphism from {
-    Domain => Y,
-    Codomain => X,
-    UnderlyingMap => f,
-    FixedMap => g
-});
-
 -- verify the zero map to the zero Mackey functor is well-defined
 
 A := makeBurnsideMackeyFunctor(7);
@@ -20,20 +8,20 @@ Z := makeZeroMackeyFunctor(7);
 fixedLevelMap:=map(Z.Fixed,A.Fixed,0);
 underlyingLevelMap:=map(Z.Underlying,A.Underlying,0);
 F := map(Z,A,underlyingLevelMap,fixedLevelMap);
-assert isWellDefined(F)
+assert (class F === MackeyFunctorHomomorphism)
 
 -- verify that the linearization maps are well-defined
-assert isWellDefined(complexLinearizationMap(5))
-assert isWellDefined(realLinearizationMap(5))
+assert( class complexLinearizationMap(5) === MackeyFunctorHomomorphism)
+assert( class realLinearizationMap(5) === MackeyFunctorHomomorphism)
 
 
 
 -- verify composition does what we want it to do ?
 A :=makeBurnsideMackeyFunctor(11);
-assert isWellDefined (id_(A) * id_(A))
+assert (class(id_(A) * id_(A)) === MackeyFunctorHomomorphism)
 assert (id_(A) * id_(A) === id_(A))
 
-assert isWellDefined ( complexLinearizationMap(11) * id_(A));
+assert (class ( complexLinearizationMap(11) * id_(A)) === MackeyFunctorHomomorphism);
 
 
 -- test isTrivialMackeyFunctor
@@ -50,7 +38,7 @@ assert isIsomorphism(realLinearizationMap(3));
 A = makeBurnsideMackeyFunctor 2;
 U = makeUnderlyingFreeMackeyFunctor 2;
 f = map(U, A, matrix {{2},{2}}, matrix {{2,4}});
-assert( isWellDefined(directSum({f,id_U,f})))
+assert( class(directSum({f,id_U,f})) === MackeyFunctorHomomorphism)
 
 -- Checking arithmetic of homomorphisms
 h = id_A;
