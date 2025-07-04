@@ -83,8 +83,12 @@ injectiveResolution Module := Complex => opts -> M -> M.cache.injectiveResolutio
 injectiveResolution Complex := Complex => opts -> C -> C.cache.injectiveResolution ??= (
     E := ring C;
     if not isSkewCommutative E then error "expected underlying ring to skew-commutative";
-    D := Hom(freeResolution(Hom(C, E), opts), E);
+    tempHom := Hom(C,E);
+    fC := resolutionMap(tempHom, opts);
+    hfC := Hom(fC,E);
+    D := Hom(freeResolution(tempHom, opts), E);
     D.cache.injectiveResolution = C;
+    D.cache.resolutionMap =hfC;
     D
     )
 
@@ -96,8 +100,9 @@ injectiveResolutionMap Module := ComplexMap => opts -> M -> (
     )
 injectiveResolutionMap Complex := ComplexMap => opts -> C -> (
     D := injectiveResolution(C, opts);
+    hfC := D.cache.resolutionMap;
     W := ring C;
-    CDoubleDual:= Hom(Hom(C,W^1),W^1);
+    CDoubleDual:= source hfC;
     DDualMap := map(CDoubleDual, C, i -> (
 	    gensMatrix := gens C_i;
 	    h :=map(C_i, source gensMatrix, id_(source gensMatrix));
@@ -105,7 +110,7 @@ injectiveResolutionMap Complex := ComplexMap => opts -> C -> (
 	    map(CDoubleDual_i, C_i, matrix ddh)
 	    )
 	);
-    Hom(resolutionMap(Hom(C,W^1),opts),W^1)* DDualMap
+    hfC * DDualMap
     --Found this code in Divisor package, seems to work, need to cache hfC in injRes --Sreehari
     --(lo,hi) := concentration C;
     --tempHash := new MutableHashTable;
@@ -530,8 +535,8 @@ TEST ///
     assert isWellDefined f
     assert isQuasiIsomorphism f
     assert isComplexMorphism f
-    source f==C
-    target f==P --target f can be longer than P, so this can be false
+    assert(source f == C)
+    assert(target f == P) --target f can be longer than P, so this can be false
 
     Mat=random(E^3,E^{-1,-2})
     prune ker Mat
