@@ -77,7 +77,9 @@ isQuasiIsomorphism f
 
 -- LL(RR(S)) = S, but because of bounds
 -- we get a finite length quotient of it
-prune HH koszulLL koszulRR(S^1, Concentration => (-5,0))
+koszulRR(S^1, Concentration => (-5,0))
+koszulLL oo
+prune HH oo
 oo == complex comodule truncate(5+1, S)
 
 -- LL(RR(finite length S-module)) is identity
@@ -88,14 +90,16 @@ complex M == prune HH oo
 
 -- RR(LL(E)) = E, but because of bounds
 -- the ends of the complex may not be exact
-C = koszulRR(koszulLL E^1, Concentration => (-5,0))
+koszulLL E^1
+C = koszulRR(oo, Concentration => (-5,0))
 prune HH C
 complex E == prune HH canonicalTruncation(C, (-4,0))
 
 -- RR(LL(perfect complex of E-modules)) is identity
 N = coker matrix {{e_0}}
-freeResolution(N, LengthLimit => n)
-koszulLL oo
+F = freeResolution(N, LengthLimit => n)
+F.dd
+koszulLL F
 koszulRR(oo, Concentration => (-n-1,n))
 prune canonicalTruncation(oo, (-n, n-1))
 complex N == prune HH oo
