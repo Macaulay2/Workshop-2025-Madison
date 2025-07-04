@@ -235,52 +235,62 @@ slnCasimir(2,2,S,f2) -- n=2, d=2, F is a polynomial in S
 --******** Reynolds Operator for the represention Sym^d(QQ^n) of sln (Algorithm 4.5.20) ********
 --with Gordie Novak
 
+-- slnReynolds function
 slnReynolds = (n,d,S,f) -> (
     fList = {f};
     gList = fList;
-    
-    Rf = 0;
 
+    -- Create a mutbale list so we can keep track of the b variables.
     b = new MutableList;
 
+    -- This keeps track of l when the loop ends.
     fin = 0;
+    -- Begin the loop (two conditions to make sure we don't get an error)
     for l when (l < #gList and gList_l != 0) do (
-        
+	    
         b = append(b, {});
 
+        -- Sets up all the b_(i,j) with 0s initially
         for i from 0 to l-1 do(
             b#l = b#l | {0};
         );
+        -- Adds a 1 to the end of the bList. 
         b#l = b#l | {1};
 
+        -- Using our leading coefficient
         a = leadCoefficient(gList_(l));
         for i when i<l do(
-            if (leadMonomial(gList_(l)) == leadMonomial(gList_(i))) then (
+            if (a == leadMonomial(gList_(i))) then (
                 gList = replace(l, gList_(l)-a*(gList_(i)), gList);
                 for j from 0 to i do ( 
                     b#l = replace(j, ((b#l_j) - (a*(b#i_j))), b#l); 
                 );
-                a=leadCoefficient(gList_(l));
+                a = leadCoefficient(gList_(l));
             ); 
         );
+
         if a != 0 then(
             gList = replace(l, (gList_(l))/a, gList);
 
-            for j from 0 to l do( 
+            for j from 0 to l do ( 
+                -- Replaces elements of our b_(i,j) with updated values. 
                 b#l = replace(j, (b#l_j) / a, b#l); 
             );
             fList = append(fList, slnCasimir(n,d,S,fList_(l)));
             gList = append(gList, fList_(l+1));
         )
         else (
+            -- If the last element becomes 0, we end the loop.
             if (gList_l == 0) then (
                 fin = l;
-                break;
+                break; -- this ends the loop. 
             );
+            -- I'm not sure about this line. Based on your previous code, this should function identically, but I'm not sure if it's computationally valid. I have not seen the algorithm so I don't know. 
             l = l-1;
         );
     );
 
+    Rf = 0;
     if gList_(fin) == 0 then ( 
         if (b#fin_0) != 0 then (
             Rf = 0;
@@ -295,7 +305,6 @@ slnReynolds = (n,d,S,f) -> (
     print "Printing Rf;";
     return Rf;
 )
-
 
 --******** Example 4.5.21 ********
 
