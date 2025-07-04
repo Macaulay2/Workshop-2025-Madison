@@ -224,10 +224,13 @@ koszulDualityFunctorModule = functor -> opts -> M -> M.cache#(functor, opts) ??=
     A' := koszulDual A; -- this is A^!
     ev := map(A', A, vars A'); -- not a map of algebras, just substitutes variables
 
-    -- TODO: what's the right way to make this step uniform?
-    W := if isSkewCommutative A then A'^1 else A'^{n+1};
+    K := coker vars A';
+    W := if functor === Hom    then A'^{n+1} -- Hom(A', K)
+    else if functor === tensor then A'^1;    -- A' ** K
     modules := hashTable apply(lo..hi,
-	i -> i => W ** A'^{-i} ** (A' ** part(-i, M)));
+	-- RR(M)_i = Hom(E(i), M_(-i))
+	-- LL(M)_i = S(i) **_k M_(-i)
+	i -> i => part(-i, M) ** A' ** A'^{-i} ** W);
 
     if lo == hi
     then complex(modules#lo, Base => lo)
@@ -247,9 +250,9 @@ koszulDualityFunctorModule = functor -> opts -> M -> M.cache#(functor, opts) ??=
 
 -- RR(M)^i = E^*(i) \otimes_k M_i
 -- E^* = Hom_k(E, k) = E(n+1)
-koszulRR Module := Complex => opts -> (koszulDualityFunctorModule koszulRR) opts
+koszulRR Module := Complex => opts -> (koszulDualityFunctorModule Hom) opts
 -- LL(N)^i = S(i) \otimes_k N_i
-koszulLL Module := Complex => opts -> (koszulDualityFunctorModule koszulLL) opts
+koszulLL Module := Complex => opts -> (koszulDualityFunctorModule tensor) opts
 
 --------------------------------------------------
 
