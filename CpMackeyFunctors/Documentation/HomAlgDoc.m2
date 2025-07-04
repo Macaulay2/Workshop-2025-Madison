@@ -1,6 +1,7 @@
 doc ///
 Node
     Key
+        Tor
         (Tor,ZZ,CpMackeyFunctor,CpMackeyFunctor)
     Headline
         computes Tor of two Cp-Mackey fuctors
@@ -21,6 +22,7 @@ Node
             Tor_3(RU,RU)
 Node
     Key
+        TorCoh
         (TorCoh,ZZ,CpMackeyFunctor,CpMackeyFunctor)
     Headline
         computes Tor of two cohomological Cp-Mackey fuctors
@@ -46,6 +48,7 @@ Node
 doc ///
 Node
     Key
+        Ext
         (Ext,ZZ,CpMackeyFunctor,CpMackeyFunctor)
     Headline
         computes Ext of two Cp-Mackey fuctors
@@ -66,6 +69,7 @@ Node
             prune Ext^4(RU,RU)
 Node
     Key
+        ExtCoh
         (ExtCoh,ZZ,CpMackeyFunctor,CpMackeyFunctor)
     Headline
         computes Ext of two cohomological Cp-Mackey fuctors
