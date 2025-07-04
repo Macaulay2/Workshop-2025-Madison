@@ -1,6 +1,7 @@
 doc ///
+Node
     Key
-        (Hom, CpMackeyFunctor,CpMackeyFunctor)
+        (Hom, CpMackeyFunctor, CpMackeyFunctor)
         [Hom,DegreeLimit]
         [Hom,MinimalGenerators]
         [Hom,Strategy]
@@ -21,4 +22,31 @@ doc ///
             M = makeBurnsideMackeyFunctor(2);
             N = makeUnderlyingFreeMackeyFunctor(2);
             Hom(M,N)
+    SeeAlso
+        (Hom, CpMackeyFunctor, MackeyFunctorHomomorphism)
+        (Hom, MackeyFunctorHomomorphism, CpMackeyFunctor)
+Node
+    Key
+        (Hom, CpMackeyFunctor, MackeyFunctorHomomorphism)
+        (Hom, MackeyFunctorHomomorphism, CpMackeyFunctor)
+    Headline
+        computes the induced map on Hom groups
+    Usage
+        Hom(M, f)
+        Hom(f, N)
+    Inputs
+        M : CpMackeyFunctor
+        f : MackeyFunctorHomomorphism
+    Outputs
+        : Matrix
+            the induced map on Hom groups $\mathrm{Hom}(M,f)$ or $\mathrm{Hom}(f,N)$
+    Description
+        Text
+            $\mathrm{Hom}$ is a functor which is contravariant in the first argument and covariant in the second argument. This method implements the functoriality on morphisms.
+        Example
+            M = makeBurnsideMackeyFunctor(2);
+            N = makeUnderlyingFreeMackeyFunctor(2);
+            f = makeRandomMackeyFunctorHomomorphism(M,N);
+            Hom(M,f)
+            Hom(f,N)
 ///
