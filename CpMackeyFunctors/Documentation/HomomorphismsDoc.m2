@@ -275,3 +275,34 @@ doc ///
         "background on Mackey functors"
         makeZeroMackeyFunctor
 ///
+
+doc ///
+    Key
+        (inducedMap, CpMackeyFunctor, CpMackeyFunctor)
+        (inducedMap, CpMackeyFunctor, CpMackeyFunctor, MackeyFunctorHomomorphism)
+        (inducedMap, CpMackeyFunctor, CpMackeyFunctor, Matrix, Matrix)
+        [inducedMap,Degree]
+        [inducedMap,Verify]
+    Headline
+        tries to induce a natural map between two Mackey functors
+    Usage
+        inducedMap(N,M)
+        inducedMap(N,M,F)
+        inducedMap(N,M,u,f)
+    Inputs
+        N : CpMackeyFunctor
+            target
+        M : CpMackeyFunctor
+            source
+    Outputs
+        : MackeyFunctorHomomorphism
+            a Mackey functor homomorphism from M to N
+    Description
+        Text
+            If a homomorphism is given (either as a @TO(MackeyFunctorHomomorphism)@ or as a pair of matrices), this method will try to induce a map between the provided mackey functors. If no homomorphism is given, the identity morophism on the source is used. A common use for this method to produce the natural inclusion of a subobject or the natural projection to a quotient object.
+        Example
+            f := complexLinearizationMap(3);
+            inducedMap(coker f, target f)
+    SeeAlso
+        inducedMap
+///
