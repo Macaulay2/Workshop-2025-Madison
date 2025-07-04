@@ -30,7 +30,7 @@ document {
 
 document {
 	Key => {AlgebraicTrace, (AlgebraicTrace, Ring, Thing), (AlgebraicTrace, Ring, Ideal, Thing) },
-	Headline => "Computes the algrbraic trace over ",TEX///$\mathbb{K}$///," for an element in a finite dimensional ",TEX///$\mathbb{K}$///,"-algebra",
+	Headline => "Computes the algebraic trace over ",TEX///$\mathbb{K}$///," for an element in a finite dimensional ",TEX///$\mathbb{K}$///,"-algebra",
 	Usage => "AlgebraicTrace(C,a)
               AlgebraicTrace(S,I,b)",
 	Inputs => {
@@ -60,7 +60,7 @@ document {
 
 		document {
 	Key => {AlgebraicNorm, (AlgebraicNorm, Ring, Thing), (AlgebraicNorm, Ring, Ideal, Thing) },
-	Headline => "Computes the algrbraic norm over ",TEX///$\mathbb{K}$///," for an element in a finite dimensional ",TEX///$\mathbb{K}$///,"-algebra",
+	Headline => "Computes the algebraic norm over ",TEX///$\mathbb{K}$///," for an element in a finite dimensional ",TEX///$\mathbb{K}$///,"-algebra",
 	Usage => "AlgebraicNorm(C,a)
               AlgebraicNorm(S,I,b)",
 	Inputs => {
