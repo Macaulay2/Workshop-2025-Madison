@@ -1,13 +1,13 @@
 restart
 debug needsPackage "CpMackeyFunctors"
 
-A = makeBurnsideMackeyFunctor 5
-B = makeUnderlyingFreeMackeyFunctor 5
-RU = makeComplexRepresentationMackeyFunctor 5
+A = makeBurnsideMackeyFunctor 3
+B = makeUnderlyingFreeMackeyFunctor 3
+RU = makeComplexRepresentationMackeyFunctor 3
 drawVerticalCpMackeyFunctor RU
 
-rand1 = makeRandomCpMackeyFunctor 5
-rand2 = makeRandomCpMackeyFunctor 5
+rand1 = makeRandomCpMackeyFunctor 3
+rand2 = makeRandomCpMackeyFunctor 3
 makeRandomMackeyFunctorHomomorphism(rand1,rand2)
 
 A**A
@@ -21,20 +21,22 @@ RU
 InternalHom(A,A)
 prune InternalHom(A,A)
 
-InternalHom(B,B)
-prune InternalHom(B,B)
+Tor_1(rand1,rand2)
+prune oo
+Ext^1(rand1,rand2)
+prune oo
 
+Tor_0(A,A)
 prune(Tor_0(A,A)) == prune(A**A)
-isTrivialMackeyFunctor Tor_47(A,A)
 
 q = 16 -- order of field 
 p = 5 -- degree of extension
 C = coker(matrix {{q^p-1}}) -- unit group of field
-Ominus1 = makeFixedPointMackeyFunctor(p,inducedMap(C,C,matrix{{q}}))
-Circ = makeZeroOnUnderlyingMackeyFunctor(p,coker(matrix{{p}}))
+K1 = makeFixedPointMackeyFunctor(p,inducedMap(C,C,matrix{{q}}))
+C = makeZeroOnUnderlyingMackeyFunctor(p,coker(matrix{{p}}))
 
-Ext^1(Circ,Ominus1)
-isTrivialMackeyFunctor oo
+Ext^1(K1,C)
+prune oo
 
 Z = makeFixedPointMackeyFunctor(p,id_(ZZ^1))
 B1 = makeZeroOnUnderlyingMackeyFunctor(p,coker(matrix{{p}}))
