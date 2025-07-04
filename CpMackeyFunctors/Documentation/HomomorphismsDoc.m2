@@ -1,15 +1,31 @@
 doc ///
     Key
         MackeyFunctorHomomorphism
+        (symbol -, MackeyFunctorHomomorphism)
+        (symbol ==, MackeyFunctorHomomorphism, MackeyFunctorHomomorphism)
+        (net, MackeyFunctorHomomorphism)
+        (symbol *, ZZ, MackeyFunctorHomomorphism)
+        (prune, MackeyFunctorHomomorphism)
+        (symbol ^, MackeyFunctorHomomorphism, ZZ)
+        (symbol -, MackeyFunctorHomomorphism, MackeyFunctorHomomorphism)
+        (symbol +, MackeyFunctorHomomorphism, MackeyFunctorHomomorphism)
+        (inverse, MackeyFunctorHomomorphism)
+        (directSum,MackeyFunctorHomomorphism)
+        (symbol ++, MackeyFunctorHomomorphism,MackeyFunctorHomomorphism)
     Headline
         the class of Mackey functor homomorphisms
     Description
         Text
-            The @TO2(Type,"type")@ of a {\em Mackey functor homomorphism} (for definitions, see @TO("background on Mackey functors")@). A Mackey functor homomorphism can be constructed with an implementation of the @TO2((map,CpMackeyFunctor,CpMackeyFunctor,Matrix,Matrix),"map")@ method in this package.
+            The @TO2(Type,"type")@ of a {\em Mackey functor homomorphism} (for definitions, see @TO("background on Mackey functors")@). A Mackey functor homomorphism can be constructed with an implementation of the @TO2((map,CpMackeyFunctor,CpMackeyFunctor,Matrix,Matrix),"map")@ method in this package. Given a Mackey functor homomorphism @TT("f")@, the data for this type can be accessed in the following way:
 
-            
+            @UL {
+                (TT "target f", " -- yields the codomain/target of the homomorphism"),
+                (TT "source f", " -- yields the domain/source of the homomorphism"),
+                (TT "f.UnderlyingMap", " -- yields the induced ", TO2("Macaulay2Doc :: module homomorphisms","homomorphism")," on the ", TO2(CpMackeyFunctor,"underlying modules")),
+                (TT "f.FixedMap", " -- yields the induced ", TO2("Macaulay2Doc :: module homomorphisms","homomorphism")," on the ", TO2(CpMackeyFunctor,"fixed modules"), "."),
+            }@
 
-            Given a Mackey functor homomorphism, we can extract its @TO("source")@ and @TO("target")@ in the same way we do for module homomorphisms ({\bf warning}: the following method @TO("makeRandomMackeyFunctorHomomorphism")@ takes ({\em source,target}) as input, which follows the @TO("Hom")@ convention rather than the @TO("map")@ convention):
+            ({\bf Warning}: the following method @TO("makeRandomMackeyFunctorHomomorphism")@ takes ({\em source,target}) as input, which follows the @TO("Hom")@ convention rather than the @TO("map")@ convention):
         Example
             M = makeRandomCpMackeyFunctor(2);
             N = makeRandomCpMackeyFunctor(2);
@@ -23,11 +39,13 @@ doc ///
 
             @UL{
                 (BOLD "powers:", " given an endomorphism of a Mackey functor ", TEX"$f\\colon M \\to M$", " we can take iterated composition of it as ", TT"f^n"),
-                (BOLD "inversion:", " if ", TEX"$f$", " is an ", TO2((isIsomorphism,MackeyFunctorHomomorphism),"isomorphism"), " we can invert it via ", TT"$f^{-1}$"),
+                (BOLD "inversion:", " if ", TEX"$f$", " is an ", TO2((isIsomorphism,MackeyFunctorHomomorphism),"isomorphism"), " we can invert it via ", TT"f^-1", " or using ", TT"inverse(f)"),
                 (BOLD "negating:", " we can take the negative of any Mackey functor homomorphism as ", TT"-f"),
                 (BOLD "addition:", " we can add two Mackey functor homomorphisms with the same domain and codomain via ", TT"f+g"),
+                (BOLD "subtraction:", " we can subtract two Mackey functor homomorphisms with the same domain and codomain via ", TT"f-g"),
                 (BOLD "iterated addition:", " we can add a Mackey functor homomorphism ", TT"f", " with itself ", TT"n", " times via ", TT"n*f"),
-                (BOLD "composition:", " we can compose two composable Mackey functor homomorphisms via ", TT"g*f")
+                (BOLD "composition:", " we can compose two composable Mackey functor homomorphisms via ", TT"g*f"),
+                (BOLD "block sum:", " given two Mackey functor homomorphisms ", TEX"$f\\colon M_1 \\to N_1$", " and ", TEX"$g\\colon M_2 \\to N_2$", " we can obtain their ", EM"block sum", " ", TEX"$f\\oplus g \\colon M_1 \\oplus M_2 \\to N_1 \\oplus N_2$", " as ", TT"f++g")
             }@
 
     SeeAlso
@@ -205,7 +223,6 @@ doc ///
 
 doc ///
     Key
-        isIsomorphism
         (isIsomorphism, MackeyFunctorHomomorphism)
     Headline
         checks if a Mackey functor homomorphism is an isomorphism
