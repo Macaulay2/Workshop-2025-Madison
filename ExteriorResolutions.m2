@@ -131,21 +131,21 @@ priddyComplex(Matrix, Ring) := opts -> (m, S) -> (
 --------------------------------------------------
 
 -- returns a pair S = Sym^* K^(n+1) and E = Wedge^* K^(n+1)
-koszulPair = method()
-koszulPair(ZZ, Ring) := (n, K) -> (
-    x := getSymbol "x";
-    e := getSymbol "e";
+koszulPair = method(Options => { Variables => {"x", "e"}})
+koszulPair(ZZ, Ring) := opts -> (n, K) -> (
+    x := getSymbol opts.Variables#0;
+    e := getSymbol opts.Variables#1;
     S := K[x_0..x_n];
     E := K[e_0..e_n, SkewCommutative => true];
     S.cache.koszulDual = E;
     E.cache.koszulDual = S;
     (S, E))
 
-koszulDual = method()
-koszulDual Ring := A -> A.cache.koszulDual ??= (
+koszulDual = method(Options => { Variables => {"x", "e"}})
+koszulDual Ring := opts -> A -> A.cache.koszulDual ??= (
     K := coefficientRing A;
-    x := getSymbol "x";
-    e := getSymbol "e";
+    x := getSymbol opts.Variables#0;
+    e := getSymbol opts.Variables#1;
     if isSkewCommutative A
     then K[x_0..x_(numgens A - 1)]
     else K[e_0..e_(numgens A - 1), SkewCommutative => true])
