@@ -125,7 +125,9 @@ export{
 beginDocumentation()
 undocumented{
     (isWellDefined,CpMackeyFunctor),
-    (isWellDefined,MackeyFunctorHomomorphism)
+    (isWellDefined,MackeyFunctorHomomorphism),
+    (ring, MackeyFunctorHomomorphism),
+    (promote, MackeyFunctorHomomorphism)
     }
 
 -- Main homepage documentation
