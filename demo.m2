@@ -17,8 +17,8 @@ elapsedTime P = injectiveResolution(k, LengthLimit => 5)
 -- whose terms are P'_i = E ** (S_i)^*
 elapsedTime P' = priddyComplex(vars E, LengthLimit => 5)
 betti P == betti P'
-dd^P_(-2)
-dd^P'_(-2)
+dd^P_(-2) - dd^P'_(-2)
+
 augP = coaugmentationMap P
 isQuasiIsomorphism augP
 
@@ -112,8 +112,8 @@ complex N == prune HH oo
 f = random(E^{2:1}, E^2)
 g = random(E^2, E^{2:-1})
 koszulLL f * koszulLL g == koszulLL(f * g)
+koszulLL f
 
--- TODO: what does this demonstrate?
 C = complex {map(S^{1}, S^1, S_0)}
 D = koszulRR(C, Concentration=>(-5,1))
 D.dd_1
