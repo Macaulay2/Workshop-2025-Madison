@@ -78,6 +78,8 @@ R = QQ[x_(1,1)..x_(n,n)];
 f = random (r*n, R);
 reynoldsSLnMap(f, p)
 
+-- Casimir and Reynolds Operators for the Lie algebra sln
+-- Written by Jeong-Hoon Ju
 --******** Lie Algebra sln (Example 4.5.14) ********
 
 Eijm = (i0,j0,m) -> ( matrix apply(m, i -> apply(m, j -> if i==i0 and j==j0 then 1/1 else 0/1)) );
@@ -231,89 +233,73 @@ slnCasimir(2,2,S,f2) -- n=2, d=2, F is a polynomial in S
 
 
 --******** Reynolds Operator for the represention Sym^d(QQ^n) of sln (Algorithm 4.5.20) ********
+--with Gordie Novak
+
+slnReynolds = (n,d,S,f) -> (
+    fList = {f};
+    gList = fList;
+    
+    Rf = 0;
+
+    b = new MutableList;
+
+    fin = 0;
+    for l when (l < #gList and gList_l != 0) do (
+        
+        b = append(b, {});
+
+        for i from 0 to l-1 do(
+            b#l = b#l | {0};
+        );
+        b#l = b#l | {1};
+
+        a = leadCoefficient(gList_(l));
+        for i when i<l do(
+            if (leadMonomial(gList_(l)) == leadMonomial(gList_(i))) then (
+                gList = replace(l, gList_(l)-a*(gList_(i)), gList);
+                for j from 0 to i do ( 
+                    b#l = replace(j, ((b#l_j) - (a*(b#i_j))), b#l); 
+                );
+                a=leadCoefficient(gList_(l));
+            ); 
+        );
+        if a != 0 then(
+            gList = replace(l, (gList_(l))/a, gList);
+
+            for j from 0 to l do( 
+                b#l = replace(j, (b#l_j) / a, b#l); 
+            );
+            fList = append(fList, slnCasimir(n,d,S,fList_(l)));
+            gList = append(gList, fList_(l+1));
+        )
+        else (
+            if (gList_l == 0) then (
+                fin = l;
+                break;
+            );
+            l = l-1;
+        );
+    );
+
+    if gList_(fin) == 0 then ( 
+        if (b#fin_0) != 0 then (
+            Rf = 0;
+        ) else (
+            Rf = ( sum for j from 1 to fin list 
+                (b#fin_j)*fList_(j-1) ) 
+                / (b#fin_1); 
+        );
+    );
+
+    print "\n--------";
+    print "Printing Rf;";
+    return Rf;
+)
 
 
 --******** Example 4.5.21 ********
 
-f=f1;
-
-    fList = {f};
-    gList = fList;
-    l = 0;
-    Rf = 0;
-
-    if gList_(l) !=0 then(
-	b_(l,l) = 1;
-	for i from 0 to l-1 do(b_(l,i) = 0;);
-        a = leadCoefficient(gList_(l));
-	for i when i<l do(
-	    if  leadMonomial(gList_(l)) == leadMonomial(gList_(i))
-	    then (
-		gList = replace(l, gList_(l)-a*(gList_(i)), gList);
-		for j from 0 to i do( b_(l,j) = b_(l,j)-a*b_(i,j); );
-		a=leadCoefficient(gList_(l));
-	    ); 
-	);
-	if a != 0 then(
-        gList = replace(l, (gList_(l))/a, gList);
-        for j from 0 to l do( b_(l,j) = b_(l,j)/a; );
-        l = l+1;
-        fList = append(fList, slnCasimir(n,d,S,fList_(l-1)));
-        gList = append(gList, fList_(l));
-	);
-    );
-
-gList
-
-    if gList_(l) !=0 then(
-	b_(l,l) = 1;
-	for i from 0 to l-1 do(b_(l,i) = 0;);
-        a = leadCoefficient(gList_(l));
-	for i when i<l do(
-	    if  leadMonomial(gList_(l)) == leadMonomial(gList_(i))
-	    then (
-		gList = replace(l, gList_(l)-a*(gList_(i)), gList);
-		for j from 0 to i do( b_(l,j) = b_(l,j)-a*b_(i,j); );
-		a=leadCoefficient(gList_(l));
-	    ); 
-	);
-	if a != 0 then(
-        gList = replace(l, (gList_(l))/a, gList);
-        for j from 0 to l do( b_(l,j) = b_(l,j)/a; );
-        l = l+1;
-        fList = append(fList, slnCasimir(n,d,S,fList_(l-1)));
-        gList = append(gList, fList_(l));
-	);
-    );
-
-gList
-
-    if gList_(l) !=0 then(
-	b_(l,l) = 1;
-	for i from 0 to l-1 do(b_(l,i) = 0;);
-        a = leadCoefficient(gList_(l));
-	for i when i<l do(
-	    if  leadMonomial(gList_(l)) == leadMonomial(gList_(i))
-	    then (
-		gList = replace(l, gList_(l)-a*(gList_(i)), gList);
-		for j from 0 to i do( b_(l,j) = b_(l,j)-a*b_(i,j); );
-		a=leadCoefficient(gList_(l));
-	    ); 
-	);
-	if a != 0 then(
-        gList = replace(l, (gList_(l))/a, gList);
-        for j from 0 to l do( b_(l,j) = b_(l,j)/a; );
-        l = l+1;
-        fList = append(fList, slnCasimir(n,d,S,fList_(l-1)));
-        gList = append(gList, fList_(l));
-	);
-    );
-
-gList
-
-    if gList_(l) == 0 then ( if b_(l,0) != 0 then Rf = 0 else Rf = ( sum for j from 1 to l list b_(l,j)*fList_(j-1) ) / b_(l,1); );
-
-Rf
+slnReynolds(2,2,S,f1)
 
 
 -- Documentation of the permutation groups methods
