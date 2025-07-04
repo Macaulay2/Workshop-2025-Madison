@@ -1,6 +1,6 @@
-\-------------------------------------
+---------------------------------------------------------------
 -- unstable A1-Brouwer degree methods (task 3.12 from Overleaf)
--------------------------------------
+---------------------------------------------------------------
 
 -- Input: A rational function q = f/g
 
@@ -24,72 +24,50 @@ getGlobalUnstableA1Degree RingElement := (Matrix,Number) => q -> (
         error "rational function does not have isolated zeros";
 	
     -- Check whether the number of variables matches the number of polynomials
-    
     S := ring f;
     if #(gens S) != 1 then
-        error "the number of variables does not match the number of polynomials";	
-    
+        error "the number of variables does not match the number of polynomials";     
     -- If the field is CC, output the Grothendieck-Witt class of an identity matrix of the appropriate rank
     if instance(kk, ComplexField) then (
     	rankAlgebra := getGlobalAlgebraRank {q};
     	return makeGWuClass id_(CC^rankAlgebra);
-        )
+        );
 
     -- If the field is RR, ask the user to run the computation over QQ instead and then base change to RR
     if instance(kk, RealField) then error "getGlobalUnstableA1Degree method does not work over the reals. Instead, define the polynomials over QQ to output an unstableGrothendieckWittClass. Then extract the matrix, base change it to RR, and run getSumDecomposition().";    
 
-    n := 1;
-
-    -- Create internal rings/matrices
-    
     -- Initialize a polynomial ring in X and Y in which to compute the Bezoutian
     X := local X;
     Y := local Y;
     R' := kk[X,Y];
     
-fX = sub(f,{x => X})
-
-fY = sub(f,{x => Y})
-
-gX = sub(g,{x => X})
-
-gY = sub(g,{x => Y})
-
-D = lift((fX * gY - fY * gX)/(X-Y),R')
-
-    -- Create an (n x n) matrix D to be populated by \Delta_{ij} from the Brazelton-McKean-Pauli paper
-    D := "";
-    try D = mutableMatrix id_((frac R')^n) else D = mutableMatrix id_(R^n);
+    fX = sub(f,{x => X});
+    fY = sub(f,{x => Y});
+    gX = sub(g,{x => X});
+    gY = sub(g,{x => Y});
     
-    for i from 0 to n - 1 do (
-	for j from 0 to n - 1 do (
-	    -- Iterate through the entries of the matrix D and populate it as follows
-            -- Create the list {Y_1,...,Y_(j-1), X_j,...,X_n}. Note that Macaulay2 is 0-indexed hence the difference in notation. 
-	    targetList1 := apply(toList(Y_1..Y_j | X_(j+1)..X_n), i->i_R);
-            -- Create the list {Y_1,...,Y_j, X_(j+1),...,X_n}. Note that Macaulay2 is 0-indexed hence the difference in notation. 
-	    targetList2 := apply(toList (Y_1..Y_(j+1) | X_(j+2)..X_n), i->i_R);
-            -- Suppose our endomorphisms are given in the variables x_1,...,x_n
-            -- Map f_i(x_1,...,x_n) to f_i(Y_1,...,Y_(j-1), X_j,...,X_n) resp.
-            -- Take the difference f(X)g(Y) - f(Y)g(X)
-            numeratorD := (map(R, S, targetList1)) (({f}_i) * ({g}_i)) - (map(R, S, targetList2)) (({f}_i) * ({g}_i)); 
-            -- Divide this by X - Y. Note that Macaulay2 is 0-indexed hence the difference in notation. 
-	    D_(i,j) = numeratorD / ((X_(j+1))_R - (Y_(j+1))_R); 
-	    ); 
-        );
-    	 
-    -- Set up the local variables bezDet and bezDetR
-    bezDet:="";
-    bezDetR:="";
-      
-    -- The determinant of D is interpreted as an element of Frac(k[x_1..x_n]), so we can try to lift it to k[x_1..x_n]           
-    if liftable(D, R') then bezDetR = lift(D, R');
+    D = lift((fX * gY - fY * gX)/(X-Y),R');
     
-    -- In some computations, applying lift(-,R) doesn't work, so we instead lift the numerator and
-    -- then divide by a lift of the denominator (which will be a scalar) to the coefficient ring kk
-    if not liftable(D, R') then (
-	bezDet = lift(numerator D, R') / lift(denominator D, coefficientRing R');
-    	bezDetR = lift(bezDet, R');
+    m := degree (X,D);
+    n := degree (Y,D);
+        
+    B := mutableMatrix id_(QQ^(m+1));  
+    
+    for i from 0 to m do(
+	for j from 0 to n do
+    	B_(i,j) = coefficient(X^i*Y^j,D)
 	);
+    
+     makeGWClass matrix B
+     )
+    
+    
+    
+    
+   --   L1 := toList (0..m)
+   --   L2 := toList (0..n)
+   --  blist := apply (L1 ** L2,(i,j) -> (X^i)*(Y^j))
+
 
 -----------------------------------
 -- test example, need to generalize
@@ -117,15 +95,35 @@ bez = sub((fX * gY - fY * gX)/(X-Y),S)
 
     -- Create the Bezoutian matrix B for the symmetric bilinear form by reading off the coefficients. 
     -- B is an (m x m) matrix. The coefficient B_(i,j) is the coefficient of the (ith basis vector x jth basis vector) in the tensor product.
-    -- phi0 maps the coefficient to kk
-    (M,C) := coefficients bez
-    B := mutableMatrix id_(QQ^2);
-    for i from 0 to 1 do (
-        for j from 0 to 1 do
-           if i == 0 then B_(i,j) = coefficient(M_(i,3-j),bez) else B_(i,j) = coefficient(M_(1-i,1-j),bez);
-        );
+    -- phi0 maps the coefficient to kk   
     
-    (makeGWuClass matrix B, det matrix B)
+    m := degree (X,Bezzz)
+    n := degree (Y,Bezzz)
+   --   L1 := toList (0..m)
+   --   L2 := toList (0..n)
+   --  blist := apply (L1 ** L2,(i,j) -> (X^i)*(Y^j))
+    
+    B := mutableMatrix id_(QQ^(m+1));  
+    -- number of possible monomial terms in the Bezoutian (even if they are zero)
+    
+    for i from 0 to m do(
+	for j from 0 to n do
+    	B_(i,j) = coefficient(X^i*Y^j,Bezzz)
+	)
+Bezzz = 3*X^2 + 3*X*Y + 3*Y^2 + X + Y 
+    
+Bez = X^4*Y^4 - 5*X^4*Y^2 - 16*X^3*Y^3 - 5*X^2*Y^4 + 7*X^4*Y + 39*X^3*Y^2 + 39*X^2*Y^3 + 7*X*Y^4 + X^4 - 29*X^3*Y - 84*X^2*Y^2 - 29*X*Y^3 + Y^4 - 14*X^3 + 63*X^2*Y + 63*X*Y^2 - 14*Y^3 + 11*X^2 - 63*X*Y + 11*Y^2 + 38*X + 38*Y - 68     
+     
+--    (M,C) := coefficients bez
+--    B := mutableMatrix id_(QQ^b);
+--    for i from 0 to 1 do (
+--        for j from 0 to 1 do
+--           if i == 0 then B_(i,j) = coefficient(M_(i,3-j),bez) else B_(i,j) = coefficient(M_(1-i,1-j),bez);
+--        );    
+--    (makeGWClass matrix B, det matrix B) -- check makeGWuClass
+    
+   
+   
         
 ----------------
 -- end here
@@ -188,6 +186,7 @@ bez = sub((fX * gY - fY * gX)/(X-Y),S)
         for j from 0 to m - 1 do
             B_(i,j) = phi0(coefficient((sBXProm_(0,i)**sBYProm_(0,j))_(0,0), bezDetRed));
         );
+    
     makeGWClass matrix B
       
 )
