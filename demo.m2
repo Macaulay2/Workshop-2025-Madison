@@ -32,12 +32,21 @@ QP(0)
 QP(4)
 QP(4) == #latticePoints(4*P)
 
+ehrhartSeries P
+hStarVector P
+
 -- another example
 P2 = convexHull transpose matrix {{-1,0}, {1,0}, {0,1/2}, {0,-1/2}}
 vertices P2
 QP2 = ehrhartQP P2 -- note period collapse
 period QP2
 QP2(7)
+
+ehrhartSeries P2
+hStarVector P2
+
+value ehrhartSeries P2
+
 
 -- a small example with negative coefficients
 q = 12
@@ -60,6 +69,21 @@ ehrhartSeries(P2, Strategy => M2)
 needsPackage("EquivariantEhrhart")
 
 ---- (II) EQUIVARIANT EHRHART THEORY from package EquivariantEhrhart
+
+
+
+-- (0) Square under the action of rotation by pi/2
+P = convexHull transpose matrix "1,1,1;1,-1,1;-1,-1,1;-1,1,1"
+g = matrix "0,-1,0;1,0,0;0,0,1"
+
+netList equivariantEhrhartSeries(P, {g})
+
+equivariantEhrhartSeries(P, g^4) -- identity gives the usual Ehrhart series
+
+vertices fixedPolytope(P, g) -- fixed polytope is the central point
+equivariantEhrhartSeries(P, g) -- identity gives the usual Ehrhart series
+
+
 
 --- (1) Permutahedron example
 
