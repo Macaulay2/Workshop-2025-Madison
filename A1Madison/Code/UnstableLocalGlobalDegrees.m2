@@ -125,7 +125,7 @@ bez = sub((fX * gY - fY * gX)/(X-Y),S)
            if i == 0 then B_(i,j) = coefficient(M_(i,3-j),bez) else B_(i,j) = coefficient(M_(1-i,1-j),bez);
         );
     
-    (makeGWClass matrix B, det matrix B) -- check makeGWuClass
+    (makeGWuClass matrix B, det matrix B)
         
 ----------------
 -- end here
