@@ -133,12 +133,16 @@ isPadicSquare (ZZ,ZZ) := Boolean => (a,p) -> (
 getLocalAlgebraBasis = method()
 getLocalAlgebraBasis (List, Ideal) := List => (L, p) -> (
     
-    -- Verify that the ideal p is prime
-    if not isPrime p then error "ideal is not prime";
-    
     -- Ambient ring
     R := ring L#0;
     I := ideal L;
+
+    if not (instance(R, PolynomialRing) and isField coefficientRing R) then error "this computation is only supported over polynomial rings over fields";
+
+    if not (isSubset(ideal(L),p)) then error "the polynomials of the list do not vanish at the prescribed ideal";
+
+    -- Verify that the ideal p is prime
+    try isPrime p else print "Warning: Unable to verify whether the prime ideal is an isolated zero of the list of polynomials";
     
     -- Check whether the ideal I is zero-dimensional
     if dim I > 0 then error "morphism does not have isolated zeros";
