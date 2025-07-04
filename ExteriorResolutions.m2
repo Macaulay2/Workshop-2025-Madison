@@ -132,33 +132,44 @@ coaugmentationMap Complex := ComplexMap => P ->  (
     )
 
 ------------------------------------------------
---
 --- Priddy complex
 --------------------------------------------------
 
 priddyDifferential = method(TypicalValue => Matrix)
-priddyDifferential(ZZ, Matrix, Ring) := (i, m, S) -> (
-    E := ring m;
-    n := numgens E - 1;
+priddyDifferential(ZZ, Matrix) := (i, m) -> m.cache#(symbol priddyDifferential, i) ??= (
+    R := ring m;
+    n := numgens R - 1;
+    -- TODO: what's the right way to make this step uniform?
+    (S, E) := koszulPair(numcols m - 1, coefficientRing R,
+	Variables => {x := symbol x, e := symbol e});
+    A := if isSkewCommutative R then S else E;
     --L := flatten (degrees m)_1; --degrees of the forms on which we are taking the Priddy complex
     --assert(all(L, i -> odd L_i));
-    monsSrc := basis(-i, S);
-    monsTgt := basis(-i+1, S);
+    srcmons := basis(-i, A);
+    tarmons := basis(-i+1, A);
     --
-    expTgt := apply(first entries monsTgt, n -> flatten exponents n);
+    srcexps := apply(first entries srcmons, mon -> flatten exponents mon);
+    tarexps := apply(first entries tarmons, mon -> flatten exponents mon);
     --
-    tgt := directSum apply(expTgt, d ->
-	E^{{n+1}+sum(numcols m, i -> d_i * flatten degree(m_i))});
+    -- TODO: what's the right way to make this step uniform?
+    W := if isSkewCommutative A then R^1 else R^{n+1};
+    --
+    src := if srcmons == 0 then R^0 else directSum apply(srcexps,
+	e -> W ** R^{sum(numcols m, i -> e_i * flatten degree(m_i))});
+    tar := if tarmons == 0 then R^0 else directSum apply(tarexps,
+	e -> W ** R^{sum(numcols m, i -> e_i * flatten degree(m_i))});
     --
     -- TODO: can this work on the whole complex at once rather than term by term?
-    f := matrix table(numcols monsTgt, numcols monsSrc,
-	(r,c) -> monsTgt_{r} // monsSrc_{c});
+    f := matrix table(numcols tarmons, numcols srcmons,
+	(r,c) -> tarmons_{r} // srcmons_{c});
     -- TODO: can we avoid sub?
-    map(tgt, , sub(f, m)))
+    map(tar, src, if f == 0 then 0 else sub(f, m)))
 
 priddyComplex = method(TypicalValue => Complex, Options => { LengthLimit => null })
-priddyComplex(Matrix, Ring) := opts -> (m, S) -> (
-    complex hashTable apply(opts.LengthLimit, i -> -i => priddyDifferential(-i, m, S)))
+priddyComplex Matrix := opts -> m -> m.cache#(symbol priddyComplex, opts.LengthLimit) ??= (
+    (lo, hi) := if instance(opts.LengthLimit, ZZ) and opts.LengthLimit > 0 then (-opts.LengthLimit, 0)
+    else try degreeSupport module koszulDual ring m else error "expected positive length limit";
+    complex hashTable apply(lo+1..hi, i -> i => priddyDifferential(i, m)))
 
 --------------------------------------------------
 --- Koszul duality helpers
@@ -167,8 +178,8 @@ priddyComplex(Matrix, Ring) := opts -> (m, S) -> (
 -- returns a pair S = Sym^* K^(n+1) and E = Wedge^* K^(n+1)
 koszulPair = method(Options => { Variables => {"x", "e"}})
 koszulPair(ZZ, Ring) := opts -> (n, K) -> (
-    x := getSymbol opts.Variables#0;
-    e := getSymbol opts.Variables#1;
+    x := if instance(opts.Variables#0, String) then getSymbol opts.Variables#0 else opts.Variables#0;
+    e := if instance(opts.Variables#1, String) then getSymbol opts.Variables#1 else opts.Variables#1;
     S := K[x_0..x_n];
     E := K[e_0..e_n, SkewCommutative => true];
     S.cache.koszulDual = E;
@@ -179,8 +190,8 @@ koszulPair(ZZ, Ring) := opts -> (n, K) -> (
 koszulDual = method(Options => { Variables => {"x", "e"}})
 koszulDual Ring := opts -> A -> A.cache.koszulDual ??= (
     K := coefficientRing A;
-    x := getSymbol opts.Variables#0;
-    e := getSymbol opts.Variables#1;
+    x := if instance(opts.Variables#0, String) then getSymbol opts.Variables#0 else opts.Variables#0;
+    e := if instance(opts.Variables#1, String) then getSymbol opts.Variables#1 else opts.Variables#1;
     if isSkewCommutative A
     then K[x_0..x_(numgens A - 1)]
     else K[e_0..e_(numgens A - 1), SkewCommutative => true])
@@ -372,33 +383,35 @@ Node
 Node
    Key
        priddyComplex
-      (priddyComplex, Matrix, Ring)
+      (priddyComplex, Matrix)
    Headline
        computes the Priddy complex of several elements of an exterior algebra
    Usage
-       priddyComplex(m, S)
+       priddyComplex m
    Inputs
        m:Matrix
 	   consisting of a single row and with entries in an exterior algebra
-       S:Ring
    Outputs
        :Complex
    Description
        Text
-           Let $S = k[x_0, \dots, x_n]$ be a polynomial ring over a field. Let $f_1, \dots, f_c$ be odd degree elements of an exterior algebra $E = \Lambda_k(e_0, \dots, e_n)$. Then, we get a complex $E\otimes_k S_0\rightarrow E\otimes_k S_1\rightarrow \cdots$ whose differentials are left multiplication by $\sum_{i=0}^n f_i\otimes x_i$.
+           Let $S = k[x_0, \dots, x_n]$ be a polynomial ring over a field.
+	   Let $f_1, \dots, f_c$ be odd degree elements of an exterior algebra
+	   $E = \Lambda_k(e_0, \dots, e_n)$. Then, we get a complex
+	   $E\otimes_k S_0\rightarrow E\otimes_k S_1\rightarrow \cdots$
+	   whose differentials are left multiplication by $\sum_{i=0}^n f_i\otimes x_i$.
 
            Below we obtain the Priddy complex where $n=2$ and $f_1=e_0$ and $f_2=e_0*e_1$ and $k=\mathbb{Q}$.
        Example
-	   S = QQ[x_0,x_1]
 	   E = QQ[e_0,e_1, SkewCommutative=>true]
 	   m = matrix{{e_0, e_0*e_1}}
-	   C = priddyComplex(m, S, LengthLimit=>3)
+	   C = priddyComplex(m, LengthLimit => 3)
 	   C.dd
 	   prune HH C
 Node
    Key
      priddyDifferential
-    (priddyDifferential, ZZ, Matrix, Ring)
+    (priddyDifferential, ZZ, Matrix)
 
 Node
    Key
@@ -531,28 +544,26 @@ TEST ///
 ///
 
 TEST ///
-    S = QQ[x_0,x_1]
     E = QQ[e_0, e_1,e_2, SkewCommutative=>true]
     m = matrix{{e_0, e_0*e_1*e_2}}
-    D = priddyDifferential(-2, m, S)
-    C = priddyComplex(m, S, LengthLimit=>3)
-    assert(D == map(E^{{6}, {8}, {10}, {12}},E^{{5}, {7}, {9}},{{e_0, 0, 0}, {e_0*e_1*e_2, e_0, 0}, {0, e_0*e_1*e_2, e_0}, {0, 0, e_0*e_1*e_2}}))
+    D = priddyDifferential(-2, m)
+    C = priddyComplex(m, LengthLimit => 3)
+    assert(D == map(E^{{6}, {8}, {10}, {12}}, E^{{5}, {7}, {9}},
+	    {{e_0, 0, 0}, {e_0*e_1*e_2, e_0, 0}, {0, e_0*e_1*e_2, e_0}, {0, 0, e_0*e_1*e_2}}))
     assert isWellDefined C
     assert isHomogeneous C
     assert(C.dd_(-2) == D)
 ///
 
-
 TEST ///
     -- Examples tried
     -- This next example doesn't make sense, because one of the forms is even degree.
-    S = QQ[x_0,x_1]
     E = QQ[e_0, e_1, e_2, e_3, SkewCommutative=>true]
     --m = matrix{{e_0*e_1, e_2*e_3}}
     m = matrix{{e_0*e_1*e_2, e_1*e_2*e_3}}
 
-    priddyDifferential(-2, m, S)
-    priddyComplex(m, S, LengthLimit=>3)
+    priddyDifferential(-2, m)
+    priddyComplex(m, LengthLimit => 3)
 ///
 
 TEST /// -- testing with S^1 and E^1
@@ -562,7 +573,7 @@ TEST /// -- testing with S^1 and E^1
   M = S^1
   C = koszulRR(M, Concentration => (-n,0))
   assert(id_C === koszulRR(id_M, Concentration => (-n,0)))
-  P = priddyComplex(vars E, S, LengthLimit => n)
+  P = priddyComplex(vars E, LengthLimit => n)
   assert(C == P)
   F = koszulLL C
   assert(keys F.module == {0,1,2,3})
@@ -619,6 +630,11 @@ TEST ///
   assert isWellDefined koszulRR(freeResolution(coker vars S, LengthLimit => 3), Concentration => (-5,0))
   assert isWellDefined koszulRR(koszulComplex vars S, Concentration => (-5,0))
   -- Note: koszulComplex vars E does not make sense
+
+  assert isWellDefined(C = priddyComplex vars S)
+  assert isWellDefined(koszulLL(C, Concentration => (-5,0)))
+  assert isWellDefined(D = priddyComplex(vars E, LengthLimit => 2))
+  assert isWellDefined(koszulRR D)
 ///
 
 TEST /// -- testing with the Koszul complex
@@ -695,7 +711,7 @@ assert( f == id_(koszulLL(M, Concentration=>(-5,5))))
 
 C = koszulLL(M, Concentration=>(0,5))
 
-P = priddyComplex(vars E, S, LengthLimit=>3)
+P = priddyComplex(vars E, LengthLimit=>3)
 
 
 M = coker matrix{{x_0}}
