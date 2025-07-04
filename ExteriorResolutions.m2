@@ -45,7 +45,7 @@ injectiveResolution Module := Complex => opts -> M -> M.cache.injectiveResolutio
     P := Hom(freeResolution(Hom(M, E), opts), E);
     P.cache.injectiveResolution = M;
     P)
-    
+
 injectiveResolution Complex := Complex => opts -> C -> C.cache.injectiveResolution ??= (
     E := ring C;
     if not isSkewCommutative E then error "expected underlying ring to skew-commutative";
@@ -105,6 +105,7 @@ priddyDifferential(ZZ, Matrix, Ring) := (i, m, S) -> (
     tgt := directSum apply(expTgt, d ->
 	E^{{n+1}+sum(numcols m, i -> d_i * flatten degree(m_i))});
     --
+    -- TODO: can this work on the whole complex at once rather than term by term?
     f := matrix table(numcols monsTgt, numcols monsSrc,
 	(r,c) -> monsTgt_{r} // monsSrc_{c});
     -- TODO: can we avoid sub?
@@ -145,58 +146,46 @@ degreeSupport = M -> (
 
 --------------------------------------------------
 
+koszulDualityFunctorModule = functor -> opts -> M -> M.cache#(functor, opts) ??= (
+    try (lo, hi) := opts.Concentration
+    else (lo, hi) = degreeSupport M;
+
+    A := ring M;
+    n := numgens A - 1;
+    A' := koszulDual A; -- this is A^!
+    ev := map(A', A, vars A'); -- not a map of algebras, just substitutes variables
+
+    -- TODO: what's the right way to make this step uniform?
+    W := if isSkewCommutative A then A'^1 else A'^{n+1};
+    modules := hashTable apply(lo..hi,
+	i -> i => W ** A'^{-i} ** (A' ** part(-i, M)));
+
+    if lo == hi
+    then complex(modules#lo, Base => lo)
+    else complex hashTable apply(lo+1..hi, i -> i => (
+	    -- This is borrowed bgg in the BGG package
+	    src := basis(-i, M);
+	    tar := basis(-i+1, M);
+
+	    -- we construct the differential by factoring it through (vars A) ** src
+	    g := ((vars A) ** src) // tar; -- g is a map from source (vars A) ** src to source tar
+	    -- which makes the traingle involving (vars A) ** src and tar commute
+	    b := (ev g) * ((transpose vars A') ** (ev source src));
+
+	    map(modules#(i-1), modules#i, b))
+	)
+    )
+
 -- RR: Com(S) -> Com(E) is the right-adjoint functor
 koszulRR = method(Options => { Concentration => null })
 -- RR(M)^i = E^*(i) \otimes_k M_i
 -- E^* = Hom_k(E, k) = E(n+1)
-koszulRR Module := Complex => opts -> M -> M.cache#(koszulRR, opts) ??= (
-    S := ring M;
-    n := numgens S - 1;
-    E := koszulDual S;
-    ev := map(E,S,vars E); -- not a map of algebras, just substiuting variables
-    (lo, hi) := if opts.Concentration =!= null then opts.Concentration else degreeSupport M;
-    modules := hashTable apply(lo..hi, i -> i => E^{n+1-i} ** (E ** part(-i, M)));
-    if lo == hi
-    then complex(modules#lo, Base => lo)
-    else complex hashTable apply(lo+1..hi,
-	i -> i => (
-	    src := basis(-i, M);
-	    tar := basis(-i+1, M);
-	    
-	    -- we construct the differential by factoring it through (vars S)**src
-	    g := ((vars S)**src)//tar; -- g is a map from source (vars S)**src to source tar making the traingle involving (vars S)**src and tar commute
-	    b := (ev g)*((transpose vars E)**(ev source src));
-	    -- the above 2 lines  were pasted and modified from the BGG package
-	    
-	    map(modules#(i-1), modules#i, b)
-	    )))
-
---------------------------------------------------
+koszulRR Module := Complex => opts -> (koszulDualityFunctorModule koszulRR) opts
 
 -- LL: Com(E) -> Com(S) is the left-adjoint functor
 koszulLL = method(Options => options koszulRR)
 -- LL(N)^i = S(i) \otimes_k N_i
-koszulLL Module := Complex  => opts -> N -> N.cache#(koszulLL, opts) ??= (
-    E := ring N;
-    n := numgens E - 1;
-    S := koszulDual E;
-    ev := map(S,E,vars S); -- not a map of algebras, just substiuting variables
-    (lo, hi) := if opts.Concentration =!= null then opts.Concentration else degreeSupport N;
-    modules := hashTable apply(lo..hi, i -> i => S^{-i} ** (S ** part(-i, N)));
-    if lo == hi
-    then complex(modules#lo, Base => lo)
-    else complex hashTable apply(lo+1..hi,
-	i -> i => (
-	    src := basis(-i, N);
-	    tar := basis(-i+1, N);
-	    
-	    -- we construct the differential by factoring it through (vars S)**src
-	    g := ((vars E)**src)//tar; -- g is a map from source (vars S)**src to source tar making the traingle involving (vars S)**src and tar commute
-	    b := (ev g)*((transpose vars S)**(ev source src));
-	    -- the above 2 lines  were pasted and modified from the BGG package
-	    
-	    map(modules#(i-1), modules#i, (-1)^i*b)
-	    )))
+koszulLL Module := Complex => opts -> (koszulDualityFunctorModule koszulLL) opts
 
 --------------------------------------------------
 
@@ -209,6 +198,13 @@ koszulDualityFunctorMatrix = functor -> opts -> f -> f.cache#(functor, opts) ??=
     src := functor(source f, opts);
     tar := functor(target f, opts);
     map(tar, src, i -> map(tar_i, src_i, R ** part(-i, f))))
+
+-- RR(y**s) = \sum_{l=0}^n y*e_l ** s*x_l
+koszulRR Matrix := ComplexMap => opts -> (koszulDualityFunctorMatrix koszulRR) opts
+-- LL(s**y) = (-1)^i \sum_{l=0}^n x_l*s \otimes y*e_l
+koszulLL Matrix := ComplexMap => opts -> (koszulDualityFunctorMatrix koszulLL) opts
+
+--------------------------------------------------
 
 koszulDualityFunctorComplex = functor -> opts -> C -> (
     try (lo, hi) := opts.Concentration -- bounds for homological degrees i
@@ -235,6 +231,15 @@ koszulDualityFunctorComplex = functor -> opts -> C -> (
 	)
     )
 
+-- RR(C)^i = \bigoplus_{j\in\ZZ} Hom_k(E(-j), C^{i-j}_j)
+--         = \bigoplus_{j\in\ZZ} (E(-j))^* \otimes_k C^{i-j}_j
+--         = \bigoplus_{j\in\ZZ} E^*(j)    \otimes_k C^{i-j}_j
+koszulRR Complex := Complex => opts -> (koszulDualityFunctorComplex koszulRR) opts
+-- LL(D)^i = \bigoplus_{j\in\ZZ} S(j) \otimes_k D^{i-j}_j
+koszulLL Complex := Complex => opts -> (koszulDualityFunctorComplex koszulLL) opts
+
+--------------------------------------------------
+
 koszulDualityFunctorComplexMap = functor -> opts -> f -> (
     src := functor(C := source f, opts);
     tar := functor(D := target f, opts);
@@ -256,18 +261,6 @@ koszulDualityFunctorComplexMap = functor -> opts -> f -> (
 	    )
 	)
     )
-
--- RR(y**s) = \sum_{l=0}^n y*e_l ** s*x_l
-koszulRR Matrix := ComplexMap => opts -> (koszulDualityFunctorMatrix koszulRR) opts
--- LL(s**y) = (-1)^i \sum_{l=0}^n x_l*s \otimes y*e_l
-koszulLL Matrix := ComplexMap => opts -> (koszulDualityFunctorMatrix koszulLL) opts
-
--- RR(C)^i = \bigoplus_{j\in\ZZ} Hom_k(E(-j), C^{i-j}_j)
---         = \bigoplus_{j\in\ZZ} (E(-j))^* \otimes_k C^{i-j}_j
---         = \bigoplus_{j\in\ZZ} E^*(j)    \otimes_k C^{i-j}_j
-koszulRR Complex := Complex => opts -> (koszulDualityFunctorComplex koszulRR) opts
--- LL(D)^i = \bigoplus_{j\in\ZZ} S(j) \otimes_k D^{i-j}_j
-koszulLL Complex := Complex => opts -> (koszulDualityFunctorComplex koszulLL) opts
 
 -- RR(y**s) = (-1)^i RR(y**s) + y ** dd^C(s) for s \in C^{i-j}_j
 koszulRR ComplexMap := ComplexMap => opts -> (koszulDualityFunctorComplexMap koszulRR) opts
@@ -386,6 +379,7 @@ Node
 XXX
 restart
 needsPackage "ExteriorResolutions"
+check ExteriorResolutions
 *-
 TEST ///
     E = ZZ/101[e_0..e_3,SkewCommutative => true]
@@ -463,7 +457,7 @@ TEST ///
     assert isWellDefined f
     assert isQuasiIsomorphism f
     assert isComplexMorphism f
-    
+
     Mat=random(E^3,E^{-1,-2})
     prune ker Mat
     CMat=complex Mat
@@ -547,7 +541,7 @@ TEST ///
     f = map(S^{-1}^4, S^4, M)
     N = matrix { { S_0, S_1, S_2, S_3 }, {S_1, S_2, S_3, S_0}, {S_2, S_3, S_0, S_1}, {S_3, S_0, S_1, S_2} }
     g = map(S^4, S^{1}^4, N)
-    assert(koszulRR(f, Concentration=>(-5,5)) * koszulRR(g, Concentration=>(-5,5)) == koszulRR(f * g, Concentration=>(-5,5))) 
+    assert(koszulRR(f, Concentration=>(-5,5)) * koszulRR(g, Concentration=>(-5,5)) == koszulRR(f * g, Concentration=>(-5,5)))
 ///
 
 TEST ///
@@ -640,7 +634,7 @@ E = ZZ/101[e_0,e_1,e_2, SkewCommutative=>true]
 -- the following was pasted and modified from the BGG package
 S := ring(M)
 numvarsE := numgens E
-ev := map(E,S,vars E) 
+ev := map(E,S,vars E)
 f0 := basis(i,M)
 f1 := basis(i+1,M)
 -- we construct the differential by factoring it through (vars S)**f0
@@ -650,4 +644,4 @@ b := (ev g)*((transpose vars E)**(ev source f0))
 map(E^{(rank target b):i+1},E^{(rank source b):i}, b)
 
 methods koszulComplex
-code 0 
+code 0
