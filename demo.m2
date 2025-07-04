@@ -7,6 +7,8 @@ needsPackage "ExteriorResolutions"
 
 -- Let's start with defining an exterior algebra
 E = ZZ/11[e_0..e_3, SkewCommutative => true]
+e_1*e_0
+e_0^2
 k = coker vars E -- the residue field is an E-module
 
 -- We compute the injective resolution of k over E
@@ -14,7 +16,9 @@ elapsedTime P = injectiveResolution(k, LengthLimit => 5)
 -- Compare with the Priddy complex on {e_0,e_1,e_2,e_3}
 -- whose terms are P'_i = E ** (S_i)^*
 elapsedTime P' = priddyComplex(vars E, LengthLimit => 5)
-
+betti P == betti P'
+dd^P_(-2)
+dd^P'_(-2)
 augP = coaugmentationMap P
 isQuasiIsomorphism augP
 
@@ -34,7 +38,7 @@ C = Hom(freeResolution(I, LengthLimit => 5), comodule I)
 P = injectiveResolution(C, LengthLimit => 5)
 
 augP = coaugmentationMap P;
-isQuasiIsomorphism augP -- FIXME: is this a bug?
+isQuasiIsomorphism augP
 
 ------------------------------------------
 -- Koszul duality functors between E and S
@@ -67,10 +71,14 @@ isQuasiIsomorphism f
 f = randomComplexMap(C, (priddyComplex vars S ** S^{-3})[-3], Cycle => true)
 isQuasiIsomorphism f
 
+------------------------------------------
+-- Composition of LL and RR
+------------------------------------------
+
 -- LL(RR(S)) = S, but because of bounds
 -- we get a finite length quotient of it
 prune HH koszulLL koszulRR(S^1, Concentration => (-5,0))
-oo == complex comodule truncate(6, S)
+oo == complex comodule truncate(5+1, S)
 
 -- LL(RR(finite length S-module)) is identity
 M = comodule truncate(n+2, S)
@@ -91,6 +99,10 @@ koszulLL oo
 koszulRR(oo, Concentration => (-n-1,n))
 prune canonicalTruncation(oo, (-n, n-1))
 complex N == prune HH oo
+
+------------------------------------------
+-- Functoriality of LL and RR
+------------------------------------------
 
 -- LL is functorial (and RR too)
 f = random(E^{2:1}, E^2)
