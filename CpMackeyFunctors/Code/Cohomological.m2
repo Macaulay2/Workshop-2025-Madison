@@ -44,9 +44,13 @@ resolutionCohomological = method()
 resolutionCohomological(CpMackeyFunctor,ZZ) := List => (M,n) -> (
     if n < 0 then return {};
     k := 0;
+
+    -- check whether existing resolution exists
+    -- k will be the length of the existing resolution
     if M.cache#?"CohProjRes" then (
         k = length M.cache#"CohProjRes";
     ) else (
+        -- initialize resolution if doesn't exist
         M.cache#"CohProjRes" = {makeFreeModuleSurjectionCohomological M};
         k = 1
     );
