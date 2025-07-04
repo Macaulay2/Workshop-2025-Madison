@@ -313,7 +313,7 @@ doc ///
     Key
         (ring, MackeyFunctorHomomorphism)
     Headline
-        returns @TT("ZZ")@
+        returns ZZ
     Description
         Text
             This is a hack needed to make @TO(matrix)@ work correctly.
