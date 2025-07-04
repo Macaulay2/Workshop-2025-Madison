@@ -24,7 +24,7 @@ MultiplicationMatrix(Ring,Ideal,Thing):= (S,I,b) -> (
 	toVector := q -> last coefficients(q,Monomials=>B);
 	Matrep := q -> (M:=toVector(q*B_(0,0));i:=1;while i<r do
 	    (M=M|(toVector (q*B_(0,i))) ; i=i+1); M);
-	lift(Matrep b, coefficientRing C))
+	lift(Matrep b, coefficientRing S))
 
 --We use the implemented matrix representation to calclate the algebraic trace
     
