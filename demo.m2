@@ -1,3 +1,22 @@
+------------------------------------------------------
+-- Demo for homological algebra over exterior algebras
+-- 2025 Macaulay2 workshop in Madison, WI
+------------------------------------------------------
+
+-- Team members:
+--  Andrew Karsten
+--  Boyana Martinova
+--  Caitlin M. Davis
+--  Jiaheng Li
+--  Jianuo Zhou
+--  Mahrud Sayrafi
+--  Penelope Beall
+--  Sreehari Suresh Babu
+--
+-- Team leads:
+--  Michael K. Brown
+--  Gregory G. Smith
+
 restart
 needsPackage "ExteriorResolutions"
 
