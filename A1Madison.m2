@@ -54,12 +54,26 @@ newPackage (
 
 export{
     
+    --AnisotropicDimension.m2
+    "getAnisotropicDimensionQQp",
+    "getAnisotropicDimension",
+    "getWittIndex",
+    
     -- ArithmeticMethods.m2
     "getPadicValuation",
     "getLocalAlgebraBasis",
     
-    --MatrixMethods.m2
-    "diagonalizeViaCongruence",
+    --BuildingForms.m2
+    "makeDiagonalForm",
+    "makeHyperbolicForm",
+    "makePfisterForm",
+    "makeDiagonalUnstableForm",
+    "makeHyperbolicUnstableForm",   
+    
+    --Decomposition.m2
+    "getAnisotropicPart",
+    "getSumDecomposition",
+    "getSumDecompositionString",
     
     --GrothendieckWittClasses.m2    
     "makeGWClass",
@@ -70,8 +84,37 @@ export{
     "addGW",
     "multiplyGW",
 
+    --GWInvariants.m2
+    "getRank",
+    "getSignature",
+    "getIntegralDiscriminant",
+    "getRelevantPrimes",
+    "getHasseWittInvariant",
+    
     --GWTransfer.m2
     "transferGW",
+    
+    --HilbertSymbols.m2
+    "getHilbertSymbolReal",
+    "getHilbertSymbol",
+    
+    --IsomorphismOfForms.m2
+    "isIsomorphicForm",
+    
+    --Isotropy.m2
+    "isAnisotropic",
+    "isIsotropic",
+    
+    --LocalGlobalDegrees.m2
+    "getGlobalA1Degree",
+    "getLocalA1Degree",
+    
+    --MatrixMethods.m2
+    "diagonalizeViaCongruence",
+    
+    --SimplifiedRepresentatives.m2
+    "getDiagonalClass",
+    "getDiagonalEntries",
 
     --TraceAndNorm.m2
     "algebraicTrace",
@@ -86,51 +129,11 @@ export{
     "addGWuDivisorial",
     "getGWClass",
     "UnstableGrothendieckWittClass",
+
+    --UnstableLocalGlobalDegrees.m2
+    "getGlobalUnstableA1Degree",
     "getLocalUnstableA1Degree",
-    
-    --BuildingForms.m2
-    "makeDiagonalForm",
-    "makeHyperbolicForm",
-    "makePfisterForm",
-    "makeDiagonalUnstableForm",
-    "makeHyperbolicUnstableForm",
 
-    --SimplifiedRepresentatives.m2
-    "getDiagonalClass",
-    "getDiagonalEntries",
-    
-    --HilbertSymbols.m2
-    "getHilbertSymbolReal",
-    "getHilbertSymbol",
-    
-    --GWInvariants.m2
-    "getRank",
-    "getSignature",
-    "getIntegralDiscriminant",
-    "getRelevantPrimes",
-    "getHasseWittInvariant",
-
-    --LocalGlobalDegrees.m2
-    "getGlobalA1Degree",
-    "getLocalA1Degree",
-    
-    --IsomorphismOfForms.m2
-    "isIsomorphicForm",
-    
-    --Isotropy.m2
-    "isAnisotropic",
-    "isIsotropic",
-
-    --AnisotropicDimension.m2
-    "getAnisotropicDimensionQQp",
-    "getAnisotropicDimension",
-    "getWittIndex",
-    
-    --Decomposition.m2
-    "getAnisotropicPart",
-    "getSumDecomposition",
-    "getSumDecompositionString"
-    
     }
 
 -- Basic arithmetic, p-adic, and commutative algebra operations we will use
@@ -171,8 +174,11 @@ load "./A1Madison/Code/Decomposition.m2"
 
 -- Unstable Grothendieck-Witt classes 
 load "./A1Madison/Code/UnstableGrothendieckWittClasses.m2"
-load "./A1Madison/Code/UnstableLocalDegrees.m2"
+
+-- Compute traces and norms
 load "./A1Madison/Code/TraceAndNorm.m2"
+
+-- Compute transfer
 load "./A1Madison/Code/GWTransfer.m2"
 
 
