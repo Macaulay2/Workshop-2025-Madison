@@ -91,3 +91,26 @@ makeZeroOnUnderlyingMackeyFunctor(ZZ,Module) := CpMackeyFunctor => (p,M) -> (
     C := map(U,U,id_U);
     makeCpMackeyFunctor(p,R,T,C)
 )
+
+isPrimePower = method()
+isPrimePower(ZZ) := Boolean => (n) -> (
+    if n < 1 then 
+        return false;
+    return #(factor n) <= 1
+)
+
+makeKGroupMackeyFunctor = method()
+makeKGroupMackeyFunctor(ZZ,ZZ,ZZ) := CpMackeyFunctor => (p,q,n) -> (
+    if not isPrime p then 
+        error "p must be prime";
+    if not isPrimePower q then
+        error "q must be a prime power";
+    if n < 1 then
+        error "n must be a positive integer";
+    und := coker matrix {{q^(n*p) - 1}};
+    fix := coker matrix {{q^n - 1}};
+    tr := inducedMap(fix, und, matrix {{1}});
+    re := inducedMap(und, fix, matrix {{sum (for i to p-1 list q^(n*i))}});
+    conj := inducedMap(und, und, matrix {{q^n}});
+    makeCpMackeyFunctor(p, re, tr, conj)
+)

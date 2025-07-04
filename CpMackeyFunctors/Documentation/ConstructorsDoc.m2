@@ -323,3 +323,26 @@ doc ///
     SeeAlso
         "constructing examples of Mackey functors"
 ///
+
+doc ///
+    Key
+        makeKGroupMackeyFunctor
+        (makeKGroupMackeyFunctor, ZZ, ZZ, ZZ)
+    Headline
+        constructs the $K$-group Mackey functor
+    Usage
+        makeKGroupMackeyFunctor(p,q,n)
+    Inputs
+        p : ZZ
+            a prime number $p$
+        q : ZZ
+            a prime power $q$
+        n : ZZ
+            a positive integer $n$
+    Outputs
+        : CpMackeyFunctor
+            the fixed point $C_p$-Mackey functor of the algebraic $K$-group $K_{2n-1}(\mathbb{F}_{q^p})$.
+    Description
+        Example
+            makeKGroupMackeyFunctor(5,9,4)
+///
