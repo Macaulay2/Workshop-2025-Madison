@@ -321,38 +321,38 @@ doc ///
             The type `EliminationTemplate` represents objects that store the data required for elimination template computations.
             An `EliminationTemplate` object encodes the action variable, the ideal, and a cache for storing computed template data such as shifts, monomial partitions, and template matrices.
             These objects are constructed using the function `eliminationTemplate` and are used as input to other functions in this package, such as `getTemplateMatrix`, `getActionMatrix`, and `templateSolve`.
-    Example
-        R = QQ[x,y]
-        J = ideal(x^2+y^2-1, x^2+x*y+y^2-1)
-        E = eliminationTemplate(x, J)
-        E
+        Example
+          R = QQ[x,y]
+          J = ideal(x^2+y^2-1, x^2+x*y+y^2-1)
+          E = eliminationTemplate(x, J)
+          E
 ///
 
 doc ///
  Node
     Key
-        eliminationTemplate
-        (eliminationTemplate, RingElement, Ideal)
+      eliminationTemplate
+      (eliminationTemplate, RingElement, Ideal)
     Headline
-        Constructor for a EliminationTemplate object
+      Constructor for a EliminationTemplate object
     Usage
-        E = eliminationTemplate(a, J)
+      E = eliminationTemplate(a, J)
     Inputs
-        a:RingElement
-            the action polynomial defining a multiplication matrix
-        J:Ideal
-            a zero-dimensional ideal
+      a:RingElement
+        the action polynomial defining a multiplication matrix
+      J:Ideal
+        a zero-dimensional ideal
     Outputs
-        E:EliminationTemplate
-            An EliminationTemplate object encoding the data for elimination template computations
+      E:EliminationTemplate
+        An EliminationTemplate object encoding the data for elimination template computations
     Description
-        Text
-            This function constructs an EliminationTemplate object, which stores the action variable and ideal, and provides a cache for storing computed template data.
-            The EliminationTemplate object can be used with other functions in this package to compute template matrices, action matrices, and solve polynomial systems.
-     Example
-            R = QQ[x,y]
-            J = ideal(x^2+y^2-1, x^2+x*y+y^2-1)
-            E = eliminationTemplate(x, J)
+      Text
+        This function constructs an EliminationTemplate object, which stores the action variable and ideal, and provides a cache for storing computed template data.
+        The EliminationTemplate object can be used with other functions in this package to compute template matrices, action matrices, and solve polynomial systems.
+      Example
+        R = QQ[x,y]
+        J = ideal(x^2+y^2-1, x^2+x*y+y^2-1)
+        E = eliminationTemplate(x, J)
 ///
 
 doc ///
@@ -476,7 +476,7 @@ J = ideal(x^3+y^3+z^3-4,x^2-y-z-1,x-y^2+z-3)
 E = eliminationTemplate(x, J)
 --H0 = getH0(x,J,Strategy=>"Larsson")
 --H0 = getH0(x,J,Strategy=> null)
-getTemplateMatrix(E, Strategy => "Larsson")
+getTemplateMatrix(E, Strategy)
 getTemplateMatrix(E, Strategy => "Greedy")
 getActionMatrix E
 eigenvalues getActionMatrix E
