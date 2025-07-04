@@ -257,9 +257,9 @@ MackeyFunctorHomomorphism ^ ZZ := MackeyFunctorHomomorphism => (f,n) -> (
     if n == -1 then (if isIsomorphism f then inverse f else error("-- f not invertible"));
     if source f != target f then error("-- can only iterate self-maps");
     g := if n < 0 then inverse f else f;
-    for i to abs(n)-1 do g = f * g;
+    for i to abs(n)-2 do g = f * g;
     g
-    )
+)
 
 isTrivialMackeyFunctor = method()
 isTrivialMackeyFunctor(CpMackeyFunctor) := Boolean => F -> (
