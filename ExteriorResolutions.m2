@@ -71,7 +71,7 @@ injectiveResolutionMap Complex := ComplexMap => opts -> C -> (
 	    map(CDoubleDual_i, C_i, matrix ddh)
 	    )
 	);
-    Hom(resolutionMap(Hom(C,W^1)),W^1)* DDualMap
+    Hom(resolutionMap(Hom(C,W^1),opts),W^1)* DDualMap
     --Found this code in Divisor package, seems to work, need to cache hfC in injRes --Sreehari
     --(lo,hi) := concentration C;
     --tempHash := new MutableHashTable;
@@ -455,7 +455,7 @@ TEST ///
     Res = injectiveResolution(C, LengthLimit => 4)
     assert(Res == C)
     assert isWellDefined Res
-    f = injectiveResolutionMap(C,LengthLimit=>5)-- new code introduces a bug here, cache hfC
+    f = injectiveResolutionMap(C,LengthLimit=>5)
     assert isWellDefined f
     assert isQuasiIsomorphism f
 
@@ -468,6 +468,8 @@ TEST ///
     assert isWellDefined f
     assert isQuasiIsomorphism f
     assert isComplexMorphism f
+    source f==C
+    target f==P --target f can be longer than P, so this can be false
 
     Mat=random(E^3,E^{-1,-2})
     prune ker Mat
