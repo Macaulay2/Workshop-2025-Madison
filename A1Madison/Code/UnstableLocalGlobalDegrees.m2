@@ -113,7 +113,7 @@ gY = sub(g,{x => Y})
 bez = sub((fX * gY - fY * gX)/(X-Y),S)
 
 
--- test UGHHHH
+-- test
 
     -- Create the Bezoutian matrix B for the symmetric bilinear form by reading off the coefficients. 
     -- B is an (m x m) matrix. The coefficient B_(i,j) is the coefficient of the (ith basis vector x jth basis vector) in the tensor product.
