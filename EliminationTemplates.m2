@@ -477,6 +477,17 @@ H0 = getH0(x,J,Strategy=>"Larsson")
 image(syz(gens(J)))
 ///
 
+TEST ///
+-- 5-point essential matrix problem
+R = QQ[x,y,z]
+Es = apply(4, i -> random(QQ^3, QQ^3))
+E = x * Es#0 + y * Es#1 + z * Es#2 + Es#3
+I = ideal(E*transpose E * E - (1/2) * trace(E * transpose E) * E)
+l = random(1, R)
+sols=templateSolve(l, I)
+assert(all(sols, x -> 1e-6 > norm sub(sub(gens I, CC[gens R]), matrix{x})))
+///
+
 end--
 
 -* Development section *-
@@ -524,6 +535,9 @@ uninstallPackage "EliminationTemplates"
 restart
 installPackage "EliminationTemplates"
 check "EliminationTemplates"
+
+
+
 help EliminationTemplates
 help getTemplate
 
