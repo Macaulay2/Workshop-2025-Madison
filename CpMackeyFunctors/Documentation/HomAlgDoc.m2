@@ -40,11 +40,11 @@ Node
             N = cokernel(matrix({{3}}));
             M = makeZeroOnUnderlyingMackeyFunctor (3,N);
             TorCoh(3,M,M)
-
 ///
 
 
 doc ///
+Node
     Key
         (Ext,ZZ,CpMackeyFunctor,CpMackeyFunctor)
     Headline
@@ -61,4 +61,28 @@ doc ///
     Description
         Text
             Given two @TO2(CpMackeyFunctor,"Cp-Mackey functors")@ $M$ and $N$, we can compute their $i$th Ext.
+        Example
+            RU = makeComplexRepresentationMackeyFunctor(3);
+            prune Ext^4(RU,RU)
+Node
+    Key
+        (ExtCoh,ZZ,CpMackeyFunctor,CpMackeyFunctor)
+    Headline
+        computes Ext of two cohomological Cp-Mackey fuctors
+    Usage
+        Ext(i,M,N)
+    Inputs
+        i : ZZ
+        M : CpMackeyFunctor
+        N : CpMackeyFunctor
+    Outputs
+        : CpMackeyFunctor
+            the $i$th cohomological Ext Cp-Mackey Functor of $M$ and $N$
+    Description
+        Text
+            Given two cohomological @TO2(CpMackeyFunctor,"Cp-Mackey functors")@ $M$ and $N$, we can compute their $i$th Ext Mackey functor in cohomological Mackey functors.
+        Example
+            N = cokernel(matrix({{3}}));
+            M = makeZeroOnUnderlyingMackeyFunctor (3,N);
+            prune ExtCoh(3,M,M)
 ///
