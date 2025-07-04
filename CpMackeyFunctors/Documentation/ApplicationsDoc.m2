@@ -37,6 +37,12 @@ doc ///
             DZ = makeOrbitMackeyFunctor(11,id_(ZZ^1))
             for i to 3 do (print (prune TorCoh(i,B1,B1)))
             for i to 3 do (print (prune TorCoh(i,DZ,DZ)))
+        Text
+            @UL{
+                ("[Arn] J.E. Arnold, ", EM"The permutation projective dimension of odd p-groups.", " Comm. Algebra 13, 387-397 (1985)."),
+                ("[BSW] S. Bouc, R. Stancu, P. Webb, ", EM"On the projective dimensions of Mackey functors", " Algebr. Represent. Theory 20 (2017), no. 6, 1467-1481."),
+                ("[Zen] M. Zeng, ", EM"Mackey functors, equviariant Eilenberg-Mac Lane Spectra and their slices.", " PhD. Thesis")
+            }@
     SeeAlso
         "background on Mackey functors"
         "the abelian category of Mackey functors"
