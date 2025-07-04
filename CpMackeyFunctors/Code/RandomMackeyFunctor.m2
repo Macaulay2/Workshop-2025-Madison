@@ -30,13 +30,10 @@ makeRandomCpMackeyFunctor(ZZ, List):= CpMackeyFunctor => opts -> (p, L) -> (
     -- Build the Macky functor B^n + A^m
     X := directSum ((for i to n-1 list B) | (for j to m-1 list A));
 
-    XUnderlying := X.Underlying;
-    XFixed := X.Fixed;
-
     -- Pick random elements in the underlying and fixed modules,
     -- yielding a random map from B^k + A^l
-    RandomUnderlyingElements := getRandomElementsInModule(XUnderlying, k);
-    RandomFixedElements := getRandomElementsInModule(XFixed, l);
+    RandomUnderlyingElements := getRandomElementsInModule(X.Underlying, k);
+    RandomFixedElements := getRandomElementsInModule(X.Fixed, l);
 
     return prune cokernel makeUniversalMap(X, RandomUnderlyingElements, RandomFixedElements)
 )

@@ -160,7 +160,7 @@ makeUniversalMapFixed(CpMackeyFunctor,Matrix) := MackeyFunctorHomomorphism => (M
         X := inducedMap(M.Fixed, , matrix x_i);
         -- TODO: should we error check element containment which is seemingly not implemented?
         p := M.PrimeOrder;
-        A := makeFixedFreeMackeyFunctor(p);
+        A := makeBurnsideMackeyFunctor(p);
         U := M.Res * X;
         F := X | (M.Trans * M.Res * X);
         map(M, A, U, F)
