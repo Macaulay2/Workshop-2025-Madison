@@ -170,12 +170,6 @@ koszulRR Module := Complex => opts -> M -> M.cache#(koszulRR, opts) ??= (
 	    
 	    map(modules#(i-1), modules#i, b)
 	    )))
--- RR(y**s) = \sum_{l=0}^n y*e_l ** s*x_l
-koszulRR Matrix := ComplexMap => opts -> f -> f.cache#(koszulRR, opts) ??= (
-    E := koszulDual ring f;
-    src := koszulRR(source f, opts);
-    tar := koszulRR(target f, opts);
-    map(tar, src, i -> map(tar_i, src_i, E ** part(-i, f))))
 
 --------------------------------------------------
 
@@ -203,18 +197,19 @@ koszulLL Module := Complex  => opts -> N -> N.cache#(koszulLL, opts) ??= (
 	    
 	    map(modules#(i-1), modules#i, (-1)^i*b)
 	    )))
--- LL(s**y) = (-1)^i \sum_{l=0}^n x_l*s \otimes y*e_l
-koszulLL Matrix := ComplexMap => opts -> f -> f.cache#(koszulLL, opts) ??= (
-    S := koszulDual ring f;
-    src := koszulLL(source f, opts);
-    tar := koszulLL(target f, opts);
-    map(tar, src, i -> map(tar_i, src_i, S ** part(-i, f))))
 
 --------------------------------------------------
 
 -- while koszulRR(Module) and koszulLL(Module) are different,
--- the implementations of koszulRR(Complex) and koszulLL(Complex)
--- are identical, hence we combine them as follows.
+-- the implementations of koszulRR and koszulLL are identical
+-- for matrices, complexes, and complex maps,
+-- hence we combine them as follows.
+koszulDualityFunctorMatrix = functor -> opts -> f -> f.cache#(functor, opts) ??= (
+    R := koszulDual ring f;
+    src := functor(source f, opts);
+    tar := functor(target f, opts);
+    map(tar, src, i -> map(tar_i, src_i, R ** part(-i, f))))
+
 koszulDualityFunctorComplex = functor -> opts -> C -> (
     try (lo, hi) := opts.Concentration -- bounds for homological degrees i
     else error "expected a range provided as Concentration => {lo, hi}";
@@ -261,6 +256,11 @@ koszulDualityFunctorComplexMap = functor -> opts -> f -> (
 	    )
 	)
     )
+
+-- RR(y**s) = \sum_{l=0}^n y*e_l ** s*x_l
+koszulRR Matrix := ComplexMap => opts -> (koszulDualityFunctorMatrix koszulRR) opts
+-- LL(s**y) = (-1)^i \sum_{l=0}^n x_l*s \otimes y*e_l
+koszulLL Matrix := ComplexMap => opts -> (koszulDualityFunctorMatrix koszulLL) opts
 
 -- RR(C)^i = \bigoplus_{j\in\ZZ} Hom_k(E(-j), C^{i-j}_j)
 --         = \bigoplus_{j\in\ZZ} (E(-j))^* \otimes_k C^{i-j}_j
@@ -597,13 +597,13 @@ TEST ///
 
 end--
 
-check ExteriorResolutions
 --------------------------------------------------
 --- Development
 --------------------------------------------------
 
 restart
 needsPackage "ExteriorResolutions"
+check ExteriorResolutions
 
 (S,E)= koszulPair(1, ZZ/101)
 
