@@ -282,6 +282,9 @@ copyTemplate(EliminationTemplate, Ideal) := o -> (E,J) -> (
 
 beginDocumentation()
 
+
+
+
 doc ///
  Node
   Key
@@ -306,6 +309,24 @@ doc ///
 	{"Optimizing Elimination Templates by Greedy Parameter Search, Martyushev-Vrablikova-Pajdla", EM "CVPR 2022"},
 	{"Efficient solvers for minimal problems by syzygy-based reduction, Larsson-Oskarsson-Astrom", EM "CVPR 2017"}
 	}@
+///
+
+doc ///
+ Node
+    Key
+        EliminationTemplate
+    Headline
+        Type for elimination template objects
+    Description
+        Text
+            The type `EliminationTemplate` represents objects that store the data required for elimination template computations.
+            An `EliminationTemplate` object encodes the action variable, the ideal, and a cache for storing computed template data such as shifts, monomial partitions, and template matrices.
+            These objects are constructed using the function `eliminationTemplate` and are used as input to other functions in this package, such as `getTemplateMatrix`, `getActionMatrix`, and `templateSolve`.
+    Example
+        R = QQ[x,y]
+        J = ideal(x^2+y^2-1, x^2+x*y+y^2-1)
+        E = eliminationTemplate(x, J)
+        E
 ///
 
 doc ///
