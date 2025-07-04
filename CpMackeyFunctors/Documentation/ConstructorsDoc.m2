@@ -16,10 +16,7 @@ doc ///
             M:=makeCpMackeyFunctor(2,R,T,C)
         
         Text
-            The output of the @TO("makeCpMackeyFunctor")@ method is a @TO("CpMackeyFunctor")@, which is a new @TO2(Type,"type")@ implemented in this package. Under the hood it is a @TO2("Macaulay2Doc :: hash tables","hash table")@, encoding all the data of the Mackey functor. The underlying and fixed modules can be recovered with the @TO("getUnderlyingModule")@ and @TO("getFixedModule")@ methods, and the homomorphisms in the data can be recovered from @TO("getRestriction")@, @TO("getTransfer")@, and @TO("getConjugation")@.
-        
-        Example
-            getRestriction M
+            The output of the @TO("makeCpMackeyFunctor")@ method is a @TO("CpMackeyFunctor")@, which is a new @TO2(Type,"type")@ implemented in this package. Under the hood it is a @TO2("Macaulay2Doc :: hash tables","hash table")@, encoding all the data of the Mackey functor. The underlying and fixed modules can be recovered with the @TO("Underlying")@ and @TO("Fixed")@ keys, and the homomorphisms in the data can be recovered from @TO("Res")@, @TO("Trans")@, and @TO("Conj")@ keys.
 
         Text
             {\bf Pruning:} Any time we might need a nicer, more readable form of a Mackey functor, we can use the @TO2((prune,CpMackeyFunctor),"prune")@ method to simplify the presentation of the underlying/fixed modules.
@@ -71,8 +68,7 @@ doc ///
             makeRandomCpMackeyFunctor(3)
             prune makeRandomCpMackeyFunctor(3,GenBound=>20)
         Text
-            {\bf Remark:} What makes this possible is the fact that it is computationally very easy to cook up a random map $\underline{A}^k \oplus \underline{B}^\ell \to \underline{A}^n \oplus \underline{B}^m$ using the universal properties of the functors $\underline{A}$ and $\underline{B}$. Since $\underline{A}$ corepresents the @TO2(getFixedModule,"fixed module")@ functor and $\underline{B}$ corepresents the @TO2(getUnderlyingModule,"underlying module")@ functor, we can determine random maps of the form $\underline{A}^k \oplus \underline{B}^\ell \to M$ by picking a @TO2((random,List,Module),"random list of elements")@ from the fixed and underlying modules of any $M$.
-
+            {\bf Remark:} What makes this possible is the fact that it is computationally very easy to cook up a random map $\underline{A}^k \oplus \underline{B}^\ell \to \underline{A}^n \oplus \underline{B}^m$ using the universal properties of the functors $\underline{A}$ and $\underline{B}$. Since $\underline{A}$ corepresents the @TO2(Fixed,"fixed module")@ functor and $\underline{B}$ corepresents the @TO2(Underlying,"underlying module")@ functor, we can determine random maps of the form $\underline{A}^k \oplus \underline{B}^\ell \to M$ by picking a @TO2((random,List,Module),"random list of elements")@ from the fixed and underlying modules of any $M$.
     SeeAlso
         "background on Mackey functors"
         "the abelian category of Mackey functors"
@@ -88,10 +84,9 @@ doc ///
         constructs the Burnside Mackey functor
     Usage
         makeBurnsideMackeyFunctor(p)
-        makeFixedFreeMackeyFunctor(p)
     Inputs 
         p : ZZ
-            a prime number=> {
+            a prime number $p$
     Outputs
         : CpMackeyFunctor
             the $C_p$-Mackey functor $\underline{A}$

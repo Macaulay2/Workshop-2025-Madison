@@ -22,14 +22,14 @@ isWellDefined MackeyFunctorHomomorphism := Boolean => F ->(
     if not (F.Domain.PrimeOrder == F.Codomain.PrimeOrder) then return false;
 
     -- Verify F.UnderlyingMap and F.FixedMap have the right domain and codomain
-    if not (source F.UnderlyingMap == getUnderlyingModule F.Domain and target F.UnderlyingMap == getUnderlyingModule F.Codomain) then return false;
-    if not (source F.FixedMap == getFixedModule F.Domain and target F.FixedMap == getFixedModule F.Codomain) then return false;
+    if not (source F.UnderlyingMap == F.Domain.Underlying and target F.UnderlyingMap == F.Codomain.Underlying) then return false;
+    if not (source F.FixedMap == F.Domain.Fixed and target F.FixedMap == F.Codomain.Fixed) then return false;
 
     -- Check commutes with restriction
     if not (F.UnderlyingMap * F.Domain.Res == F.Codomain.Res * F.FixedMap) then (print " -- the given morphism does not commute with restriction"; return false);
 
     -- Check commutes with transfer
-    if not (F.FixedMap * F.Domain.Tr == F.Codomain.Tr * F.UnderlyingMap) then (print " -- the given morphism does not commute with transfer"; return false);
+    if not (F.FixedMap * F.Domain.Trans == F.Codomain.Trans * F.UnderlyingMap) then (print " -- the given morphism does not commute with transfer"; return false);
 
     -- Check commutes with conjugation
     if not (F.UnderlyingMap * F.Domain.Conj == F.Codomain.Conj * F.UnderlyingMap) then (print " -- the given morphism does not commute with conjugation"; return false);
@@ -46,8 +46,8 @@ map(CpMackeyFunctor, CpMackeyFunctor, Matrix, Matrix) := MackeyFunctorHomomorphi
     F := new MackeyFunctorHomomorphism from {
         symbol Codomain => N,
         symbol Domain => M,
-        symbol UnderlyingMap => map(getUnderlyingModule(N),getUnderlyingModule(M),u),
-        symbol FixedMap =>  map(getFixedModule(N),getFixedModule(M),f),
+        symbol UnderlyingMap => map(N.Underlying,M.Underlying,u),
+        symbol FixedMap =>  map(N.Fixed,M.Fixed,f),
         symbol cache => new CacheTable
         };
     if isWellDefined F then (
@@ -146,7 +146,7 @@ complexLinearizationMap(ZZ) := MackeyFunctorHomomorphism => p -> (
 realLinearizationMap = method()
 realLinearizationMap(ZZ) := MackeyFunctorHomomorphism => p -> (
     RO := makeRealRepresentationMackeyFunctor p;
-    map(RO, makeBurnsideMackeyFunctor p, matrix {{1}}, matrix {{1,1}} || matrix (for i to (rank (getFixedModule RO) - 2) list {0,1}))
+    map(RO, makeBurnsideMackeyFunctor p, matrix {{1}}, matrix {{1,1}} || matrix (for i to (rank (RO.Fixed) - 2) list {0,1}))
 )
 
 makeUniversalMapFixed = method()
@@ -162,7 +162,7 @@ makeUniversalMapFixed(CpMackeyFunctor,Matrix) := MackeyFunctorHomomorphism => (M
         p := M.PrimeOrder;
         A := makeFixedFreeMackeyFunctor(p);
         U := M.Res * X;
-        F := X | (M.Tr * M.Res * X);
+        F := X | (M.Trans * M.Res * X);
         map(M, A, U, F)
 	)};
     matrix L
@@ -182,7 +182,7 @@ makeUniversalMapUnderlying(CpMackeyFunctor,Matrix) := MackeyFunctorHomomorphism 
         p := M.PrimeOrder;
         B := makeUnderlyingFreeMackeyFunctor(p);
         U := matrix {for i to p-1 list ((M.Conj)^i) * X};
-        F := M.Tr * X;
+        F := M.Trans * X;
         map(M, B, U, F)
 	)};
     matrix L
@@ -226,7 +226,7 @@ MackeyFunctorHomomorphism * MackeyFunctorHomomorphism := MackeyFunctorHomomorphi
 
 -- Direct sums of homomorphisms
 MackeyFunctorHomomorphism.directSum = args -> (
-    if not same ((args/source)/getPrimeOrder) then error "-- Prime not compatible";
+    if not same apply(args, f -> (source f).PrimeOrder) then error "-- Prime not compatible";
     Src := directSum(args/source);
     Tgt := directSum(args/target);
     B := directSum(apply(args,a->a.UnderlyingMap));
@@ -236,16 +236,6 @@ MackeyFunctorHomomorphism.directSum = args -> (
     )
 MackeyFunctorHomomorphism ++ MackeyFunctorHomomorphism := MackeyFunctorHomomorphism => (F, G) -> MackeyFunctorHomomorphism.directSum(F, G)
 directSum MackeyFunctorHomomorphism := MackeyFunctorHomomorphism => F -> MackeyFunctorHomomorphism.directSum(1 : F)
-
-getUnderlyingMap = method()
-getUnderlyingMap(MackeyFunctorHomomorphism) := CpMackeyFunctor => F -> (
-    F.UnderlyingMap
-)
-
-getFixedMap = method()
-getFixedMap(MackeyFunctorHomomorphism) := CpMackeyFunctor => F -> (
-    F.FixedMap
-)
 
 -- Checking if a morphism is an iso.
 isIsomorphism(MackeyFunctorHomomorphism) := Boolean => F -> (
@@ -273,7 +263,7 @@ MackeyFunctorHomomorphism ^ ZZ := MackeyFunctorHomomorphism => (f,n) -> (
 
 isTrivialMackeyFunctor = method()
 isTrivialMackeyFunctor(CpMackeyFunctor) := Boolean => F -> (
-    getFixedModule(F) == 0 and getUnderlyingModule(F) == 0
+    F.Fixed == 0 and F.Underlying == 0
 )
 
 -- Equality of morphisms
@@ -296,19 +286,19 @@ prune MackeyFunctorHomomorphism := MackeyFunctorHomomorphism => opts -> f -> (
 
 -- block homomorphisms
 MackeyFunctorHomomorphism | MackeyFunctorHomomorphism := MackeyFunctorHomomorphism => MackeyFunctorHomomorphism.concatCols = maps -> (
-    if not all(maps, f -> target f === target maps#0) or not all(maps, f -> getPrimeOrder source f === getPrimeOrder source maps#0) then
+    if not all(maps, f -> target f === target maps#0) or not all(maps, f -> (source f).PrimeOrder === (source maps#0).PrimeOrder) then
         error "MackeyFunctorHomomorphism.concatCols: all maps must have the same target and prime order";
     if #maps === 0 then
         error "MackeyFunctorHomomorphism.concatCols: no maps provided";
-    map(target maps#0, directSum apply(maps, source), concatCols apply(maps, getUnderlyingMap), concatCols apply(maps, getFixedMap))
+    map(target maps#0, directSum apply(maps, source), concatCols apply(maps, f -> f.UnderlyingMap), concatCols apply(maps, f -> f.FixedMap))
 )
 
 MackeyFunctorHomomorphism || MackeyFunctorHomomorphism := MackeyFunctorHomomorphism => MackeyFunctorHomomorphism.concatRows = maps -> (
-    if not all(maps, f -> source f === source maps#0) or not all(maps, f -> getPrimeOrder source f === getPrimeOrder source maps#0) then
+    if not all(maps, f -> source f === source maps#0) or not all(maps, f -> (source f).PrimeOrder === (source maps#0).PrimeOrder) then
         error "MackeyFunctorHomomorphism.concatRows: all maps must have the same source and prime order";
     if #maps === 0 then
         error "MackeyFunctorHomomorphism.concatRows: no maps provided";
-    map(directSum apply(maps, target), source maps#0, concatRows apply(maps, getUnderlyingMap), concatRows apply(maps, getFixedMap))
+    map(directSum apply(maps, target), source maps#0, concatRows apply(maps, f -> f.UnderlyingMap), concatRows apply(maps, f -> f.FixedMap))
 )
 
 MackeyFunctorHomomorphism.concatBlocks = maps -> MackeyFunctorHomomorphism.concatRows apply(maps, MackeyFunctorHomomorphism.concatCols)

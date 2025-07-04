@@ -50,12 +50,12 @@ load "./CpMackeyFunctors/Code/MackeyFunctor.m2"
 export{
     "CpMackeyFunctor",
     "makeCpMackeyFunctor",
-    "getPrimeOrder",
-    "getUnderlyingModule",
-    "getFixedModule",
-    "getRestriction",
-    "getTransfer",
-    "getConjugation",
+    "PrimeOrder",
+    "Res",
+    "Trans",
+    "Conj",
+    "Underlying",
+    "Fixed",
     "isCohomological",
     "drawVerticalCpMackeyFunctor"
 }
@@ -84,8 +84,6 @@ export{
     "FixedMap",
     "complexLinearizationMap",
     "realLinearizationMap",
-    "getUnderlyingMap",
-    "getFixedMap",
     "isTrivialMackeyFunctor",
 }
 

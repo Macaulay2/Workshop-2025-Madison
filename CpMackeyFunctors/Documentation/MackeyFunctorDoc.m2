@@ -10,32 +10,22 @@ doc ///
             The keys available (internally) in the hash table are as follows, together with their external {\tt get} methods:
             
             @UL {
-                (TT ".PrimeOrder", " yields the ", TO2(ZZ,"order"), " of the cyclic group over which we're working. Accesible via the  ", TO "getPrimeOrder", " method"),
+                (TT ".PrimeOrder", " yields the ", TO2(ZZ,"order"), " of the cyclic group over which we're working."),
                 (TT ".Underlying", 
                 " encodes the ", TO "module", " ",
-                TEX"$M(C_p/e)$",
-                ". It can be accessed via the ",
-                TO "getUnderlyingModule", " method."),
+                TEX"$M(C_p/e)$"),
                 (TT ".Fixed",
                 " encodes the ",TO "module", " ",
-                TEX"$M(C_p/C_p)$",
-                ". It can be accessed via the ",
-                TO "getFixedModule", " method."),
+                TEX"$M(C_p/C_p)$"),
                 (TT ".Res",
                 " encodes the restriction ", TO2("Macaulay2Doc :: module homomorphisms","homomorphism")," ",
-                TEX"$M(C_p/C_p) \\to M(C_p/e)$",
-                ". It can be accessed via the ",
-                TO "getRestriction", " method."),
+                TEX"$M(C_p/C_p) \\to M(C_p/e)$"),
                 (TT ".Tr",
                 " encodes the transfer ", TO2("Macaulay2Doc :: module homomorphisms","homomorphism")," ",
-                TEX"$M(C_p/e) \\to M(C_p/C_p)$",
-                ". It can be accessed via the ",
-                TO "getTransfer", " method."),
+                TEX"$M(C_p/e) \\to M(C_p/C_p)$"),
                 (TT ".Conj",
                 " encodes the conjugation ", TO2("Macaulay2Doc :: module homomorphisms","homomorphism")," ",
-                TEX"$M(C_p/e) \\to M(C_p/e)$",
-                ". It can be accessed via the ",
-                TO "getConjugation", " method."),
+                TEX"$M(C_p/e) \\to M(C_p/e)$"),
             }@
 
             {\bf Constructing new Mackey functors:}
@@ -50,135 +40,6 @@ doc ///
     SeeAlso
         "background on Mackey functors"
         CpMackeyFunctor
-///
-
-doc ///
-    Key
-        getPrimeOrder
-    Headline
-        getPrimeOrder
-    Usage
-        getPrimeOrder M
-    Inputs
-        M : CpMackeyFunctor
-    Outputs
-        p : ZZ
-            the order of the cyclic group $C_p$ over which $M$ is defined
-    Description
-        Text
-            Given a Mackey functor $M$ defined over $C_p$, this method returns $p$.
-    
-    SeeAlso
-        "background on Mackey functors"
-        CpMackeyFunctor
-///
-
-doc ///
-    Key
-        getUnderlyingModule
-    Headline
-        getUnderlyingModule
-    Usage
-        getUnderlyingModule M
-    Inputs
-        M : CpMackeyFunctor
-    Outputs
-        : Module
-            the underlying module $M(C_p/e)$
-    Description
-        Text
-            Returns the underlying module $M(C_p/e)$ of any Mackey functor $M$.
-    SeeAlso
-        "background on Mackey functors"
-        CpMackeyFunctor
-        getFixedModule
-///
-
-doc ///
-    Key
-        getFixedModule
-    Headline
-        getFixedModule
-    Usage
-        getFixedModule M
-    Inputs
-        M : CpMackeyFunctor
-    Outputs
-        : Module
-            the fixed module $M(C_p/C_p)$
-    Description
-        Text
-            Returns the underlying fixed module $M(C_p/C_p)$ of any Mackey functor $M$.
-    SeeAlso
-        "background on Mackey functors"
-        CpMackeyFunctor
-        getUnderlyingModule
-///
-
-doc ///
-    Key
-        getRestriction
-    Headline
-        getRestriction
-    Usage
-        getRestriction M
-    Inputs
-        M : CpMackeyFunctor
-    Outputs
-        : Matrix
-            the restriction map in $M$
-    Description
-        Text
-            Returns the restriction homomorphism in $M$.
-    SeeAlso
-        "background on Mackey functors"
-        CpMackeyFunctor
-        getTransfer
-        getConjugation
-///
-
-doc ///
-    Key
-        getTransfer
-    Headline
-        getTransfer
-    Usage
-        getTransfer M
-    Inputs
-        M : CpMackeyFunctor
-    Outputs
-        : Matrix
-            the transfer map in $M$
-    Description
-        Text
-            Returns the transfer homomorphism in $M$.
-    SeeAlso
-        "background on Mackey functors"
-        CpMackeyFunctor
-        getRestriction
-        getConjugation
-///
-
-doc ///
-    Key
-        getConjugation
-    Headline
-        getConjugation
-    Usage
-        getConjugation M
-    Inputs
-        M : CpMackeyFunctor
-    Outputs
-        : Matrix
-            the conjugation map in $M$
-    Description
-        Text
-            Returns the conjugation homomorphism in $M$.
-    SeeAlso
-        "background on Mackey functors"
-        CpMackeyFunctor
-        getRestriction
-        getTransfer
 ///
 
 doc ///

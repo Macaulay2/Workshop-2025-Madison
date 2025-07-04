@@ -12,5 +12,5 @@ MF := makeCpMackeyFunctor(2,r,t,c)
 d = resolutionCohomological(MF,3)
 for i to (length d) - 2 do (
     comp = d#i * d#(i+1);
-    assert(getUnderlyingMap(comp) == 0 and getFixedMap(comp) == 0)
+    assert(comp.UnderlyingMap == 0 and comp.FixedMap == 0)
 )

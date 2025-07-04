@@ -4,13 +4,13 @@ needsPackage "Isomorphism"
 -- Verify that the dimensions match up when box product with Burnside
 A = makeBurnsideMackeyFunctor(7)
 R = makeComplexRepresentationMackeyFunctor(7)
-assert(rank getUnderlyingModule R == rank getUnderlyingModule (A**R))
-assert(rank getUnderlyingModule R == rank getUnderlyingModule (R**A))
-assert(rank getFixedModule R == rank getFixedModule (A**R))
-assert(rank getFixedModule R == rank getFixedModule (R**A))
+assert(rank R.Underlying == rank (A**R).Underlying)
+assert(rank R.Underlying == rank (R**A).Underlying)
+assert(rank R.Fixed == rank (A**R).Fixed)
+assert(rank R.Fixed == rank (R**A).Fixed)
 
 -- Verify that fixed modules of A and A ** R are isomorphic
-isIsomorphic(getFixedModule(R), getFixedModule(A ** R))
+isIsomorphic(R.Fixed, (A ** R).Fixed)
 
 -- Verifying that induced maps on box products are well-defined
 L = complexLinearizationMap(7)

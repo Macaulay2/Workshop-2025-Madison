@@ -32,11 +32,11 @@ R:=inducedMap(U,F,matrix({{1}}));
 T:=inducedMap(F,U,matrix({{0}}));
 M:=makeCpMackeyFunctor(3,R,T,C);
 assert(isWellDefined M);
-assert(getUnderlyingModule M == U);
-assert(getFixedModule M == F);
-assert(getRestriction M == R);
-assert(getTransfer M == T);
-assert(getConjugation M == C);
+assert(M.Underlying == U);
+assert(M.Fixed == F);
+assert(M.Res == R);
+assert(M.Trans == T);
+assert(M.Conj == C);
 
 assert(not isCohomological makeBurnsideMackeyFunctor 7);
 assert(isCohomological makeFixedPointMackeyFunctor(2,id_(ZZ^1)));

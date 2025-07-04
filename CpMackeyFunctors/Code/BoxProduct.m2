@@ -7,20 +7,20 @@
 -- Create the fixed module of the box product *before* modding out by the equivalence relation
 genFixedModuleBoxProduct = method()
 genFixedModuleBoxProduct (CpMackeyFunctor,CpMackeyFunctor) := Module => (M,N) ->(
-    return (getFixedModule(M) ** getFixedModule(N))++(getUnderlyingModule(M) ** getUnderlyingModule(N))
+    return (M.Fixed ** N.Fixed) ++ (M.Underlying ** N.Underlying)
 )
 
 -- Create the syzygy module
 syzFixedModuleBoxProduct = method()
 syzFixedModuleBoxProduct (CpMackeyFunctor,CpMackeyFunctor) := Module => (M,N) ->(
-    return ((getUnderlyingModule(M) ** getFixedModule(N)) ++ (getFixedModule(M) ** getUnderlyingModule(N)) ++ (getUnderlyingModule(M) ** getUnderlyingModule(N)))
+    return (M.Underlying ** N.Fixed) ++ (M.Fixed ** N.Underlying) ++ (M.Underlying ** N.Underlying)
 )
 
 -- Create the map from the first summand of the syzygy module
 boxProductRelationOne = method()
 boxProductRelationOne (CpMackeyFunctor,CpMackeyFunctor) := Matrix => (M,N) ->(
-    outputMapOne := getTransfer(M) ** id_(getFixedModule(N));
-    outputMapTwo := id_(getUnderlyingModule(M)) ** getRestriction(N);
+    outputMapOne := M.Trans ** id_(N.Fixed);
+    outputMapTwo := id_(M.Underlying) ** N.Res;
     return matrix({{outputMapOne},{-outputMapTwo}})
 
 )
@@ -28,8 +28,8 @@ boxProductRelationOne (CpMackeyFunctor,CpMackeyFunctor) := Matrix => (M,N) ->(
 -- Create the map from the second summand of the syzygy module
 boxProductRelationTwo = method()
 boxProductRelationTwo (CpMackeyFunctor,CpMackeyFunctor) := Matrix => (M,N) ->(
-    outputMapOne := id_(getFixedModule(M)) ** getTransfer(N);
-    outputMapTwo := getRestriction(M)** id_(getUnderlyingModule(N));
+    outputMapOne := id_(M.Fixed) ** N.Trans;
+    outputMapTwo := M.Res ** id_(N.Underlying);
     return matrix({{outputMapOne},{-outputMapTwo}})
 
 )
@@ -38,12 +38,12 @@ boxProductRelationTwo (CpMackeyFunctor,CpMackeyFunctor) := Matrix => (M,N) ->(
 boxProductRelationThree = method()
 boxProductRelationThree (CpMackeyFunctor,CpMackeyFunctor) := Matrix => (M,N) ->(
 
-    targetOfZero:= getFixedModule(M) ** getFixedModule(N);
-    sourceOfZero:=getUnderlyingModule(M) ** getUnderlyingModule(N);
+    targetOfZero:= M.Fixed ** N.Fixed;
+    sourceOfZero:= M.Underlying ** N.Underlying;
 
     outputMapOne := map(targetOfZero, sourceOfZero,0);
 
-    outputMapTwo := getConjugation(M)** getConjugation(N) - id_(getUnderlyingModule(M))** id_(getUnderlyingModule(N));
+    outputMapTwo := M.Conj ** N.Conj - id_(M.Underlying) ** id_(N.Underlying);
     return matrix({{outputMapOne},{-outputMapTwo}})
 )
 
@@ -62,14 +62,14 @@ boxProductFixedModule (CpMackeyFunctor,CpMackeyFunctor) := Matrix => (M,N) ->(
 -- Obtain the underlying module for the box product
 boxProductUnderlyingModule = method()
 boxProductUnderlyingModule (CpMackeyFunctor,CpMackeyFunctor) := Matrix => (M,N) ->(
-    getUnderlyingModule(M)**getUnderlyingModule(N)
+    M.Underlying ** N.Underlying
 )
 
 -- Define the transfer map for box products
 boxProductTransfer = method()
 boxProductTransfer (CpMackeyFunctor,CpMackeyFunctor) := Matrix => (M,N) ->(
     -- Look at the transfer valued in the generators module before modding out by relations
-    mapBeforeInducing := map(getFixedModule(M) ** getFixedModule(N), getUnderlyingModule(M) ** getUnderlyingModule(N),0) || id_(getUnderlyingModule(M))** id_(getUnderlyingModule(N));
+    mapBeforeInducing := map(M.Fixed ** N.Fixed, M.Underlying ** N.Underlying,0) || id_(M.Underlying)** id_(N.Underlying);
 
     return inducedMap(boxProductFixedModule(M,N),boxProductUnderlyingModule(M,N), mapBeforeInducing)
 )
@@ -78,12 +78,12 @@ boxProductTransfer (CpMackeyFunctor,CpMackeyFunctor) := Matrix => (M,N) ->(
 boxProductRestriction = method()
 boxProductRestriction (CpMackeyFunctor,CpMackeyFunctor) := Matrix => (M,N) ->(
 
-    mapOne:= getRestriction(M) ** getRestriction(N);
+    mapOne:= M.Res ** N.Res;
 
-    p := getPrimeOrder(M);
+    p := M.PrimeOrder;
 
     mapTwo:= sum for j from 0 to p-1 list(
-        ((getConjugation(M))^j) ** ((getConjugation(N))^j)
+        ((M.Conj)^j) ** ((N.Conj)^j)
     );
 
     return inducedMap(boxProductUnderlyingModule(M,N),boxProductFixedModule(M,N),mapOne | mapTwo)
@@ -92,14 +92,14 @@ boxProductRestriction (CpMackeyFunctor,CpMackeyFunctor) := Matrix => (M,N) ->(
 -- Define the conjugation map for box products
 boxProductConjugation = method()
 boxProductConjugation (CpMackeyFunctor,CpMackeyFunctor) := Matrix => (M,N) ->(
-    getConjugation(M) ** getConjugation(N)
+    M.Conj ** N.Conj
 )
 
 -- Define the box product!
 boxProduct = method()
 boxProduct (CpMackeyFunctor,CpMackeyFunctor) := CpMackeyFunctor => (M,N) ->(
-    if getPrimeOrder(M) != getPrimeOrder(N) then error("-- Primes not the same (incompatable)");
-    result := makeCpMackeyFunctor(getPrimeOrder(M),boxProductRestriction(M,N), boxProductTransfer(M,N),boxProductConjugation(M,N));
+    if M.PrimeOrder != N.PrimeOrder then error("-- Primes not the same (incompatable)");
+    result := makeCpMackeyFunctor(M.PrimeOrder,boxProductRestriction(M,N), boxProductTransfer(M,N),boxProductConjugation(M,N));
     result.cache.formation = FunctionApplication{boxProduct, (M, N)};
     result
 )

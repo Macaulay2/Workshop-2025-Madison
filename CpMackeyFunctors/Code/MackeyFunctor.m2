@@ -1,10 +1,3 @@
-protect symbol PrimeOrder
-protect symbol Underlying
-protect symbol Fixed
-protect symbol Res
-protect symbol Tr
-protect symbol Conj
-
 CpMackeyFunctor = new Type of HashTable
 CpMackeyFunctor.synonym = "C_p Mackey Functor"
 
@@ -16,7 +9,7 @@ isWellDefined CpMackeyFunctor := Boolean => M -> (
     ------------------------
     
     -- Ensure all the keys in the hash table defining a Mackey functor are indeed defined
-    if not (M#?PrimeOrder and M#?Res and M#?Tr and M#?Conj and M#?Underlying and M#?Fixed) then (print "-- Hashtable does not have correct keys"; return false);
+    if not (M#?PrimeOrder and M#?Res and M#?Trans and M#?Conj and M#?Underlying and M#?Fixed) then (print "-- Hashtable does not have correct keys"; return false);
 
     -- Check that the input p is actually a prime number
     if not (class M.PrimeOrder === ZZ and isPrime(M.PrimeOrder)) then (print "-- p is not prime"; return false);
@@ -30,8 +23,8 @@ isWellDefined CpMackeyFunctor := Boolean => M -> (
     if not target(M.Res) == M.Underlying then (print " -- the target of res should be the underlying module"; return false);
 
     -- Check source and target of transfer are correct
-    if not source(M.Tr) == M.Underlying then (print " -- the source of tr should be the underlying module"; return false);
-    if not target(M.Tr) == M.Fixed then (print " -- the target of tr should be the fixed module"; return false);
+    if not source(M.Trans) == M.Underlying then (print " -- the source of tr should be the underlying module"; return false);
+    if not target(M.Trans) == M.Fixed then (print " -- the target of tr should be the fixed module"; return false);
     
     -- Check source and target of conjugation are correct
     if not source(M.Conj) == M.Underlying then (print " -- the source of conj should be the underlying module"; return false);
@@ -46,15 +39,15 @@ isWellDefined CpMackeyFunctor := Boolean => M -> (
     if not (M.Conj)^(M.PrimeOrder) == id_(M.Underlying) then (print "-- Conj is not an automorphism of order dividing p"; return false);
 
     -- Axiom 2: res and tr are homomorphisms (item 3 in overleaf)
-    if not isWellDefined M.Tr then (print "-- tr is not a homomorphism"; return false);
+    if not isWellDefined M.Trans then (print "-- tr is not a homomorphism"; return false);
     if not isWellDefined M.Res then (print "-- res is not a homomorphism"; return false);
 
     -- Axiom 3: c*res = res and tr*c = tr
     if M.Conj * M.Res != M.Res then (print "-- c * res is not equal to res"; return false);
-    if M.Tr * M.Conj != M.Tr then (print "-- tr * c is not equal to tr"; return false);
+    if M.Trans * M.Conj != M.Trans then (print "-- tr * c is not equal to tr"; return false);
 
     -- Axiom 4: res * tr = sum of all conjugates (item 5 in overleaf)
-    if not (M.Res * M.Tr == sum for i to M.PrimeOrder-1 list M.Conj^i) then (print "-- res * tr is not equal to the sum of all conjugates"; return false);
+    if not (M.Res * M.Trans == sum for i to M.PrimeOrder-1 list M.Conj^i) then (print "-- res * tr is not equal to the sum of all conjugates"; return false);
 
     true
 )
@@ -71,7 +64,7 @@ makeCpMackeyFunctor(ZZ,Matrix,Matrix,Matrix) := CpMackeyFunctor => (p,R,T,C) ->(
         symbol Underlying => source T,          -- extract the underlying module from the transfer homomorphism
         symbol Fixed => target T,               -- extract the fixed module from the transfer homomorphism
         symbol Res => R,
-        symbol Tr => T,
+        symbol Trans => T,
         symbol Conj => C,
         symbol cache => new CacheTable
         };
@@ -98,11 +91,11 @@ horSpace := n -> (s := " "; if n == 1 then return s else for i to n-2 do s = s |
 vertArrows := n -> (s := "^ |"; if n > 1 then for i to n-1 do s = s || "| |"; s || "| V")
 
 net CpMackeyFunctor := M -> (
-    n := 6 + max({M.Res,M.Tr}/net/width);
+    n := 6 + max({M.Res,M.Trans}/net/width);
     h := if M.Res == 0 then 1 else numRows M.Res;
     horizontalJoin(
 	vertSpace(h) || (net M.Fixed), vertSpace(h) || "  --" || " <--",
-	lineBelow("Res : " | (net M.Res), n) || lineAbove( "Tr : " | (net M.Tr), n),
+	lineBelow("Res : " | (net M.Res), n) || lineAbove( "Tr : " | (net M.Trans), n),
 	vertSpace(h) || "--> " || "-- ", vertSpace(h) || (net M.Underlying),
 	vertSpace(h) || "  -┐" || "  <┘", vertSpace(h) || (" Conj : " | (net M.Conj))
 	)
@@ -110,7 +103,7 @@ net CpMackeyFunctor := M -> (
 
 drawVerticalCpMackeyFunctor = method()
 drawVerticalCpMackeyFunctor(CpMackeyFunctor) := Net => M -> (
-    hMid := 1 + max {length net M.Res, length net M.Tr};
+    hMid := 1 + max {length net M.Res, length net M.Trans};
     hTop := length net M.Fixed + 1;
 	firstCol := vertSpace(hTop) || " Res" || (net M.Res);
     w1 := width net M.Fixed;
@@ -122,7 +115,7 @@ drawVerticalCpMackeyFunctor(CpMackeyFunctor) := Net => M -> (
     w2 = if w2 == wm then 0 else round((wm-w2)/2);
     w3 = if w3 == wm then 0 else round((wm-w3)/2);
     secondCol := horizontalJoin(horSpace(w1),net M.Fixed) || horizontalJoin(horSpace(w),vertArrows(hMid)) || horizontalJoin(horSpace(w2),net M.Underlying) || horizontalJoin(horSpace(w), "  ^") || horizontalJoin(horSpace(w), "└-┘") || horizontalJoin(horSpace(w), " c") || horizontalJoin(horSpace(w3),net M.Conj);
-    thirdCol := vertSpace(hTop) || " Tr" || (net M.Tr);
+    thirdCol := vertSpace(hTop) || " Tr" || (net M.Trans);
     return horizontalJoin(firstCol, " ", secondCol, " ", thirdCol)
 )
 
@@ -133,7 +126,7 @@ CpMackeyFunctor == CpMackeyFunctor := Boolean => (M,N) -> (
     if M.Underlying != N.Underlying then return false;
     if M.Fixed != N.Fixed then return false;
     if M.Res != N.Res then return false;
-    if M.Tr != N.Tr then return false;
+    if M.Trans != N.Trans then return false;
     if M.Conj != N.Conj then return false;
     true
 )
@@ -145,7 +138,7 @@ prune CpMackeyFunctor := CpMackeyFunctor => opts -> M -> (
     fT := (T.cache.pruningMap);
     fB := (B.cache.pruningMap);
     r := map(B, T, (matrix inverse fB) * (matrix M.Res) * (matrix fT));
-    t := map(T, B, (matrix inverse fT) * (matrix M.Tr) * (matrix fB));
+    t := map(T, B, (matrix inverse fT) * (matrix M.Trans) * (matrix fB));
     c := map(B, B, (matrix inverse fB) * (matrix M.Conj) * (matrix fB));
     M' := makeCpMackeyFunctor(M.PrimeOrder, r, t, c);
     M'.cache.pruningMap = map(M,M',fB,fT);
@@ -156,40 +149,10 @@ prune CpMackeyFunctor := CpMackeyFunctor => opts -> M -> (
 -- Recovering cached data
 -------------------------
 
-getPrimeOrder = method()
-getPrimeOrder CpMackeyFunctor := ZZ => M ->(
-    M.PrimeOrder
-)
-
-getUnderlyingModule = method()
-getUnderlyingModule CpMackeyFunctor := Module => M ->(
-    M.Underlying
-)
-
-getFixedModule = method()
-getFixedModule CpMackeyFunctor := Module => M ->(
-    M.Fixed
-)
-
-getRestriction = method()
-getRestriction CpMackeyFunctor := Matrix => M ->(
-    M.Res
-)
-
-getTransfer = method()
-getTransfer CpMackeyFunctor := Matrix => M ->(
-    M.Tr
-)
-
-getConjugation = method()
-getConjugation CpMackeyFunctor := Matrix => M ->(
-    M.Conj
-)
-
 isCohomological = method()
 isCohomological CpMackeyFunctor := Boolean => M -> (
     if not M.cache#?"isCohomological" then (
-        M.cache#"isCohomological" = (M.Tr * M.Res == map(M.Fixed, M.Fixed, M.PrimeOrder));
+        M.cache#"isCohomological" = (M.Trans * M.Res == map(M.Fixed, M.Fixed, M.PrimeOrder));
     );
     M.cache#"isCohomological"
 )

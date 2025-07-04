@@ -18,7 +18,7 @@ doc ///
         Example
             InternalHom(makeRealRepresentationMackeyFunctor 3, makeComplexRepresentationMackeyFunctor 3)
         Text
-            The underlying @TO2((Hom, CpMackeyFunctor,CpMackeyFunctor),"group of homomorphisms")@ between any two Mackey functors can be recovered as the @TO2(getFixedModule,"fixed module")@ of the internal hom.
+            The underlying @TO2((Hom, CpMackeyFunctor,CpMackeyFunctor),"group of homomorphisms")@ between any two Mackey functors can be recovered as the @TO2(Fixed,"fixed module")@ key of the internal hom.
     SeeAlso
         "the abelian category of Mackey functors"
         boxProduct

@@ -1,17 +1,17 @@
 -- The Hom group Hom(M,N) is a subgroup of Hom(M(Cp/e),N(Cp/e)) ++ Hom(M(Cp/Cp),N(Cp/Cp))
 Hom(CpMackeyFunctor, CpMackeyFunctor) := Module => opts -> (M,N) -> (
     if not M.PrimeOrder === N.PrimeOrder then error "-- Mackey functors must have the same prime";
-    homFixedFixed := Hom(getFixedModule M, getFixedModule N);
-    homUnderlyingUnderlying := Hom(getUnderlyingModule M, getUnderlyingModule N);
-    homFixedUnderlying := Hom(getFixedModule M, getUnderlyingModule N);
-    homUnderlyingFixed := Hom(getUnderlyingModule M, getFixedModule N);
+    homFixedFixed := Hom(M.Fixed, N.Fixed);
+    homUnderlyingUnderlying := Hom(M.Underlying, N.Underlying);
+    homFixedUnderlying := Hom(M.Fixed, N.Underlying);
+    homUnderlyingFixed := Hom(M.Underlying, N.Fixed);
     lhs := directSum(homUnderlyingUnderlying, homFixedFixed);
     rhs := directSum(homFixedUnderlying, homUnderlyingFixed, homUnderlyingUnderlying);
     result := kernel map(rhs, lhs, matrix(
         {
-            {-Hom(M.Res, getUnderlyingModule N), Hom(getFixedModule M, N.Res)},
-            {-Hom(getUnderlyingModule M, N.Tr), Hom(M.Tr, getFixedModule N)},
-            {Hom(M.Conj, getUnderlyingModule N) - Hom(getUnderlyingModule M, N.Conj), 0}
+            {-Hom(M.Res, N.Underlying), Hom(M.Fixed, N.Res)},
+            {-Hom(M.Underlying, N.Trans), Hom(M.Trans, N.Fixed)},
+            {Hom(M.Conj, N.Underlying) - Hom(M.Underlying, N.Conj), 0}
         }
     ));
     result.cache.homomorphism = f -> (
@@ -28,8 +28,8 @@ Hom(CpMackeyFunctor, CpMackeyFunctor) := Module => opts -> (M,N) -> (
 -- Covariant Hom
 Hom(CpMackeyFunctor, MackeyFunctorHomomorphism) := Matrix => opts -> (M,f) -> (
     if not M.PrimeOrder === (source f).PrimeOrder then error "-- Mackey functors must have the same prime";
-    T := getFixedModule(M);
-    B := getUnderlyingModule(M);
+    T := M.Fixed;
+    B := M.Underlying;
     fT := f.FixedMap;
     fB := f.UnderlyingMap;
     phi := Hom(T, fT);
@@ -40,8 +40,8 @@ Hom(CpMackeyFunctor, MackeyFunctorHomomorphism) := Matrix => opts -> (M,f) -> (
 -- Contravariant Hom
 Hom(MackeyFunctorHomomorphism, CpMackeyFunctor) := Matrix => opts -> (f,N) -> (
     if not (source f).PrimeOrder === N.PrimeOrder then error "-- Mackey functors must have the same prime";
-    T := getFixedModule(N);
-    B := getUnderlyingModule(N);
+    T := N.Fixed;
+    B := N.Underlying;
     fT := f.FixedMap;
     fB := f.UnderlyingMap;
     phi := Hom(fT, T);

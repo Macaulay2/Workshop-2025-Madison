@@ -7,12 +7,12 @@ InternalHom (CpMackeyFunctor,CpMackeyFunctor) := CpMackeyFunctor => (M,N) -> (
     B := makeUnderlyingFreeMackeyFunctor p;
     underlying := Hom(B ** M, N);
     fixed := Hom(A ** M, N);
-    tau := makeUniversalMapUnderlying(A, vector(getUnderlyingModule A,{1}));
+    tau := makeUniversalMapUnderlying(A, vector(A.Underlying,{1}));
     restriction := Hom(tau ** M, N);
-    rho := makeUniversalMapFixed(B, vector(getFixedModule B,{1}));
+    rho := makeUniversalMapFixed(B, vector(B.Fixed,{1}));
     transfer := Hom(rho ** M, N);
     gen := {0,1} | for i to p-3 list 0;
-    conj := Hom(makeUniversalMapUnderlying(B, vector(getUnderlyingModule B, gen)) ** M, N);
+    conj := Hom(makeUniversalMapUnderlying(B, vector(B.Underlying, gen)) ** M, N);
     makeCpMackeyFunctor(
         p,
         restriction,

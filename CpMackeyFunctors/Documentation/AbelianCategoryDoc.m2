@@ -44,7 +44,7 @@ doc ///
             
             \[\underline{\text{Hom}} \colon \text{Mack}_G^{\text{op}} \times \text{Mack}_G \to \text{Mack}_G,\]
 
-            whose @TO2(getFixedModule,"fixed point module")@ is the @TO2((Hom,CpMackeyFunctor,CpMackeyFunctor),"abelian group of homomorphisms")@ from $M$ to $N$. The category $\text{Mack}_G$ is {\em closed symmetric monoidal}, meaning the internal hom and box product fit together into a natural isomorphism of abelian groups, natural in any three Mackey functors $M$, $N$, and $P$:
+            whose @TO2(Fixed,"fixed point module")@ is the @TO2((Hom,CpMackeyFunctor,CpMackeyFunctor),"abelian group of homomorphisms")@ from $M$ to $N$. The category $\text{Mack}_G$ is {\em closed symmetric monoidal}, meaning the internal hom and box product fit together into a natural isomorphism of abelian groups, natural in any three Mackey functors $M$, $N$, and $P$:
             \[\text{Hom}_{\text{Mack}_G}(M \square N, P) \cong \text{Hom}_{\text{Mack}_G}(M, \underline{\text{Hom}}(N,P)).\]
 
             
@@ -55,7 +55,7 @@ doc ///
 
             \[\underline{\text{Tor}}^i(-,M) := \mathbf{L}_i (- \square M).\]
 
-            These are {\em internal} incarnations of $\text{Ext}$ and $\text{Tor}$. We can recover the abelian groups $\text{Ext}^i(M,N)$ and $\text{Tor}_i(M,N)$ as the @TO2(getFixedModule,"fixed point module")@ of the internal Ext and Tor.
+            These are {\em internal} incarnations of $\text{Ext}$ and $\text{Tor}$. We can recover the abelian groups $\text{Ext}^i(M,N)$ and $\text{Tor}_i(M,N)$ as the @TO2(Fixed,"fixed point module")@ of the internal Ext and Tor.
 
     SeeAlso
         "background on Mackey functors"
