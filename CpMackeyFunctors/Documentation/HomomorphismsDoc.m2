@@ -38,6 +38,7 @@ doc ///
             We have implemented some unary and binary operations on Mackey functor homomorphisms, including
 
             @UL{
+                (TO2("==","equality"), " of two Mackey functors homomorphisms, via ", TT"f==g"),
                 (BOLD "powers:", " given an endomorphism of a Mackey functor ", TEX"$f\\colon M \\to M$", " we can take iterated composition of it as ", TT"f^n"),
                 (BOLD "inversion:", " if ", TEX"$f$", " is an ", TO2((isIsomorphism,MackeyFunctorHomomorphism),"isomorphism"), " we can invert it via ", TT"f^-1", " or using ", TT"inverse(f)"),
                 (BOLD "negating:", " we can take the negative of any Mackey functor homomorphism as ", TT"-f"),
@@ -50,6 +51,7 @@ doc ///
 
     SeeAlso
         "background on Mackey functors"
+        CpMackeyFunctor
 
 ///
 -- ^^ There must be a better way!
