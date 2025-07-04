@@ -1,5 +1,30 @@
 needsPackage "ExteriorResolutions"
 
+
+--Injective Resolutions---
+--Residue Field--
+E = ZZ/11[e_0..e_3,SkewCommutative=>true]
+m = ideal vars E
+k = E^1/m
+P = injectiveResolution(k,LengthLimit=>10)--priddyComplex
+augP = coaugmentationMap P
+isQuasiIsomorphism augP
+
+--A non-cyclic Example--
+Mat = random(E^1,E^{-1,-2})
+M = k++ image Mat
+P = injectiveResolution(M,LengthLimit=>7)
+augP = coaugmentationMap P
+isQuasiIsomorphism augP
+
+
+
+--Resolving a Complex--
+I = ideal random(E^1,E^{-1,-2})
+C = Hom(freeResolution(I,LengthLimit=> 3), comodule I)
+P = injectiveResolution(C,LengthLimit=>3)
+-------------------------------------------
+
 (S, E) = koszulPair(4, ZZ/101)
 isCommutative S
 isSkewCommutative E
