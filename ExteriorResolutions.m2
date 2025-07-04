@@ -500,65 +500,45 @@ TEST ///
     priddyComplex(m, S, LengthLimit=>3)
 ///
 
-TEST ///
-    (S,E)= koszulPair(2, ZZ/101)
+TEST /// -- testing with S^1 and E^1
+    (S,E) = koszulPair(n = 2, ZZ/101)
+
+    -- testing koszulRR and koszulLL for Module and Complex
     M = S^1
-    
-    C = koszulRR(M, Concentration=>(-3,0))
-    P = priddyComplex(vars E, S, LengthLimit=>3)
-    
+    C = koszulRR(M, Concentration => (-n,0))
+    assert(id_C === koszulRR(id_M, Concentration => (-n,0)))
+    P = priddyComplex(vars E, S, LengthLimit => n)
     assert(C == P)
+    F = koszulLL(C, Concentration => (0,n+1))
+    assert(prune HH F == complex comodule truncate(n+1, S))
 
-    F = koszulLL(HH_0 C, Concentration=>(-5,5))
-    assert(F == complex M)
+    N = E^{n+1}
+    D = koszulLL(N, Concentration => (0,n+1))
+    assert(id_D === koszulLL(id_N, Concentration => (0,n+1)))
+    K = koszulComplex vars S
+    -- TODO: figure out of it's possible to find the isomorphism
+    assert(betti D == betti K)
+    F0 = koszulRR(D, Concentration => (-n,0))
+    -- Note: we take the canonical truncation to discard the edge homology
+    F = canonicalTruncation(F0, (-n+1,0));
+    assert(prune HH F == complex N)
+
+    -- TODO: make this a new test
+    -- g = koszulRR(map(S^{1}, S^1, S_0), Concentration => (-5,0))
+    -- koszulRR(complex { matrix {{x_0}} }, Concentration => (-5,0))
 ///
 
-TEST ///
-    (S,E) = koszulPair(2, ZZ/101)
-    M = E^{3}
-    
-    C = koszulLL(M, Concentration=>(-3,0))
-    D = koszulComplex vars S
-
-    assert(betti C == betti D)
-
-    P = priddyComplex(vars S, E, LengthLimit=>3)
-
-    F = koszulRR(HH_0 C, Concentration=>(-5,5))
-    assert( F_0 == M)
-///
-
-TEST ///
-    (S,E)= koszulPair(2, ZZ/101)
-
-    M = S^1
-
-    f = koszulRR(id_M, Concentration=>(-5,5))
-    g = koszulRR(map(S^{1}, S^1, S_0), Concentration=>(-5,5))
-    
-    assert( f == id_(koszulRR(M, Concentration=>(-5,5))))
-
-    (S,E)= koszulPair(1, ZZ/101)
-    koszulRR(complex { matrix {{x_0}} }, Concentration => (-5,0))
-    koszulRR(koszulComplex vars S, Concentration => (-5,0))
-///
-
-TEST ///
-    (S,E)= koszulPair(2, ZZ/101)
-
-    M = E^1
-
-    f = koszulLL(id_M, Concentration=>(-5,5))
-    
-    assert( f == id_(koszulLL(M, Concentration=>(-5,5))))
-///
-TEST ///
-    (S,E)= koszulPair(1, ZZ/101)
+TEST /// -- testing with the Koszul complex
+    (S,E) = koszulPair(n = 2, ZZ/101)
 
     C = koszulComplex vars S
-    
-    -- RR(id_C) == id_(RR(C))
-    assert( koszulRR(id_C, Concentration=>(-5,5)) == id_(koszulRR(C, Concentration=>(-5,5))) )
+    D = koszulRR(C, Concentration => (-n,0))
+    C' = koszulLL(D, Concentration => (0,n))
+
+    -- id_(RR(C)) == RR(id_C)
+    assert(id_D == koszulRR(id_C, Concentration => (-n,0)))
+    -- id_(LL(D)) == LL(id_D)
+    assert(id_C' == koszulLL(id_D, Concentration => (0,n)))
 ///
 
 TEST ///
