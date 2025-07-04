@@ -78,13 +78,17 @@ complex comodule truncate(6, S) == prune HH koszulLL(D, Concentration => (-2, 4)
 
 ---
 
--- LL(RR(finite length module)) is identity
-(S,E) = koszulPair(2, ZZ/101)
-M = comodule truncate(5, S)
-assert(complex M == prune HH koszulLL(koszulRR M, Concentration => (0,5)))
+-- LL(RR(finite length S-module)) is identity
+(S,E) = koszulPair(n = 2, ZZ/101)
+M = comodule truncate(n+2, S)
+koszulRR oo
+koszulLL oo
+assert(complex M == prune HH oo)
 
--- RR(LL(perfect complex)) is identity
+-- RR(LL(perfect complex of E-modules)) is identity
 N = coker matrix {{e_0}}
-= freeResolution(N, LengthLimit => 4)
-C = canonicalTruncation(koszulRR(koszulLL(D, Concentration => (-5,5)), Concentration => (-3,3)), (-2, 2));
-assert(complex N == prune HH C)
+freeResolution(N, LengthLimit => n)
+koszulLL oo
+koszulRR(oo, Concentration => (-n-1,n))
+prune canonicalTruncation(oo, (-n, n-1))
+assert(complex N == prune HH oo)

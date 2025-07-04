@@ -15,7 +15,7 @@ newPackage("ExteriorResolutions",
 	{Name => "Sreehari Suresh Babu", Email => "sreeharisbabu183@gmail.com",  HomePage => "https://sreehari183.github.io/" }
 	},
     Keywords => {"Commutative Algebra"},
-    PackageExports => {"Complexes"},
+    PackageExports => { "Complexes", "SimplicialComplexes" },
     AuxiliaryFiles => true,
     DebuggingMode  => true
     )
@@ -33,6 +33,40 @@ export {
     "koszulDual",
     "exteriorStanleyReisner",
 }
+
+--------------------------------------------------
+
+-- TODO: move to Core, c.f. https://github.com/Macaulay2/M2/issues/3844
+-- assume 'test' is a monotonic function, i.e. false for all i < n then true for i >= n
+binarySearch = method()
+-- return the first index of an element in L such that test(L#i) is true
+binarySearch(List,        Function) := (L,          test) -> binarySearch(0, #L-1, i -> test(L#i))
+-- shorthand for search in [0, n)
+binarySearch(         ZZ, Function) := (      high, test) -> binarySearch(0, high-1, test)
+-- shorthand for when a lower bound isn't known
+binarySearch(Nothing, ZZ, Function) := (null, high, test) -> (
+    dist := 1;
+    while true do if test(high - dist)
+    then (high, dist) = (high - dist, dist * 2)
+    else break binarySearch(high - dist + 1, high, test));
+-- shorthand for when an upper bound isn't known
+binarySearch(ZZ, Nothing, Function) := (low, null, test) -> (
+    dist := 1;
+    while true do if test(low + dist)
+    then break binarySearch(low, low + dist, test)
+    else (low, dist) = (low + dist + 1, dist * 2))
+-- standard binary search
+binarySearch(ZZ, ZZ, Function) := (low, high, test) -> (
+    -- TODO: are the first two lines standard?
+    if     test(low)  then return low;
+    --if not test(high) then return high + 1;
+    while high - low > 1 do (
+	mid := (high + low) // 2;
+	if test(mid) then high = mid else low = mid);
+    high)
+
+-- TODO: move to Complexes
+hilbertPolynomial Complex := o -> C -> sum(pairs C.module, (i, M) -> (-1)^i * hilbertPolynomial(M, o))
 
 --------------------------------------------------
 --- Injective resolutions
@@ -127,7 +161,7 @@ priddyComplex(Matrix, Ring) := opts -> (m, S) -> (
     complex hashTable apply(opts.LengthLimit, i -> -i => priddyDifferential(-i, m, S)))
 
 --------------------------------------------------
---- Koszul duality Functors
+--- Koszul duality helpers
 --------------------------------------------------
 
 -- returns a pair S = Sym^* K^(n+1) and E = Wedge^* K^(n+1)
@@ -141,6 +175,7 @@ koszulPair(ZZ, Ring) := opts -> (n, K) -> (
     E.cache.koszulDual = S;
     (S, E))
 
+-- given a polynomial ring returns an exterior algebra and vice versa
 koszulDual = method(Options => { Variables => {"x", "e"}})
 koszulDual Ring := opts -> A -> A.cache.koszulDual ??= (
     K := coefficientRing A;
@@ -150,16 +185,40 @@ koszulDual Ring := opts -> A -> A.cache.koszulDual ??= (
     then K[x_0..x_(numgens A - 1)]
     else K[e_0..e_(numgens A - 1), SkewCommutative => true])
 
--- TODO: doesn't work over E yet
-degreeSupport = M -> (
-    if hilbertPolynomial M != 0 then error "expected a range provided as Concentration => {lo, hi}";
-    (-first max degrees source relations M, -first min degrees source generators M))
+-- given a finite length module, finds (lo,hi)
+-- such that M_d == 0 for d < lo and hi < d
+degreeSupport = method()
+degreeSupport Module := M -> if M == 0 then (0,0) else (
+    if hilbertPolynomial M != 0 then error "expected a range provided as Concentration => (lo, hi)";
+    - binarySearch(first max degrees M, , i -> hilbertFunction(i, M) == 0) + 1,
+    - binarySearch(, first min degrees M, i -> hilbertFunction(i, M) != 0))
+degreeSupport Complex := C -> if C == 0 then (0,0) else (
+    if hilbertPolynomial C != 0 then error "expected a range provided as Concentration => (lo, hi)";
+    supports := apply(pairs C.module, (i, M) -> {i,i} + toList degreeSupport M);
+    supports / first // min,
+    supports / last  // max)
+degreeSupport ComplexMap := f -> if f == 0 then (0,0) else (
+    supports := apply({source f, target f}, degreeSupport);
+    supports / first // min,
+    supports / last  // max)
 
 --------------------------------------------------
+--- Koszul duality functors
+--------------------------------------------------
+
+-- RR: Com(S) -> Com(E) is the right-adjoint functor
+koszulRR = method(Options => { Concentration => null })
+
+-- LL: Com(E) -> Com(S) is the left-adjoint functor
+koszulLL = method(Options => options koszulRR)
+
+-- the implementations of koszulRR and koszulLL are identical
+-- except in one step, so we combine their implementations
 
 koszulDualityFunctorModule = functor -> opts -> M -> M.cache#(functor, opts) ??= (
     try (lo, hi) := opts.Concentration
     else (lo, hi) = degreeSupport M;
+    if hi < lo then error "expected nonempty concentration";
 
     A := ring M;
     n := numgens A - 1;
@@ -187,23 +246,14 @@ koszulDualityFunctorModule = functor -> opts -> M -> M.cache#(functor, opts) ??=
 	)
     )
 
--- RR: Com(S) -> Com(E) is the right-adjoint functor
-koszulRR = method(Options => { Concentration => null })
 -- RR(M)^i = E^*(i) \otimes_k M_i
 -- E^* = Hom_k(E, k) = E(n+1)
 koszulRR Module := Complex => opts -> (koszulDualityFunctorModule koszulRR) opts
-
--- LL: Com(E) -> Com(S) is the left-adjoint functor
-koszulLL = method(Options => options koszulRR)
 -- LL(N)^i = S(i) \otimes_k N_i
 koszulLL Module := Complex => opts -> (koszulDualityFunctorModule koszulLL) opts
 
 --------------------------------------------------
 
--- while koszulRR(Module) and koszulLL(Module) are different,
--- the implementations of koszulRR and koszulLL are identical
--- for matrices, complexes, and complex maps,
--- hence we combine them as follows.
 koszulDualityFunctorMatrix = functor -> opts -> f -> f.cache#(functor, opts) ??= (
     R := koszulDual ring f;
     src := functor(source f, opts);
@@ -219,7 +269,7 @@ koszulLL Matrix := ComplexMap => opts -> (koszulDualityFunctorMatrix koszulLL) o
 
 koszulDualityFunctorComplex = functor -> opts -> C -> (
     try (lo, hi) := opts.Concentration -- bounds for homological degrees i
-    else error "expected a range provided as Concentration => {lo, hi}";
+    else (lo, hi) = degreeSupport C;
     (inf, sup) := concentration C; -- bounds for homological degrees k in C
 
     terms := hashTable apply(inf..sup,
@@ -256,7 +306,8 @@ koszulDualityFunctorComplexMap = functor -> opts -> f -> (
     tar := functor(D := target f, opts);
 
     try (lo, hi) := opts.Concentration
-    else error "expected a range provided as Concentration => {lo, hi}";
+    else (lo, hi) = degreeSupport f;
+
     concentrations := apply({C, D}, concentration);
     inf := concentrations / first // min;
     sup := concentrations / last  // max;
@@ -281,8 +332,6 @@ koszulLL ComplexMap := ComplexMap => opts -> (koszulDualityFunctorComplexMap kos
 --------------------------------------------------
 --- Stanley Reisner
 --------------------------------------------------
-
-needsPackage "SimplicialComplexes"
 
 exteriorStanleyReisner = method()
 exteriorStanleyReisner(SimplicialComplex, Ring) := (S, K) -> (
@@ -497,7 +546,6 @@ TEST ///
 TEST ///
     -- Examples tried
     -- This next example doesn't make sense, because one of the forms is even degree.
-    needsPackage "ExteriorResolutions"
     S = QQ[x_0,x_1]
     E = QQ[e_0, e_1, e_2, e_3, SkewCommutative=>true]
     --m = matrix{{e_0*e_1, e_2*e_3}}
@@ -508,44 +556,82 @@ TEST ///
 ///
 
 TEST /// -- testing with S^1 and E^1
-    (S,E) = koszulPair(n = 2, ZZ/101)
+  (S, E) = koszulPair(n = 2, ZZ/101)
 
-    -- testing koszulRR and koszulLL for Module and Complex
-    M = S^1
-    C = koszulRR(M, Concentration => (-n,0))
-    assert(id_C === koszulRR(id_M, Concentration => (-n,0)))
-    P = priddyComplex(vars E, S, LengthLimit => n)
-    assert(C == P)
-    F = koszulLL(C, Concentration => (0,n+1))
-    assert(prune HH F == complex comodule truncate(n+1, S))
+  -- testing koszulRR and koszulLL for Module and Complex
+  M = S^1
+  C = koszulRR(M, Concentration => (-n,0))
+  assert(id_C === koszulRR(id_M, Concentration => (-n,0)))
+  P = priddyComplex(vars E, S, LengthLimit => n)
+  assert(C == P)
+  F = koszulLL C
+  assert(keys F.module == {0,1,2,3})
+  assert(prune HH F == complex comodule truncate(n+1, S))
 
-    N = E^{n+1}
-    D = koszulLL(N, Concentration => (0,n+1))
-    assert(id_D === koszulLL(id_N, Concentration => (0,n+1)))
-    K = koszulComplex vars S
-    -- TODO: figure out of it's possible to find the isomorphism
-    assert(betti D == betti K)
-    F0 = koszulRR(D, Concentration => (-n,0))
-    -- Note: we take the canonical truncation to discard the edge homology
-    F = canonicalTruncation(F0, (-n+1,0));
-    assert(prune HH F == complex N)
+  N = E^{n+1}
+  D = koszulLL N
+  assert(keys D.module == {0,1,2,3})
+  assert(id_D === koszulLL id_N)
+  K = koszulComplex vars S
+  -- TODO: figure out of it's possible to find the isomorphism
+  assert(betti D == betti K)
+  F0 = koszulRR(D, Concentration => (-n,0))
+  -- Note: we take the canonical truncation to discard the edge homology
+  F = canonicalTruncation(F0, (-n+1,0));
+  assert(prune HH F == complex N)
+///
 
-    -- TODO: make this a new test
-    -- g = koszulRR(map(S^{1}, S^1, S_0), Concentration => (-5,0))
-    -- koszulRR(complex { matrix {{x_0}} }, Concentration => (-5,0))
+TEST ///
+  (S, E) = koszulPair(n = 2, ZZ/101)
+
+  C = koszulLL E^1
+  D = koszulRR(S^1, Concentration => (-n-1,0))
+  assert(complex E == prune HH canonicalTruncation(koszulRR(C, Concentration => (-n,0)), -n+1, 0))
+  assert(complex comodule truncate(n+2, S) == prune HH koszulLL D)
+
+  -- LL(RR(finite length module)) is identity
+  (S, E) = koszulPair(n = 2, ZZ/101)
+
+  M = comodule truncate(n+2, S)
+  assert(complex M == prune HH koszulLL koszulRR M)
+  -- FIXME: complex M == koszulLL koszulRR M
+
+  -- RR(LL(perfect complex)) is identity
+  N = coker matrix {{e_0}}
+  D = freeResolution(N, LengthLimit => n)
+  C0 = koszulRR(koszulLL D, Concentration => (-n,n))
+  C = canonicalTruncation(C0, (-n+1, n-1));
+  assert(complex N == prune HH C)
+  -- FIXME: complex N == C
+///
+
+TEST ///
+  (S, E) = koszulPair(n = 2, ZZ/101)
+
+  f = matrix {{x_0}}
+  assert isWellDefined koszulRR(f, Concentration => (-n,0))
+  assert isWellDefined koszulRR ker f
+  assert isWellDefined koszulRR(coker f, Concentration => (-n,0))
+  assert isWellDefined koszulRR(image f, Concentration => (-n,0))
+  assert isWellDefined koszulRR(complex {f}, Concentration => (-n,0))
+
+  assert isWellDefined koszulLL freeResolution(coker vars E, LengthLimit => 3)
+  assert isWellDefined koszulRR(freeResolution(coker vars S, LengthLimit => 3), Concentration => (-5,0))
+  assert isWellDefined koszulRR(koszulComplex vars S, Concentration => (-5,0))
+  -- Note: koszulComplex vars E does not make sense
 ///
 
 TEST /// -- testing with the Koszul complex
-    (S,E) = koszulPair(n = 2, ZZ/101)
+  (S, E) = koszulPair(n = 2, ZZ/101)
 
-    C = koszulComplex vars S
-    D = koszulRR(C, Concentration => (-n,0))
-    C' = koszulLL(D, Concentration => (0,n))
+  C = koszulComplex vars S
+  D = koszulRR(C, Concentration => (-n,0))
+  C' = koszulLL(D, Concentration => (0,n))
 
-    -- id_(RR(C)) == RR(id_C)
-    assert(id_D == koszulRR(id_C, Concentration => (-n,0)))
-    -- id_(LL(D)) == LL(id_D)
-    assert(id_C' == koszulLL(id_D, Concentration => (0,n)))
+  -- id_(RR(C)) == RR(id_C)
+  assert(id_D == koszulRR(id_C, Concentration => (-n,0)))
+  -- id_(LL(D)) == LL(id_D)
+  assert(id_C' == koszulLL(id_D, Concentration => (0,n)))
 ///
 
 TEST ///
@@ -567,39 +653,10 @@ TEST ///
 ///
 
 TEST ///
-    needsPackage "SimplicialComplexes"
     R = ZZ/19937[a,b,c,d]
     S = simplicialComplex {a*b*c, b*c*d, a*d}
     exteriorStanleyReisner(S, ZZ/19937)
     exteriorStanleyReisner(S, ZZ/101)
-///
-
-TEST ///
-  (S,E) = koszulPair(2, ZZ/101)
-
-  assert isWellDefined koszulLL(freeResolution(coker vars E, LengthLimit => 3), Concentration => (-5,5))
-  assert isWellDefined koszulRR(freeResolution(coker vars S, LengthLimit => 3), Concentration => (-5,5))
-  assert isWellDefined koszulRR(koszulComplex vars S, Concentration => (-5,5))
-  -- Note: koszulComplex vars E does not make sense
-
-  C = koszulLL(E^1, Concentration => (-3, 0))
-  D = koszulRR(S^1, Concentration => (-5, 0))
-
-  assert(complex E == naiveTruncation(prune HH koszulRR(C, Concentration => (-5,0)), -4, 0))
-  assert(complex comodule truncate(6, S) == prune HH koszulLL(D, Concentration => (-2, 4)))
-
-  -- LL(RR(finite length module)) is identity
-  (S,E) = koszulPair(2, ZZ/101)
-  M = comodule truncate(5, S)
-  assert(complex M == prune HH koszulLL(koszulRR M, Concentration => (0,5)))
-  -- FIXME: complex M == koszulLL(koszulRR M, Concentration => (0,5))
-
-  -- RR(LL(perfect complex)) is identity
-  N = coker matrix {{e_0}}
-  D = freeResolution(N, LengthLimit => 4)
-  C = canonicalTruncation(koszulRR(koszulLL(D, Concentration => (-5,5)), Concentration => (-3,3)), (-2, 2));
-  assert(complex N == prune HH C)
-  -- FIXME: complex N == C
 ///
 
 end--
