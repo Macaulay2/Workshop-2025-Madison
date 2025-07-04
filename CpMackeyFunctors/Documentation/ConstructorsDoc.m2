@@ -345,4 +345,6 @@ doc ///
     Description
         Example
             makeKGroupMackeyFunctor(5,9,4)
+    SeeAlso
+        "list of common Mackey functors"
 ///
