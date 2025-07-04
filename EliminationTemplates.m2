@@ -464,17 +464,21 @@ eigenvalues getActionMatrix E
 
 TEST ///
 R = QQ[x,y,z]
---J = ideal(x^3 + y^2 - 1, x - y - 1)
-J=ideal(x^3+y^3+z^3-4,x^2-y-z-1,x-y^2+z-3)
+J = ideal(x^3+y^3+z^3-4,x^2-y-z-1,x-y^2+z-3)
 E1 = eliminationTemplate(x, J)
-H0 = getH0(x,J,Strategy=>null)
-H0%image(syz(gens(J)))
-
+E2 = eliminationTemplate(x, J)
+E3 = eliminationTemplate(x, J)
+--H0 = getH0(x,J,Strategy=>"Larsson")
+--H0 = getH0(x,J,Strategy=> null)
 getTemplateMatrix(E1, Strategy => null)
 getActionMatrix E1
 eigenvalues getActionMatrix E1
-H0 = getH0(x,J,Strategy=>"Larsson")
-image(syz(gens(J)))
+getTemplateMatrix(E2, Strategy => "Larsson")
+getActionMatrix E2
+eigenvalues getActionMatrix E2
+getTemplateMatrix(E3, Strategy => "Greedy")
+getActionMatrix E3
+eigenvalues getActionMatrix E3
 ///
 
 TEST ///
