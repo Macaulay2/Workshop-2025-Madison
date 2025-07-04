@@ -19,10 +19,10 @@ doc ///
             The @TO2(Type,"type")@ of a {\em Mackey functor homomorphism} (for definitions, see @TO("background on Mackey functors")@). A Mackey functor homomorphism can be constructed with an implementation of the @TO2((map,CpMackeyFunctor,CpMackeyFunctor,Matrix,Matrix),"map")@ method in this package. Given a Mackey functor homomorphism @TT("f")@, the data for this type can be accessed in the following way:
 
             @UL {
-                (TT "target f", " -- yields the codomain/target of the homomorphism"),
-                (TT "source f", " -- yields the domain/source of the homomorphism"),
-                (TT "f.UnderlyingMap", " -- yields the induced ", TO2("Macaulay2Doc :: module homomorphisms","homomorphism")," on the ", TO2(CpMackeyFunctor,"underlying modules")),
-                (TT "f.FixedMap", " -- yields the induced ", TO2("Macaulay2Doc :: module homomorphisms","homomorphism")," on the ", TO2(CpMackeyFunctor,"fixed modules"), "."),
+                (TT "target f", " -- yields the codomain/target of the homomorphism. See ", TO2((target, MackeyFunctorHomomorphism),"target")),
+                (TT "source f", " -- yields the domain/source of the homomorphism. See ", TO2((source, MackeyFunctorHomomorphism),"source")),
+                (TT "f.UnderlyingMap", " -- yields the induced ", TO2("Macaulay2Doc :: module homomorphisms","homomorphism")," on the ", TO2(CpMackeyFunctor,"underlying modules"),". See ", TO("UnderlyingMap")),
+                (TT "f.FixedMap", " -- yields the induced ", TO2("Macaulay2Doc :: module homomorphisms","homomorphism")," on the ", TO2(CpMackeyFunctor,"fixed modules"), ". See ", TO("FixedMap")),
             }@
 
             ({\bf Warning}: the following method @TO("makeRandomMackeyFunctorHomomorphism")@ takes ({\em source,target}) as input, which follows the @TO("Hom")@ convention rather than the @TO("map")@ convention):
@@ -61,6 +61,9 @@ doc ///
         the fixed-point level of a Mackey functor homomorphism
     Usage
         F.FixedMap
+    SeeAlso
+        "background on Mackey functors"
+        MackeyFunctorHomomorphism
 ///
 
 doc ///
@@ -70,6 +73,9 @@ doc ///
         the underlying level of a Mackey functor homomorphism
     Usage
         F.UnderlyingMap
+    SeeAlso
+        "background on Mackey functors"
+        MackeyFunctorHomomorphism
 ///
 
 doc ///
@@ -114,6 +120,9 @@ doc ///
             A homomorphism between Mackey functors has a source and a target. This method returns the source.
         Example
             source(complexLinearizationMap(5))
+    SeeAlso
+        "background on Mackey functors"
+        MackeyFunctorHomomorphism
 ///
 
 doc ///
@@ -133,6 +142,9 @@ doc ///
             A homomorphism between Mackey functors has a source and a target. This method returns the target.
         Example
             target(complexLinearizationMap(5))
+    SeeAlso
+        "background on Mackey functors"
+        MackeyFunctorHomomorphism
 ///
 
 doc ///

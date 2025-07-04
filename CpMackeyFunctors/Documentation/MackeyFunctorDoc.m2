@@ -1,6 +1,9 @@
 doc ///
     Key
         CpMackeyFunctor
+        (symbol ==, CpMackeyFunctor, CpMackeyFunctor)
+        (directSum,CpMackeyFunctor)
+        (net, CpMackeyFunctor)
     Headline
         The type of Cp Mackey functors
     Description
@@ -10,22 +13,19 @@ doc ///
             The keys available (internally) in the hash table are as follows, together with their external {\tt get} methods:
             
             @UL {
-                (TT ".PrimeOrder", " yields the ", TO2(ZZ,"order"), " of the cyclic group over which we're working."),
+                (TT ".PrimeOrder", " yields the ", TO2(ZZ,"order"), " of the cyclic group over which we're working. See ", TO("PrimeOrder")),
                 (TT ".Underlying", 
                 " encodes the ", TO "module", " ",
-                TEX"$M(C_p/e)$"),
-                (TT ".Fixed",
-                " encodes the ",TO "module", " ",
-                TEX"$M(C_p/C_p)$"),
-                (TT ".Res",
-                " encodes the restriction ", TO2("Macaulay2Doc :: module homomorphisms","homomorphism")," ",
-                TEX"$M(C_p/C_p) \\to M(C_p/e)$"),
-                (TT ".Tr",
+                TEX"$M(C_p/e)$", ". See ", TO("Underlying")),
+                (TT ".Fixed", " encodes the ",TO "module", " ", TEX"$M(C_p/C_p)$",". See ", TO("Fixed")),
+                (TT ".Res"," encodes the restriction ", TO2("Macaulay2Doc :: module homomorphisms","homomorphism")," ",
+                TEX"$M(C_p/C_p) \\to M(C_p/e)$",". See ", TO("Res")),
+                (TT ".Trans",
                 " encodes the transfer ", TO2("Macaulay2Doc :: module homomorphisms","homomorphism")," ",
-                TEX"$M(C_p/e) \\to M(C_p/C_p)$"),
+                TEX"$M(C_p/e) \\to M(C_p/C_p)$",". See", TO("Trans")),
                 (TT ".Conj",
                 " encodes the conjugation ", TO2("Macaulay2Doc :: module homomorphisms","homomorphism")," ",
-                TEX"$M(C_p/e) \\to M(C_p/e)$"),
+                TEX"$M(C_p/e) \\to M(C_p/e)$",". See ", TO("Conj")),
             }@
 
             {\bf Constructing new Mackey functors:}
@@ -118,6 +118,79 @@ doc ///
         Example
             M = makeRandomCpMackeyFunctor(2)
             drawVerticalCpMackeyFunctor M
+    SeeAlso
+        "background on Mackey functors"
+        CpMackeyFunctor
+///
+
+
+doc ///
+    Key
+        PrimeOrder
+    Headline
+        the prime order of the group over which a Mackey functor is defined
+    Usage
+        M.PrimeOrder
+    SeeAlso
+        "background on Mackey functors"
+        CpMackeyFunctor
+///
+
+doc ///
+    Key
+        Underlying
+    Headline
+        the underlying module of a Mackey functor
+    Usage
+        M.Underlying
+    SeeAlso
+        "background on Mackey functors"
+        CpMackeyFunctor
+///
+
+doc ///
+    Key
+        Fixed
+    Headline
+        the fixed module of a Mackey functor
+    Usage
+        M.Fixed
+    SeeAlso
+        "background on Mackey functors"
+        CpMackeyFunctor
+///
+
+doc ///
+    Key
+        Res
+    Headline
+        the restriction homomorphism in a Mackey functor
+    Usage
+        M.Res
+    SeeAlso
+        "background on Mackey functors"
+        CpMackeyFunctor
+///
+
+doc ///
+    Key
+        Trans
+    Headline
+        the transfer homomorphism in a Mackey functor
+    Usage
+        M.Trans
+    SeeAlso
+        "background on Mackey functors"
+        CpMackeyFunctor
+///
+
+doc ///
+    Key
+        Conj
+    Headline
+        the conjugation homomorphism in a Mackey functor
+    Usage
+        M.Conj
     SeeAlso
         "background on Mackey functors"
         CpMackeyFunctor
