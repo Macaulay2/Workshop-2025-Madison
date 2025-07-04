@@ -127,7 +127,7 @@ undocumented{
     (isWellDefined,CpMackeyFunctor),
     (isWellDefined,MackeyFunctorHomomorphism),
     (ring, MackeyFunctorHomomorphism),
-    (promote, MackeyFunctorHomomorphism)
+    (promote, MackeyFunctorHomomorphism, ZZ)
     }
 
 -- Main homepage documentation
