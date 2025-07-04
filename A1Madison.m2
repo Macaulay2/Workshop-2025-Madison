@@ -65,6 +65,22 @@ export{
     "addGW",
     "multiplyGW",
 
+    --GrothendieckWittClassesOverAlgebra.m2  --proposed replacements for functions in version 1.1  
+    "makeGWClassOverAlgebra",
+    "GrothendieckWittClassOverAlgebra",
+    "getDiagonalClassOverAlgebra",
+    "getDiagonalEntriesOverAlgebra",
+    "getRing",
+    "diagonalizeViaCongruenceOverAlgebra",
+
+    --GWTransfer.m2
+    "transferGW",
+
+    --TraceAndNorm.m2
+    "AlgebraicTrace",
+    "AlgebraicNorm",
+    "MultiplicationMatrix",
+
     --UnstableGrothendieckWittClasses.m2
     "makeGWuClass",
     --"isWellDefinedGWu", -- Leave exported for now
@@ -162,6 +178,12 @@ load "./A1Madison/Code/Decomposition.m2"
 load "./A1Madison/Code/UnstableGrothendieckWittClasses.m2"
 load "./A1Madison/Code/multiplicity.m2"
 load "./A1Madison/Code/UnstableLocalDegrees.m2"
+load "./A1Madison/Code/TraceAndNorm.m2"
+load "./A1Madison/Code/GWTransfer.m2"
+
+-- File for testing proposed changes; extends Grothendieck-Witt classes to be defined over dimension-0 algebras (is this the right generality?)
+load "./A1Madison/Code/GrothendieckWittClassOverAlgebra.m2"
+
 
 ----------------------------
 ----------------------------
