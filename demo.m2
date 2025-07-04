@@ -75,18 +75,21 @@ P = convexHull transpose matrix{
     {0,0,1,1}
     }
 
-isSymmetric(P, matrix permutation {2, 1, 3, 4})
-EES = equivariantEhrhartSeries(P)
+g = matrix permutation {2, 1, 3, 4}
+
+isSymmetric(P, g)
+EES = equivariantEhrhartSeries(P);
+netList EES
 EES_0
 isEffective(EES_0)
 
 -- Orbit polytope
 
 P2 = orbitPolytope(transpose matrix {{0,1,2}})
-vertices P2
-EES2 = equivariantEhrhartSeries P2
+vertices P2 -- permutohedron in 3-dimensions
+EES2 = equivariantEhrhartSeries P2;
+netList EES2
 isEffective(EES2_0)
-
 
 
 
@@ -107,7 +110,7 @@ vertices Pg
 ES = ehrhartSeries(Pg)
 EES = equivariantEhrhartSeries(P,{M})
 
-isEffective EES3_0
+isEffective EES_0
 
 
 -- Permute the last two coordinates of hypersimplex(4,2)
@@ -136,7 +139,8 @@ ES = ehrhartSeries(Pg)
 -- Equivariant ES
 EES = equivariantEhrhartSeries(P,{M})
 
-isEffective EES3_0
+isEffective EES_0
+
 
 -- Permute three coordinates
 
@@ -154,7 +158,8 @@ ES = ehrhartSeries(Pg)
 -- Equivariant ES
 EES = equivariantEhrhartSeries(P,{M})
 
-isEffective EES3_0
+isEffective EES_0
+
 
 -- Permute all coordinates
 
@@ -172,4 +177,4 @@ ES = ehrhartSeries(Pg)
 -- Equivariant ES
 EES = equivariantEhrhartSeries(P,{M})
 
-isEffective EES3_0
+isEffective EES_0
