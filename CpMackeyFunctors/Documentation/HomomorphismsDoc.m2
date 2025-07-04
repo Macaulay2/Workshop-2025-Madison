@@ -3,16 +3,36 @@ doc ///
         MackeyFunctorHomomorphism
     Headline
         the class of Mackey functor homomorphisms
-    Subnodes
-        FixedMap
-        UnderlyingMap
     Description
         Text
-            Common ways to construct a Mackey functor homomorphism:
+            The @TO2(Type,"type")@ of a {\em Mackey functor homomorphism} (for definitions, see @TO("background on Mackey functors")@). A Mackey functor homomorphism can be constructed with an implementation of the @TO2((map,CpMackeyFunctor,CpMackeyFunctor,Matrix,Matrix),"map")@ method in this package.
+
+            
+
+            Given a Mackey functor homomorphism, we can extract its @TO("source")@ and @TO("target")@ in the same way we do for module homomorphisms ({\bf warning}: the following method @TO("makeRandomMackeyFunctorHomomorphism")@ takes ({\em source,target}) as input, which follows the @TO("Hom")@ convention rather than the @TO("map")@ convention):
+        Example
+            M = makeRandomCpMackeyFunctor(2);
+            N = makeRandomCpMackeyFunctor(2);
+            f = makeRandomMackeyFunctorHomomorphism(M,N)
         Text
-            • @ TO2((map, CpMackeyFunctor, CpMackeyFunctor, Matrix, Matrix), "map") @  
+            There are a few ways to build Mackey functor homomorphisms, for example we can take the @TO2(id,"identity")@ on any Mackey functor
+        Example
+            id_(M)
         Text
-            • @ TT "id_M" @
+            We have implemented some unary and binary operations on Mackey functor homomorphisms, including
+
+            @UL{
+                (BOLD "powers:", " given an endomorphism of a Mackey functor ", TEX"$f\\colon M \\to M$", " we can take iterated composition of it as ", TT"f^n"),
+                (BOLD "inversion:", " if ", TEX"$f$", " is an ", TO2((isIsomorphism,MackeyFunctorHomomorphism),"isomorphism"), " we can invert it via ", TT"$f^{-1}$"),
+                (BOLD "negating:", " we can take the negative of any Mackey functor homomorphism as ", TT"-f"),
+                (BOLD "addition:", " we can add two Mackey functor homomorphisms with the same domain and codomain via ", TT"f+g"),
+                (BOLD "iterated addition:", " we can add a Mackey functor homomorphism ", TT"f", " with itself ", TT"n", " times via ", TT"n*f"),
+                (BOLD "composition:", " we can compose two composable Mackey functor homomorphisms via ", TT"g*f")
+            }@
+
+    SeeAlso
+        "background on Mackey functors"
+
 ///
 -- ^^ There must be a better way!
 
@@ -182,6 +202,28 @@ doc ///
             A = makeBurnsideMackeyFunctor 2;
             id_A || id_A
 ///
+
+doc ///
+    Key
+        isIsomorphism
+        (isIsomorphism, MackeyFunctorHomomorphism)
+    Headline
+        checks if a Mackey functor homomorphism is an isomorphism
+    Usage
+        isIsomorphism F
+    Inputs
+        F : MackeyFunctorHomomorphism
+    Outputs
+        : Boolean
+            whether $F$ is an isomorphism
+    Description
+        Text
+            Checks whether a @TO2(MackeyFunctorHomomorphism,"Mackey functor homomorphism")@ is an isomorphism.
+    SeeAlso
+        "background on Mackey functors"
+        MackeyFunctorHomomorphism
+///
+
 
 doc ///
     Key

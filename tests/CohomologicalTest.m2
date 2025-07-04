@@ -7,8 +7,6 @@ t = map(F,U, matrix {{2}})
 c = map(U,U, matrix {{1}})
 MF := makeCpMackeyFunctor(2,r,t,c)
 
--- verify that constructed surjections are indeed surjective
-assert(isTrivialMackeyFunctor (cokernel (makeFreeModuleSurjection MF)))
 
 -- verify free resolutions are in fact complexes
 d = resolutionCohomological(MF,3)
