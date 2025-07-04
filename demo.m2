@@ -32,14 +32,12 @@ k = coker vars E -- the residue field is an E-module
 
 -- We compute the injective resolution of k over E
 elapsedTime P = injectiveResolution(k, LengthLimit => 5)
--- Compare with the Priddy complex on {e_0,e_1,e_2,e_3}
--- whose terms are P'_i = E ** (S_i)^*
-elapsedTime P' = priddyComplex(vars E, LengthLimit => 5)
-betti P == betti P'
-dd^P_(-2) - dd^P'_(-2)
-
 augP = coaugmentationMap P
 isQuasiIsomorphism augP
+-- In fact, this is the Priddy complex on {e_3,e_2,e_1,e_0}
+-- whose terms are P'_i = E ** (S_i)^*
+elapsedTime P' = priddyComplex(matrix{{e_3,e_2,e_1,e_0}}, LengthLimit => 5)
+P == P'
 
 
 -- A non-cyclic Example
@@ -83,11 +81,10 @@ koszulLL coker vars E
 
 -- LL(E(n+1)) = k
 C = koszulLL E^{n+1}
--- In fact, it is isomorphic to the Koszul complex on {x_0,x_1,x_2}
+-- In fact, this is the Priddy complex on {x_0,x_1,x_2} with a twist and shift
+C == (priddyComplex(-vars S) ** S^{-3})[-3]
+-- Which is also isomorphic to the Koszul complex on {x_0,x_1,x_2}
 f = randomComplexMap(C, koszulComplex vars S, Cycle => true)
-isQuasiIsomorphism f
--- Which also happens to be the Priddy complex on {x_0,x_1,x_2} with a twist and shift
-f = randomComplexMap(C, (priddyComplex vars S ** S^{-3})[-3], Cycle => true)
 isQuasiIsomorphism f
 
 ------------------------------------------
