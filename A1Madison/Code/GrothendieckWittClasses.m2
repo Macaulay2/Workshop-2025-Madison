@@ -84,8 +84,12 @@ getAlgebra GrothendieckWittClass := Ring => beta -> (
 
 getBaseField = method()
 getBaseField GrothendieckWittClass := Ring => beta -> (
+    if (instance(getAlgebra beta, ComplexField)) or (instance(getAlgebra beta, RealField)) or (getAlgebra beta === QQ) or (instance(getAlgebra beta, GaloisField)) then return getAlgebra beta;
+
     if not isPrime ideal(0_(ring getMatrix beta)) then error "the Grothendieck-Witt class is not defined over a field";
+
     if (not isField ring getMatrix beta) then return toField ring getMatrix beta;
+
     ring getMatrix beta
     )
 

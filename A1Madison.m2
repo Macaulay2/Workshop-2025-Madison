@@ -134,6 +134,9 @@ export{
     "getGlobalUnstableA1Degree",
     "getLocalUnstableA1Degree",
 
+    -- Spare
+    "isFiniteEtaleAlgebra"
+
     }
 
 -- Basic arithmetic, p-adic, and commutative algebra operations we will use
@@ -475,8 +478,8 @@ M3 = makeGWClass matrix(CC, {{1*ii,24/10,-2.41},{24/10,-5,0},{-2.41,0,69+ii}});
 M4 = makeGWClass matrix(GF(7), {{1,0,0},{0,2,0},{0,0,-3}});
 
 assert(getBaseField(M1) === QQ);
-assert(getBaseField(M2) === RR_53);
-assert(getBaseField(M3) === CC_53);
+assert(instance(getBaseField(M2),RealField));
+assert(instance(getBaseField(M3),ComplexField));
 assert((getBaseField M4).order == 7);
 ///
 

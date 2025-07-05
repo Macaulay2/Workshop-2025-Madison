@@ -177,18 +177,30 @@ getScalar UnstableGrothendieckWittClass := alpha -> (
     alpha.scalar
 )
 
--- Input: An unstable Grothendieck-Witt class beta
--- Output: The base field of beta
-
-getBaseField UnstableGrothendieckWittClass := Ring => beta -> (
-    ring getMatrix beta
-    )
 
 -- Input: A GrothendieckWittClass representing a symmetric bilinear form determined by a matrix M
 -- Output: The matrix M
 
 getMatrix UnstableGrothendieckWittClass := Matrix => alpha -> (
     alpha.matrix
+    )
+
+-- Input: An UnstableGrothendieckWittClass
+-- Output: A ring, the algebra it is defined over
+getAlgebra UnstableGrothendieckWittClass := Ring => beta -> (
+    ring getMatrix beta
+    )
+
+-- Input: An unstable Grothendieck-Witt class beta
+-- Output: The base field of beta
+getBaseField UnstableGrothendieckWittClass := Ring => beta -> (
+    if (instance(getAlgebra beta, ComplexField)) or (instance(getAlgebra beta, RealField)) or (getAlgebra beta === QQ) or (instance(getAlgebra beta, GaloisField)) then return getAlgebra beta;
+
+    if not isPrime ideal(0_(ring getMatrix beta)) then error "the Grothendieck-Witt class is not defined over a field";
+
+    if (not isField ring getMatrix beta) then return toField ring getMatrix beta;
+
+    ring getMatrix beta
     )
 
 -- Input: Two Grothendieck-Witt classes beta and gamma over the same field
