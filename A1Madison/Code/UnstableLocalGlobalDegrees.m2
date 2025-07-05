@@ -41,10 +41,10 @@ getGlobalUnstableA1Degree RingElement := (Matrix,Number) => q -> (
     Y := local Y;
     R' := kk[X,Y];
     
-    fX = sub(f,{x => X});
-    fY = sub(f,{x => Y});
-    gX = sub(g,{x => X});
-    gY = sub(g,{x => Y});
+    fX := sub(f,{x => X});
+    fY := sub(f,{x => Y});
+    gX := sub(g,{x => X});
+    gY := sub(g,{x => Y});
     
     D := lift((fX * gY - fY * gX)/(X-Y),R');
     
