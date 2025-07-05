@@ -54,20 +54,66 @@ isDiagonal Matrix := Boolean => M -> (
     true
     )
 
--- Input: A symmetric matrix over a field
--- Output: A diagonal matrix congruent to the original matrix
-
 diagonalizeViaCongruence = method()
-diagonalizeViaCongruence Matrix := Matrix => AnonMut -> (
-    k := ring AnonMut;
-    --if not isField k then error "expected matrix over a field";
-
-    if not isSquareAndSymmetric AnonMut then
+diagonalizeViaCongruence Matrix := Matrix => A -> (
+    -- Return an error if the matrix is not square and symmetric.
+    if not isSquareAndSymmetric A then
 	error "matrix is not symmetric";
 
-    -- Return false if the matrix isn't defined over a field
-    if not (isField k or (instance(k, QuotientRing) and isField coefficientRing k and dim k == 0 and isPrime ideal(0_(k)))) then error "the base ring of the matrix is not the algebra presentation of a field";
+    k := ring A;
 
+    -- If the matrix is defined over a field, run the diagonalizeViaCongruenceField
+    if (isField k or instance(k, ComplexField) or instance(k, RR) or (instance(k, QuotientRing) and isField coefficientRing k and dim k == 0 and isPrime ideal(0_(k)))) then 
+    return diagonalizeViaCongruenceField A;
+
+    -- If the matrix is defined only over a ring, run diagonalizeViaCongruenceRing
+    diagonalizeViaCongruenceRing A
+)
+-- Input: A symmetric matrix over a field
+-- Output: A diagonal matrix congruent to the original matrix
+diagonalizeViaCongruenceRing = method()
+diagonalizeViaCongruenceRing (Matrix) := (Matrix) => (AnonMut) -> (
+    A := mutableMatrix AnonMut;
+    n:=numRows(A);
+    for col from 0 to (n-1) do (
+        if A_(col,col) == 0 then (
+            for row from col+1 to n-1 do ( 
+		--Scan for nonzero entries below the diagonal entry
+                if A_(row,col) != 0 then (
+                    if A_(row,row) == 0 then (
+		        --Row reduction to make A_(col,col) nonzero
+                        rowAdd(A,col,1,row);
+		        --Column reduction to keep reduced matrix congruent to original matrix
+                        columnAdd(A,col,1,row);
+                        )
+                    else (
+		        --Row and column swaps to make A_(col,col) nonzero
+                        rowSwap(A,col,row);
+                        columnSwap(A,col,row);
+                        );
+                    );
+                    break;
+                );
+            );
+        --Now A_(col,col) != 0 unless there was a zero row/column and we use it to clear the column below
+        if A_(col,col) != 0 then (
+            for row from (col+1) to (n-1) do (
+                temp:=A_(row,col);
+                rowMult(A,row,A_(col,col)); --multiply row row by A_(col,col)
+                columnMult(A,row,A_(col,col)); --column multiplication to keep reduced matrix congruent
+                rowAdd(A,row,-temp,col); --more row reduction make every entry below A_(col,col) is zero
+                columnAdd(A,row,-temp,col); --column reduction to keep reduced matrix congruent
+                );
+            );
+        );
+    return matrix A 
+    )
+
+-- Input: A symmetric matrix over a field
+-- Output: A diagonal matrix congruent to the original matrix
+diagonalizeViaCongruenceField = method()
+diagonalizeViaCongruenceField Matrix := Matrix => AnonMut -> (
+    k := ring AnonMut;
     kk := k;
     if not isField k then kk = toField k;
 
