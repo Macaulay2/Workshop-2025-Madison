@@ -18,4 +18,5 @@ assert(class makeOrbitMackeyFunctor(2,matrix{{0,1,0},{1,0,0},{0,0,1}}) === CpMac
 
 assert(class makeFixedTrivMackeyFunctor(5) === CpMackeyFunctor);
 
+
 assert(class makeFixedSignMackeyFunctor() === CpMackeyFunctor);
