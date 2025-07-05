@@ -1,3 +1,21 @@
+-- Input: A ring
+-- Output: Boolean that gives whether the ring is a finite etale algebra over a field (and in particular if it is a field or a field extension)
+isFiniteEtaleAlgebra = method()
+isFiniteEtaleAlgebra Ring := Boolean => (Alg) -> (
+    -- Verifies that the input is a finitely generated algebra over a field of dimension 0
+    if not (isField Alg or (instance(Alg, QuotientRing) and isField coefficientRing Alg and dim Alg == 0)) then return false;
+
+    -- Being a finite etale algebra over a field can be checked by verifying that the trace of all basis elements are nonzero.
+    baseField :=  coefficientRing Alg;
+    B := flatten entries basis Alg; 
+    basisTraces := apply(B, b -> (algebraicNorm(Alg, b) =!= 0_baseField));
+
+    if (not same basisTraces or (unique basisTraces)_0 == false) then return false;
+
+    true
+)
+
+
 -- Input: A matrix
 -- Output: Boolean that gives whether the matrix defines a nondegenerate symmetric bilinear form over a field of characteristic not 2
 
@@ -11,7 +29,7 @@ isWellDefinedGW Matrix := Boolean => M -> (
     if isDegenerate M then return false;
 
     -- Return false if the matrix isn't defined over a field
-    if not (isField ring M or (instance(ring M, QuotientRing) and isField coefficientRing ring M and dim ring M == 0 and isPrime ideal(0_(ring M)))) then return false;
+    if not (isField ring M or isFiniteEtaleAlgebra ring M) then return false;
     
     -- Returns false if the matrix is defined over a field of characteristic 2
     if char(ring M) == 2 then return false;
@@ -66,7 +84,8 @@ getAlgebra GrothendieckWittClass := Ring => beta -> (
 
 getBaseField = method()
 getBaseField GrothendieckWittClass := Ring => beta -> (
-    if not isField ring getMatrix beta then return toField ring getMatrix beta;
+    if not isPrime ideal(0_(ring getMatrix beta)) then error "the Grothendieck-Witt class is not defined over a field";
+    if (not isField ring getMatrix beta) then return toField ring getMatrix beta;
     ring getMatrix beta
     )
 
