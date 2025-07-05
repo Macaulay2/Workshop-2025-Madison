@@ -46,7 +46,7 @@ getGlobalUnstableA1Degree RingElement := (Matrix,Number) => q -> (
     gX = sub(g,{x => X});
     gY = sub(g,{x => Y});
     
-    D = lift((fX * gY - fY * gX)/(X-Y),R');
+    D := lift((fX * gY - fY * gX)/(X-Y),R');
     
     m := degree (X,D);
     n := degree (Y,D);
@@ -55,7 +55,7 @@ getGlobalUnstableA1Degree RingElement := (Matrix,Number) => q -> (
     
     for i from 0 to m do(
 	for j from 0 to n do
-    	B_(i,j) = coefficient(X^i*Y^j,D)
+    	B_(i,j) := coefficient(X^i*Y^j,D)
 	);
     
      makeGWuClass matrix B
@@ -86,7 +86,7 @@ getLocalUnstableA1Degree (RingElement, Number) := (UnstableGrothendieckWittClass
 
     x := (gens ring q)#0;
 
-    q = sub(q, frac ring q);
+    q := sub(q, frac ring q);
 
     -- Extract numerator f from q
     f := numerator(q);
