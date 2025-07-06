@@ -86,8 +86,8 @@ injectiveResolution Complex := Complex => opts -> C -> C.cache.injectiveResoluti
     if not isSkewCommutative E then error "expected underlying ring to be skew-commutative";
     D := dual C;
     f := Hom(resolutionMap(D, opts), E);
-    I := Hom(freeResolution(D, opts), E);
-    I.cache.injectiveResolutionMap = f;
+    I := target f; --Hom(freeResolution(D, opts), E); --better to compute as the target of f
+    I.cache.resolutionMap = f; -- a different name here to avoid confusion
     I.cache.formation = FunctionApplication { injectiveResolution, C };
     I)
 
@@ -98,9 +98,10 @@ injectiveResolutionMap Module := ComplexMap => opts -> M -> (
 	map(C_0, M, transpose syz transpose presentation M)))
 
 -- TODO: shouldn't this just C.cache.injectiveResolutionMap?
+--Sreehari: C.cache.injectiveResolutionMap has the double dual of C as source, the below code uses the natural iso to fix the source
 injectiveResolutionMap Complex := ComplexMap => opts -> C -> ( -- C.cache.injectiveResolutionMap ??= (
     D := injectiveResolution(C, opts);
-    hfC := D.cache.injectiveResolutionMap;
+    hfC := D.cache.resolutionMap;
     W := ring C;
     CDoubleDual:= source hfC;
     DDualMap := map(CDoubleDual, C, i -> (
@@ -661,8 +662,7 @@ TEST ///
     A=typeA(2)
     I=orlikSolomon(A)
     E=ring I
-    B=typeA(2)
-    J=orlikSolomon(B,E)
+    J=ideal random(E^1,E^{-3,-3})
     M=(ring I)^1/I ++ (ring J)^1/J
     P = injectiveResolution(M, LengthLimit => 7)
     assert isWellDefined P
@@ -703,12 +703,12 @@ TEST ///
     P = injectiveResolution(C, LengthLimit => 5)
     assert isWellDefined P
     assert isFree P
-    f = injectiveResolutionMap C -- bug  --new code fixed this bug
+    f = injectiveResolutionMap C 
     assert isWellDefined f
     assert isQuasiIsomorphism f
     assert isComplexMorphism f
     assert(source f == C)
-    assert(target f == P) --target f can be longer than P, so this can be false
+    assert(target f == P) 
 
     Mat=random(E^3,E^{-1,-2})
     prune ker Mat
