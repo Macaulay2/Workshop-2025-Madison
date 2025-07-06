@@ -180,9 +180,11 @@ koszulDual Ring := opts -> A -> A.cache.koszulDual ??= (
     K := coefficientRing A;
     x := if instance(opts.Variables#0, String) then getSymbol opts.Variables#0 else opts.Variables#0;
     e := if instance(opts.Variables#1, String) then getSymbol opts.Variables#1 else opts.Variables#1;
-    if isSkewCommutative A
+    A' := if isSkewCommutative A
     then K[x_0..x_(numgens A - 1)]
-    else K[e_0..e_(numgens A - 1), SkewCommutative => true])
+    else K[e_0..e_(numgens A - 1), SkewCommutative => true];
+    A'.cache.koszulDual = A;
+    A')
 
 -- given a finite length module, finds (lo,hi)
 -- such that M_d == 0 for d < lo and hi < d
