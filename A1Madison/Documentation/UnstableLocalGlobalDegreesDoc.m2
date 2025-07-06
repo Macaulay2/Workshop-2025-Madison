@@ -1,16 +1,17 @@
 doc ///
     Key
         getUnstableGlobalA1Degree
-        (getUnstableGlobalA1Degree, RingElement)   
+        (getUnstableGlobalA1Degree, frac R)   
     Headline
-        computes the unstable global A1 degree of a pointed rational function f/g
+        computes the unstable global A1 degree of a pointed rational function $f/g:\mathbb{P}^{1}_{k}\to\mathbb{P}^{1}_{k}$
     Usage
         getUnstableGlobalA1Degree(q)
     Inputs 
-        q : a rational function @TT("f/g")@ where @TT("f")@ and @TT("g")@ are polynomials in one variable over a field @TT("k")@, with @TT("g")@ not identically zero   
+        q :frac R
+             a rational function @TT("f/g")@ where @TT("f")@ and @TT("g")@ are polynomials in one variable over a field @TT("k")@, with @TT("g")@ not identically zero   
     Outputs
-        : UnstableGrothendieckWittClass
-            the isomorphism class of a non-degenerate symmetric bilinear form represented by a B\'{e}zoutian matrix @TT("N")@ together with a scalar @TT("t") as its determinant
+        : Sequence
+             a B\'{e}zoutian matrix @TT("N")@ and its scalar @TT("t") determinant as an UnstableGrothendieckWittClass
     Description
         Text
              As termed by Igieobo, et. al, the unstable $\mathbb{A}^1$-degree is valued in the unstable Grothendieck-Witt ring $GW^u(k)$, where there is a group isomorphism $[\mathbb{P}^{1}_{k},\mathbb{P}^{1}_{k}]\longrightarrow\mathrm{GW}(k)\times_{k^{\times}/(k^{\times})^{2}}k^{\times}.$  As in the stable case, the global unstable $\mathbb{A}^{1}$-degree at rational points is given as a type of B\'{e}zoutian.  Work by Casanave shows that there is a group is a isomorphism  $$\deg^{u}:[\mathbb{P}^{1}_{k},\mathbb{P}^{1}_{k}]\longrightarrow\mathrm{GW}^{u}(k)$$
@@ -20,3 +21,18 @@ doc ///
             getGlobalUnstableA1Degree(q)
            
 ///
+
+doc///
+    Key
+        getLocalUnstableA1Degree
+        (getLocalUnstableA1Degree, RingElement, RingElement)
+    Headline
+        computes a local unstable A1-Brouwer degree of a pointed rational function at a root
+    Usage
+        getLocalUnstableA1Degree(q, r)
+    Inputs
+        q : a rational function @TT("f/g")@ where @TT("f")@ and @TT("g")@ are polynomials in one variable over a field @TT("k")@, with @TT("g")@ not identically zero
+        r : a root of the polynomial @TT("f")@ in the ring of fractions of the polynomial ring over @TT("k")
+    Outputs
+        : UnstableGrothendieckWittClass`
+\\\
