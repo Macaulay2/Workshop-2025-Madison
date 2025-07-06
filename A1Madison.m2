@@ -134,9 +134,6 @@ export{
     "getGlobalUnstableA1Degree",
     "getLocalUnstableA1Degree",
 
-    -- Spare
-    "isFiniteEtaleAlgebra"
-
     }
 
 -- Basic arithmetic, p-adic, and commutative algebra operations we will use

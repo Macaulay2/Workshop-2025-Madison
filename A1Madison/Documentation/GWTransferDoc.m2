@@ -13,5 +13,5 @@ document {
 		 beta = makeGWuClass matrix(QQ, {{0,2},{2,0}});
 		 getScalar beta
 	 	 ///,
-    SeeAlso => {"GrothendieckWittClass"}
+    SeeAlso => {"GrothendieckWittClass", "algebraicTrace"}
         }

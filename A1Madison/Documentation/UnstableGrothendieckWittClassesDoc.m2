@@ -3,7 +3,7 @@ document{
     Headline => "a new type, intended to capture the isomorphism class of an element of the unstable Grothendieck-Witt group of a base field",
     PARA {"An ", TT "UnstableGrothendieckWittClass" ," object is a type of ", TO2(HashTable, "HashTable"), " encoding the data of a ", TO2(GrothendieckWittClass, "GrothendieckWittClass"), " over a field ", TEX///$k$///, " and a scalar ", TEX///$b$///, " over the same field."},
 	
-    PARA{"An ", TT"UnstableGrothendieckWittClass", " object can be built in one of several way using the ", TO2(makeGWuClass, "makeGWuClass"), " method."},
+    PARA{"An ", TT"UnstableGrothendieckWittClass", " object can be built in one of several ways using the ", TO2(makeGWuClass, "makeGWuClass"), " method."},
 
 	PARA{"We can construct an ", TT"UnstableGrothendieckWittClass", " over a field ", TEX///$k$///, " object by applying ", TT"makeGWuClass", " to a pair ", TT"(M,a)", " where ", TT"M", " is either a symmetric matrix of full rank or a ", TO2(GrothendieckWittClass, "GrothendieckWittClass"), " and ", TT"a", " is a scalar which agrees with the determinant of ", TT"M", " in the quotient ", TEX///$k^{\times}/(k^{\times})^{2}$///, "."},
 	EXAMPLE lines///
@@ -170,5 +170,5 @@ document {
     UL{
 	{"[IMS+24] Igieobo, et. al., ", EM "Motivic configurations on the line,", TT"arXiv: 2411.15347", "."},
     },
-    SeeAlso => {"UnstableGrothendieckWittClass"} -- to add local and global degree functions
-        }
+    SeeAlso => {"UnstableGrothendieckWittClass", "getGlobalUnstableA1Degree", "getLocalUnstableA1Degree"}
+    }
