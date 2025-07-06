@@ -389,11 +389,17 @@ Node
 	   P = priddyComplex(m, LengthLimit => 3)
 	   P.dd
        Text
-	   Another way obtain a Priddy complex on the variables $e_0, \dots, e_n$ of $E$ is to apply @TO koszulRR@ to $S$.
+	   Another way obtain a Priddy complex of the variables $e_0, \dots, e_n$ of $E$ is to apply @TO koszulRR@ to $S$.
        Example
 	   (S,E) = koszulPair(2, ZZ/101)
 	   C = koszulRR(S^1, Concentration => (-5,0))
 	   C == priddyComplex(vars E, LengthLimit => 5)
+       Text
+	   The Priddy complex of the variables of $E$ is isomorphic to an @TO2(injectiveResolution, "injective resolution")@ of the base field $k$.
+       Example
+	   k = coker vars E
+	   R = injectiveResolution(k, LengthLimit=>5)
+	   betti C == betti R
    SeeAlso
        priddyDifferential
 Node
@@ -421,13 +427,45 @@ Node
        priddyComplex
 Node
    Key
-     injectiveResolution
+       injectiveResolution
+       (injectiveResolution, Module)
+       (injectiveResolution, Complex)
+   Headline
+       compute the injective resolution of a module or complex over an exterior algebra
+   Usage
+       injectiveResolution M
+       injectiveResolution C
+   Inputs
+       M:Module
+	   over an exterior algebra
+       C:Complex
+	   over an exterior algebra
+   Outputs
+       :Complex
+   Description
+       Text
+	   Below we compute an injective resolution of $k=\mathbb{Z}/101$ viewed as a $\Lambda_k[x,y,z]$-module.
+       Example
+	   E = ZZ/101[x,y,z, SkewCommutative=>true]
+	   C = injectiveResolution(coker vars E, LengthLimit=>3)
+	   C.dd
+       Text
+	   This resolution is isomorphic to a @TO2(priddyComplex, "Priddy complex")@.
+       Example
+	   betti C == betti priddyComplex(vars E, LengthLimit=>3)
+   SeeAlso
+       injectiveResolutionMap
+       coaugmentationMap
 Node
    Key
      coaugmentationMap
 Node
    Key
        koszulRR
+       (koszulRR, Module)
+       (koszulRR, Matrix)
+       (koszulRR, Complex)
+       (koszulRR, ComplexMap)
    Usage
        D = koszulRR C
        psi = koszulRR phi
@@ -445,11 +483,13 @@ Node
        g:Matrix
    Description
        Text
+	   This is a functor whose left adjoint is @TO koszulLL@.
+	   
 	   Let $S = k[x_0, \dots, x_n]$ be a polynomial ring over a field $k$ and  $E = \Lambda_k(e_0, \dots, e_n)$ be an exterior algebra. If $C$ is a complex of graded $S$-modules with differential $\partial_C$, then $\mathbb{R}(C)$ is the complex of graded $E$-modules with $\mathbb{R}(C)^i = \bigoplus_{j\in\mathbb{Z}} \operatorname{Hom}_k(E(-j), C^{i-j}_j) = \bigoplus_{j\in\mathbb{Z}} (E(-j))^* \otimes_k C^{i-j}_j = \bigoplus_{j\in\mathbb{Z}} E^*(j) \otimes_k C^{i-j}_j$ in cohomological degree $i$ and with the following differential: if $f\in\operatorname{Hom}_k(E(-j), C^{i-j}_j)$, then $\partial(f)$ is the sum of the map $\partial_C\circ f\in\operatorname{Hom}(E(-j), C^{i-j+1}_j)$ with the map $E(-j-1)\rightarrow C^{i-j}_{j+1}$ given by $e\mapsto (-1)^{i-j}\sum_{\ell=0}^n x_if(ee_\ell)$.
 
 	   Below we verify that $\mathbb{R}(k) = E$.
        Example
-	   (S,E)= koszulPair(2, ZZ/101)
+	   (S, E) = koszulPair(2, ZZ/101)
 	   koszulRR coker vars S
        Text
 	   Below we verify that $\mathbb{R}(S)$ is the Priddy injective resolution of $k$.
@@ -461,7 +501,8 @@ Node
 	   Below we check functoriality.
        Example
 	   opts = new OptionTable from {Concentration=>(-5,5)}
-	   koszulRR(id_(complex S^2), opts) == id_(koszulRR(S^2, opts))
+	   C = complex map(S^{1}, S^1, S_0)
+	   koszulRR(id_C, opts) == id_(koszulRR(C, opts))
 	   f = random(S^{2:1}, S^2)
 	   g = random(S^2, S^{2:-1})
 	   koszulRR(f, opts) * koszulRR(g, opts)  == koszulRR(f * g, opts)
@@ -469,9 +510,97 @@ Node
        koszulLL
 Node
    Key
-     koszulLL
+       koszulLL
+       (koszulLL, Module)
+       (koszulLL, Matrix)
+       (koszulLL, Complex)
+       (koszulLL, ComplexMap)
+   Usage
+       D = koszulLL C
+       psi = koszulLL phi
+       N = koszulLL M
+       g = koszulLL f
+   Inputs
+       C:Complex
+       phi:ComplexMap
+       M:Module
+       f:Matrix
+   Outputs
+       D:Complex
+       psi:ComplexMap
+       N:Module
+       g:Matrix
+   Description
+       Text
+           This is a functor whose right adjoint is @TO koszulRR@.
+	   
+	   Let $S = k[x_0, \dots, x_n]$ be a polynomial ring over a field and  $E = \Lambda_k(e_0, \dots, e_n)$ be an exterior algebra. If $C$ is a complex of graded $E$-modules with differential $\partial_C$, then $\mathbb{L}(C)$ is the complex of graded $S$-modules with $\mathbb{L}(C)^i = \bigoplus_{j\in\mathbb{Z}} S(j)\otimes_k C_j^{i-j}$ in cohomological degree $i$ and with differential $\partial_{\mathbb{L}(C)}(s\otimes c) = (-1)^i\sum_{\ell=0}^n sx_\ell \otimes ce_\ell + s\otimes\partial_C c$.
+	   
+	   Below we verify that $\mathbb{L}(k) = S$.
+       Example
+	   (S, E) = koszulPair(2, ZZ/101)
+	   koszulLL coker vars E
+       Text
+	   The complex $\mathbb{L}(E(3))$ is isomorphic to a Koszul complex.
+       Example
+	   C = koszulLL(E^{3})
+	   D = koszulComplex vars S
+	   betti C == betti D
+       Text
+	   Below we check functoriality.
+       Example
+	   C = complex map(E^{1}, E^1, E_0)
+	   koszulLL(id_C) == id_(koszulLL C)
+	   f = random(E^{2:1}, E^2)
+	   g = random(E^2, E^{2:-1})
+	   koszulLL f * koszulLL g == koszulLL(f * g)
    SeeAlso
        koszulRR
+Node
+   Key
+       koszulPair
+       (koszulPair, ZZ, Ring)
+   Usage
+       koszulPair(i,F)
+   Inputs
+       i:ZZ
+       F:Ring
+   Outputs
+       :Sequence
+	   consisting of a commutative polynomial ring and a skew-commutative polynomial ring
+   Description
+       Text
+           Given an integer $n$ and a field $k$, this constructs the pair $(S, E)$ where $S = k[x_0, \dots, x_n]$ is a polynomial ring and $E = \Lambda_k[e_0, \dots, e_n]$ is an exterior algebra.
+       Example
+	   (S, E) = koszulPair(2, ZZ/101, Variables=>{x,e})
+	   S
+	   E
+	   vars S
+	   vars E
+       Text
+	   The two rings will recognize each other as belonging to the same pair.
+       Example
+	   S === koszulDual E
+	   E === koszulDual S
+       Text
+           This allows one to give @TO koszulLL@ (resp. @TO koszulRR@) a complex of $E$-modules (resp. $S$-modules) and get a complex of $S$-modules (resp. $E$-modules). Otherwise, these methods internally use @TO koszulDual@ to create a new ring for the output.
+       Example
+	   C = complex map(E^{1}, E^1, E_0)
+	   koszulLL C
+   SeeAlso
+       koszulDual
+Node
+   Key
+       koszulDual
+       (koszulDual, Ring)
+   Usage
+       koszulDual R
+   Inputs
+       R:Ring
+   Outputs
+       :Ring
+   SeeAlso
+       koszulPair
 Node
    Key
        exteriorStanleyReisner
