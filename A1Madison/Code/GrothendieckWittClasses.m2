@@ -1,16 +1,27 @@
 -- Input: A ring
 -- Output: Boolean that gives whether the ring is a finite etale algebra over a field (and in particular if it is a field or a field extension)
 isFiniteEtaleAlgebra = method()
-isFiniteEtaleAlgebra Ring := Boolean => (Alg) -> (
+isFiniteEtaleAlgebra QuotientRing := Boolean => (Alg) -> (
     -- Verifies that the input is a finitely generated algebra over a field of dimension 0
     if not (isField Alg or (instance(Alg, QuotientRing) and isField coefficientRing Alg and dim Alg == 0)) then return false;
 
-    -- Being a finite etale algebra over a field can be checked by verifying that the trace of all basis elements are nonzero.
-    baseField :=  coefficientRing Alg;
+    -- Being a finite etale algebra over a field can be checked by verifying that the trace defines a nondegenerate symmetric bilinear form from Alg x Alg to the base field
+    baseField := coefficientRing Alg;
     B := flatten entries basis Alg; 
-    basisTraces := apply(B, b -> (algebraicNorm(Alg, b) =!= 0_baseField));
+    n := #B;
+    
+    -- Define the matrix of the trace form
+    M := mutableMatrix id_(baseField^n);
+    
+    for i from 0 to n-1 do (
+        for j from 0 to n-1 do (
+            M_(i,j) = algebraicTrace(Alg, B_i * B_j);
+        );
+    );
 
-    if (not same basisTraces or (unique basisTraces)_0 == false) then return false;
+    discAlg := determinant matrix M;
+
+    if (discAlg == 0_baseField) then return false;
 
     true
 )
