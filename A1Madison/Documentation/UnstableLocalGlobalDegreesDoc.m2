@@ -3,7 +3,7 @@ doc ///
         getUnstableGlobalA1Degree
         (getUnstableGlobalA1Degree, RingElement)   
     Headline
-        Computes the unstable global A1 degree of a pointed rational function $f/g:\mathbb{P}^{1}_{k}\to\mathbb{P}^{1}_{k}$
+        Computes the unstable global A1 degree a pointed rational function $f/g:\mathbb{P}^{1}_{k}\to\mathbb{P}^{1}_{k}$
     Usage
         getUnstableGlobalA1Degree(q)
     Inputs 
@@ -37,7 +37,7 @@ doc///
         getLocalUnstableA1Degree(q, r)
     Inputs
         q : a rational function @TT("f/g")@ where @TT("f")@ and @TT("g")@ are polynomials in one variable over a field @TT("k")@, with @TT("g")@ not identically zero
-        r : a root of the polynomial @TT("f")@ in the ring of fractions of the polynomial ring over @TT("k")
+        r : a root of the polynomial @TT("f")@ in the ring of fractions of the polynomial ring over @TT("k")@
     Outputs
-        : UnstableGrothendieckWittClass`
+        : UnstableGrothendieckWittClass
 \\\

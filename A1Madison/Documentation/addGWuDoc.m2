@@ -3,7 +3,7 @@ doc ///
         addGWu
         (addGWu, UnstableGrothendieckWittClass,UnstableGrothendieckWittClass)     
     Headline
-        the direct sum of two unstable Grothendieck-Witt Classes
+        the direct sum for  two unstable Grothendieck-Witt Classes
     Usage
         addGWu(beta, gamma)
     Inputs
