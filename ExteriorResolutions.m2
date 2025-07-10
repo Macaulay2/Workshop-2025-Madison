@@ -160,12 +160,7 @@ priddyComplex Matrix := opts -> m -> m.cache#(symbol priddyComplex, opts.Concent
     else if instance(opts.Concentration, Sequence) and length opts.Concentration == 2 and all(opts.Concentration, i -> instance(i,ZZ)) and opts.Concentration#0 <= opts.Concentration#1 then opts.Concentration
     else try degreeSupport module koszulDual ring m else error "expected Concentration to be a nondecreasing sequence of 2 integers";
     if lo==hi then source priddyDifferential(lo, m) else complex hashTable apply(lo+1..hi, i -> i => priddyDifferential(i, m)))
-///
-restart
-needsPackage "ExteriorResolutions"
-(S, E) = koszulPair(3,ZZ/101)
-priddyComplex(vars E, Concentration=>(-3,3))
-///
+
 --------------------------------------------------
 --- Koszul duality helpers
 --------------------------------------------------
@@ -431,7 +426,7 @@ Node
 	   E = QQ[e_0,e_1, SkewCommutative=>true]
 	   m = matrix{{e_0, e_0*e_1}}
 	   d = priddyDifferential(-3, m)
-	   d == dd^(priddyComplex(m, LengthLimit =>5 ))_(-3)
+	   d == dd^(priddyComplex(m, Concentration => 5 ))_(-3)
    SeeAlso
        priddyComplex
 Node
