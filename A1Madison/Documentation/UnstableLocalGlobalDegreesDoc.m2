@@ -7,7 +7,7 @@ Node
         getUnstableGlobalA1Degree
         (getUnstableGlobalA1Degree, RingElement)   
     Headline
-        Computes the unstable global A1 degree a pointed rational function $f/g:\mathbb{P}^{1}_{k}\to\mathbb{P}^{1}_{k}$
+        Computes the unstable global A1 degree of a pointed rational function $f/g:\mathbb{P}^{1}_{k}\to\mathbb{P}^{1}_{k}$
     Usage
         getUnstableGlobalA1Degree(q)
     Inputs 
