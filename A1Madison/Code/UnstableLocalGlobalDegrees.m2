@@ -9,6 +9,8 @@
 getGlobalUnstableA1Degree = method()
 getGlobalUnstableA1Degree RingElement := (Matrix,Number) => q -> (
 
+    R := ring q;
+
     -- Extract numerator f from q
     f := numerator(sub(q, frac R));
        
@@ -86,7 +88,7 @@ getLocalUnstableA1Degree (RingElement, Number) := (UnstableGrothendieckWittClass
 
     x := (gens ring q)#0;
 
-    q := sub(q, frac ring q);
+    q = sub(q, frac ring q);
 
     -- Extract numerator f from q
     f := numerator(q);

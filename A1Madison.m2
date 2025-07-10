@@ -175,6 +175,9 @@ load "./A1Madison/Code/Decomposition.m2"
 -- Unstable Grothendieck-Witt classes 
 load "./A1Madison/Code/UnstableGrothendieckWittClasses.m2"
 
+-- Unstable local and global A1-Brouwer degrees 
+load "./A1Madison/Code/UnstableLocalGlobalDegrees.m2"
+
 -- Compute traces and norms
 load "./A1Madison/Code/TraceAndNorm.m2"
 
