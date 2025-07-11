@@ -4,12 +4,12 @@ doc ///
 
 Node
     Key
-        getUnstableGlobalA1Degree
-        (getUnstableGlobalA1Degree, RingElement)   
+        getGlobalUnstableA1Degree
+        (getGlobalUnstableA1Degree, RingElement)   
     Headline
         Computes the unstable global A1 degree a pointed rational function $f/g:\mathbb{P}^{1}_{k}\to\mathbb{P}^{1}_{k}$
     Usage
-        getUnstableGlobalA1Degree(q)
+        getGlobalUnstableA1Degree(q)
     Inputs 
         q:RingElement
             a polynomial or a rational function @TT("f/g")@ where @TT("f")@ and @TT("g")@ are polynomials in one variable over a field @TT("k")@, with @TT("g")@ not identically zero   

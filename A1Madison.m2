@@ -193,8 +193,6 @@ load "./A1Madison/Code/GWTransfer.m2"
 
 beginDocumentation()
 
-document{
-    Key => A1Madison,
 doc ///
 Node
     Key
@@ -260,6 +258,10 @@ load "./A1Madison/Documentation/UnstableGrothendieckWittClassesDoc.m2"
 load "./A1Madison/Documentation/addGWuDoc.m2"
 
 load "./A1Madison/Documentation/TraceAndNormDoc.m2"
+
+load "./A1Madison/Documentation/GWTransferDoc.m2"
+
+load "./A1Madison/Documentation/UnstableLocalGlobalDegreesDoc.m2"
 
 ----------------------------
 ----------------------------
