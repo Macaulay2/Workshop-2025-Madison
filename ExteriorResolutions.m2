@@ -156,11 +156,15 @@ priddyDifferential(ZZ, Matrix) := (i, m) -> m.cache#(symbol priddyDifferential, 
 
 priddyComplex = method(TypicalValue => Complex, Options => { Concentration => null })
 priddyComplex Matrix := opts -> m -> m.cache#(symbol priddyComplex, opts.Concentration) ??= (
-    (lo, hi) := if instance(opts.Concentration, ZZ) and opts.Concentration >= 0 then (-opts.Concentration, 0)
-    else if instance(opts.Concentration, Sequence) and length opts.Concentration == 2 and all(opts.Concentration, i -> instance(i,ZZ)) and opts.Concentration#0 <= opts.Concentration#1 then opts.Concentration
-    else try degreeSupport module koszulDual ring m else error "expected Concentration to be a nondecreasing sequence of 2 integers";
+    (lo, hi) := if instance(opts.Concentration, Sequence) and length opts.Concentration == 2 and all(opts.Concentration, i -> instance(i,ZZ)) and opts.Concentration#0 <= opts.Concentration#1 then opts.Concentration
+    else try degreeSupport module koszulDual ring m else error "expected a nondecreasing sequence of 2 integers";
     if lo==hi then source priddyDifferential(lo, m) else complex hashTable apply(lo+1..hi, i -> i => priddyDifferential(i, m)))
-
+///
+restart
+needsPackage "ExteriorResolutions"
+(S, E) = koszulPair(3, ZZ/101)
+priddyComplex(vars E, Concentration=>5)
+///
 --------------------------------------------------
 --- Koszul duality helpers
 --------------------------------------------------
@@ -370,7 +374,7 @@ Node
        priddyComplex
       (priddyComplex, Matrix)
    Headline
-       compute the Priddy complex of several elements of an exterior algebra
+       makes a Priddy complex
    Usage
        priddyComplex m
    Inputs
@@ -390,7 +394,7 @@ Node
        Example
 	   E = QQ[e_0,e_1, SkewCommutative=>true]
 	   m = matrix{{e_0, e_0*e_1}}
-	   P = priddyComplex(m, Concentration => 3)
+	   P = priddyComplex(m, Concentration => (0,3))
 	   P.dd
        Text
 	   Another way obtain a Priddy complex of the variables $e_0, \dots, e_n$ of $E$ is to apply @TO koszulRR@ to $S$.
@@ -426,7 +430,7 @@ Node
 	   E = QQ[e_0,e_1, SkewCommutative=>true]
 	   m = matrix{{e_0, e_0*e_1}}
 	   d = priddyDifferential(-3, m)
-	   d == dd^(priddyComplex(m, Concentration => 5 ))_(-3)
+	   d == dd^(priddyComplex(m, Concentration => (-5,0) ))_(-3)
    SeeAlso
        priddyComplex
 Node
@@ -456,7 +460,7 @@ Node
        Text
 	   This resolution is isomorphic to a @TO2(priddyComplex, "Priddy complex")@.
        Example
-	   betti C == betti priddyComplex(vars E, Concentration=>3)
+	   betti C == betti priddyComplex(vars E, Concentration=>(-3,0))
    SeeAlso
        injectiveResolutionMap
        coaugmentationMap
@@ -496,7 +500,7 @@ Node
 	   (S, E) = koszulPair(2, ZZ/101)
 	   koszulRR coker vars S
        Text
-	   Below we verify that $\mathbb{R}(S)$ is the Priddy injective resolution of $k$.
+	   Below we verify that $\mathbb{R}(S)$ is the @TO2(priddyComplex, "Priddy injective resolution")@ of $k$.
        Example
 	   C = koszulRR(S^1, Concentration => (-5,0))
 	   prune HH_0 C == coker vars E
@@ -725,7 +729,7 @@ TEST ///
     E = QQ[e_0, e_1,e_2, SkewCommutative=>true]
     m = matrix{{e_0, e_0*e_1*e_2}}
     D = priddyDifferential(-2, m)
-    C = priddyComplex(m, Concentration => 3)
+    C = priddyComplex(m, Concentration => (-3,0))
     assert(D == map(E^{{6}, {8}, {10}, {12}}, E^{{5}, {7}, {9}},
 	    {{e_0, 0, 0}, {e_0*e_1*e_2, e_0, 0}, {0, e_0*e_1*e_2, e_0}, {0, 0, e_0*e_1*e_2}}))
     assert isWellDefined C
@@ -741,7 +745,7 @@ TEST ///
     m = matrix{{e_0*e_1*e_2, e_1*e_2*e_3}}
 
     priddyDifferential(-2, m)
-    priddyComplex(m, Concentration => 3)
+    priddyComplex(m, Concentration => (-3,0))
 ///
 
 TEST /// -- testing with S^1 and E^1
@@ -751,7 +755,7 @@ TEST /// -- testing with S^1 and E^1
   M = S^1
   C = koszulRR(M, Concentration => (-n,0))
   assert(id_C === koszulRR(id_M, Concentration => (-n,0)))
-  P = priddyComplex(vars E, Concentration => n)
+  P = priddyComplex(vars E, Concentration => (-n,0))
   assert(C == P)
   F = koszulLL C
   assert(keys F.module == {0,1,2,3})
@@ -811,7 +815,7 @@ TEST ///
 
   assert isWellDefined(C = priddyComplex vars S)
   assert isWellDefined(koszulLL(C, Concentration => (-5,0)))
-  assert isWellDefined(D = priddyComplex(vars E, Concentration => 2))
+  assert isWellDefined(D = priddyComplex(vars E, Concentration => (-2,0)))
   assert isWellDefined(koszulRR D)
 ///
 
