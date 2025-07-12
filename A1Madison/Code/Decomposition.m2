@@ -289,3 +289,19 @@ getSumDecompositionString = method()
 getSumDecompositionString GrothendieckWittClass := String => beta -> (
     (getSumDecompositionVerbose beta)_1
     )
+
+-- Input: An unstable Grothendieck-Witt class beta over over QQ, RR, CC, or a finite field of characteristic not 2
+-- Output: A simplified diagonal representative of beta
+
+getSumDecomposition UnstableGrothendieckWittClass := UnstableGrothendieckWittClass => beta -> (
+    simplifiedGWuClassDiagonal := getSumDecomposition getGWClass beta;
+    beta.cache.getDiagonalClass = makeGWuClass(simplifiedGWuClassDiagonal, getScalar beta);
+    makeGWuClass(simplifiedGWuClassDiagonal, getScalar beta)
+    )
+
+-- Input: A Grothendieck-Witt class beta over over QQ, RR, CC, or a finite field of characteristic not 2
+-- Output: The decomposition of beta as a sum of hyperbolic and rank one forms
+
+getSumDecompositionString UnstableGrothendieckWittClass := String => beta -> (
+    "(" | (getSumDecompositionString getGWClass(beta)) | ", " | toString(getScalar beta) | ")"
+    )
