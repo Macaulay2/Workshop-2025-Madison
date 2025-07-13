@@ -169,11 +169,11 @@ load "./A1Madison/Code/Isotropy.m2"
 -- Computing anisotropic dimension
 load "./A1Madison/Code/AnisotropicDimension.m2"
 
--- Decomposing Grothendieck-Witt classes and symmetric bilinear forms
-load "./A1Madison/Code/Decomposition.m2"
-
 -- Unstable Grothendieck-Witt classes 
 load "./A1Madison/Code/UnstableGrothendieckWittClasses.m2"
+
+-- Decomposing Grothendieck-Witt classes and symmetric bilinear forms
+load "./A1Madison/Code/Decomposition.m2"
 
 -- Unstable local and global A1-Brouwer degrees 
 load "./A1Madison/Code/UnstableLocalGlobalDegrees.m2"

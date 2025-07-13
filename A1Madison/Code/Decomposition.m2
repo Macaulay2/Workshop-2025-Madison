@@ -251,27 +251,40 @@ getSumDecompositionVerbose GrothendieckWittClass := (GrothendieckWittClass, Stri
     kk := getBaseField beta;
 
     if getRank(beta) == 0 then
-	return (makeGWClass(diagonalMatrix(kk, {})), "empty form");
+        return (makeGWClass(diagonalMatrix(kk, {})), "empty form");
     
     outputString := "";
     
-    -- Get isotropic dimension of beta and construct its isotropic and anistropic parts
+    -- Get Witt index and build hyperbolic summand string
     w := getWittIndex beta;
+    if w == 1 then
+        outputString = outputString | "H"
+    else if w > 1 then
+        outputString = outputString | toString(w) | "H";
     
-    if w > 0 then outputString = outputString | toString(w) | "H";
-    
-    hyperbolicPart := makeHyperbolicForm(kk,2*w);
+    hyperbolicPart := makeHyperbolicForm(kk, 2*w);
     alpha := getAnisotropicPart beta;
     
+    -- Append anisotropic diagonal entries
     if getRank(alpha) > 0 then (
         D := getDiagonalEntries alpha;
-        for i from 0 to length(D) - 1 do
-	    outputString = outputString | " + <" | toString(D_i) | ">";
-	);
+        r := getRank alpha;
+        -- if exactly one diagonal entry, no leading plus
+        if r == 1 then (
+            outputString = outputString | "<" | toString(D_0) | ">";
+        ) else (
+            -- first entry without plus
+            outputString = outputString | "<" | toString(D_0) | ">";
+            -- subsequent entries with leading " + "
+            for i from 1 to r-1 do (
+                outputString = outputString | " + <" | toString(D_i) | ">";
+            );
+        );
+    );
     
-    -- Return a simplified form of beta
+    -- Return a simplified form of beta and its string
     return (addGW(alpha, hyperbolicPart), outputString);
-    )    
+)    
 
 -- Input: A Grothendieck-Witt class beta over over QQ, RR, CC, or a finite field of characteristic not 2
 -- Output: A simplified diagonal representative of beta
