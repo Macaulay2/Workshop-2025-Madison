@@ -2,6 +2,10 @@
 -- A1-Brouwer degree methods
 ----------------------------
 
+---------
+-- Global 
+---------
+
 -- Input: A list f = {f_1, f_2, ..., f_n} of polynomials giving a map kk^n -> kk^n
 -- Output: The Grothendieck-Witt class deg^(A^1)(f)
 
