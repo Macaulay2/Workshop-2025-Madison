@@ -169,11 +169,11 @@ load "./A1Madison/Code/Isotropy.m2"
 -- Computing anisotropic dimension
 load "./A1Madison/Code/AnisotropicDimension.m2"
 
--- Decomposing Grothendieck-Witt classes and symmetric bilinear forms
-load "./A1Madison/Code/Decomposition.m2"
-
 -- Unstable Grothendieck-Witt classes 
 load "./A1Madison/Code/UnstableGrothendieckWittClasses.m2"
+
+-- Decomposing Grothendieck-Witt classes and symmetric bilinear forms
+load "./A1Madison/Code/Decomposition.m2"
 
 -- Unstable local and global A1-Brouwer degrees 
 load "./A1Madison/Code/UnstableLocalGlobalDegrees.m2"
@@ -193,56 +193,41 @@ load "./A1Madison/Code/GWTransfer.m2"
 
 beginDocumentation()
 
-document{
-    Key => A1Madison,
-    Headline => "package for working with both A1-Brouwer degree computations and quadratic forms",
-    PARA {
-	    "Version history:"
-	    },
-	UL { 
-	    {BOLD "1.1.0: ", "this version was developed by N. Borisov, T. Brazelton, F. Espino, T. Hagedorn, Z. Han, J. Lopez Garcia, J. Louwsma, W. Ong, and A. Tawfeek."},
-	    {BOLD "2.0: ", " this version was developed by XXX."}
-	    },
-    PARA{"This package is intended to allow the computation and manipulation of ", TO2(getLocalA1Degree,"local"), 
-	" and ", TO2(getGlobalA1Degree,"global"), " ", TEX///$\mathbb{A}^1$///, EM "-Brouwer degrees.",
-	" Global Brouwer degrees are non-degenerate symmetric bilinear forms valued in the Grothendieck-Witt ring of a field ", TEX///$\text{GW}(k)$///, "."},
-    PARA{"In order to simplify the forms produced, this package produces invariants of symmetric bilinear forms, including their ", 
-	TO2(getWittIndex,"Witt indices"), ", their ", 
-	TO2(getIntegralDiscriminant,"discriminants"), ", and their ", 
-	TO2(getHasseWittInvariant, "Hasse-Witt invariants"), ". Quadratic forms can be ", 
-	TO2(getSumDecomposition,"decomposed"), " into their isotropic and ", TO2(getAnisotropicPart,"anisotropic parts"), 
-	". Finally, and perhaps most crucially, we can certify whether two symmetric bilinear forms are ", TO2(isIsomorphicForm,"isomorphic") , " in the Grothendieck-Witt ring."},
-PARA{"Below is an example using the methods provided by this package to compute the ", TO2(getLocalA1Degree,"local"),
-        " and ", TO2(getGlobalA1Degree,"global"), " ", TEX///$\mathbb{A}^1$///,  "-Brouwer degrees for an endomorphism ",
-	TEX///$\mathbb{A}_{\mathbb{Q}}^1\rightarrow \mathbb{A}_{\mathbb{Q}}^1.$///, " defined by ",TEX///$$ f(x)=(x^2+x+1)(x-3)(x+2).$$///,
-	" We first compute the global degree."},
-    EXAMPLE {
-    "R = QQ[x]",
-    "f = {x^4 - 6*x^2 - 7*x - 6}",
-    "alpha = getGlobalA1Degree f",
-    "beta = getSumDecomposition alpha",
-    },
-    PARA{"We can also compute the local degrees at the respective ideals."},   
-    EXAMPLE {
-    "I1 = ideal(x^2 + x + 1);",
-    "alpha1 = getLocalA1Degree(f, I1)",
-    "I2 = ideal(x - 3)",
-    "alpha2 = getLocalA1Degree(f, I2)",
-    "I3 = ideal(x + 2);",
-    "alpha3 = getLocalA1Degree(f, I3)", 
-    },
+doc ///
+Node
+    Key
+        A1Madison
+    Headline
+        a package for working with both A1-Brouwer degree computations and quadratic forms
+    Description
+        Text
+            This package is intended to allow the computation of local and global A1-Brouer degrees in both the stable and unstable settings, and for manipulations of unstable Grothendieck-Witt classes and symmetric bilinear forms including their invariants and decompositions. 
 
-    PARA{"We can then use the ", TO isIsomorphicForm, "  method to verify that the ", 
-    TO2(getLocalA1Degree, "local"), " degrees sum to the ", TO2(getGlobalA1Degree, "global"), 
-    " degree."},
-    EXAMPLE{
-	"alpha' = addGW(alpha1, addGW(alpha2, alpha3))",
-	"isIsomorphicForm(alpha,alpha')",
-	"beta' = getSumDecomposition alpha'",
-	},
-    },
-undocumented{
-    }
+            Version history: 
+            @UL{
+				(BOLD("V 1.1: "), "this version was developed by N. Borisov, T. Brazelton, F. Espino, T. Hagedorn, Z. Han, J. Lopez Garcia, J. Louwsma, W. Ong, and A. Tawfeek. This version implements computations of local and global A1-Brouwer degrees, as well as Grothendieck-Witt classes and their invariants. "),
+				(BOLD("V 2.0: "), "this version was developed by S. Atherton, S. Dutta, J. Lopez Garcia, J. Louwsma, Y. Luo, W. Ong, S. Pauli, and R. Sagayaraj. This version implements the computation of unstable local and global A1-Brouwer degrees, manipulations of the unstable Grothendieck-Witt group, and generalizes several methods in V 1.1 for Grothendieck-Witt class manipulations over fields to the setting of finite étale algebras over fields.")
+			}@
+
+            The $\mathbb{A}^{1}$-Brouwer degree and its unstable counterpart are valued in the Grothendieck-Witt ring and unstable Grothendieck-Group of a field $\text{GW}(k)$ and $\text{GW}^{u}(k)$, respectively. Global $\mathbb{A}^{1}$-degrees can be computed as follows: 
+
+        Example
+            R = QQ[x];
+            f = {x^4 - 6*x^2 - 7*x - 6};
+            alpha = getGlobalA1Degree f
+
+        Text
+            And in the case of unstable global $\mathbb{A}^{1}$-degrees:
+
+        Example
+            K = frac R;
+            q = (x^2 + x - 2)/(3*x + 5);
+            beta = getGlobalUnstableA1Degree(q)
+
+        Text
+            Invariants and simplified representatives for these forms such as their Witt indices, discriminants, and Hasse-Witt invariants can be computed as follows:
+            
+///
 
 load "./A1Madison/Documentation/ArithmeticMethodsDoc.m2"
 
@@ -273,6 +258,10 @@ load "./A1Madison/Documentation/UnstableGrothendieckWittClassesDoc.m2"
 load "./A1Madison/Documentation/addGWuDoc.m2"
 
 load "./A1Madison/Documentation/TraceAndNormDoc.m2"
+
+load "./A1Madison/Documentation/GWTransferDoc.m2"
+
+load "./A1Madison/Documentation/UnstableLocalGlobalDegreesDoc.m2"
 
 ----------------------------
 ----------------------------

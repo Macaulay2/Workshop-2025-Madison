@@ -53,7 +53,7 @@ isWellDefinedGW Matrix := Boolean => M -> (
 -- of a nondegenerate symmetric bilinear form over a field of characteristic not 2
 
 GrothendieckWittClass = new Type of HashTable
-GrothendieckWittClass.synonym = "Grothendieck-Witt Class over algebra"
+GrothendieckWittClass.synonym = "Grothendieck-Witt Class"
 
 -- Input: A matrix M representing a nondegenerate symmetric bilinear form over a field of characteristic not 2
 -- Output: The GrothendieckWittClass representing the symmetric bilinear form determined by M
@@ -97,9 +97,9 @@ getBaseField = method()
 getBaseField GrothendieckWittClass := Ring => beta -> (
     if (instance(getAlgebra beta, ComplexField)) or (instance(getAlgebra beta, RealField)) or (getAlgebra beta === QQ) or (instance(getAlgebra beta, GaloisField)) then return getAlgebra beta;
 
-    if not isPrime ideal(0_(ring getMatrix beta)) then error "the Grothendieck-Witt class is not defined over a field";
+    if not isPrime ideal(0_(getAlgebra beta)) then error "the Grothendieck-Witt class is not defined over a field";
 
-    if (not isField ring getMatrix beta) then return toField ring getMatrix beta;
+    if (not isField getAlgebra beta) then return toField getAlgebra beta;
 
     ring getMatrix beta
     )
@@ -117,8 +117,8 @@ getMatrix GrothendieckWittClass := Matrix => alpha -> (
 
 addGW = method()
 addGW (GrothendieckWittClass,GrothendieckWittClass) := GrothendieckWittClass => (beta,gamma) -> (
-    Kb := getBaseField beta;
-    Kg := getBaseField gamma;
+    Kb := getAlgebra beta;
+    Kg := getAlgebra gamma;
     
     -- Galois field case
     if instance(Kb, GaloisField) and instance(Kg, GaloisField) then (
@@ -139,8 +139,8 @@ addGW (GrothendieckWittClass,GrothendieckWittClass) := GrothendieckWittClass => 
 
 multiplyGW = method()
 multiplyGW (GrothendieckWittClass,GrothendieckWittClass) := GrothendieckWittClass => (beta,gamma) -> (
-    Kb := getBaseField beta;
-    Kg := getBaseField gamma;
+    Kb := getAlgebra beta;
+    Kg := getAlgebra gamma;
     
     -- Galois field case
     if instance(Kb, GaloisField) and instance(Kg, GaloisField) then (
