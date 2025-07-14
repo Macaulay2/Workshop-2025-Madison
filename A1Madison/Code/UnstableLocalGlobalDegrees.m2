@@ -59,10 +59,11 @@ getGlobalUnstableA1Degree RingElement := (Matrix,Number) => q -> (
     
     for i from 0 to m do(
 	for j from 0 to n do
-    	B_(i,j) := coefficient(X^i*Y^j,D)
+    	B_(i,j) = coefficient(X^i*Y^j,D)
 	);
     
-     makeGWuClass matrix B
+--- makeGWuClass 
+matrix B
      )
 
 -- Input: A rational function f/g, a root of f, and the multiplicity of that root
