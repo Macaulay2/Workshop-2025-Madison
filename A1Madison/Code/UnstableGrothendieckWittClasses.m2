@@ -42,7 +42,7 @@ isWellDefinedGWu (Matrix, Number) := Boolean => (M, a) -> (
         if ring a =!= ring M then return false;
         -- warn if we can’t test square‐class of det
         if det(M) =!= a then
-            print "Warning: can’t verify determinant vs scalar up to squares."
+            print "Warning, the function is not able to verify if the determinant of M and a agree up to squares."
     );
 
     -- if we reach here, the scalar passed one of the branches, so check the GW‐class itself
