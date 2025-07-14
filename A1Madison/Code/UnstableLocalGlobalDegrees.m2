@@ -7,7 +7,7 @@
 -- Output: A pair (M,a) where M is a matrix and a is a scalar (the determinant of M)
 
 getGlobalUnstableA1Degree = method()
-getGlobalUnstableA1Degree RingElement := (Matrix,Number) => q -> (
+getGlobalUnstableA1Degree (RingElement) := (UnstableGrothendieckWittClass) => q -> (
 
     R := ring q;
 
@@ -38,7 +38,7 @@ getGlobalUnstableA1Degree RingElement := (Matrix,Number) => q -> (
         );
 
     -- If the field is RR, ask the user to run the computation over QQ instead and then base change to RR
-    if instance(kk, RealField) then error "getGlobalUnstableA1Degree method does not work over the reals. Instead, define the polynomials over QQ to output an unstableGrothendieckWittClass. Then extract the matrix, base change it to RR, and run getSumDecomposition().";    
+    if instance(kk, RealField) then error "getGlobalUnstableA1Degree method does not work over the reals. Instead, define the polynomials over QQ to output an UnstableGrothendieckWittClass. Then extract the matrix, base change it to RR, and run getSumDecomposition().";    
 
     -- Initialize a polynomial ring in X and Y in which to compute the Bezoutian
     X := local X;
@@ -63,7 +63,7 @@ getGlobalUnstableA1Degree RingElement := (Matrix,Number) => q -> (
 	);
     
      makeGWuClass matrix B
-     )
+)
 
 -- Input: A rational function f/g, a root of f, and the multiplicity of that root
 
