@@ -1,5 +1,3 @@
-restart    
-
 --We define a method to represent multiplication by an element in a finite dimensional K-algebra as a matrix indexed by basis elements of its base field
 
 multiplicationMatrix=method()
