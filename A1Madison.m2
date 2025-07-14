@@ -217,7 +217,7 @@ Node
             alpha = getGlobalA1Degree f
         
         Text
-            
+
 
         Example
             K = frac R;
@@ -233,7 +233,7 @@ Node
             getHasseWittInvariant(alpha, 3)
 
         Text
-            Finally, we provide methods for verifying if two symmetric bilinear forms or unstable Grothendieck-Witt classes are isomorphic, and for computing simplified representatives of these objects. 
+            Finally, we provide methods for verifying if two symmetric bilinear forms or unstable Grothendieck-Witt classes are @TO2(isIsomorphicForm,"isomorphic")@, and for computing @TO2(getSumDecomposition,"simplified representatives")@ of these objects. 
 
         Example
             getSumDecompositionString alpha
