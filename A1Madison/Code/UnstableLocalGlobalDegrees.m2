@@ -86,7 +86,7 @@ getLocalUnstableA1Degree (RingElement, Number) := (UnstableGrothendieckWittClass
 
     if numgens ring q != 1 then error "must input function of one variable";
 
-    x := (gens ring q)#0;
+    u := (gens ring q)#0;
 
     q = sub(q, frac ring q);
 
@@ -106,7 +106,7 @@ getLocalUnstableA1Degree (RingElement, Number) := (UnstableGrothendieckWittClass
 
     m := getMultiplicity(f, r);
 
-    F := (x-sub(r, frac ring q))^m * g/f;
+    F := (u - sub(r, frac ring q))^m * g/f;
 
     makeAntidiagonalUnstableForm(kk, F(r), m)
 )
@@ -129,7 +129,7 @@ getLocalUnstableA1Degree (RingElement, RingElement) := (UnstableGrothendieckWitt
 
     if numgens ring q != 1 then error "must input function of one variable";
 
-    x := (gens ring q)#0;
+    u := (gens ring q)#0
 
     q = sub(q, frac ring q);
 
@@ -149,7 +149,7 @@ getLocalUnstableA1Degree (RingElement, RingElement) := (UnstableGrothendieckWitt
 
     m := getMultiplicity(f, r);
 
-    F := (x-sub(r, frac ring q))^m * g/f;
+    F := (u - sub(r, frac ring q))^m * g/f;
 
     makeAntidiagonalUnstableForm(kk, F(r), m)
 )
