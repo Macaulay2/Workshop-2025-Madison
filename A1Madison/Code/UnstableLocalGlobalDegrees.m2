@@ -27,6 +27,8 @@ getGlobalUnstableA1Degree RingElement := (Matrix,Number) => q -> (
 	
     -- Check whether the number of variables matches the number of polynomials
     S := ring f;
+    u := (gens ring q)#0;
+
     if #(gens S) != 1 then
         error "the number of variables does not match the number of polynomials";     
     -- If the field is CC, output the Grothendieck-Witt class of an identity matrix of the appropriate rank
@@ -43,15 +45,15 @@ getGlobalUnstableA1Degree RingElement := (Matrix,Number) => q -> (
     Y := local Y;
     R' := kk[X,Y];
     
-    fX := sub(f,{x => X});
-    fY := sub(f,{x => Y});
-    gX := sub(g,{x => X});
-    gY := sub(g,{x => Y});
-    
+    fX := sub(f,{u => X});
+    fY := sub(f,{u => Y});
+    gX := sub(g,{u => X});
+    gY := sub(g,{u => Y});
+
     D := lift((fX * gY - fY * gX)/(X-Y),R');
     
-    m := degree (X,D);
-    n := degree (Y,D);
+    m := degree(X,D);
+    n := degree(Y,D);
         
     B := mutableMatrix id_(QQ^(m+1));  
     
