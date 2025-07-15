@@ -269,16 +269,13 @@ getSumDecompositionVerbose GrothendieckWittClass := (GrothendieckWittClass, Stri
     if getRank(alpha) > 0 then (
         D := getDiagonalEntries alpha;
         r := getRank alpha;
-        -- if exactly one diagonal entry, no leading plus
-        if r == 1 then (
-            outputString = outputString | "<" | toString(D_0) | ">";
-        ) else (
-            -- first entry without plus
-            outputString = outputString | "<" | toString(D_0) | ">";
-            -- subsequent entries with leading " + "
-            for i from 1 to r-1 do (
-                outputString = outputString | " + <" | toString(D_i) | ">";
-            );
+        -- if there's already something in outputString, prepend " + "
+        if outputString === "" then
+            outputString = "<" | toString(D_0) | ">"
+        else
+            outputString = outputString | " + <" | toString(D_0) | ">";
+        for i from 1 to r-1 do (
+            outputString = outputString | " + <" | toString(D_i) | ">";
         );
     );
     
