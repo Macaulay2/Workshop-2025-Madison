@@ -283,3 +283,30 @@ doc ///
 		getLocalUnstableA1Degree
 ///
 
+doc ///
+	Key
+		getGWClass
+		(getGWClass, UnstableGrothendieckWittClass)
+	Headline
+		returns the Grothendieck-Witt class of the stable part of an unstable Grothendieck-Witt class
+	Usage
+		getGWClass(beta)
+	Inputs
+		beta: UnstableGrothendieckWittClass
+			an unstable Grothendieck-Witt class
+	Outputs
+		: GrothendieckWittClass
+			the Grothendieck-Witt class of the stable part of the unstable Grothendieck-Witt class
+	Description
+		Text
+			Given an @TT("UnstableGrothendieckWittClass")@ object @TT("beta")@, this method returns the Grothendieck-Witt class of the stable part of the unstable Grothendieck-Witt class. 
+		Example
+			M = matrix(QQ, {{0,1},{1,0}})
+			alpha = makeGWuClass(M, -9)
+			getGWClass alpha
+	SeeAlso
+		UnstableGrothendieckWittClass
+		makeGWuClass
+		getMatrix
+///
+
