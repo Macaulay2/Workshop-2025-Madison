@@ -14,7 +14,7 @@ doc ///
             the class $\text{deg}^{\mathbb{A}^{1}}(f/g)$ in the unstable Grothendieck-Witt group $\text{GW}^{u}(k)$
     Description
         Text
-            Given a pointed rational function $f/g:\mathbb{P}^{1}_{k}\to\mathbb{P}^{1}_{k}$, we may compute its @ITALIC("global unstable")@ $\mathbb{A}^{1}$-@ITALIC("Brouwer degree")@ valued in the unstable Grothendieck-Witt group $\text{GW}^{u}(k)\text{GW}(k)\times_{k^{\times}/(k^{\times})^{2}}k^{\times}$.
+            Given a pointed rational function $f/g:\mathbb{P}^{1}_{k}\to\mathbb{P}^{1}_{k}$, we may compute its @ITALIC("global unstable")@ $\mathbb{A}^{1}$-@ITALIC("Brouwer degree")@ valued in the unstable Grothendieck-Witt group $\text{GW}^{u}(k):=\text{GW}(k)\times_{k^{\times}/(k^{\times})^{2}}k^{\times}$.
 
             Morel's $\mathbb{A}^{1}$-Brouwer degree generalizes the classical Brouwer degree by associating to an endomorphism of the sphere a class in the Grothendieck-Witt ring of non-degenerate symmetric bilinear forms. While this morphism is an isomorphism in dimensions two and above, it is only surjective in dimension one [M12]. In this case, a computation of Morel [M12] and Cazanave [C12] compute $[\mathbb{P}^{1}_{k},\mathbb{P}^{1}_{k}]\to\text{GW}^{u}(k)$. 
 
