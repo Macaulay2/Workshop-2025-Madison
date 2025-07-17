@@ -1,6 +1,8 @@
 doc ///
 	Key
 		GrothendieckWittClass
+		(net, GrothendieckWittClass)
+		(texMath, GrothendieckWittClass)
 	Headline
 		a new type intended to capture the isomorphism class of an element of the Grothendieck-Witt ring of a field or finite étale algebras over a field 
 	Description
