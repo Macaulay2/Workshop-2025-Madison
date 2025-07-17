@@ -222,7 +222,7 @@ Node
         Example
             K = frac R;
             q = (x^2 + x - 2)/(3*x + 5);
-            --beta = getGlobalUnstableA1Degree(q)
+            beta = getGlobalUnstableA1Degree(q)
 
         Text
             Furthermore, we can compute a number of invariants associated to symmetric bilinear forms such as their @TO2(getWittIndex, "Witt indices")@, @TO2(getIntegralDiscriminant, "integral discriminants")@, and @TO2(getHasseWittInvariant, "Hasse-Witt invariants")@ at a fixed prime:
@@ -239,6 +239,10 @@ Node
             getSumDecompositionString alpha
             twoH = makeDiagonalForm(QQ, (1,-1,1,-1))
             isIsomorphicForm(alpha, twoH)
+        Example
+            getSumDecomposition beta
+            gamma = makeGWuClass(matrix(QQ, {{11, 0},{0,22}}), 8)
+            isIsomorphicForm(beta, gamma)
 ///
 
 load "./A1Madison/Documentation/ArithmeticMethodsDoc.m2"

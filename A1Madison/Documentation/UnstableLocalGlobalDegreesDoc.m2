@@ -26,7 +26,7 @@ doc ///
         Example
             frac QQ[x];
             q = (x^5 - 6*x^4 + 11*x^3 - 2*x^2 - 12*x + 8)/(x^4 - 5*x^2 + 7*x + 1);
-            --getGlobalUnstableA1Degree q
+            getGlobalUnstableA1Degree q
         Text
             The rank of this form is of rank five, which agrees with the number of zeroes of the rational function counted with multiplicity over the complex numbers. 
 
@@ -36,7 +36,7 @@ doc ///
             deg2 = getLocalUnstableA1Degree(q, 1)
             deg3 = getLocalUnstableA1Degree(q, 2)
             degSum = addGWuDivisorial({deg1, deg2, deg3}, {-1, 1, 2})
-            --isIsomorphicForm(degSum, getGlobalUnstableA1Degree q)
+            isIsomorphicForm(degSum, getGlobalUnstableA1Degree q)
     References
         [I+24] J. Igieobo, et. al., "Motivic configurations on the line," @TT("arXiv: 2411.15347")@, 2024. 
 
