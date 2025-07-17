@@ -55,6 +55,7 @@ doc ///
     Key
         getLocalUnstableA1Degree
         (getLocalUnstableA1Degree, RingElement, RingElement)
+        (getLocalUnstableA1Degree, RingElement, Number)
     Headline
         computes a local unstable $\mathbb{A}^{1}$-Brouwer degree of a pointed rational function $f/g:\mathbb{P}^{1}_{k}\to\mathbb{P}^{1}_{k}$ at a root $p\in\mathbb{P}^{1}_{k}$
     Usage
