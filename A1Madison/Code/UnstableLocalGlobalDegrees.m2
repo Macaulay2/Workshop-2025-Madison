@@ -7,7 +7,7 @@
 -- Output: A pair (M,a) where M is a matrix and a is a scalar (the determinant of M)
 
 getGlobalUnstableA1Degree = method()
-getGlobalUnstableA1Degree RingElement := q -> (
+getGlobalUnstableA1Degree RingElement := UnstableGrothendieckWittClass => q -> (
 
     R := ring q;
 
