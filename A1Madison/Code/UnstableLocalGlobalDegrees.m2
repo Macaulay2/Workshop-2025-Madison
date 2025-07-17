@@ -7,7 +7,7 @@
 -- Output: A pair (M,a) where M is a matrix and a is a scalar (the determinant of M)
 
 getGlobalUnstableA1Degree = method()
-getGlobalUnstableA1Degree (RingElement) := (UnstableGrothendieckWittClass) => q -> (
+getGlobalUnstableA1Degree RingElement := q -> (
 
     R := ring q;
 
@@ -59,7 +59,7 @@ getGlobalUnstableA1Degree (RingElement) := (UnstableGrothendieckWittClass) => q 
     
     for i from 0 to m do(
 	for j from 0 to n do
-    	B_(i,j) := coefficient(X^i*Y^j,D)
+    	B_(i,j) = coefficient(X^i*Y^j,D)
 	);
     
      makeGWuClass matrix B
