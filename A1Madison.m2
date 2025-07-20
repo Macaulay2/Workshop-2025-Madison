@@ -209,15 +209,15 @@ Node
 				(BOLD("V 2.0: "), "this version was developed by S. Atherton, S. Dutta, J. Lopez Garcia, J. Louwsma, Y. Luo, W. Ong, S. Pauli, and R. Sagayaraj. This version implements the computation of unstable local and global A1-Brouwer degrees, manipulations of the unstable Grothendieck-Witt group, and generalizes several methods in V 1.1 for Grothendieck-Witt class manipulations over fields to the setting of finite étale algebras over fields.")
 			}@
 
-            The $\mathbb{A}^{1}$-Brouwer degree and its unstable counterpart are valued in the Grothendieck-Witt ring and unstable Grothendieck-Group of a field $\text{GW}(k)$ and $\text{GW}^{u}(k)$, respectively. Global $\mathbb{A}^{1}$-degrees can be computed as follows: 
+            The $\mathbb{A}^{1}$-Brouwer degree and its unstable counterpart are valued in the Grothendieck-Witt ring and unstable Grothendieck-Group of a field $\text{GW}(k)$ and $\text{GW}^{u}(k)$, respectively. These can be computed as follows: 
 
         Example
             R = QQ[x];
             f = {x^4 - 6*x^2 - 7*x - 6};
             alpha = getGlobalA1Degree f
-
+        
         Text
-            And in the case of unstable global $\mathbb{A}^{1}$-degrees:
+
 
         Example
             K = frac R;
@@ -225,8 +225,24 @@ Node
             beta = getGlobalUnstableA1Degree(q)
 
         Text
-            Invariants and simplified representatives for these forms such as their Witt indices, discriminants, and Hasse-Witt invariants can be computed as follows:
-            
+            Furthermore, we can compute a number of invariants associated to symmetric bilinear forms such as their @TO2(getWittIndex, "Witt indices")@, @TO2(getIntegralDiscriminant, "integral discriminants")@, and @TO2(getHasseWittInvariant, "Hasse-Witt invariants")@ at a fixed prime:
+        
+        Example
+            getWittIndex alpha
+            getIntegralDiscriminant alpha
+            getHasseWittInvariant(alpha, 3)
+
+        Text
+            Finally, we provide methods for verifying if two symmetric bilinear forms or unstable Grothendieck-Witt classes are @TO2(isIsomorphicForm,"isomorphic")@, and for computing @TO2(getSumDecomposition,"simplified representatives")@ of these objects. 
+
+        Example
+            getSumDecompositionString alpha
+            twoH = makeDiagonalForm(QQ, (1,-1,1,-1))
+            isIsomorphicForm(alpha, twoH)
+        Example
+            getSumDecomposition beta
+            gamma = makeGWuClass(matrix(QQ, {{11, 0},{0,22}}), 8)
+            isIsomorphicForm(beta, gamma)
 ///
 
 load "./A1Madison/Documentation/ArithmeticMethodsDoc.m2"
