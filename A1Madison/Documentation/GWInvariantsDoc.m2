@@ -1,17 +1,17 @@
-doc ///
-    Key
-        getSignature
-        (getSignature, GrothendieckWittClass
-    Headline
-        computes the signature of a symmetric bilinear form over the real numbers or rational numbers
-    Usage
-        getSignature(beta)
-    Inputs
-        beta: GrothendieckWittClass
-            a symmetric bilinear form defined over $\mathbb{Q}$ or $\mathbb{R}$
-    Outputs
-        :ZZ
-            the signature of the symmetric bilinear form $\beta$
+--doc ///
+--    Key
+--        getSignature
+--        (getSignature, GrothendieckWittClass
+--    Headline
+--        computes the signature of a symmetric bilinear form over the real numbers or rational numbers
+--    Usage
+--        getSignature(beta)
+--    Inputs
+--        beta: GrothendieckWittClass
+--            a symmetric bilinear form defined over $\mathbb{Q}$ or $\mathbb{R}$
+--    Outputs
+--        :ZZ
+--            the signature of the symmetric bilinear form $\beta$
 
 
 
