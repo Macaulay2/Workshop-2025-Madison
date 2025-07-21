@@ -63,8 +63,8 @@ getGlobalUnstableA1Degree RingElement := UnstableGrothendieckWittClass => q -> (
 	);
     
 --- makeGWuClass 
-matrix B
-     )
+--matrix B
+    -- )
      makeGWuClass matrix B
 )
 
