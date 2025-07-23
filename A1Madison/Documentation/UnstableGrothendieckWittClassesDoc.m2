@@ -260,13 +260,13 @@ doc ///
 		L1: List
 			a list of unstable Grothendieck-Witt classes representing unstable local degrees
 		L2: List
-			a list of elements of the base field corresponding to the roots at which the unstable local degrees of @TT("L1")@ are computed
+			a list of elements of the base field corresponding to the roots at which the unstable local degrees of TT("L1") are computed
 	Outputs
 		: UnstableGrothendieckWittClass
-			the unstable Grothendieck-Witt class representing the divisorial sum of the local degrees with respect to the divisor determined by @TT("L2")@
+			the unstable Grothendieck-Witt class representing the divisorial sum of the local degrees with respect to the divisor determined by TT("L2")
 	Description
 		Text
-			Let $f/g:\mathbb{P}^{1}_{k}\to\mathbb{P}^{1}_{k}$ be a pointed rational function with zeroes $\{r_{1},\dots,r_{n}\}$ and $\{\beta_{1},\dots,\beta_{n}\}$ the unstable local $\mathbb{A}^{1}$-degrees at the $r_{i}$. The unstable global $\mathbb{A}^{1}$-degree of the rational function is not computed as the @TO2(addGWu, "addGWu")@ of the local unstable degrees, but as the divisorial sum [I+24].
+			Let $f/g:\mathbb{P}^{1}_{k}\to\mathbb{P}^{1}_{k}$ be a pointed rational function with zeroes $\{r_{1},\dots,r_{n}\}$ and $\{\beta_{1},\dots,\beta_{n}\}$ the unstable local $\mathbb{A}^{1}$-degrees at the $r_{i}$. The unstable global $\mathbb{A}^{1}$-degree of the rational function is not computed as the TO2{addGWu, "addGWu"} of the local unstable degrees, but as the divisorial sum [I+24].
 
 			The following example computes the divisorial sum of the rational function $\frac{x^{2}+x-2}{3x+5}$ over $\mathbb{Q}$ where the lists of unstable Grothendieck-Witt classes are given by $\{(\langle \frac{1}{3}\rangle, \frac{1}{3}), (\langle \frac{8}{3}\rangle, \frac{8}{3})\}$ and $\{-2, 1\}$.
 		Example
@@ -276,37 +276,11 @@ doc ///
 			beta = makeGWuClass(M2)
 			addGWuDivisorial({alpha, beta}, {-2, 1})
 	References
-		[I+24] J. Igieobo, et. al., "Motivic configurations on the line," @TT("arXiv: 2411.15347")@, 2024.
+		[I+24] J. Igieobo, et. al., "Motivic configurations on the line," TT("arXiv: 2411.15347"), 2024.
 	SeeAlso
 		UnstableGrothendieckWittClass
 		getGlobalUnstableA1Degree
 		getLocalUnstableA1Degree
 ///
 
-doc ///
-	Key
-		getGWClass
-		(getGWClass, UnstableGrothendieckWittClass)
-	Headline
-		returns the Grothendieck-Witt class of the stable part of an unstable Grothendieck-Witt class
-	Usage
-		getGWClass(beta)
-	Inputs
-		beta: UnstableGrothendieckWittClass
-			an unstable Grothendieck-Witt class
-	Outputs
-		: GrothendieckWittClass
-			the Grothendieck-Witt class of the stable part of the unstable Grothendieck-Witt class
-	Description
-		Text
-			Given an @TT("UnstableGrothendieckWittClass")@ object @TT("beta")@, this method returns the Grothendieck-Witt class of the stable part of the unstable Grothendieck-Witt class. 
-		Example
-			M = matrix(QQ, {{0,1},{1,0}})
-			alpha = makeGWuClass(M, -9)
-			getGWClass alpha
-	SeeAlso
-		UnstableGrothendieckWittClass
-		makeGWuClass
-		getMatrix
-///
 
