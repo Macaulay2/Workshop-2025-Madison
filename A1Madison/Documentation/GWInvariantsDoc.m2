@@ -1,38 +1,30 @@
---doc ///
---    Key
---        getSignature
---        (getSignature, GrothendieckWittClass
---    Headline
---        computes the signature of a symmetric bilinear form over the real numbers or rational numbers
---    Usage
---        getSignature(beta)
---    Inputs
---        beta: GrothendieckWittClass
---            a symmetric bilinear form defined over $\mathbb{Q}$ or $\mathbb{R}$
---    Outputs
---        :ZZ
---            the signature of the symmetric bilinear form $\beta$
-
-
-
-document{
-    Headline => "computes the signature of a symmetric bilinear form over the real numbers or rational numbers",
-    Key => {getSignature, (getSignature, GrothendieckWittClass)},
-    Usage => "getSignature beta",
-    Inputs => {
-	GrothendieckWittClass => "beta" => {"a symmetric bilinear form defined over ", TEX///$\mathbb{Q}$///, " or ", TEX///$\mathbb{R}$///},
-	},
-    Outputs => {
-	ZZ => "n" => {"the ", EM "signature", " of the symmetric bilinear form ", TEX///$\beta$///},
-	},
-    PARA{"Given a symmetric bilinear form, after diagonalizing it, we can consider the number of positive entries minus the number of negative entries appearing along the diagonal. This is the ", EM "signature", " of a symmetric bilinear form, and is one of the primary invariants used to classify forms. For more information see ", TO2(isIsomorphicForm,"isIsomorphicForm"), "."},
-    EXAMPLE lines ///
-    M = matrix(RR, {{0,0,1},{0,1,0},{1,0,0}});
-    beta = makeGWClass M;
-    getSignature beta
-    ///,
-    SeeAlso => {"isIsomorphicForm", "getHilbertSymbolReal", "getSumDecomposition", "getSumDecompositionString"}
-    }
+doc ///
+    Key
+        getSignature
+        (getSignature, GrothendieckWittClass)
+    Headline
+        computes the signature of a symmetric bilinear form over the real numbers or rational numbers
+    Usage
+        getSignature(beta)
+    Inputs
+        beta: GrothendieckWittClass
+            a symmetric bilinear form defined over $\mathbb{Q}$ or $\mathbb{R}$
+    Outputs
+        :ZZ
+            the signature of the symmetric bilinear form $\beta$
+    Description
+        Text
+            Given a symmetric bilinear form, after diagonalizing it, we can consider the number of positive entries minus the number of negative entries appearing along the diagonal. This is the @ITALIC("signature")@ of a symmetric bilinear form, and is one of the primary invariants used to classify forms. For more information, see @TO2(isIsomorphicForm, "isIsomorphicForm")@. 
+        Example
+            M = matrix(RR, {{0,0,1},{0,1,0},{1,0,0}});
+            beta = makeGWClass M;
+            getSignature beta
+    SeeAlso
+        isIsomorphicForm
+        getHilbertSymbol
+        getSumDecomposition
+        getSumDecompositionString
+///
 
 
 document{
