@@ -43,21 +43,48 @@ doc ///
 --    SeeAlso => {"getAnisotropicDimension"}   
 --}
 
+doc ///
+    Key
+        getAnisotropicDimension
+        (getAnisotropicDimension, GrothendieckWittClass)
+	(getAnisotropicDimension,  Matrix)
+    Headline
+        returns the anisotropic dimension of a symmetric bilinear form
+    Usage
+        getAnisotropicDimension beta
+    Inputs
+        beta: GrothendieckWittClass
+               a GrothendieckWittClass over a field $k$, where $k$ is $\mathbb{Q}$, $\mathbb{R}$, $\mathbb{C}$, or a finite field of characteristic not 2 
+    Outputs
+            : ZZ
+               the rank of the anisotropic part of $\beta$
+    Description
+        Text
+            By the Witt Decomposition Theorem, any non-degenerate form decomposes uniquely as $\beta \cong n \mathbb{H} \oplus \beta_a$ where the form $\beta_a$ is anisotropic. The rank of $\beta_a$ is called the anisotropic dimension of $\beta$.
+	    The anisotropic dimension of a form defined over the rational numbers is the maximum of the @TO2(getAnisotropicDimensionQQp, "getAnisotropicDimensionQQp")@ anistropic dimension at each of the completions of $\mathbb{Q}$.
+--    References
+--        [KC18] P. Koprowski, A. Czogala, "Computing with quadratic forms over number fields," @ITALIC("Journal of Symbolic Computation")@, 2018.
+    SeeAlso
+	getWittIndex
+        getAnisotropicDimensionQQp
+	getAnisotropicPart
+///
 
-document{
-    Key => {getAnisotropicDimension, (getAnisotropicDimension, GrothendieckWittClass), (getAnisotropicDimension, Matrix)},
-    Headline => "returns the anisotropic dimension of a symmetric bilinear form",
-    Usage => "getAnisotropicDimension beta",
-    Inputs => {
-	GrothendieckWittClass => "beta" => {"over a field ", TEX///$k$///, " where ", TEX///$k$///, " is ", TEX///$\mathbb{Q}$///,", ",TEX///$ \mathbb{R}$///,", ",TEX///$\mathbb{C}$///, ", or a finite field of characteristic not 2"},
-	},
-    Outputs => {
-        ZZ => {"the rank of the anisotropic part of ", TEX///$\beta$///},
-	},
-    PARA{"By the Witt Decomposition Theorem, any non-degenerate form decomposes uniquely as ", TEX///$\beta \cong n \mathbb{H} \oplus \beta_a$///," where the form ", TEX///$\beta_a$///," is anisotropic. The rank of ", TEX///$\beta_a$///, " is called the ", EM "anisotropic dimension", " of ", TEX///$\beta$///, "."},
-    PARA{"The anisotropic dimension of a form defined over the rational numbers is the maximum of the ", TO2(getAnisotropicDimensionQQp,"anistropic dimension at each of the completions"), " of ", TEX///$\mathbb{Q}$///, "."},
-    SeeAlso => {"getWittIndex", "getAnisotropicDimensionQQp", "getAnisotropicPart"}   
-}
+
+--document{
+--    Key => {getAnisotropicDimension, (getAnisotropicDimension, GrothendieckWittClass), (getAnisotropicDimension, Matrix)},
+--    Headline => "returns the anisotropic dimension of a symmetric bilinear form",
+--    Usage => "getAnisotropicDimension beta",
+--    Inputs => {
+--	GrothendieckWittClass => "beta" => {"over a field ", TEX///$k$///, " where ", TEX///$k$///, " is ", TEX///$\mathbb{Q}$///,", ",TEX///$ \mathbb{R}$///,", ",TEX///$\mathbb{C}$///, ", or a finite field of characteristic not 2"},
+--	},
+--    Outputs => {
+--        ZZ => {"the rank of the anisotropic part of ", TEX///$\beta$///},
+--	},
+--    PARA{"By the Witt Decomposition Theorem, any non-degenerate form decomposes uniquely as ", TEX///$\beta \cong n \mathbb{H} \oplus \beta_a$///," where the form ", TEX///$\beta_a$///," is anisotropic. The rank of ", TEX///$\beta_a$///, " is called the ", EM "anisotropic dimension", " of ", TEX///$\beta$///, "."},
+--    PARA{"The anisotropic dimension of a form defined over the rational numbers is the maximum of the ", TO2(getAnisotropicDimensionQQp,"anistropic dimension at each of the completions"), " of ", TEX///$\mathbb{Q}$///, "."},
+--    SeeAlso => {"getWittIndex", "getAnisotropicDimensionQQp", "getAnisotropicPart"}   
+--}
 
 
 document{
