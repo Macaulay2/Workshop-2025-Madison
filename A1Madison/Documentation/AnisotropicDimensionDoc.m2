@@ -87,23 +87,45 @@ doc ///
 --}
 
 
-document{
-    Key => {getWittIndex, (getWittIndex, GrothendieckWittClass)},
-    Headline => "returns the Witt index of a symmetric bilinear form",
-    Usage => "getWittIndex beta",
-    Inputs => {
-	GrothendieckWittClass => "beta" => {"denoted by ", TEX///$\beta\in\text{GW}(k)$///, " where ", TEX///$k$///, " is ", TEX///$\mathbb{Q}$///,", ",TEX///$ \mathbb{R}$///,", ",TEX///$\mathbb{C}$///, ", or a finite field of characteristic not 2"},
-	},
-    Outputs => {
-        ZZ => {"the rank of the totally isotropic part of ", TEX///$\beta$///},
-	},
-    PARA{"By the Witt Decomposition Theorem, any non-degenerate form decomposes uniquely as ", TEX///$\beta \cong n \mathbb{H} \oplus \beta_a$///," where the form ", TEX///$\beta_a$///," is anisotropic. The integer ", TEX///$n$///, " is called the ", EM "Witt index", " of ", TEX///$\beta$///, ". See for instance [L05, I.4.3]."},
-    
-        PARA{EM "Citations:"},
-    UL{
-	{"[L05] T.Y. Lam, ", EM "Introduction to quadratic forms over fields,", " American Mathematical Society, 2005."},
-    },
-    SeeAlso => {"getAnisotropicDimension"}   
-}
+--document{
+--    Key => {getWittIndex, (getWittIndex, GrothendieckWittClass)},
+--    Headline => "returns the Witt index of a symmetric bilinear form",
+--    Usage => "getWittIndex beta",
+--    Inputs => {
+--	GrothendieckWittClass => "beta" => {"denoted by ", TEX///$\beta\in\text{GW}(k)$///, " where ", TEX///$k$///, " is ", TEX///$\mathbb{Q}$///,", ",TEX///$ \mathbb{R}$///,", ",TEX///$\mathbb{C}$///, ", or a finite field of characteristic not 2"},
+--	},
+--    Outputs => {
+--        ZZ => {"the rank of the totally isotropic part of ", TEX///$\beta$///},
+--	},
+--    PARA{"By the Witt Decomposition Theorem, any non-degenerate form decomposes uniquely as ", TEX///$\beta \cong n \mathbb{H} \oplus \beta_a$///," where the form ", TEX///$\beta_a$///," is anisotropic. The integer ", TEX///$n$///, " is called the ", EM "Witt index", " of ", TEX///$\beta$///, ". See for instance [L05, I.4.3]."},
+--    
+--        PARA{EM "Citations:"},
+--    UL{
+--	{"[L05] T.Y. Lam, ", EM "Introduction to quadratic forms over fields,", " American Mathematical Society, 2005."},
+--    },
+--    SeeAlso => {"getAnisotropicDimension"}   
+--}
 
 
+doc ///
+    Key
+        getWittIndex
+        (getWittIndex, GrothendieckWittClass)
+    Headline
+        returns the Witt index of a symmetric bilinear form
+    Usage
+        getWittIndex beta
+    Inputs
+        beta: GrothendieckWittClass
+               a GrothendieckWittClass denoted by $\beta\in\text{GW}(k)$, where $k$ is $\mathbb{Q}$, $\mathbb{R}$, $\mathbb{C}$, or a finite field of characteristic not 2
+    Outputs
+            : ZZ
+               the rank of the totally isotropic part of $\beta$
+    Description
+        Text
+	    By the Witt Decomposition Theorem, any non-degenerate form decomposes uniquely as $\beta \cong n \mathbb{H} \oplus \beta_a$ where the form $\beta_a$ is anisotropic. The integer $n$ is called the Witt index of $\beta$. See for instance [L05, I.4.3].
+    References
+	    [L05] T.Y. Lam, "Introduction to quadratic forms over fields," @ITALIC("American Mathematical Society")@, 2005.
+    SeeAlso
+        getAnisotropicDimension
+///
