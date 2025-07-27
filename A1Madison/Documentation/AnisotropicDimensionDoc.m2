@@ -1,21 +1,47 @@
-document{
-    Key => {getAnisotropicDimensionQQp, (getAnisotropicDimensionQQp, GrothendieckWittClass, ZZ)},
-    Headline => "returns the anisotropic dimension of a rational symmetric bilinear form over the p-adic rational numbers",
-    Usage => "getAnisotropicDimensionQQp(beta, p)",
-    Inputs => {
-	GrothendieckWittClass => "beta" => {"over ", TEX///$\mathbb{Q}$///},
-	ZZ => "p" => {"a prime number"},
-	},
-    Outputs => {
-        ZZ => {"the rank of the anisotropic part of ", TEX///$\beta$///, " over ", TEX///$\mathbb{Q}_p$///},
-	},
-    PARA{"This is an implementation of [KC18, Algorithm 8], which computes the anisotropic dimension of rational forms over the ", TEX///$p$///,"-adic rational numbers. Note that any form of rank ", TEX///$\ge 5$///, " is isotropic, so this method will always return 0, 1, 2, 3, or 4."},
-    PARA{EM "Citations:"},
-    UL{
-	{"[KC18] P. Koprowski, A. Czogala, ", EM "Computing with quadratic forms over number fields,", " Journal of Symbolic Computation, 2018."},
-    },
-    SeeAlso => {"getAnisotropicDimension"}   
-}
+doc ///
+    Key
+	getAnisotropicDimensionQQp
+	(getAnisotropicDimensionQQp, GrothendieckWittClass, ZZ)
+    Headline
+	returns the anisotropic dimension of a rational symmetric bilinear form over the p-adic rational numbers
+    Usage
+	getAnisotropicDimensionQQp(beta, p)
+    Inputs
+	beta: GrothendieckWittClass
+	       a GrothendieckWittClass
+	   p: ZZ
+	       a prime number
+    Outputs
+	    : ZZ
+	       the rank of the anisotropic part of $\beta$ over $\mathbb{Q}_{p}$
+    Description
+	Text
+	    This is an implementation of [KC18, Algorithm 8], which computes the anisotropic dimension of rational forms over the $p$-adic rational numbers. Any form of rank $\ge 5$ is isotropic, so this method will always return 0, 1, 2, 3, or 4.
+    References
+	[KC18] P. Koprowski, A. Czogala, "Computing with quadratic forms over number fields," @ITALIC("Journal of Symbolic Computation")@, 2018.
+    SeeAlso
+	getAnisotropicDimension
+///
+
+
+--document{
+--    Key => {getAnisotropicDimensionQQp, (getAnisotropicDimensionQQp, GrothendieckWittClass, ZZ)},
+--    Headline => "returns the anisotropic dimension of a rational symmetric bilinear form over the p-adic rational numbers",
+--    Usage => "getAnisotropicDimensionQQp(beta, p)",
+--    Inputs => {
+--	GrothendieckWittClass => "beta" => {"over ", TEX///$\mathbb{Q}$///},
+--	ZZ => "p" => {"a prime number"},
+--	},
+--    Outputs => {
+--        ZZ => {"the rank of the anisotropic part of ", TEX///$\beta$///, " over ", TEX///$\mathbb{Q}_p$///},
+--	},
+--    PARA{"This is an implementation of [KC18, Algorithm 8], which computes the anisotropic dimension of rational forms over the ", TEX///$p$///,"-adic rational numbers. Note that any form of rank ", TEX///$\ge 5$///, " is isotropic, so this method will always return 0, 1, 2, 3, or 4."},
+--    PARA{EM "Citations:"},
+--    UL{
+--	{"[KC18] P. Koprowski, A. Czogala, ", EM "Computing with quadratic forms over number fields,", " Journal of Symbolic Computation, 2018."},
+--    },
+--    SeeAlso => {"getAnisotropicDimension"}   
+--}
 
 
 document{
