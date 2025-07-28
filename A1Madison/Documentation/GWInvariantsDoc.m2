@@ -36,7 +36,7 @@ doc ///
         getIntegralDiscriminant(beta)
     Inputs
         beta: GrothendieckWittClass
-            a symmetric bilinear form defined over $\mathbb{Q}$ or $\mathbb{R}$ 
+            denoted by $beta \in \text{GW}(\mathbb{Q})$
     Outputs
         :ZZ
             an integral square class representative of $\text{disc}(\beta)$
@@ -60,7 +60,7 @@ doc ///
         getHasseWittInvariant(beta, p)
     Inputs
         beta: GrothendieckWittClass
-            denoted by $beta \in \text{GW}(\mathbb{Q})$,
+            denoted by $beta \in \text{GW}(\mathbb{Q})$
         p: ZZ
             a prime number  
     Outputs
@@ -79,25 +79,7 @@ doc ///
         getRelevantPrimes
 ///       
 
----document{
-  --  Key => {getHasseWittInvariant, (getHasseWittInvariant, GrothendieckWittClass, ZZ), (getHasseWittInvariant, List, ZZ)},
-   -- Headline => "computes the Hasse-Witt invariant at a prime p for the quadratic form of the Grothendieck-Witt class",
-  --  Usage => "getHasseWittInvariant(beta, p)",
-  --  Inputs => {
-	--GrothendieckWittClass => "beta" => {"denoted by ", TEX///$\beta\in\text{GW}(\mathbb{Q})$///},
-	--ZZ => "p" => {"a prime number"},
-	--},
-  --  Outputs => {
-   --     ZZ => {"the Hasse-Witt invariant of ", TEX///$\beta$///," at the prime ",TEX///$p$///},
---	},
-  --  PARA{"The ", EM "Hasse-Witt invariant", " of a diagonal form ", TEX///$\langle a_1,\ldots,a_n\rangle$///, " over a field ", TEX///$K$///, " is defined to be the product ", TEX///$\prod_{i<j} \left(a_i,a_j\right)_p $///, " where ", TEX///$(-,-)_p$///, " is the ", TO2(getHilbertSymbol,"Hilbert symbol"), "."},
-  --  PARA{"The Hasse-Witt invariant of a form will be equal to 1 for almost all primes. In particular, after diagonalizing a form ", TEX///$\beta \cong \left\langle a_1,\ldots,a_n\right\rangle$///, " the Hasse-Witt invariant at a prime ", TEX///$p$///, " will be 1 automatically if ", TEX///$p\nmid a_i$///, " for all ", TEX///$i$///, ". Thus we only have to compute the Hasse-Witt invariant at ", TO2(getRelevantPrimes, "primes dividing diagonal entries"),  "."},
-  --  EXAMPLE lines ///
-  --  beta = makeGWClass matrix(QQ, {{1,4,7},{4,3,-1},{7,-1,5}});
-   -- getHasseWittInvariant(beta, 7)
- --   ///,
-   -- SeeAlso => {"isIsomorphicForm", "getRelevantPrimes"}
----}
+
 
 
 document{
