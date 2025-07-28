@@ -1,26 +1,26 @@
 doc ///
     Key
-	getAnisotropicDimensionQQp
-	(getAnisotropicDimensionQQp, GrothendieckWittClass, ZZ)
+        getAnisotropicDimensionQQp
+        (getAnisotropicDimensionQQp, GrothendieckWittClass, ZZ)
     Headline
-	returns the anisotropic dimension of a rational symmetric bilinear form over the p-adic rational numbers
+	    returns the anisotropic dimension of a rational symmetric bilinear form over the p-adic rational numbers
     Usage
-	getAnisotropicDimensionQQp(beta, p)
+	    getAnisotropicDimensionQQp(beta, p)
     Inputs
-	beta: GrothendieckWittClass
-	       a GrothendieckWittClass
-	   p: ZZ
-	       a prime number
+        beta: GrothendieckWittClass
+            over $\mathbb{Q}$
+        p: ZZ
+	        a prime number
     Outputs
 	    : ZZ
 	       the rank of the anisotropic part of $\beta$ over $\mathbb{Q}_{p}$
     Description
-	Text
-	    This is an implementation of [KC18, Algorithm 8], which computes the anisotropic dimension of rational forms over the $p$-adic rational numbers. Any form of rank $\ge 5$ is isotropic, so this method will always return 0, 1, 2, 3, or 4.
+        Text
+            This is an implementation of [KC18, Algorithm 8], which computes the anisotropic dimension of rational forms over the $p$-adic rational numbers. Any form of rank $\ge 5$ is isotropic, so this method will always return 0, 1, 2, 3, or 4.
     References
-	[KC18] P. Koprowski, A. Czogala, "Computing with quadratic forms over number fields," @ITALIC("Journal of Symbolic Computation")@, 2018.
+	    [KC18] P. Koprowski, A. Czogala, "Computing with quadratic forms over number fields," @ITALIC("Journal of Symbolic Computation")@, 2018.
     SeeAlso
-	getAnisotropicDimension
+	    getAnisotropicDimension
 ///
 
 
@@ -61,13 +61,14 @@ doc ///
     Description
         Text
             By the Witt Decomposition Theorem, any non-degenerate form decomposes uniquely as $\beta \cong n \mathbb{H} \oplus \beta_a$ where the form $\beta_a$ is anisotropic. The rank of $\beta_a$ is called the anisotropic dimension of $\beta$.
-	    The anisotropic dimension of a form defined over the rational numbers is the maximum of the @TO2(getAnisotropicDimensionQQp, "getAnisotropicDimensionQQp")@ anistropic dimension at each of the completions of $\mathbb{Q}$.
---    References
---        [KC18] P. Koprowski, A. Czogala, "Computing with quadratic forms over number fields," @ITALIC("Journal of Symbolic Computation")@, 2018.
+	        
+            The anisotropic dimension of a form defined over the rational numbers is the maximum of the @TO2(getAnisotropicDimensionQQp, "getAnisotropicDimensionQQp")@ anistropic dimension at each of the completions of $\mathbb{Q}$ at the @TO2(getRelevantPrimes, "relevant primes")@.
+    References
+        [KC18] P. Koprowski, A. Czogala, "Computing with quadratic forms over number fields," @ITALIC("Journal of Symbolic Computation")@, 2018.
     SeeAlso
-	getWittIndex
+        getWittIndex
         getAnisotropicDimensionQQp
-	getAnisotropicPart
+	        getAnisotropicPart
 ///
 
 

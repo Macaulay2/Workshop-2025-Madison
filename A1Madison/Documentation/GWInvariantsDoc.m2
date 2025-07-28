@@ -36,7 +36,7 @@ doc ///
         getIntegralDiscriminant(beta)
     Inputs
         beta: GrothendieckWittClass
-            denoted by $beta \in \text{GW}(\mathbb{Q})$
+            denoted by $\beta \in \text{GW}(\mathbb{Q})$
     Outputs
         :ZZ
             an integral square class representative of $\text{disc}(\beta)$
@@ -60,7 +60,7 @@ doc ///
         getHasseWittInvariant(beta, p)
     Inputs
         beta: GrothendieckWittClass
-            denoted by $beta \in \text{GW}(\mathbb{Q})$
+            denoted by $\beta \in \text{GW}(\mathbb{Q})$
         p: ZZ
             a prime number  
     Outputs
