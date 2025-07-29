@@ -229,7 +229,7 @@ getEigenMatrix(RingElement, Ideal) := o -> (a, J) -> (
 
 templateSolve = method(Options => {MonomialOrder => null})
 templateSolve(EliminationTemplate) := o -> (E) -> templateSolve(actionVariable E, ideal E, o)
-templateSolve(Ideal) := o -> (I) -> getEigenMatrix(random(1,ring I), I, o)
+templateSolve(Ideal) := o -> (I) -> templateSolve(random(1,ring I), I, o)
 templateSolve(RingElement, Ideal) := o -> (a, J) -> (
     (B, M) := getEigenMatrix(a, J);
     basisMons := apply(flatten entries B, m -> sub(m, ring J));
@@ -242,6 +242,8 @@ templateSolve(RingElement, Ideal) := o -> (a, J) -> (
             m := basisMons#i;
             monomialValues#m = M_(i, rootIndex);
         );
+
+        -- TODO: check excessive polynomials first before falling back to Groebner basis
 
         root := {};
         for v in varsList do (
@@ -280,9 +282,6 @@ copyTemplate(EliminationTemplate, Ideal) := o -> (E,J) -> (
 )
 
 beginDocumentation()
-
-
-
 
 doc ///
  Node
@@ -384,7 +383,7 @@ doc ///
       The elements of this sequence encode the rows and columns of a Macaulay matrix (the template matrix.)
       The last element consists of lists of three monomials supported on equations indexing the rows of the template matrix.
       These are called excessive monomials, reducible monomials, and basic monomials.
-   Example
+    Example
       R = QQ[x,y];
       J = ideal(x^2+y^2-1, x^2+x*y+y^2-1);    
       actVar = x;
@@ -454,9 +453,8 @@ B = lift(basis(R/J), R)
 M = getTemplateMatrix(sh, mp, J)
 Ma = getActionMatrix(actVar, mp, M) 
 evals = eigenvalues Ma
--- TODO: assert something
+assert(all(sort evals, {-1,0,0,1}, (e1, e2) -> abs(e1 - e2) < 1e-4))
 ///
-
 
 TEST ///
 R = QQ[x,y]
@@ -467,7 +465,7 @@ getH0(x, B, J)
 M = getTemplateMatrix(x, B, J)
 Mx = getActionMatrix(x, mp, M)
 evals = eigenvalues Mx
-assert(all(sort evals, {-2,0,1}, (e1, e2) -> abs(e1-e2) < 1e-4))
+assert(all(sort evals, {-2,0,1}, (e1, e2) -> abs(e1 - e2) < 1e-4))
 ///
 
 TEST ///
@@ -505,11 +503,29 @@ TEST ///
 -- 5-point essential matrix problem
 R = QQ[x,y,z]
 Es = apply(4, i -> random(QQ^3, QQ^3))
-E = x * Es#0 + y * Es#1 + z * Es#2 + Es#3
-I = ideal(E*transpose E * E - (1/2) * trace(E * transpose E) * E)
+E = x * Es#0 + y * Es#1 + z * Es#2 + Es#3  -- essential matrix
+I = ideal(E*transpose E * E - (1/2) * trace(E * transpose E) * E)  -- Dezure constraints
 l = random(1, R)
 sols=templateSolve(l, I)
 assert(all(sols, x -> 1e-6 > norm sub(sub(gens I, CC[gens R]), matrix{x})))
+///
+
+TEST ///
+-- change of ideals
+R=QQ[x,y]
+I=ideal(x^2+y^2-1,x^2+y^3+x*y-2)
+J=ideal(x^2+y^2-2,x^2+y^3+3*x*y-5)
+B=basis(R/I)
+E=eliminationTemplate(x+4*y,I)
+getTemplate(E)
+getEigenMatrix(E)
+sols = templateSolve(E)
+assert(all(sols, x -> 1e-6 > norm sub(sub(gens I, QQ[gens R]), matrix{x})))
+
+F=copyTemplate(E,J)
+getEigenMatrix(F)
+sols = templateSolve(F)
+assert(all(sols, x -> 1e-6 > norm sub(sub(gens J, QQ[gens R]), matrix{x})))
 ///
 
 end--
@@ -535,10 +551,13 @@ B=basis(R/I)
 E=eliminationTemplate(x+4*y,I)
 getTemplate(E)
 getEigenMatrix(E)
-templateSolve(E)
+sols = templateSolve(E)
+assert(all(sols, x -> 1e-6 > norm sub(sub(gens I, QQ[gens R]), matrix{x})))
+
 F=copyTemplate(E,J)
 getEigenMatrix(F)
-templateSolve(F)
+sols = templateSolve(F)
+assert(all(sols, x -> 1e-6 > norm sub(sub(gens J, QQ[gens R]), matrix{x})))
 
 restart
 debug needsPackage "EliminationTemplates"
@@ -554,13 +573,18 @@ R = QQ[x,y]
 J = ideal(x^3 + y^2 - 1, x - y - 1)
 templateSolve(x, J)
 
+-- Benchmark tests: just run these three lines
+-- literature results are from 
+-- https://openaccess.thecvf.com/content_cvpr_2017/papers/Larsson_Efficient_Solvers_for_CVPR_2017_paper.pdf
+restart
+load "Benchmarks.m2";
+time runBenchmarks()
+--
 
 uninstallPackage "EliminationTemplates"
 restart
 installPackage "EliminationTemplates"
 check "EliminationTemplates"
-
-
 
 help EliminationTemplates
 help getTemplate
