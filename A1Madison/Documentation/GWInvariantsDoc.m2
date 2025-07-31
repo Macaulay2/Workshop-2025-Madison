@@ -54,6 +54,7 @@ doc ///
     Key
         getHasseWittInvariant
         (getHasseWittInvariant, GrothendieckWittClass, ZZ)
+        (getHasseWittInvariant, List, ZZ)
     Headline
         computes the Hasse-Witt invariant at a prime $p$ for the quadratic form of the Grothendieck-Witt class
     Usage
@@ -110,6 +111,7 @@ doc ///
     Key
         getRank
         (getRank, GrothendieckWittClass)
+        (getRank, Matrix)
     Headline
         calculates the rank of a symmetric bilinear form
     Usage

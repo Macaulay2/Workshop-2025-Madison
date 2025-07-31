@@ -54,6 +54,35 @@ doc ///
 
 doc ///
 	Key
+		makeGWClass
+		(makeGWClass, Matrix)
+		(isWellDefinedGW, Matrix)
+	Headline
+		the Grothendieck-Witt class of a symmetric matrix
+	Usage
+		makeGWClass M
+	Inputs
+		M: Matrix
+			a non-singular symmetric matrix defined over a field or finite étale algebra of characteristic not 2
+	Outputs
+		: GrothendieckWittClass
+			the isomorphism class of the non-degenerate symmetric bilinear form represented by @TT("M")@
+	Description
+		Text
+			Given a symmetric matrix @TT("M")@, this command outputs an object of type @TT("GrothendieckWittClass")@. This output has the representing matrix @TT("M")@ and the base field of the matrix stored in its @TO2(CacheTable,"CacheTable")@.
+		Example
+			R = QQ[x]/(x^2 + 1);
+			M = matrix(R, {{1,2},{2,x}});
+			beta = makeGWClass M
+	SeeAlso
+		GrothendieckWittClass
+		getMatrix
+		getBaseField
+		getAlgebra
+///
+
+doc ///
+	Key
 		addGW
 		(addGW, GrothendieckWittClass, GrothendieckWittClass)
 	Headline
