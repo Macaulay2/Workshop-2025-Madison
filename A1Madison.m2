@@ -758,10 +758,10 @@ TEST ///
 F = GF(32003)
 R = frac F[x];
 q = (x^2 + x - 2)/(3*x + 5);
---Gdeg = getGlobalUnstableA1Degree(q);
+Gdeg = getGlobalUnstableA1Degree(q);
 deg1 = getLocalUnstableA1Degree(q, -2);
 deg2 = getLocalUnstableA1Degree(q, 1);
---assert(isIsomorphicForm(Gdeg, makeGWuClass(matrix(F, {{11, 5}, {5, 3}}))))
+assert(isIsomorphicForm(Gdeg, makeGWuClass(matrix(F, {{11, 5}, {5, 3}}))))
 assert(isIsomorphicForm(deg1, makeGWuClass(matrix(F, {{1/3}}))))
 assert(isIsomorphicForm(deg2, makeGWuClass(matrix(F, {{8/3}}))))
 ///

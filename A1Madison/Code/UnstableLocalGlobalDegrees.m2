@@ -14,8 +14,12 @@ getGlobalUnstableA1Degree RingElement := UnstableGrothendieckWittClass => q -> (
     -- Extract numerator f from q
     f := numerator(sub(q, frac R));
        
-    -- Extract numerator g from q
+    -- Extract numerator g from q and normalize
     g := denominator(sub(q, frac R));
+    g = g/leadCoefficient(f);
+
+    -- normalize the leading coefficient of f
+    f = f/leadCoefficient(f);
     
     -- Get the underlying ring and ensure it is a field
     kk := coefficientRing ring(f);
