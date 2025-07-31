@@ -55,7 +55,7 @@ getGlobalUnstableA1Degree RingElement := UnstableGrothendieckWittClass => q -> (
     m := degree(X,D);
     n := degree(Y,D);
         
-    B := mutableMatrix id_(QQ^(m+1));  
+    B := mutableMatrix id_(kk^(m+1));  
     
     for i from 0 to m do(
 	for j from 0 to n do

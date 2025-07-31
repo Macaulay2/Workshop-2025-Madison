@@ -628,7 +628,7 @@ assert(getScalar(G6) === det M5)
 
 -- Test 29
 TEST ///
--- Tests for GrothendieckWittClass type
+-- Tests for UnstableGrothendieckWittClass type
 M1 = matrix(QQ, {{1,0},{0,1}});
 M2 = matrix(QQ, {{1,2},{2,5}});
 G1 = makeGWuClass M1;
@@ -641,6 +641,7 @@ assert(getMatrix(G3) === matrix(QQ, {{1,0,0,0},{0,1,0,0},{0,0,1,2},{0,0,2,5}}));
 assert(getScalar(G3) === (det M1) * (det M2))
 ///
 
+-- Tests for UnstableGrothendieckWittClass constructors
 -- Test 30
 TEST ///
 M1 = matrix(QQ, {{1/1,0,0},{0,1,0},{0,0,1}});
@@ -655,7 +656,7 @@ assert(try(makeGWuClass(M3,sub(-6,GF 5))) then false else true);
 ///
 
 
--- Test for getBaseField
+-- Test for getBaseField and getAlgebra
 -- Test 31
 TEST ///
 M1 = makeGWuClass matrix(QQ, {{1/1,0,0},{0,2,3},{0,3,1}});
@@ -667,9 +668,13 @@ assert(getBaseField(M1) === QQ);
 assert(getBaseField(M2) === RR_53);
 assert(getBaseField(M3) === CC_53);
 assert((getBaseField M4).order == 7);
+assert(getAlgebra(M1) === QQ);
+assert(getAlgebra(M2) === RR_53);
+assert(getAlgebra(M3) === CC_53);
+assert((getAlgebra M4).order == 7);
 ///
 
--- Test for addGW
+-- Test for addGWu
 -- Test 32
 TEST ///
 A1 = makeGWuClass matrix(QQ, {{1/1,0,-3},{0,23,0},{-3,0,-2/5}});
@@ -688,3 +693,78 @@ assert(addGWu(A1, A2) === A3);
 assert(addGWu(B1, B2) === B3);
 assert(addGWu(C1, C2) === C3);
 ///
+
+-- Test for constructors over etale algebras
+-- Test 33
+TEST ///
+R = QQ[x]/(x^2 + 1);
+S = QQ[y]/(y^2 - 1);
+M1 = matrix(R, {{1,2},{2,x}});
+M2 = matrix(S, {{1,2},{2,y}});
+assert(try(makeGWuClass(M1)) then true else false)
+assert(try(makeGWClass(M1)) then true else false)
+assert(try(makeGWuClass(M2)) then true else false)
+assert(try(makeGWClass(M2)) then true else false)
+assert(getAlgebra(makeGWuClass(M1)) === R);
+assert(getAlgebra(makeGWClass(M2)) === S);
+///
+
+-- Test for diagonalization over etale algebras
+-- Test 34
+TEST ///
+R = QQ[x]/(x^2 + 1);
+S = QQ[y]/(y^2 - 1);
+M1 = makeGWClass matrix(R, {{1,2},{2,x}});
+M2 = makeGWClass matrix(S, {{1,2},{2,y}});
+M3 = makeGWuClass matrix(R, {{1,2},{2,x}});
+M4 = makeGWuClass matrix(S, {{1,2},{2,y}});
+assert(getDiagonalClass(M1) === makeGWClass matrix(R, {{1,0},{0,x-4}}));
+assert(getDiagonalClass(M2) === makeGWClass matrix(S, {{1,0},{0,y-4}}));
+assert(getDiagonalClass(M3) === makeGWuClass(matrix(R, {{1,0},{0,x-4}}), getScalar M3));
+assert(getDiagonalClass(M4) === makeGWuClass(matrix(S, {{1,0},{0,y-4}}), getScalar M4));
+///
+
+-- Tests for isIsomorphicForm for unstable classes
+-- Test 35
+TEST ///
+B1 = matrix(QQ, {{1/1,-2/1,4/1},{-2/1,2/1,0},{4/1,0,-7/1}});
+B2 = matrix(QQ, {{-17198/4225,-166126/975,-71771/1560},{-166126/975,-27758641/4050,-251077/135},{-71771/1560,-251077/135,-290407/576}});
+assert(isIsomorphicForm(makeGWuClass B1, makeGWuClass(B2,-18)));
+B3 = matrix(QQ, {{-38/1,-50/1,23/1},{-50/1,-62/1,41/1},{23/1,41/1,29/1}});
+assert(isIsomorphicForm(makeGWuClass B1, makeGWuClass(B3, -18)));
+///
+
+-- Test for local degree and global degree functions and that the local-global principle is satisfied
+-- Test 36
+TEST ///
+frac QQ[x];
+q = (x^5 - 6*x^4 + 11*x^3 - 2*x^2 - 12*x + 8)/(x^4 - 5*x^2 + 7*x + 1);
+Gdeg = getGlobalUnstableA1Degree q;
+M = matrix(QQ, {{-68, 38, 11, -14, 1}, {38, -63, 63, -29, 7}, {11, 63, -84, 39, -5}, {-14, -29, 39, -16, 0}, {1, 7, -5, 0, 1}});
+assert(isIsomorphicForm(Gdeg,makeGWuClass(M, -53240)))
+deg1 = getLocalUnstableA1Degree(q, -1)
+deg2 = getLocalUnstableA1Degree(q, 1)
+deg3 = getLocalUnstableA1Degree(q, 2)
+assert(isIsomorphicForm(deg1, makeGWuClass(matrix(QQ, {{-5/27}}))))
+assert(isIsomorphicForm(deg2, makeGWuClass(matrix(QQ, {{-2}}))))
+assert(isIsomorphicForm(deg3, makeGWuClass(matrix(QQ, {{0, 0, 11/3}, {0, 11/3, 0}, {11/3, 0, 0}}))))
+degSum = addGWuDivisorial({deg1, deg2, deg3}, {-1, 1, 2})
+assert(isIsomorphicForm(degSum, Gdeg));
+///
+
+-- Test for general local and global degree functions
+-- Test 37
+TEST ///
+F = GF(32003)
+R = frac F[x];
+q = (x^2 + x - 2)/(3*x + 5);
+--Gdeg = getGlobalUnstableA1Degree(q);
+deg1 = getLocalUnstableA1Degree(q, -2);
+deg2 = getLocalUnstableA1Degree(q, 1);
+--assert(isIsomorphicForm(Gdeg, makeGWuClass(matrix(F, {{11, 5}, {5, 3}}))))
+assert(isIsomorphicForm(deg1, makeGWuClass(matrix(F, {{1/3}}))))
+assert(isIsomorphicForm(deg2, makeGWuClass(matrix(F, {{8/3}}))))
+///
+
+-- Test for trace and norm
+-- Test 38 (TO WRITE AFTER METHOD NAME UPDATE)
