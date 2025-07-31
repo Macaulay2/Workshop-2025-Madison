@@ -25,7 +25,7 @@ getPrimeFactors ZZ := List => n -> (
     )
 
 getPrimeFactors QQ := List => n -> (
-    if not liftable(n, ZZ) then error "gatPrimeFactors expected an integer";
+    if not liftable(n, ZZ) then error "getPrimeFactors expected an integer";
     getPrimeFactors sub(n, ZZ)  
     )
 
