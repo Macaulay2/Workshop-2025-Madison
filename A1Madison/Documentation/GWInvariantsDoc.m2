@@ -79,50 +79,54 @@ doc ///
         getRelevantPrimes
 ///       
 
+doc ///
+    Key
+        getRelevantPrimes
+        (getRelevantPrimes, GrothendieckWittClass)
+    Headline
+        outputs a list containing all primes $p$ where the Hasse-Witt invariant of a symmetric bilinear form is nontrivial
+    Usage
+        getRelevantPrimes(beta)
+    Inputs
+        beta: GrothendieckWittClass
+            denoted by $\beta \in \text{GW}(\mathbb{Q})$
+    Outputs
+        : List
+            a finite list of primes $(p_1,\ldots,p_r)$ containing all primes $p$ where the Hasse-Witt invariant $\phi_p(\beta)$ is nontrivial
+    Description
+        Text
+            It is a classical result that the Hasse-Witt invariants of a quadratic form are equal to 1 for all but finitely many primes (see e.g. [S73, IV Section 3.3]). As the Hasse-Witt invariants are computed as a product
+            of Hilbert symbols of the pairwise entries appearing on a diagonalization of the symbol, it suffices to consider primes dividing diagonal entries.
+        Example
+            beta = makeDiagonalForm(QQ, (6,7,22));
+            getRelevantPrimes(beta)
+    References
+        [S73] J.P. Serre, "A course in arithmetic," Springer-Verlag, 1973.
+    SeeAlso
+        getHasseWittInvariant
+///
 
-
-
-document{
-    Key => {getRelevantPrimes, (getRelevantPrimes, GrothendieckWittClass)},
-    Headline => "outputs a list containing all primes p where the Hasse-Witt invariant of a symmetric bilinear form is nontrivial",
-    Usage => "getRelevantPrimes beta",
-    Inputs => {
-	GrothendieckWittClass => "beta" => {"denoted by ", TEX///$\beta\in\text{GW}(\mathbb{Q})$///},
-	},
-    Outputs => {
-        List => {"a finite list of primes ", TEX///$(p_1,\ldots,p_r)$///, " containing all primes ",
-	    TEX///$p$///, " where the ",TO2(getHasseWittInvariant,"Hasse-Witt invariant "), TEX///$\phi_p(\beta)$///," is nontrivial"},
-	},
-    PARA{"It is a classical result that the ", TO2(getHasseWittInvariant,"Hasse-Witt invariants"), " of a quadratic form are equal to 1 for all but finitely many primes (see e.g. [S73, IV Section 3.3]). As the Hasse-Witt invariants are computed as a product of ", TO2(getHilbertSymbol,"Hilbert symbols") , " of the pairwise entries appearing on a diagonalization of the symbol, it suffices to consider primes dividing diagonal entries."},
-   EXAMPLE lines ///
-   beta = makeDiagonalForm(QQ, (6,7,22));
-   getRelevantPrimes beta
-   ///,
-   PARA{EM "Citations:"},
-    UL{
-	{"[S73] J.P. Serre, ", EM "A course in arithmetic,", " Springer-Verlag, 1973."},
-    },
-    SeeAlso => {"getHasseWittInvariant"}
-}
-
-document {
-        Key => {getRank, (getRank, GrothendieckWittClass), (getRank, Matrix)},
-        Headline => "calculates the rank of a symmetric bilinear form",
-        Usage => "getRank beta",
-        Inputs => {
-            GrothendieckWittClass => "beta" => {"denoted by ",  TEX///$\beta \in  GW(\mathbb{Q})$///, " or a symmetric matrix ", TEX///$\beta$///}
-            },
-        Outputs => {
-            ZZ => {"the rank of the form ", TEX///$\beta$///}
-           },
-        PARA {"This computes the rank of the form ", TEX///$\beta$/// },
-        EXAMPLE lines ///
-                 beta = makeDiagonalForm(QQ, (3,5,7,11))
-                 getRank beta
-		 ///,                
-        EXAMPLE lines ///
-                 M = matrix(QQ, {{1,4,7},{4,3,-1},{7,-1,5}})
-                 getRank M
-                 ///,
-    SeeAlso => {"isIsomorphicForm", "getSignature"}
-}
+doc ///
+    Key
+        getRank
+        (getRank, GrothendieckWittClass)
+    Headline
+        calculates the rank of a symmetric bilinear form
+    Usage
+        getRank(beta)
+    Inputs
+        beta: GrothendieckWittClass
+            a symmetric bilinear form defined over $\mathbb{Q}$
+    Outputs
+        : ZZ
+            the rank of the symmetric bilinear form $\beta$
+    Description
+        Text
+            The rank of a symmetric bilinear form is the dimension of the vector space spanned by the vectors that are orthogonal to all other vectors in the space. This is equivalent to the number of non-zero entries on the diagonal of a diagonalized form.
+        Example
+            beta = makeDiagonalForm(QQ, (3,5,7,11))
+            getRank beta
+    SeeAlso
+        isIsomorphicForm
+        getSignature
+///
