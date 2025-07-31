@@ -114,4 +114,77 @@ doc ///
 		getSumDecompositionString
 ///
 
+doc ///
+	Key
+		makeDiagonalUnstableForm
+		(makeDiagonalUnstableForm, Ring, RingElement)
+		(makeDiagonalUnstableForm, Ring, ZZ)
+		(makeDiagonalUnstableForm, Ring, QQ)
+		(makeDiagonalUnstableForm, Ring, Sequence)
+		(makeDiagonalUnstableForm, InexactFieldFamily, RingElement)
+		(makeDiagonalUnstableForm, InexactFieldFamily, ZZ)
+		(makeDiagonalUnstableForm, InexactFieldFamily, QQ)
+		(makeDiagonalUnstableForm, InexactFieldFamily, Sequence)
+	Headline
+		the unstable Grothendieck-Witt class of a diagonal matrix
+	Usage
+		makeDiagonalUnstableForm(k, a)
+		makeDiagonalUnstableForm(k, L)
+	Inputs
+		k: Ring
+			a field or finite étale algebra over a field
+		a: RingElement
+			any element in the field or finite étale algebra over a field
+		L: Sequence
+			of elements in the field or finite étale algebra $a_{i}$ where $i = 1,\dots, n$
+	Outputs
+		: UnstableGrothendieckWittClass
+			the unstable Grothendieck-Witt class represented by the diagonal form $\langle a_{1},\ldots,a_{n}\rangle$ in the unstable Grothendieck-Witt group of the field or finite étale algebra
+	Description
+		Text
+			Given a sequence of elements $a_{1},\ldots,a_{n}$, we can form the diagonal form $\langle a_{1},\ldots,a_{n}\rangle$ defined to be the block sum of each of the rank one forms $\langle a_{i} \rangle \colon k \times k \to k,$ $(x,y) \mapsto a_{i} xy$.
+		Example
+			makeDiagonalUnstableForm(QQ, (3,5,7))
+		Text
+			Inputting a ring element, an integer, or a rational number instead of a sequence will produce a rank one form instead. For instance:
+		Example
+			makeDiagonalUnstableForm(GF(29), 5/13)
+			makeDiagonalUnstableForm(RR, 2)
+	SeeAlso
+		getDiagonalClass
+		diagonalizeViaCongruence
+///
 
+doc ///
+	Key
+		makeHyperbolicUnstableForm
+		(makeHyperbolicUnstableForm, Ring)
+		(makeHyperbolicUnstableForm, Ring, ZZ)
+		(makeHyperbolicUnstableForm, InexactFieldFamily)
+		(makeHyperbolicUnstableForm, InexactFieldFamily, ZZ)
+	Headline
+		the unstable Grothendieck-Witt class of a hyperbolic form
+	Usage
+		makeHyperbolicUnstableForm(k)
+		makeHyperbolicUnstableForm(k, n)
+	Inputs
+		k: Ring
+			a field or finite étale algebra over a field
+		n: ZZ
+			an even number, giving an optional rank $n$ for a totally hyperbolic form
+	Outputs
+		: UnstableGrothendieckWittClass
+			the unstable Grothendieck-Witt class represented by the hyperbolic form $\mathbb{H} = \langle 1, -1\rangle$ in the unstable Grothendieck-Witt group or the totally hyperbolic form $\left(\frac{n}{2}\right)\mathbb{H}$ if an optional rank $n$ is specified
+	Description
+		Text
+			By default outputs the rank two hyperbolic form over the input algebra.
+		Example
+			makeHyperbolicUnstableForm(GF(7))
+		Text
+			Specifying a rank yields a copy of sums of the rank two hyperbolic form. Only even rank inputs are accepted.
+		Example
+			makeHyperbolicUnstableForm(RR, 4)
+	SeeAlso
+		getSumDecomposition
+		getSumDecompositionString
+///
