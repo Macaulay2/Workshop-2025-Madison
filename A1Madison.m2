@@ -271,8 +271,6 @@ load "./A1Madison/Documentation/DecompositionDoc.m2"
 
 load "./A1Madison/Documentation/UnstableGrothendieckWittClassesDoc.m2"
 
-load "./A1Madison/Documentation/addGWuDoc.m2"
-
 load "./A1Madison/Documentation/TraceAndNormDoc.m2"
 
 load "./A1Madison/Documentation/GWTransferDoc.m2"
