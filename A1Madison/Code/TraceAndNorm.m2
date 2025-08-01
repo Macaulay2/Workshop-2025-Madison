@@ -31,11 +31,11 @@ getMultiplicationMatrix(Ring,Ideal,Thing):= (S,I,b) -> (
 getTrace=method()
 
 getTrace(Ring,Thing) := (C,a) -> (
-	M:=multiplicationMatrix(C,a);
+	M:=getMultiplicationMatrix(C,a);
 	trace M)
     
 getTrace(Ring,Ideal,Thing) := (S,I,b) -> (
-	M:=multiplicationMatrix(S,I,b);
+	M:=getMultiplicationMatrix(S,I,b);
 	trace M)
 
 --We use the implemented matrix representation to calclate the algebraic norm 
@@ -43,9 +43,9 @@ getTrace(Ring,Ideal,Thing) := (S,I,b) -> (
 getNorm=method()
 
 getNorm(Ring,Thing) := (C,a) -> (
-	M:=multiplicationMatrix(C,a);
+	M:=getMultiplicationMatrix(C,a);
 	det M)
 
 getNorm(Ring,Ideal,Thing) := (S,I,b) -> (
-	M:=multiplicationMatrix(S,I,b);
+	M:=getMultiplicationMatrix(S,I,b);
 	det M)
