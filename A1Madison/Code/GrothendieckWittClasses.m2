@@ -15,7 +15,7 @@ isFiniteEtaleAlgebra QuotientRing := Boolean => (Alg) -> (
     
     for i from 0 to n-1 do (
         for j from 0 to n-1 do (
-            M_(i,j) = algebraicTrace(Alg, B_i * B_j);
+            M_(i,j) = getTrace(Alg, B_i * B_j);
         );
     );
 

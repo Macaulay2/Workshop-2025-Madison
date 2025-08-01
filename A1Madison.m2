@@ -117,9 +117,9 @@ export{
     "getDiagonalEntries",
 
     --TraceAndNorm.m2
-    "algebraicTrace",
-    "algebraicNorm",
-    "multiplicationMatrix",
+    "getTrace",
+    "getNorm",
+    "getMultiplicationMatrix",
 
     --UnstableGrothendieckWittClasses.m2
     "makeGWuClass",

@@ -21,5 +21,5 @@ doc ///
 			transferGW(beta)
 	SeeAlso
 		GrothendieckWittClass
-		algebraicTrace
+		getTrace
 ///

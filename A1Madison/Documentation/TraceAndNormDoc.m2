@@ -29,7 +29,7 @@ document {
      	}
 
 document {
-	Key => {algebraicTrace, (getTrace, Ring, Thing), (getTrace, Ring, Ideal, Thing) },
+	Key => {getTrace, (getTrace, Ring, Thing), (getTrace, Ring, Ideal, Thing) },
 	Headline => "Computes the algebraic trace over ",TEX///$\mathbb{K}$///," for an element in a finite dimensional ",TEX///$\mathbb{K}$///,"-algebra",
 	Usage => "getTrace(C,a)
               getTrace(S,I,b)",
