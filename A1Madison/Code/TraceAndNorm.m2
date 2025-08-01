@@ -2,11 +2,11 @@
 
 --We define a method to represent multiplication by an element in a finite dimensional K-algebra as a matrix indexed by basis elements of its base field
 
-multiplicationMatrix=method()
+getMultiplicationMatrix=method()
 
 --This applies the method by accepting a K-algebra C and an element a as inputs
 
-multiplicationMatrix(Ring,Thing):= (C,a) -> (
+getMultiplicationMatrix(Ring,Thing):= (C,a) -> (
 	B:=basis(C);
 	r:=degree C;
 	Q:=(a)*(transpose B)*B;
@@ -17,7 +17,7 @@ multiplicationMatrix(Ring,Thing):= (C,a) -> (
 
 --This applies the method by accepting a polynomial ring C, an ideal I and an element a as input to find matrix representation of multiplication by the element over the corresponding quotient ring 
 
-multiplicationMatrix(Ring,Ideal,Thing):= (S,I,b) -> (
+getMultiplicationMatrix(Ring,Ideal,Thing):= (S,I,b) -> (
 	B:=basis(S/I);
 	r:=degree I;
 	Q:=(b)*(transpose B)*B;
@@ -28,24 +28,24 @@ multiplicationMatrix(Ring,Ideal,Thing):= (S,I,b) -> (
 
 --We use the implemented matrix representation to calclate the algebraic trace
     
-algebraicTrace=method()
+getTrace=method()
 
-algebraicTrace(Ring,Thing) := (C,a) -> (
+getTrace(Ring,Thing) := (C,a) -> (
 	M:=multiplicationMatrix(C,a);
 	trace M)
     
-algebraicTrace(Ring,Ideal,Thing) := (S,I,b) -> (
+getTrace(Ring,Ideal,Thing) := (S,I,b) -> (
 	M:=multiplicationMatrix(S,I,b);
 	trace M)
 
 --We use the implemented matrix representation to calclate the algebraic norm 
     
-algebraicNorm=method()
+getNorm=method()
 
-algebraicNorm(Ring,Thing) := (C,a) -> (
+getNorm(Ring,Thing) := (C,a) -> (
 	M:=multiplicationMatrix(C,a);
 	det M)
 
- algebraicNorm(Ring,Ideal,Thing) := (S,I,b) -> (
+getNorm(Ring,Ideal,Thing) := (S,I,b) -> (
 	M:=multiplicationMatrix(S,I,b);
 	det M)

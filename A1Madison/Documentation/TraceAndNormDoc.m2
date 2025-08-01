@@ -1,8 +1,8 @@
 document {
-	Key => {multiplicationMatrix, (multiplicationMatrix, Ring, Thing), (multiplicationMatrix, Ring, Ideal, Thing) },
+	Key => {getMultiplicationMatrix, (getMultiplicationMatrix, Ring, Thing), (getMultiplicationMatrix, Ring, Ideal, Thing) },
 	Headline => "Computes the matrix over a ",TEX///$\mathbb{K}$///," -basis for multiplication by an element in a finite dimensional ",TEX///$\mathbb{K}$///,"-algebra",
-	Usage => "multiplicationMatrix(C,a)
-              multiplicationMatrix(S,I,b)",
+	Usage => "getMultiplicationMatrix(C,a)
+              getMultiplicationMatrix(S,I,b)",
 	Inputs => {
 	    Ring=> "C" => {"a finite dimensional ",TEX///$\mathbb{K}$///,"-algebra"},
 	    Thing=> "a" => {"an element in C"},
@@ -17,22 +17,22 @@ document {
 	EXAMPLE lines ///
 		 L = QQ[x]/(x^6+x^5+x^4+x^3+x^2+x+1)
          F = toField L
-		 N=multiplicationMatrix(F[a,b,c], ideal(a^2,b^2,c^2),1+a*b+b*c+c*a)
+		 N=getMultiplicationMatrix(F[a,b,c], ideal(a^2,b^2,c^2),1+a*b+b*c+c*a)
 	 	 ///,
 	EXAMPLE lines ///
 		QQ[x,y]
         L = QQ[x,y]/(x^2+y^2+1)
 		F = frac L	
-		A=multiplicationMatrix(F[z], ideal(z^2+1), 1+y*x^2*z)
+		A=getMultiplicationMatrix(F[z], ideal(z^2+1), 1+y*x^2*z)
 		///,
-	SeeAlso => {"algebraicTrace", "algebraicNorm"}
+	SeeAlso => {"getTrace", "getNorm"}
      	}
 
 document {
-	Key => {algebraicTrace, (algebraicTrace, Ring, Thing), (algebraicTrace, Ring, Ideal, Thing) },
+	Key => {algebraicTrace, (getTrace, Ring, Thing), (getTrace, Ring, Ideal, Thing) },
 	Headline => "Computes the algebraic trace over ",TEX///$\mathbb{K}$///," for an element in a finite dimensional ",TEX///$\mathbb{K}$///,"-algebra",
-	Usage => "algebraicTrace(C,a)
-              algebraicTrace(S,I,b)",
+	Usage => "getTrace(C,a)
+              getTrace(S,I,b)",
 	Inputs => {
 	    Ring=> "C" => {"a finite dimensional ",TEX///$\mathbb{K}$///,"-algebra"},
 	    Thing=> "a" => {"an element in C"},
@@ -47,22 +47,22 @@ document {
 	EXAMPLE lines ///
 		 L = QQ[x]/(x^6+x^5+x^4+x^3+x^2+x+1)
          F = toField L
-		 N=algebraicTrace(F[a,b,c], ideal(a^2,b^2,c^2),1+a*b+b*c+c*a)
+		 N=getTrace(F[a,b,c], ideal(a^2,b^2,c^2),1+a*b+b*c+c*a)
 	 	 ///,
 	EXAMPLE lines ///
 		QQ[x,y]
         L = QQ[x,y]/(x^2+y^2+1)
 		F = frac L	
-		A=algebraicTrace(F[z], ideal(z^2+1), 1+y*x^2*z)
+		A=getTrace(F[z], ideal(z^2+1), 1+y*x^2*z)
 		///,
-	SeeAlso => {"multiplicationMatrix", "algebraicNorm"}
+	SeeAlso => {"getMultiplicationMatrix", "getNorm"}
      	}
 
 		document {
-	Key => {algebraicNorm, (algebraicNorm, Ring, Thing), (algebraicNorm, Ring, Ideal, Thing) },
+	Key => {getNorm, (getNorm, Ring, Thing), (getNorm, Ring, Ideal, Thing) },
 	Headline => "Computes the algebraic norm over ",TEX///$\mathbb{K}$///," for an element in a finite dimensional ",TEX///$\mathbb{K}$///,"-algebra",
-	Usage => "algebraicNorm(C,a)
-              algebraicNorm(S,I,b)",
+	Usage => "getNorm(C,a)
+              getNorm(S,I,b)",
 	Inputs => {
 	    Ring=> "C" => {"a finite dimensional ",TEX///$\mathbb{K}$///,"-algebra"},
 	    Thing=> "a" => {"an element in C"},
@@ -77,13 +77,13 @@ document {
 	EXAMPLE lines ///
 		 L = QQ[x]/(x^6+x^5+x^4+x^3+x^2+x+1)
          F = toField L
-		 N=algebraicNorm(F[a,b,c], ideal(a^2,b^2,c^2),1+a*b+b*c+c*a)
+		 N=getNorm(F[a,b,c], ideal(a^2,b^2,c^2),1+a*b+b*c+c*a)
 	 	 ///,
 	EXAMPLE lines ///
 		QQ[x,y]
         L = QQ[x,y]/(x^2+y^2+1)
 		F = frac L	
-		A=algebraicNorm(F[z], ideal(z^2+1), 1+y*x^2*z)
+		A=getNorm(F[z], ideal(z^2+1), 1+y*x^2*z)
 		///,
-	SeeAlso => {"multiplicationMatrix", "algebraicTrace"}
+	SeeAlso => {"getMultiplicationMatrix", "getTrace"}
      	}
