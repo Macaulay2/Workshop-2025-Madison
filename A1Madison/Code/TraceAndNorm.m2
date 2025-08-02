@@ -2,11 +2,20 @@
 
 --We define a method to represent multiplication by an element in a finite dimensional K-algebra as a matrix indexed by basis elements of its base field
 
+isRingElement=method()
+
+isRingElement(Ring,Thing):=(R,a) -> (
+    try promote(a,R) else (
+	error "The given element is not a member of the input ring"
+    )
+)
+
 getMultiplicationMatrix=method()
 
 --This applies the method by accepting a K-algebra C and an element a as inputs
 
 getMultiplicationMatrix(Ring,Thing):= (C,a) -> (
+	isRingElement(C,a);
 	B:=basis(C);
 	r:=degree C;
 	Q:=(a)*(transpose B)*B;
@@ -18,6 +27,7 @@ getMultiplicationMatrix(Ring,Thing):= (C,a) -> (
 --This applies the method by accepting a polynomial ring C, an ideal I and an element a as input to find matrix representation of multiplication by the element over the corresponding quotient ring 
 
 getMultiplicationMatrix(Ring,Ideal,Thing):= (S,I,b) -> (
+        isRingElement(S,b);
 	B:=basis(S/I);
 	r:=degree I;
 	Q:=(b)*(transpose B)*B;
