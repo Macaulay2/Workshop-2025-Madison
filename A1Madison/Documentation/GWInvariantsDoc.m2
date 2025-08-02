@@ -41,6 +41,8 @@ doc ///
         :ZZ
             an integral square class representative of $\text{disc}(\beta)$
     Description
+        Text
+            The integral discriminant of a symmetric bilinear form $\beta$ is defined to be the square class of the determinant of the matrix representing $\beta$. This is an invariant of the form, and is used in the classification of forms. 
         Example 
             beta = makeGWClass matrix(QQ, {{1,4,7},{4,3,-1},{7,-1,5}});
             getIntegralDiscriminant beta

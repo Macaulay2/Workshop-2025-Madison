@@ -77,6 +77,7 @@ doc ///
 	SeeAlso
 	    getMultiplicationMatrix
 	    getNorm
+		transferGW
 ///
 
 	

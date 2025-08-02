@@ -80,15 +80,12 @@ doc ///
             M = matrix(CC, {{1,2,3},{2,4,5},{3,5,6}});
             alpha = makeGWClass M;
             getSumDecompositionString alpha
-        Example
             N = matrix(RR, {{2.091,2.728,6.747},{2.728,7.329,6.257},{6.747,6.257,0.294}});
             beta = makeGWClass N;
             getSumDecompositionString beta
-        Example
             P = matrix(QQ, {{1,2,3},{2,4,5},{3,5,6}});
             gamma = makeGWClass P;
             getSumDecompositionString gamma
-        Example
             Q = matrix(GF(13), {{9,1,7,4},{1,10,3,2},{7,3,6,7},{4,2,7,5}});
             delta = makeGWClass Q;
             getSumDecompositionString delta
