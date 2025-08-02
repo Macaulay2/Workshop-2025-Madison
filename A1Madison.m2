@@ -789,3 +789,22 @@ G = makeGWClass M;
 G7 = transferGW G;
 assert(isIsomorphicForm(G7, makeDiagonalForm(GF(7), (3, 4, 4))));
 ///
+
+-- Test for diagonal and hyperbolic unstable constructors
+-- Test 40
+TEST ///
+alpha = makeDiagonalUnstableForm(RR, (1,-1));
+beta = makeGWuClass matrix(RR, {{0,1},{1,0}});
+H = makeHyperbolicUnstableForm RR;
+assert(isIsomorphicForm(alpha, H));
+assert(isIsomorphicForm(beta, H));
+///
+
+-- Test 41
+TEST ///
+alpha = makeDiagonalUnstableForm(GF(27), (1,-1));
+beta = makeGWuClass matrix(GF(27), {{0,1},{1,0}});
+H = makeHyperbolicUnstableForm GF(27);
+assert(isIsomorphicForm(alpha, H));
+assert(isIsomorphicForm(beta, H));
+///
