@@ -45,7 +45,7 @@ newPackage (
 	 Email => "atawfeek@uw.edu",
 	 HomePage => "https://www.atawfeek.com/"}
 	},
-    Headline => "for working with A1-Brouwer degree computations"
+    Headline => "for working with A1-Brouwer degree computations and quadratic forms"
     )
 
     PackageImports=>{
@@ -198,7 +198,7 @@ Node
     Key
         A1Madison
     Headline
-        a package for working with both A1-Brouwer degree computations and quadratic forms
+        a package for working with A1-Brouwer degree computations and quadratic forms
     Description
         Text
             This package is intended to allow the computation of local and global A1-Brouer degrees in both the stable and unstable settings, and for manipulations of unstable Grothendieck-Witt classes and symmetric bilinear forms including their invariants and decompositions. 
