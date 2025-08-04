@@ -1,3 +1,5 @@
+protect symbol scalar
+
 -- Input: A matrix and a scalar
 -- Output: Boolean that gives whether the matrix defines a well-defined class of the unstable Grothendieck-Witt group. 
 

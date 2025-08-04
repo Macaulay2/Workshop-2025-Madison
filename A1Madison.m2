@@ -122,7 +122,6 @@ export{
     "makeGWuClass",
     "getScalar",
     "addGWu",
-    "scalar", -- To avoid error about unexported symbol
     "addGWuDivisorial",
     "getGWClass",
     "UnstableGrothendieckWittClass",
