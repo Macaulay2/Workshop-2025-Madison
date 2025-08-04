@@ -768,8 +768,28 @@ degSum = addGWuDivisorial({deg1, deg2}, {-2, 1});
 assert(isIsomorphicForm(degSum, Gdeg));
 ///
 
--- Test for transferGW
+-- Test for trace and norm
 -- Test 38
+TEST ///
+R=GF(2)[x]/(x^2+x+1)
+F=frac R
+K=F[y]/(y^2+x*y+1)
+N=getMultiplicationMatrix(K,1+x*y)
+assert(N-matrix{{1, x},{x, 1+x^2}}==map(F^2,F^2,0))
+///
+
+-- Test 39
+TEST ///
+F = QQ[x]/(x^5+2*x+3) 
+F=frac F
+N=getMultiplicationMatrix(F[y]/(y^3+3*y+2),1+x*y)
+assert(N-matrix{{1_F, 0_F, -2*x },{x, 1, -3*x},{0, x, 1 }}==map(F^3,F^3,0))
+assert(getTrace(F[y]/(y^3+3*y+2),1+x*y)==3_F)
+assert(getNorm(F[y]/(y^3+3*y+2),1+x*y)==det N)
+///
+
+-- Test for transferGW
+-- Test 40
 TEST ///
 R = QQ[x]/(x^5 - x - 1)
 M = matrix(R, {{1, 3*x^2 + 4*x^4, 8*x^3 + 4}, {3*x^2 + 4*x^4, 5, 1}, {8*x^3 + 4, 1, 7*x^2 + 3*x}});
@@ -778,7 +798,7 @@ GQ = transferGW G;
 assert(GQ === makeDiagonalForm(QQ, (5, -75, 17059280/279299)));
 ///
 
--- Test 39
+-- Test 41
 TEST ///
 R = GF(7)[x]/(x^3 + 6*x^2 + 4);
 M = matrix(R, {{1, 2, x}, {2, x^2 + 5, 3*x + 2}, {x, 3*x + 2, 5}});
@@ -788,7 +808,7 @@ assert(isIsomorphicForm(G7, makeDiagonalForm(GF(7), (3, 4, 4))));
 ///
 
 -- Test for diagonal and hyperbolic unstable constructors
--- Test 40
+-- Test 42
 TEST ///
 alpha = makeDiagonalUnstableForm(RR, (1,-1));
 beta = makeGWuClass matrix(RR, {{0,1},{1,0}});
@@ -797,7 +817,7 @@ assert(isIsomorphicForm(alpha, H));
 assert(isIsomorphicForm(beta, H));
 ///
 
--- Test 41
+-- Test 43
 TEST ///
 alpha = makeDiagonalUnstableForm(GF(27), (1,-1));
 beta = makeGWuClass matrix(GF(27), {{0,1},{1,0}});
