@@ -7,8 +7,8 @@ isWellDefinedGWu = method()
 -- First version of this function treats the case where a is a Number, (eg. an element of CC_53, RR_53, QQ, or ZZ)
 isWellDefinedGWu (Matrix, Number) := Boolean => (M, a) -> (
 
-    -- return false if a is zero
-    if a == 0 then return false;
+    -- return false if a is not a unit of the finite etale algebra
+    if not isUnit(promote(a, ring M)) then return false;
 
     -- if matrix is defined over the complex numbers, allow scalar to be one of complex, real, rational, or integral.
     if instance(ring M, ComplexField) then (
@@ -54,8 +54,8 @@ isWellDefinedGWu (Matrix, Number) := Boolean => (M, a) -> (
 -- Second version of this function treats the case where a is a RingElement (eg. an element of a Galois field)
 isWellDefinedGWu (Matrix, RingElement) := Boolean => (M, a) -> (
 
-    -- Return false if a is zero in the field
-    if a == 0 then return false;
+    -- Return false if a is not a unit in the finite etale algebra
+    if not isUnit(promote(a, ring M)) then return false;
 
     -- If matrix is defined over the complex numbers, allow scalar to be one of complex, real, rational, or integral. 
     if instance(ring M, ComplexField) or instance(ring M, RealField) or ring M === QQ then return false;
