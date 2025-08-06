@@ -1,9 +1,4 @@
--------------------------------------------------------------
--- unstable A1-Brouwer degree methods (task 3.12 from Overleaf)
--------------------------------------------------------------
-
 -- Input: A pointed rational function q = f/g
-
 -- Output: A pair (M,a) where M is a matrix and a is a scalar (the determinant of M)
 
 getGlobalUnstableA1Degree = method()
@@ -35,10 +30,10 @@ getGlobalUnstableA1Degree RingElement := UnstableGrothendieckWittClass => q -> (
 
     if #(gens S) != 1 then
         error "the number of variables does not match the number of polynomials";     
-    -- If the field is CC, output the Grothendieck-Witt class of an identity matrix of the appropriate rank
+    -- If the field is CC, output the unstable Grothendieck-Witt class of an identity matrix of the appropriate rank and scalar corresponding to the resultant of f and g
     if instance(kk, ComplexField) then (
     	rankAlgebra := getGlobalAlgebraRank {q};
-    	return makeGWuClass id_(CC^rankAlgebra);
+    	return makeGWuClass(id_(CC^rankAlgebra), (-1)^((degree(u,f)^2 - degree(u,f))/2)*getResultant(f, g));
         );
 
     -- If the field is RR, ask the user to run the computation over QQ instead and then base change to RR
@@ -69,7 +64,7 @@ getGlobalUnstableA1Degree RingElement := UnstableGrothendieckWittClass => q -> (
 --- makeGWuClass 
 --matrix B
     -- )
-     makeGWuClass matrix B
+    makeGWuClass matrix B
 )
 
 -- Input: A rational function f/g, a root of f, and the multiplicity of that root
