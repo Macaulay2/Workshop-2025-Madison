@@ -59,6 +59,8 @@ export{
     -- ArithmeticMethods.m2
     "getPadicValuation",
     "getLocalAlgebraBasis",
+    "getSylvesterMatrix",
+    "getResultant",
     
     --BuildingForms.m2
     "makeDiagonalForm",
@@ -129,7 +131,6 @@ export{
     --UnstableLocalGlobalDegrees.m2
     "getGlobalUnstableA1Degree",
     "getLocalUnstableA1Degree",
-
     }
 
 -- Basic arithmetic, p-adic, and commutative algebra operations we will use
@@ -751,8 +752,31 @@ degSum = addGWuDivisorial({deg1, deg2, deg3}, {-1, 1, 2});
 assert(isIsomorphicForm(degSum, Gdeg));
 ///
 
--- Test for general local and global degree functions
+-- Tests for Sylvester matrix and resultant
 -- Test 37
+TEST ///
+R = QQ[x];
+f = x^2 + x - 2;
+g = 3*x + 5;
+Sylv = getSylvesterMatrix(f, g);
+M = matrix(QQ, {{-2, 5, 0}, {1, 3, 5}, {1, 0, 3}});
+assert(Sylv == M);
+assert(getResultant(f, g) == det M);
+///
+
+-- Test 38
+TEST ///
+R = ZZ[x];
+f = x^2 + x - 2;
+g = 3*x + 5;
+Sylv = getSylvesterMatrix(f, g);
+M = matrix(ZZ, {{-2, 5, 0}, {1, 3, 5}, {1, 0, 3}});
+assert(Sylv == M);
+assert(getResultant(f, g) == det M);
+///
+
+-- Test for general local and global degree functions
+-- Test 39
 TEST ///
 F = GF(32003)
 R = frac F[x];
@@ -768,7 +792,7 @@ assert(isIsomorphicForm(degSum, Gdeg));
 ///
 
 -- Test for trace and norm
--- Test 38
+-- Test 40
 TEST ///
 R=GF(2)[x]/(x^2+x+1)
 F=frac R
@@ -777,7 +801,7 @@ N=getMultiplicationMatrix(K,1+x*y)
 assert(N-matrix{{1, x},{x, 1+x^2}}==map(F^2,F^2,0))
 ///
 
--- Test 39
+-- Test 41
 TEST ///
 F = QQ[x]/(x^5+2*x+3) 
 F=frac F
@@ -788,7 +812,7 @@ assert(getNorm(F[y]/(y^3+3*y+2),1+x*y)==det N)
 ///
 
 -- Test for transferGW
--- Test 40
+-- Test 42
 TEST ///
 R = QQ[x]/(x^5 - x - 1)
 M = matrix(R, {{1, 3*x^2 + 4*x^4, 8*x^3 + 4}, {3*x^2 + 4*x^4, 5, 1}, {8*x^3 + 4, 1, 7*x^2 + 3*x}});
@@ -797,7 +821,7 @@ GQ = transferGW G;
 assert(GQ === makeDiagonalForm(QQ, (5, -75, 17059280/279299)));
 ///
 
--- Test 41
+-- Test 43
 TEST ///
 R = GF(7)[x]/(x^3 + 6*x^2 + 4);
 M = matrix(R, {{1, 2, x}, {2, x^2 + 5, 3*x + 2}, {x, 3*x + 2, 5}});
@@ -807,7 +831,7 @@ assert(isIsomorphicForm(G7, makeDiagonalForm(GF(7), (3, 4, 4))));
 ///
 
 -- Test for diagonal and hyperbolic unstable constructors
--- Test 42
+-- Test 44
 TEST ///
 alpha = makeDiagonalUnstableForm(RR, (1,-1));
 beta = makeGWuClass matrix(RR, {{0,1},{1,0}});
@@ -816,7 +840,7 @@ assert(isIsomorphicForm(alpha, H));
 assert(isIsomorphicForm(beta, H));
 ///
 
--- Test 43
+-- Test 45
 TEST ///
 alpha = makeDiagonalUnstableForm(GF(27), (1,-1));
 beta = makeGWuClass matrix(GF(27), {{0,1},{1,0}});
