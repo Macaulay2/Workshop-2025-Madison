@@ -2,13 +2,19 @@ doc ///
     Key
         getGlobalUnstableA1Degree
         (getGlobalUnstableA1Degree, RingElement)
+        (getGlobalUnstableA1Degree, RingElement, RingElement)
     Headline
         computes the global unstable $\mathbb{A}^{1}$-Brouwer degree of a pointed rational function $f/g:\mathbb{P}^{1}_{k}\to\mathbb{P}^{1}_{k}$
     Usage
         getGlobalUnstableA1Degree(q)
+        getGlobalUnstableA1Degree(f, g)
     Inputs
         q: RingElement
-            a pointed rational function $f/g$ where $f,g\in k[x]$ are coprime polynomials over a field $k$ of characteristic not 2 and $g$ not identically zero. Over $\mathbb{R}$, the user is prompted to instead do the computation over $\mathbb{Q}$ and then base change to $\mathbb{R}$.
+            a pointed rational function $f/g$ where $f,g\in k[x]$ are coprime polynomials over a field $k$ of characteristic not 2 and $g$ not identically zero. Over $\mathbb{C}$, the two-input variant is to be used as fraction fields are not supported over $\mathbb{C}$. Over $\mathbb{R}$, the user is prompted to instead do the computation over $\mathbb{Q}$ and then base change to $\mathbb{R}$.
+        f: RingElement
+            a polynomial $f\in k[x]$ where $k$ is a field of characteristic not 2
+        g: RingElement
+            a polynomial $g\in k[x]$ where $k$ is a field of characteristic not 2 and $g$ is not identically zero
     Outputs
         : UnstableGrothendieckWittClass
             the class $\text{deg}^{\mathbb{A}^{1}}(f/g)$ in the unstable Grothendieck-Witt group $\text{GW}^{u}(k)$

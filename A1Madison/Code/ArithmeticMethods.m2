@@ -221,8 +221,8 @@ solveCongruenceList(List,List) := (L1,L2) -> (
 -- Output: the Sylvester matrix of the two polynomials
 getSylvesterMatrix = method()
 getSylvesterMatrix(RingElement, RingElement) := RingElement => (f, g) -> (
-    if not (ring f === ring g) then
-        error  "the polynomials must be defined over the same ring";
+    if not ((ring f === ring g) and length gens ring f == 1) then
+        error  "the polynomials must be defined over the same univariate polynomial ring";
 
     kk := coefficientRing ring f;
 

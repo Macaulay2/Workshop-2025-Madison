@@ -28,7 +28,7 @@ isFiniteEtaleAlgebra QuotientRing := Boolean => (Alg) -> (
 
 
 -- Input: A matrix
--- Output: Boolean that gives whether the matrix defines a nondegenerate symmetric bilinear form over a field of characteristic not 2
+-- Output: Boolean that gives whether the matrix defines a nondegenerate symmetric bilinear form over an algebra of characteristic not 2
 
 isWellDefinedGW = method()
 isWellDefinedGW Matrix := Boolean => M -> (
@@ -42,7 +42,7 @@ isWellDefinedGW Matrix := Boolean => M -> (
     -- Return false if the matrix isn't defined over a field
     if not (isField ring M or isFiniteEtaleAlgebra ring M) then return false;
     
-    -- Returns false if the matrix is defined over a field of characteristic 2
+    -- Returns false if the matrix is defined over a ring of characteristic 2
     if char(ring M) == 2 then return false;
 
     -- Otherwise, return true
