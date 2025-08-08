@@ -7,15 +7,15 @@
 
 makeDiagonalForm = method()
 makeDiagonalForm (Ring, RingElement) := GrothendieckWittClass => (kk, a) -> (
-    makeGWClass matrix(kk, {{sub(a, kk)}})
+    makeGWClass matrix(kk, {{promote(a, kk)}})
     )
 
 makeDiagonalForm (Ring, ZZ) := GrothendieckWittClass => (kk, a) -> (
-    makeGWClass matrix(kk, {{sub(a, kk)}})
+    makeGWClass matrix(kk, {{promote(a, kk)}})
     )
 
 makeDiagonalForm (Ring, QQ) := GrothendieckWittClass => (kk, a) -> (
-    makeGWClass matrix(kk, {{sub(a, kk)}})
+    makeGWClass matrix(kk, {{promote(a, kk)}})
     )
 
 makeDiagonalForm (Ring, Sequence) := GrothendieckWittClass => (kk, L) -> (
@@ -32,15 +32,15 @@ makeDiagonalForm (Ring, Sequence) := GrothendieckWittClass => (kk, L) -> (
     )
 
 makeDiagonalForm (InexactFieldFamily,RingElement) := GrothendieckWittClass => (kk, a) -> (
-    makeGWClass matrix(kk, {{sub(a, kk)}})
+    makeGWClass matrix(kk, {{promote(a, kk)}})
     )
 
 makeDiagonalForm (InexactFieldFamily,ZZ) := GrothendieckWittClass => (kk, a) -> (
-    makeGWClass matrix(kk, {{sub(a, kk)}})
+    makeGWClass matrix(kk, {{promote(a, kk)}})
     )
 
 makeDiagonalForm (InexactFieldFamily,QQ) := GrothendieckWittClass => (kk, a) -> (
-    makeGWClass matrix(kk, {{sub(a, kk)}})
+    makeGWClass matrix(kk, {{promote(a, kk)}})
     )
 
 makeDiagonalForm (InexactFieldFamily, Sequence) := GrothendieckWittClass => (kk, L) -> (
@@ -50,7 +50,7 @@ makeDiagonalForm (InexactFieldFamily, Sequence) := GrothendieckWittClass => (kk,
     -- Build an n x n mutable identity matrix
     A := mutableIdentity(kk, n);
     
-    for i from 0 to n - 1 do A_(i,i) = sub(L_i, kk);
+    for i from 0 to n - 1 do A_(i,i) = promote(L_i, kk);
     
     -- A is mutable so we take matrix A and form a Grothendieck-Witt class
     makeGWClass matrix A
@@ -61,7 +61,7 @@ makeAntidiagonalUnstableForm (Ring, RingElement, ZZ) := UnstableGrothendieckWitt
     
     -- Build an n x n mutable identity matrix
     A := mutableMatrix(kk, n,n);
-    for i from 0 to n - 1 do A_(i,n-1-i) = sub(res, kk);
+    for i from 0 to n - 1 do A_(i,n-1-i) = promote(res, kk);
     
     -- A is mutable so we take matrix A and form a Grothendieck-Witt class
     makeGWuClass matrix A
@@ -71,7 +71,7 @@ makeAntidiagonalUnstableForm (Ring, Number, ZZ) := UnstableGrothendieckWittClass
     
     -- Build an n x n mutable identity matrix
     A := mutableMatrix(kk, n,n);
-    for i from 0 to n - 1 do A_(i,n-1-i) = sub(res, kk);
+    for i from 0 to n - 1 do A_(i,n-1-i) = promote(res, kk);
     
     -- A is mutable so we take matrix A and form a Grothendieck-Witt class
     makeGWuClass matrix A
@@ -88,7 +88,7 @@ makeHyperbolicForm Ring := GrothendieckWittClass => kk -> (
 makeHyperbolicForm (Ring, ZZ) := GrothendieckWittClass => (kk, n) -> (
     if odd n then error "entered rank is odd";
     H := matrix(kk, {{1,0},{0,-1}});
-    m := sub(n/2, ZZ);
+    m := promote(n/2, ZZ);
     outputMatrix := diagonalMatrix(kk, {});
     for i from 0 to m - 1 do outputMatrix = outputMatrix ++ H;
     makeGWClass outputMatrix
@@ -101,7 +101,7 @@ makeHyperbolicForm InexactFieldFamily := GrothendieckWittClass => kk -> (
 makeHyperbolicForm (InexactFieldFamily, ZZ) := GrothendieckWittClass => (kk, n) -> (
     if odd n then error "entered rank is odd";
     H := matrix(kk, {{1,0},{0,-1}});
-    m := sub(n/2, ZZ);
+    m := promote(n/2, ZZ);
     outputMatrix := diagonalMatrix(kk, {});
     for i from 0 to m - 1 do outputMatrix = outputMatrix ++ H;
     makeGWClass outputMatrix
@@ -112,15 +112,15 @@ makeHyperbolicForm (InexactFieldFamily, ZZ) := GrothendieckWittClass => (kk, n) 
 
 makePfisterForm = method()
 makePfisterForm (Ring, RingElement) := GrothendieckWittClass => (kk, a) -> (
-    makeDiagonalForm(kk, (1, sub((-1)*a, kk)))
+    makeDiagonalForm(kk, (1, promote((-1)*a, kk)))
     )
 
 makePfisterForm (Ring, ZZ) := GrothendieckWittClass => (kk, a) -> (
-    makeDiagonalForm(kk, (1, sub((-1)*a, kk)))
+    makeDiagonalForm(kk, (1, promote((-1)*a, kk)))
     )
 
 makePfisterForm (Ring, QQ) := GrothendieckWittClass => (kk, a) -> (
-    makeDiagonalForm(kk, (1, sub((-1)*a, kk)))
+    makeDiagonalForm(kk, (1, promote((-1)*a, kk)))
     )
 
 makePfisterForm (Ring, Sequence) := GrothendieckWittClass => (kk, L) -> (
@@ -137,15 +137,15 @@ makePfisterForm (Ring, Sequence) := GrothendieckWittClass => (kk, L) -> (
     )
 
 makePfisterForm (InexactFieldFamily, RingElement) := GrothendieckWittClass => (kk, a) -> (
-    makeDiagonalForm(kk, (1, sub((-1)*a, kk)))
+    makeDiagonalForm(kk, (1, promote((-1)*a, kk)))
     )
 
 makePfisterForm (InexactFieldFamily,ZZ) := GrothendieckWittClass => (kk, a) -> (
-    makeDiagonalForm(kk,(1, sub((-1)*a, kk)))
+    makeDiagonalForm(kk,(1, promote((-1)*a, kk)))
     )
 
 makePfisterForm (InexactFieldFamily,QQ) := GrothendieckWittClass => (kk, a) -> (
-    makeDiagonalForm(kk,(1, sub((-1)*a, kk)))
+    makeDiagonalForm(kk,(1, promote((-1)*a, kk)))
     )
 
 makePfisterForm (InexactFieldFamily,Sequence) := GrothendieckWittClass => (kk, L) -> (
