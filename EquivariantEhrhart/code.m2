@@ -28,9 +28,7 @@ isSymmetric(Polyhedron, Matrix) := Boolean => (P, M) -> (
 -- 	)
 
 isSymmetric(Polyhedron, List) := Boolean => (P, L) -> (
-    result := true;
-    for M in L do if not isSymmetric(P, M) then (result = false; break);
-    result
+    all(L, M -> isSymmetric(P, M))
     )
 
 -- would need this to compute conjugacy classes
