@@ -1,3 +1,4 @@
+loadPackage "NumericalAlgebraicGeometry";
 -- Input: A pointed rational function q = f/g
 -- Output: A pair (M,a) where M is a matrix and a is a scalar (the determinant of M)
 
@@ -29,7 +30,10 @@ getGlobalUnstableA1Degree RingElement := UnstableGrothendieckWittClass => q -> (
     u := (gens ring q)#0;
 
     if #(gens S) != 1 then
-        error "the number of variables does not match the number of polynomials";     
+        error "the number of variables does not match the number of polynomials";    
+
+    if (degree f)#0 <= (degree g)#0 then
+        error "the rational function is not pointed"; 
 
     -- If the field is RR, ask the user to run the computation over QQ instead and then base change to RR
     if instance(kk, RealField) then error "getGlobalUnstableA1Degree method does not work over the reals. Instead, define the polynomials over QQ to output an UnstableGrothendieckWittClass. Then extract the form, base change it to RR, and run getSumDecomposition().";    
@@ -84,6 +88,9 @@ getGlobalUnstableA1Degree (RingElement, RingElement) := UnstableGrothendieckWitt
     S := ring f;
     u := (gens ring f)#0;
 
+    if (degree f)#0 <= (degree g)#0 then
+        error "the rational function is not pointed"; 
+
     -- If the field is CC, output the unstable Grothendieck-Witt class of an identity matrix of the appropriate rank and scalar corresponding to the resultant of f and g
     if instance(kk, ComplexField) then (
     	return makeGWuClass(id_(CC^(degree(u,f))), promote((-1)^(((degree(u,f))^2 - degree(u,f))/2), kk)*getResultant(f, g));
@@ -117,9 +124,8 @@ getGlobalUnstableA1Degree (RingElement, RingElement) := UnstableGrothendieckWitt
     makeGWuClass matrix B
 )
 
--- Input: A rational function f/g, a root of f, and the multiplicity of that root
-
--- Output: A pair (M,a) where M is a matrix and a is a scalar
+-- Input: A rational function f/g, a root of f
+-- Output: An unstable Grothendieck-Witt class
 
 getLocalUnstableA1Degree = method()
 getLocalUnstableA1Degree (RingElement, Number) := (UnstableGrothendieckWittClass) => (q, r) -> (
@@ -132,7 +138,7 @@ getLocalUnstableA1Degree (RingElement, Number) := (UnstableGrothendieckWittClass
     if not (kk === QQ or (instance(kk, GaloisField) and kk.char != 2)) then 
         error "only implemented over QQ and finite fields of characteristic not 2";
 
-   -- If the base field is QQ, allow the root to be integer or rational
+    -- If the base field is QQ, allow the root to be integer or rational
     if kk === QQ and not (ring r === QQ or ring r === ZZ) then error "root not from the base field of the polynomial";
 
     -- If the base field is a finite field, allow the root to be integer, rational, or from the same finite field
@@ -157,6 +163,9 @@ getLocalUnstableA1Degree (RingElement, Number) := (UnstableGrothendieckWittClass
     -- Check whether the number of variables matches the number of polynomials
     if not f(r) == 0 then
         error "the field element is not a zero of the function";
+
+    if (degree f)#0 <= (degree g)#0 then
+        error "the rational function is not pointed"; 
 
     m := getMultiplicity(f, r);
 
@@ -175,7 +184,7 @@ getLocalUnstableA1Degree (RingElement, RingElement) := (UnstableGrothendieckWitt
     if not (kk === QQ or (instance(kk, GaloisField) and kk.char != 2)) then 
         error "only implemented over QQ and finite fields of characteristic not 2";
 
-   -- If the base field is QQ, allow the root to be integer or rational
+    -- If the base field is QQ, allow the root to be integer or rational
     if kk === QQ and not (ring r === QQ or ring r === ZZ) then error "root not from the base field of the polynomial";
 
     -- If the base field is a finite field, allow the root to be integer, rational, or from the same finite field
@@ -200,6 +209,9 @@ getLocalUnstableA1Degree (RingElement, RingElement) := (UnstableGrothendieckWitt
     -- Check whether the number of variables matches the number of polynomials
     if not f(r) == 0 then
         error "the field element is not a zero of the function";
+    
+    if (degree f)#0 <= (degree g)#0 then
+        error "the rational function is not pointed"; 
 
     m := getMultiplicity(f, r);
 
@@ -208,11 +220,125 @@ getLocalUnstableA1Degree (RingElement, RingElement) := (UnstableGrothendieckWitt
     makeAntidiagonalUnstableForm(kk, F(r), m)
 )
 
+-- Variant that takes in numerator and denominator separately
+getLocalUnstableA1Degree (RingElement, RingElement, Number) := (UnstableGrothendieckWittClass) => (f, g, r) -> (
+
+    if not (instance(ring f, PolynomialRing) and instance(ring g, PolynomialRing) and ring f === ring g) then
+        error "both input polynomials must be defined over the same univariate polynomial ring";
+        
+    kk := coefficientRing ring f;
+
+    if not (instance(kk, ComplexField) or kk === QQ or (instance(kk, GaloisField) and kk.char != 2)) then 
+        error "only implemented over CC, QQ, and finite fields of characteristic not 2";
+
+    -- If the base field is CC, allow the root to be complex, real, rational, or an integer. 
+    if instance(kk, ComplexField) and not (instance(ring r, ComplexField) or instance(ring r, RealField) or ring r === QQ or ring r === ZZ) then error "root not from the base field of the polynomials";
+
+    -- If the base field is QQ, allow the root to be integer or rational
+    if kk === QQ and not (ring r === QQ or ring r === ZZ) then error "root not from the base field of the polynomial";
+
+    -- If the base field is a finite field, allow the root to be integer, rational, or from the same finite field
+    if instance(kk, GaloisField) and not (ring r === QQ or ring r === ZZ or (instance(ring r, GaloisField) and kk.order == (ring r).order)) then error "root not from the base field of the polynomial";
+
+    if numgens ring f != 1 then error "must input function of one variable";
+
+    
+    -- Check whether the rational function has isolated zeros
+    if dim ideal(f) > 0 then 
+        error "rational function does not have isolated zeros";
+	
+    -- Check whether the number of variables matches the number of polynomials
+    if not f(r) == 0 then
+        error "the field element is not a zero of the function";
+    
+    u := (gens ring f)#0;
+
+    if (degree f)#0 <= (degree g)#0 then
+        error "the rational function is not pointed"; 
+    
+    if instance(kk, ComplexField) then
+        return getLocalUnstableA1DegreeCC(f, g, r);
+
+    m := getMultiplicity(f, r);
+
+    F := (u - sub(r, frac ring f))^m * g/f;
+
+    makeAntidiagonalUnstableForm(kk, F(r), m)
+)
+
+-- Variant that takes in numerator and denominator separately
+getLocalUnstableA1Degree (RingElement, RingElement, RingElement) := (UnstableGrothendieckWittClass) => (f, g, r) -> (
+
+    if not (instance(ring f, PolynomialRing) and instance(ring g, PolynomialRing) and ring f === ring g) then
+        error "both input polynomials must be defined over the same univariate polynomial ring";
+        
+    kk := coefficientRing ring f;
+
+    if not (kk === QQ or (instance(kk, GaloisField) and kk.char != 2)) then 
+        error "QQ, and finite fields of characteristic not 2";
+
+    -- If the base field is CC, allow the root to be complex, real, rational, or an integer. 
+    if instance(kk, ComplexField) and not (instance(ring r, ComplexField) or instance(ring r, RealField) or ring r === QQ or ring r === ZZ) then error "root not from the base field of the polynomials";
+
+    -- If the base field is QQ, allow the root to be integer or rational
+    if kk === QQ and not (ring r === QQ or ring r === ZZ) then error "root not from the base field of the polynomial";
+
+    -- If the base field is a finite field, allow the root to be integer, rational, or from the same finite field
+    if instance(kk, GaloisField) and not (ring r === QQ or ring r === ZZ or (instance(ring r, GaloisField) and kk.order == (ring r).order)) then error "root not from the base field of the polynomial";
+
+    if numgens ring f != 1 then error "must input function of one variable";
+
+    
+    -- Check whether the rational function has isolated zeros
+    if dim ideal(f) > 0 then 
+        error "rational function does not have isolated zeros";
+	
+    -- Check whether the number of variables matches the number of polynomials
+    if not f(r) == 0 then
+        error "the field element is not a zero of the function";
+    
+    u := (gens ring f)#0;
+
+    if (degree f)#0 <= (degree g)#0 then
+        error "the rational function is not pointed"; 
+
+    m := getMultiplicity(f, r);
+
+    F := (u - sub(r, frac ring f))^m * g/f;
+
+    makeAntidiagonalUnstableForm(kk, F(r), m)
+)
+
+-- Input: A rational function f/g, a root of f, and the multiplicity of that root
+-- Output: An unstable Grothendieck-Witt class
+getLocalUnstableA1DegreeCC = method()
+getLocalUnstableA1DegreeCC(RingElement, RingElement, Number) := UnstableGrothendieckWittClass => (f, g, r) -> (
+    Sf := solveSystem {f};
+    Sg := solveSystem {g};
+
+    rootsf := apply(Sf, i -> i.Coordinates);
+    rootsg := apply(Sg, i -> i.Coordinates);
+
+    rootsfNotr := select(rootsf, i -> not areEqual(i#0, sub(r, CC_53)));
+
+    outputFormRank := number(rootsf, i -> areEqual(i#0, sub(r, CC_53)));
+
+    LDdenom := sub(1, CC_53);
+
+    -- compute the denominator of the local degree as the evaluation of the product of (x-ri) where ri range over the roots not equal to r
+    for i from 0 to (#rootsfNotr) - 1 do (
+        LDdenom = LDdenom * (r - rootsfNotr#i#0)
+    );
+
+    makeGWuClass(id_(CC_53^(outputFormRank)), (-1)^((outputFormRank^2 - outputFormRank)/2)*(g(r)/LDdenom)^outputFormRank)        
+)
+
+
 -- Input: a polynomial in one variable and a root
 -- Output: multiplicity of the polynomial
 
 getMultiplicity = method()
-getMultiplicity(RingElement, Number) := ZZ => (f, r) ->(
+getMultiplicity(RingElement, Number) := ZZ => (f, r) -> (
     -- return an error if the polynomial isn't in one variable, or is a polynomial at all
     if not instance(ring f, PolynomialRing) or numgens ring f != 1 then
         error "need polynomial with one variable";
@@ -231,7 +357,7 @@ getMultiplicity(RingElement, Number) := ZZ => (f, r) ->(
     multiplicity
 )
 
-getMultiplicity(RingElement, RingElement) := ZZ => (f, r) ->(
+getMultiplicity(RingElement, RingElement) := ZZ => (f, r) -> (
     -- return an error if the polynomial isn't in one variable, or is a polynomial at all
     if not instance(ring f, PolynomialRing) or numgens ring f != 1 then
         error "need polynomial with one variable";

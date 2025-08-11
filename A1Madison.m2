@@ -47,6 +47,8 @@ newPackage (
 
     PackageImports=>{
 	"MinimalPrimes",
+    "NumericalAlgebraicGeometry",
+    "NAGtypes"
 	},
 
 export{
@@ -752,31 +754,8 @@ degSum = addGWuDivisorial({deg1, deg2, deg3}, {-1, 1, 2});
 assert(isIsomorphicForm(degSum, Gdeg));
 ///
 
--- Tests for Sylvester matrix and resultant
--- Test 37
-TEST ///
-R = QQ[x];
-f = x^2 + x - 2;
-g = 3*x + 5;
-Sylv = getSylvesterMatrix(f, g);
-M = matrix(QQ, {{-2, 5, 0}, {1, 3, 5}, {1, 0, 3}});
-assert(Sylv == M);
-assert(getResultant(f, g) == det M);
-///
-
--- Test 38
-TEST ///
-R = ZZ[x];
-f = x^2 + x - 2;
-g = 3*x + 5;
-Sylv = getSylvesterMatrix(f, g);
-M = matrix(ZZ, {{-2, 5, 0}, {1, 3, 5}, {1, 0, 3}});
-assert(Sylv == M);
-assert(getResultant(f, g) == det M);
-///
-
 -- Test for general local and global degree functions
--- Test 39
+-- Test 37
 TEST ///
 F = GF(32003)
 R = frac F[x];
@@ -789,6 +768,29 @@ assert(isIsomorphicForm(deg1, makeGWuClass(matrix(F, {{1/3}}))));
 assert(isIsomorphicForm(deg2, makeGWuClass(matrix(F, {{8/3}}))));
 degSum = addGWuDivisorial({deg1, deg2}, {-2, 1});
 assert(isIsomorphicForm(degSum, Gdeg));
+///
+
+-- Tests for Sylvester matrix and resultant
+-- Test 38
+TEST ///
+R = QQ[x];
+f = x^2 + x - 2;
+g = 3*x + 5;
+Sylv = getSylvesterMatrix(f, g);
+M = matrix(QQ, {{-2, 5, 0}, {1, 3, 5}, {1, 0, 3}});
+assert(Sylv == M);
+assert(getResultant(f, g) == det M);
+///
+
+-- Test 39
+TEST ///
+R = ZZ[x];
+f = x^2 + x - 2;
+g = 3*x + 5;
+Sylv = getSylvesterMatrix(f, g);
+M = matrix(ZZ, {{-2, 5, 0}, {1, 3, 5}, {1, 0, 3}});
+assert(Sylv == M);
+assert(getResultant(f, g) == det M);
 ///
 
 -- Test for trace and norm

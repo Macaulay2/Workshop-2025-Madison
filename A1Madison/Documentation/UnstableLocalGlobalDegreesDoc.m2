@@ -14,7 +14,7 @@ doc ///
         f: RingElement
             a polynomial $f\in k[x]$ where $k$ is a field of characteristic not 2
         g: RingElement
-            a polynomial $g\in k[x]$ where $k$ is a field of characteristic not 2 and $g$ is not identically zero
+            a polynomial $g\in k[x]$ where $k$ is a field of characteristic not 2 and $g$ is not identically zero, such that $f/g$ is a pointed rational function
     Outputs
         : UnstableGrothendieckWittClass
             the class $\text{deg}^{\mathbb{A}^{1}}(f/g)$ in the unstable Grothendieck-Witt group $\text{GW}^{u}(k)$
@@ -64,14 +64,23 @@ doc ///
         getLocalUnstableA1Degree
         (getLocalUnstableA1Degree, RingElement, RingElement)
         (getLocalUnstableA1Degree, RingElement, Number)
+        (getLocalUnstableA1Degree, RingElement, RingElement, Number)
+        (getLocalUnstableA1Degree, RingElement, RingElement, RingElement)
     Headline
         computes a local unstable $\mathbb{A}^{1}$-Brouwer degree of a pointed rational function $f/g:\mathbb{P}^{1}_{k}\to\mathbb{P}^{1}_{k}$ at a root $p\in\mathbb{P}^{1}_{k}$
     Usage
         getLocalUnstableA1Degree(q, p)
+        getLocalUnstableA1Degree(f, g, p)
     Inputs
         q: RingElement
-            a pointed rational function $f/g$ where $f,g\in k[x]$ are coprime polynomials over a field $k$ of characteristic not 2 and $g$ not identically zero. Over $\mathbb{R}$, the user is prompted to instead do the computation over $\mathbb{Q}$ and then base change to $\mathbb{R}$.
+            a pointed rational function $f/g$ where $f,g\in k[x]$ are coprime polynomials over a field $k$ of characteristic not 2 and $g$ not identically zero. Over $\mathbb{C}$ the two-input variant is to be used as fraction fields are not supported over $\mathbb{C}$. Over $\mathbb{R}$, the user is prompted to instead do the computation over $\mathbb{Q}$ and then base change to $\mathbb{R}$.
+        f: RingElement
+            a polynomial $f\in k[x]$ where $k$ is a field of characteristic not 2
+        g: RingElement
+            a polynomial $g\in k[x]$ where $k$ is a field of characteristic not 2 and $g$ is not identically zero, such that $f/g$ is a pointed rational function
         p: RingElement
+            a point $p\in\mathbb{P}^{1}_{k}$ corresponding to a root of the rational function $f/g$ in the field $k$.
+        p: Number
             a point $p\in\mathbb{P}^{1}_{k}$ corresponding to a root of the rational function $f/g$ in the field $k$.
     Outputs
         : UnstableGrothendieckWittClass

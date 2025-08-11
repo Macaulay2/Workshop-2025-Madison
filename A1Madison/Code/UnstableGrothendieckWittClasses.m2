@@ -334,7 +334,7 @@ isIsomorphicForm (UnstableGrothendieckWittClass,UnstableGrothendieckWittClass) :
     if not (instance(k2, ComplexField) or instance(k2, RealField) or k2 === QQ or (instance(k2, GaloisField) and k2.char != 2)) then
         error "Base field not supported; only implemented over QQ, RR, CC, and finite fields of characteristic not 2";
     
-    -- Over CC, the scalars are automatically in the same square class, so just need to check the forms
+    -- In most cases, we can check equality directly
     if ((instance(k1, ComplexField) and instance(k2, ComplexField)) or (instance(k1, RealField) and instance(k2, RealField)) or (k1 === QQ and k2 === QQ)) then (
         return (isIsomorphicForm(getMatrix alpha, getMatrix beta) and getScalar alpha == getScalar beta);
         )
