@@ -1,7 +1,7 @@
 symmetricGroup = method()
 symmetricGroup ZZ := List => n -> (
     if n < 1 then error("invalid matrix size");
-	for sigma in permutations toList(1..n) list permutation sigma
+    for sigma in permutations toList(1..n) list permutation sigma
     )
 
 
@@ -12,7 +12,7 @@ isSymmetric(Polyhedron, Matrix) := Boolean => (P, M) -> (
     V := sort vertices P; -- vertices of P are probably already sorted
     if numColumns M != numRows M then error("matrix must be square");
     if numColumns M != numRows V then error("matrix incompatible with polytope");
-    MV := sort M * V;
+    MV := sort(M * V);
     if ring MV =!= ring V then error("rings of matrices are different");
     MV == V
     )
