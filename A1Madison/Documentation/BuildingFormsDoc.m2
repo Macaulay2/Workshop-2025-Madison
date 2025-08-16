@@ -2,12 +2,10 @@ doc ///
 	Key
 		makeDiagonalForm
 		(makeDiagonalForm, Ring, RingElement)
-		(makeDiagonalForm, Ring, ZZ)
-		(makeDiagonalForm, Ring, QQ)
+		(makeDiagonalForm, Ring, Number)
 		(makeDiagonalForm, Ring, Sequence)
 		(makeDiagonalForm, InexactFieldFamily, RingElement)
-		(makeDiagonalForm, InexactFieldFamily, ZZ)
-		(makeDiagonalForm, InexactFieldFamily, QQ)
+		(makeDiagonalForm, InexactFieldFamily, Number)
 		(makeDiagonalForm, InexactFieldFamily, Sequence)
 	Headline
 		the Grothendieck-Witt class of a diagonal form
@@ -44,12 +42,10 @@ doc ///
 	Key
 		makePfisterForm
 		(makePfisterForm, Ring, RingElement)
-		(makePfisterForm, Ring, ZZ)
-		(makePfisterForm, Ring, QQ)
+		(makePfisterForm, Ring, Number)
 		(makePfisterForm, Ring, Sequence)
 		(makePfisterForm, InexactFieldFamily, RingElement)
-		(makePfisterForm, InexactFieldFamily, ZZ)
-		(makePfisterForm, InexactFieldFamily, QQ)
+		(makePfisterForm, InexactFieldFamily, Number)
 		(makePfisterForm, InexactFieldFamily, Sequence)
 	Headline
 		the Grothendieck-Witt class of a Pfister form
@@ -118,12 +114,10 @@ doc ///
 	Key
 		makeDiagonalUnstableForm
 		(makeDiagonalUnstableForm, Ring, RingElement)
-		(makeDiagonalUnstableForm, Ring, ZZ)
-		(makeDiagonalUnstableForm, Ring, QQ)
+		(makeDiagonalUnstableForm, Ring, Number)
 		(makeDiagonalUnstableForm, Ring, Sequence)
 		(makeDiagonalUnstableForm, InexactFieldFamily, RingElement)
-		(makeDiagonalUnstableForm, InexactFieldFamily, ZZ)
-		(makeDiagonalUnstableForm, InexactFieldFamily, QQ)
+		(makeDiagonalUnstableForm, InexactFieldFamily, Number)
 		(makeDiagonalUnstableForm, InexactFieldFamily, Sequence)
 	Headline
 		the unstable Grothendieck-Witt class of a diagonal matrix

@@ -4,72 +4,55 @@ protect symbol scalar
 -- Output: Boolean that gives whether the matrix defines a well-defined class of the unstable Grothendieck-Witt group. 
 
 isWellDefinedGWu = method()
--- First version of this function treats the case where a is a Number, (eg. an element of CC_53, RR_53, QQ, or ZZ)
-isWellDefinedGWu (Matrix, Number) := Boolean => (M, a) -> (
+-- First version of this function treats the case where b is a Number (eg. an element of CC_53, RR_53, QQ, or ZZ)
+isWellDefinedGWu (Matrix, Number) := Boolean => (M, b) -> (
 
-    -- return false if a is not a unit of the finite etale algebra
-    if not isUnit(promote(a, ring M)) then return false;
+    -- Return false if b is not compatible with the ring of M
+    if not isCompatibleElement(ring M, b) then return false;
+    c := substitute(b, ring M);
 
-    -- if matrix is defined over the complex numbers, allow scalar to be one of complex, real, rational, or integral.
-    if instance(ring M, ComplexField) then (
-        if not ( instance(ring a, ComplexField)
-                 or instance(ring a, RealField)
-                 or ring a === QQ
-                 or ring a === ZZ ) then
-            return false
-    )
-    -- If matrix is defined over the real numbers, allow scalar to be one of real, rational, or integral.
-    else if instance(ring M, RealField) then (
-        if not ( (instance(ring a, RealField)
-                   or ring a === QQ
-                   or ring a === ZZ)
-                  and sign(a) == sign(det M) ) then
-            return false
-    )
-    -- If matrix is defined over the rationals, allow scalar to be one of rational, or integral.
-    else if ring M === QQ then (
-        if not ( (ring a === QQ or ring a === ZZ)
-                  and getSquarefreePart(det M) == getSquarefreePart(a) ) then
-            return false
-    )
-    -- If matrix is defined over a finite field, allow scalar to be either an integer or rational. The case of a being an an element of a Galois field is treated in the next variant.
-    else if instance(ring M, GaloisField) then (
-        if not ( (ring a === QQ or ring a === ZZ)
-                  and isGFSquare(det M) == isGFSquare(sub(a, ring M)) ) then
-            return false
-    )
+    -- Return false if c is not a unit of the finite etale algebra
+    if not isUnit c then return false;
+
+    -- If matrix is defined over the real numbers, require that the signs of c and of det M agree
+    if instance(ring M, RealField) and sign c != sign det M then return false;
+    
+    -- If matrix is defined over the rational numbers, require that det M and c are in the same square class
+    if ring M === QQ and getSquarefreePart det M != getSquarefreePart c then return false;
+    
+    -- If matrix is defined over a finite field, require that det M and c are in the same square class.
+    if instance(ring M, GaloisField) and isGFSquare det M != isGFSquare c then return false;
+    
     -- If matrix is defined over an arbitrary algebra, scalars being equal to the determinant of the matrix are allowed automatically, but we are unable to check representatives up to squares.
-    else (
-        -- must even live in the same ring
-        if ring a =!= ring M then return false;
-        -- warn if we can’t test square‐class of det
-        if det(M) =!= a then
-            print "Warning, the function is not able to verify if the determinant of M and a agree up to squares."
+    if not (instance(ring M, ComplexField) or instance(ring M, RealField) or ring M === QQ or instance(ring M, GaloisField)) then (
+        -- warn if we can’t test square class of det
+        if det M =!= c then
+            print "Warning, unable to verify whether the determinant of M and b agree up to squares.";
     );
-
-    -- if we reach here, the scalar passed one of the branches, so check the GW‐class itself
+    -- Then check whether M gives a well-defined element of GW(k)
     isWellDefinedGW M
 )
 
--- Second version of this function treats the case where a is a RingElement (eg. an element of a Galois field)
-isWellDefinedGWu (Matrix, RingElement) := Boolean => (M, a) -> (
+-- Second version of this function treats the case where b is a RingElement (e.g. an element of a Galois field)
+isWellDefinedGWu (Matrix, RingElement) := Boolean => (M, b) -> (
+
+    -- return false if b is not compatible with the ring of M
+    if not isCompatibleElement(ring M, b) then return false;
+    c := substitute(b, ring M);
 
     -- Return false if a is not a unit in the finite etale algebra
-    if not isUnit(promote(a, ring M)) then return false;
+    if not isUnit c then return false;
 
-    -- If matrix is defined over the complex numbers, allow scalar to be one of complex, real, rational, or integral. 
-    if instance(ring M, ComplexField) or instance(ring M, RealField) or ring M === QQ then return false;
+    -- If matrix is defined over a finite field, require that det M and c are in the same square class.
+    if instance(ring M, GaloisField) and isGFSquare det M != isGFSquare c then return false;
 
-    -- If matrix is defined over a finite field, allow scalar to be an element of that Galois field. The case of a being an integer is treated in the previous variant. 
-    if instance(ring M, GaloisField) and not (instance(ring a, GaloisField) and (ring M).order == (ring a).order and isGFSquare(det M) == isGFSquare(a)) then return false
-
-    else if not instance(ring M, GaloisField) then (
-        if ring a =!= ring M then return false;
-
-    -- If matrix is defined over an arbitrary field, scalars being equal to the determinant of the matrix are allowed automatically. 
-        if ring a === ring M and det(M) =!= a then print "Warning, the function is not able to verify if the determinant of M and a agree up to squares.";
+    -- If matrix is defined over an arbitrary algebra, scalars being equal to the determinant of the matrix are allowed automatically, but we are unable to check representatives up to squares.
+    if not instance(ring M, GaloisField) then (
+        -- warn if we can’t test square‐class of det
+        if det M =!= c then
+            print "Warning, unable to verify whether the determinant of M and b agree up to squares.";
     );
-    -- Then check that M is a well-defined element of GW(k)
+    -- Then check whether M gives a well-defined element of GW(k)
     isWellDefinedGW M
     )
 
@@ -80,31 +63,31 @@ UnstableGrothendieckWittClass = new Type of HashTable
 UnstableGrothendieckWittClass.synonym = "Unstable Grothendieck-Witt Class"
 
 -- Input: An UnstableGrothendieckWittClass
--- Output: A net for printing the underlying dat
+-- Output: A net for printing the underlying data
 
 net UnstableGrothendieckWittClass := Net => alpha -> (
     net (getMatrix alpha, getScalar alpha)
     )
 
--- Input: A GrothendieckWittClass
+-- Input: An UnstableGrothendieckWittClass
 -- Output: A string for printing the underlying matrix
 
 texMath UnstableGrothendieckWittClass := String => alpha -> (
     texMath (getMatrix alpha, getScalar alpha)
     )
 
--- Input: Either a matrix M or a matrix-scalar pair (M,a) representing a well-defined element of the unstable Grothendieck-Witt group. 
+-- Input: Either a matrix M or a matrix-scalar pair (M,b) representing a well-defined element of the unstable Grothendieck-Witt group. 
 -- Output: The GrothendieckWittClass representing the symmetric bilinear form determined by M
 
 makeGWuClass = method()
 
--- First version of this function treats the case of an input (M,a) where a is a Number (eg. an element of CC_53, RR_53, QQ, or ZZ)
-makeGWuClass (Matrix, Number) := UnstableGrothendieckWittClass => (M, a) -> (
-   if isWellDefinedGWu (M, a) then (
+-- First version of this function treats the case of an input (M,b) where b is a Number (eg. an element of CC_53, RR_53, QQ, or ZZ)
+makeGWuClass (Matrix, Number) := UnstableGrothendieckWittClass => (M, b) -> (
+   if isWellDefinedGWu (M, b) then (
         new UnstableGrothendieckWittClass from {
             symbol matrix => M,
             symbol cache => new CacheTable,
-            symbol scalar => sub(a, ring M)
+            symbol scalar => substitute(b, ring M)
             }
         )
     else (
@@ -112,13 +95,13 @@ makeGWuClass (Matrix, Number) := UnstableGrothendieckWittClass => (M, a) -> (
 	)
     )
 
--- Second version of this function treats the case of an input (M,a) where a is a Number (eg. an element of a Galois field)
-makeGWuClass (Matrix, RingElement) := UnstableGrothendieckWittClass => (M, a) -> (
-   if isWellDefinedGWu (M, a) then (
+-- Second version of this function treats the case of an input (M,b) where b is a Number (eg. an element of a Galois field)
+makeGWuClass (Matrix, RingElement) := UnstableGrothendieckWittClass => (M, b) -> (
+   if isWellDefinedGWu (M, b) then (
         new UnstableGrothendieckWittClass from {
             symbol matrix => M,
             symbol cache => new CacheTable,
-            symbol scalar => sub(a, ring M)
+            symbol scalar => substitute(b, ring M)
             }
         )
     else (
@@ -126,13 +109,13 @@ makeGWuClass (Matrix, RingElement) := UnstableGrothendieckWittClass => (M, a) ->
 	)
     )
 
--- Third version of this function treats the case of an input M, where a is assumed to be the determinant of M. 
-makeGWuClass (Matrix) := UnstableGrothendieckWittClass => (M) -> (
+-- Third version of this function treats the case of an input M, where the scalar is assumed to be the determinant of M. 
+makeGWuClass Matrix := UnstableGrothendieckWittClass => M -> (
    if isWellDefinedGWu (M, det M) then (
         new UnstableGrothendieckWittClass from {
             symbol matrix => M,
             symbol cache => new CacheTable,
-            symbol scalar => sub(det M, ring M)
+            symbol scalar => substitute(det M, ring M)
             }
         )
     else (
@@ -141,12 +124,12 @@ makeGWuClass (Matrix) := UnstableGrothendieckWittClass => (M) -> (
     )
 
 -- Fourth version of this function treats the case of an input a GrothendieckWittClass alpha and a Number (eg. an element of CC_53, RR_53, QQ, or ZZ)
-makeGWuClass (GrothendieckWittClass, Number) := UnstableGrothendieckWittClass => (alpha, a) -> (
-   if isWellDefinedGWu (getMatrix alpha, a) then (
+makeGWuClass (GrothendieckWittClass, Number) := UnstableGrothendieckWittClass => (alpha, b) -> (
+   if isWellDefinedGWu (getMatrix alpha, b) then (
         new UnstableGrothendieckWittClass from {
             symbol matrix => getMatrix alpha,
             symbol cache => new CacheTable,
-            symbol scalar => sub(a, getBaseField alpha)
+            symbol scalar => substitute(b, getBaseField alpha)
             }
         )
     else (
@@ -155,12 +138,12 @@ makeGWuClass (GrothendieckWittClass, Number) := UnstableGrothendieckWittClass =>
     )
 
 -- Fifth version of this function treats the case of an input a GrothendieckWittClass alpha and a RingElement (eg. an element of a Galois field)
-makeGWuClass (GrothendieckWittClass, RingElement) := UnstableGrothendieckWittClass => (alpha, a) -> (
-   if isWellDefinedGWu (getMatrix alpha, a) then (
+makeGWuClass (GrothendieckWittClass, RingElement) := UnstableGrothendieckWittClass => (alpha, b) -> (
+   if isWellDefinedGWu (getMatrix alpha, b) then (
         new UnstableGrothendieckWittClass from {
             symbol matrix => getMatrix alpha,
             symbol cache => new CacheTable,
-            symbol scalar => sub(a, getBaseField alpha)
+            symbol scalar => substitute(b, getBaseField alpha)
             }
         )
     else (
@@ -168,13 +151,13 @@ makeGWuClass (GrothendieckWittClass, RingElement) := UnstableGrothendieckWittCla
 	)
     )
 
--- Sixth version of this function treats the case of an input a GrothendieckWittClass alpha, where a is assumed to be the determinant of the Gram matrix of alpha.  
-makeGWuClass (GrothendieckWittClass) := UnstableGrothendieckWittClass => (alpha) -> (
+-- Sixth version of this function treats the case of an input a GrothendieckWittClass alpha, where the scalar is assumed to be the determinant of the Gram matrix of alpha.  
+makeGWuClass GrothendieckWittClass := UnstableGrothendieckWittClass => alpha -> (
    if isWellDefinedGWu (getMatrix alpha, det getMatrix alpha) then (
         new UnstableGrothendieckWittClass from {
             symbol matrix => getMatrix alpha,
             symbol cache => new CacheTable,
-            symbol scalar => sub(det getMatrix alpha, getBaseField alpha)
+            symbol scalar => substitute(det getMatrix alpha, getBaseField alpha)
             }
         )
     else (
@@ -186,7 +169,7 @@ makeGWuClass (GrothendieckWittClass) := UnstableGrothendieckWittClass => (alpha)
 -- Output: Its stable part
 
 getGWClass = method()
-getGWClass (UnstableGrothendieckWittClass) := GrothendieckWittClass => alpha -> (
+getGWClass UnstableGrothendieckWittClass := GrothendieckWittClass => alpha -> (
     makeGWClass getMatrix alpha
 )
 
@@ -215,11 +198,11 @@ getAlgebra UnstableGrothendieckWittClass := Ring => beta -> (
 -- Input: An unstable Grothendieck-Witt class beta
 -- Output: The base field of beta
 getBaseField UnstableGrothendieckWittClass := Ring => beta -> (
-    if (instance(getAlgebra beta, ComplexField)) or (instance(getAlgebra beta, RealField)) or (getAlgebra beta === QQ) or (instance(getAlgebra beta, GaloisField)) then return getAlgebra beta;
+    if instance(getAlgebra beta, ComplexField) or instance(getAlgebra beta, RealField) or getAlgebra beta === QQ or instance(getAlgebra beta, GaloisField) then return getAlgebra beta;
 
     if not isPrime ideal(0_(ring getMatrix beta)) then error "the Grothendieck-Witt class is not defined over a field";
 
-    if (not isField ring getMatrix beta) then return toField ring getMatrix beta;
+    if not isField ring getMatrix beta then return toField ring getMatrix beta;
 
     ring getMatrix beta
     )
@@ -228,7 +211,7 @@ getBaseField UnstableGrothendieckWittClass := Ring => beta -> (
 -- Output: The direct sum of beta and gamma
 
 addGWu = method()
-addGWu (UnstableGrothendieckWittClass,UnstableGrothendieckWittClass) := UnstableGrothendieckWittClass => (beta,gamma) -> (
+addGWu (UnstableGrothendieckWittClass, UnstableGrothendieckWittClass) := UnstableGrothendieckWittClass => (beta, gamma) -> (
     Kb := getBaseField beta;
     Kg := getBaseField gamma;
     
@@ -237,7 +220,7 @@ addGWu (UnstableGrothendieckWittClass,UnstableGrothendieckWittClass) := Unstable
 	-- Return an error if the underlying fields of the two classes are different
 	if not Kb.order == Kg.order then
 	    error "these classes have different underlying fields";
-	return makeGWuClass(getMatrix beta ++ sub(getMatrix gamma, Kb), getScalar beta * sub(getScalar gamma, Kb));
+	return makeGWuClass(getMatrix beta ++ substitute(getMatrix gamma, Kb), getScalar beta * substitute(getScalar gamma, Kb));
 	);
     
     -- Remaining cases
@@ -255,7 +238,7 @@ addGWuDivisorial (List, List) := UnstableGrothendieckWittClass => (classList, ro
     baseFieldList := apply(classList, getBaseField);
     matrixList := apply(classList, getMatrix);
     scalarList := apply(classList, getScalar);
-    multiplicityList := apply(classList, i -> rank(getMatrix(i)));
+    multiplicityList := apply(classList, i -> rank getMatrix i);
     isGaloisField := apply(baseFieldList, i -> instance(i, GaloisField));
 
     -- Return an error if list of roots is of different size than list of classes
@@ -271,12 +254,13 @@ addGWuDivisorial (List, List) := UnstableGrothendieckWittClass => (classList, ro
         error "the list of GWu classes should have the same base field";
     
     -- Return an error if the roots are not in the correct field
-    if not fieldsAreCompatible(baseFieldList, rootList) then
-        error "the roots must be in the base field of the classes";
+    for i from 0 to n-1 do (
+        if not isCompatibleElement(baseFieldList#i, rootList#i) then error "the roots must be in the base field of the classes";
+    );
 
     -- Create the sum matrix and scalar    
-    newForm := directSum(matrixList);
-    newScalar := product(scalarList);
+    newForm := directSum matrixList;
+    newScalar := product scalarList;
     for i from 0 to n-1 do (
         for j from i+1 to n-1 do ( -- We require j > i 
             newScalar = newScalar * (rootList#i - rootList#j)^(2 * multiplicityList#i * multiplicityList#j);
@@ -284,28 +268,6 @@ addGWuDivisorial (List, List) := UnstableGrothendieckWittClass => (classList, ro
     );
     makeGWuClass(newForm,newScalar)
     )
-
--- Input: List of unstable Grothendieck-Witt classes, list of numbers/ring elements
--- Output: Boolean of whether the elements of the second list are elements of the field corresponding to the GWu class
-
-fieldsAreCompatible = method()
-fieldsAreCompatible (List, List) := Boolean => (baseFieldList, rootList) -> (
-    n := #baseFieldList;
-    for i from 0 to n-1 do (
-        -- If matrix is defined over the complex numbers, allow root to be one of complex, real, rational, or integral. 
-        if instance(baseFieldList#i, ComplexField) and not (instance(ring rootList#i, ComplexField) or instance(ring rootList#i, RealField) or ring rootList#i === QQ or ring rootList#i === ZZ) then return false;
-
-        -- If matrix is defined over the real numbers, allow scalar to be one of real, rational, or integral. 
-        if instance(baseFieldList#i, RealField) and not (instance(ring rootList#i, RealField) or ring rootList#i === QQ or ring rootList#i === ZZ) then return false;
-
-        -- If matrix is defined over the rationals, allow scalar to be one of rational, or integral. 
-        if baseFieldList#i === QQ and not (ring rootList#i === QQ or ring rootList#i === ZZ) then return false;
-
-        -- If matrix is defined over a finite field, allow scalar then the only scalars allowed are integral. The case of the scalar being over the same Galois field is treated in the next variant. 
-        if instance(baseFieldList#i, GaloisField) and not (ring rootList#i === ZZ or (instance(ring rootList#i, GaloisField) and (baseFieldList#i).order == (ring rootList#i).order)) then return false;
-    );
-    true
-)
 
 -- Input: An unstable Grothendieck-Witt class beta over QQ, RR, CC, or a finite field of characteristic not 2
 -- Output: A diagonalized form of beta, with squarefree entries on the diagonal
@@ -335,15 +297,14 @@ isIsomorphicForm (UnstableGrothendieckWittClass,UnstableGrothendieckWittClass) :
         error "Base field not supported; only implemented over QQ, RR, CC, and finite fields of characteristic not 2";
     
     -- In most cases, we can check equality directly
-    if ((instance(k1, ComplexField) and instance(k2, ComplexField)) or (instance(k1, RealField) and instance(k2, RealField)) or (k1 === QQ and k2 === QQ)) then (
+    if (instance(k1, ComplexField) and instance(k2, ComplexField)) or (instance(k1, RealField) and instance(k2, RealField)) or (k1 === QQ and k2 === QQ) then (
         return (isIsomorphicForm(getMatrix alpha, getMatrix beta) and getScalar alpha == getScalar beta);
         )
     
     -- Over a finite field, the scalars are in the same square class if and only if they are either both squares or both not squares 
-    else if (instance(k1, GaloisField) and instance(k2, GaloisField) and k1.char !=2 and k2.char != 2 and k1.order == k2.order) then (
-        return (isIsomorphicForm(getMatrix alpha, getMatrix beta) and getScalar alpha == sub(getScalar beta, k1));
+    else if instance(k1, GaloisField) and instance(k2, GaloisField) and k1.char !=2 and k2.char != 2 and k1.order == k2.order then (
+        return (isIsomorphicForm(getMatrix alpha, getMatrix beta) and getScalar alpha == substitute(getScalar beta, k1));
         )
     -- If we get here, then the base fields are not the same
-    else
-	    error "Base fields are not the same";
+    else error "Base fields are not the same";
     )
