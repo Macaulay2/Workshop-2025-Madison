@@ -1,5 +1,5 @@
 loadPackage "NumericalAlgebraicGeometry";
--- Input: A pointed rational function q = f/g
+-- Input: A reduced pointed rational function q = f/g
 -- Output: A pair (M,a) where M is a matrix and a is a scalar (the determinant of M)
 
 getGlobalUnstableA1Degree = method()
