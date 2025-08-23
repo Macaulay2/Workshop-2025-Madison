@@ -64,36 +64,39 @@ getGlobalUnstableA1Degree RingElement := UnstableGrothendieckWittClass => q -> (
 )
 
 getGlobalUnstableA1Degree (RingElement, RingElement) := UnstableGrothendieckWittClass => (f, g) -> (
+    	
+     fr := sub(f/gcd(f,g), ring f);
+     gr := sub(g/gcd(f,g), ring g);  
 
-    if not ((ring f === ring g) and length gens ring f == 1) then
+    if not ((ring fr === ring gr) and length gens ring fr == 1) then
         error "the two polynomials must be in the same univariate polynomial ring";
 
-    R := ring f;
+    R := ring fr;
 
     -- normalize the leading coefficient of g
-    g = g/leadCoefficient(f);
+    gr = gr/leadCoefficient(fr);
 
     -- then normalize the leading coefficient of f
-    f = f/leadCoefficient(f);
+    fr = fr/leadCoefficient(fr);
     
     -- Get the underlying ring and ensure it is a field
-    kk := coefficientRing ring(f);
+    kk := coefficientRing ring(fr);
     if not isField kk then kk = toField kk;
     
     -- Check whether the rational function has isolated zeros
-    if dim ideal(f) > 0 then 
+    if dim ideal(fr) > 0 then 
         error "rational function does not have isolated zeros";
 	
     -- Check whether the number of variables matches the number of polynomials
-    S := ring f;
-    u := (gens ring f)#0;
+    S := ring fr;
+    u := (gens ring fr)#0;
 
-    if (degree f)#0 <= (degree g)#0 then
+    if (degree fr)#0 <= (degree gr)#0 then
         error "the rational function is not pointed"; 
 
     -- If the field is CC, output the unstable Grothendieck-Witt class of an identity matrix of the appropriate rank and scalar corresponding to the resultant of f and g
     if instance(kk, ComplexField) then (
-    	return makeGWuClass(id_(CC^(degree(u,f))), promote((-1)^(((degree(u,f))^2 - degree(u,f))/2), kk)*getResultant(f, g));
+    	return makeGWuClass(id_(CC^(degree(u,fr))), promote((-1)^(((degree(u,fr))^2 - degree(u,fr))/2), kk)*getResultant(fr, gr));
         );
 
     -- If the field is RR, ask the user to run the computation over QQ instead and then base change to RR
@@ -104,10 +107,10 @@ getGlobalUnstableA1Degree (RingElement, RingElement) := UnstableGrothendieckWitt
     Y := local Y;
     R' := kk[X,Y];
     
-    fX := sub(f,{u => X});
-    fY := sub(f,{u => Y});
-    gX := sub(g,{u => X});
-    gY := sub(g,{u => Y});
+    fX := sub(fr,{u => X});
+    fY := sub(fr,{u => Y});
+    gX := sub(gr,{u => X});
+    gY := sub(gr,{u => Y});
 
     D := lift((fX * gY - fY * gX)/(X-Y),R');
     
