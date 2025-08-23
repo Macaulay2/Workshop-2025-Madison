@@ -64,9 +64,10 @@ getGlobalUnstableA1Degree RingElement := UnstableGrothendieckWittClass => q -> (
 )
 
 getGlobalUnstableA1Degree (RingElement, RingElement) := UnstableGrothendieckWittClass => (f, g) -> (
-    	
-     fr := sub(f/gcd(f,g), ring f);
-     gr := sub(g/gcd(f,g), ring g);  
+
+    -- reduce f and g
+    fr := sub(f/gcd(f,g), ring f);
+    gr := sub(g/gcd(f,g), ring g);  
 
     if not ((ring fr === ring gr) and length gens ring fr == 1) then
         error "the two polynomials must be in the same univariate polynomial ring";
