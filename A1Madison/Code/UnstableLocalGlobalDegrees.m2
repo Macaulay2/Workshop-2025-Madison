@@ -1,8 +1,10 @@
 loadPackage "NumericalAlgebraicGeometry";
+
 -- Input: A reduced pointed rational function q = f/g
 -- Output: A pair (M,a) where M is a matrix and a is a scalar (the determinant of M)
 
 getGlobalUnstableA1Degree = method()
+
 getGlobalUnstableA1Degree RingElement := UnstableGrothendieckWittClass => q -> (
 
     R := ring q;
@@ -33,7 +35,11 @@ getGlobalUnstableA1Degree RingElement := UnstableGrothendieckWittClass => q -> (
         error "the number of variables does not match the number of polynomials";    
 
     if (degree f)#0 <= (degree g)#0 then
-        error "the rational function is not pointed"; 
+        error "the rational function is not pointed";
+    
+    -- If the field is CC, ask the user to run the computation using the method getGlobalUnstableA1Degree(f,g)
+    if instance(kk, ComplexField) then
+        error "getGlobalUnstableA1Degree does not work over the complex numbers for a rational function f/g. Instead, use getGlobalUnstableA1Degree(f,g).";    
 
     -- If the field is RR, ask the user to run the computation over QQ instead and then base change to RR
     if instance(kk, RealField) then error "getGlobalUnstableA1Degree method does not work over the reals. Instead, define the polynomials over QQ to output an UnstableGrothendieckWittClass. Then extract the form, base change it to RR, and run getSumDecomposition().";    
@@ -42,6 +48,7 @@ getGlobalUnstableA1Degree RingElement := UnstableGrothendieckWittClass => q -> (
     X := local X;
     Y := local Y;
     R' := kk[X,Y];
+    -- R' := QQ[i][X,Y]; 
     
     fX := sub(f,{u => X});
     fY := sub(f,{u => Y});
@@ -63,21 +70,51 @@ getGlobalUnstableA1Degree RingElement := UnstableGrothendieckWittClass => q -> (
     makeGWuClass matrix B
 )
 
+-- Input: A pair (f,g) of univariate polynomials for which f/g is a pointed rational function
+-- Output: A pair (M,a) where M is a matrix and a is a scalar (the determinant of M)
+
 getGlobalUnstableA1Degree (RingElement, RingElement) := UnstableGrothendieckWittClass => (f, g) -> (
 
-    -- reduce f and g
-    fr := sub(f/gcd(f,g), ring f);
-    gr := sub(g/gcd(f,g), ring g);  
+    -- Make f monic
+    f1 := f / (leadCoefficient f);
+    g1 := g / (leadCoefficient f);
+
+    -- Use NumericalAlgebraicGeometry to compute roots (numerical in CC)
+    r1 := roots f1;
+    r2 := roots g1;
+
+    -- Cancel common roots
+    removeCommonApprox := (L1,L2,tol) -> (
+        L1new := {};
+        L2new := L2;
+        for r in L1 list (
+            i := position(L2new, s -> abs(r-s) < tol);
+            if i === null then (
+                L1new = append(L1new, r)
+            ) else (
+                L2new = (take(L2new,i)) | (drop(L2new,i+1));
+            )
+        );
+        (L1new, L2new)
+    );
+
+    -- Cancel common roots numerically
+    (r1, r2) = removeCommonApprox(r1, r2, 1e-8);
+
+    -- Rebuild cleaned numerator and denominator
+    x := (gens ring f1)#0;
+    fr := product(r1, r -> (x - r));
+    gr := (leadCoefficient g)*product(r2, r -> (x - r)); 
 
     if not ((ring fr === ring gr) and length gens ring fr == 1) then
         error "the two polynomials must be in the same univariate polynomial ring";
 
     R := ring fr;
 
-    -- normalize the leading coefficient of g
+    -- Normalize the leading coefficient of g
     gr = gr/leadCoefficient(fr);
 
-    -- then normalize the leading coefficient of f
+    -- Normalize the leading coefficient of f
     fr = fr/leadCoefficient(fr);
     
     -- Get the underlying ring and ensure it is a field
@@ -92,43 +129,44 @@ getGlobalUnstableA1Degree (RingElement, RingElement) := UnstableGrothendieckWitt
     S := ring fr;
     u := (gens ring fr)#0;
 
+    -- Check if rational fr/gr  function is pointed
     if (degree fr)#0 <= (degree gr)#0 then
-        error "the rational function is not pointed"; 
+        error "the rational function is not pointed";
+        if instance(kk, ComplexField) then (
+        makeGWuClass(
+            id_(CC^((degree fr)#0)),
+            promote((-1)^(((degree fr)#0^2 - (degree fr)#0)/2), kk) * getResultant(fr, gr)
+        )
+    ) else if instance(kk, RealField) then (
+        error "getGlobalUnstableA1Degree method does not work over the reals. ..."
+    ) else (
 
-    -- If the field is CC, output the unstable Grothendieck-Witt class of an identity matrix of the appropriate rank and scalar corresponding to the resultant of f and g
-    if instance(kk, ComplexField) then (
-    	return makeGWuClass(id_(CC^(degree(u,fr))), promote((-1)^(((degree(u,fr))^2 - degree(u,fr))/2), kk)*getResultant(fr, gr));
+        -- Bezoutian matrix
+	
+        X := local X;
+        Y := local Y;
+        R' := kk[X,Y];
+
+        fX := sub(fr,{u => X});
+        fY := sub(fr,{u => Y});
+        gX := sub(gr,{u => X});
+        gY := sub(gr,{u => Y});
+
+        D := lift((fX * gY - fY * gX)/(X-Y),R');
+        m := degree(X,D);
+        n := degree(Y,D);
+
+        B := mutableMatrix id_(kk^(m+1));  
+        for i from 0 to m do (
+            for j from 0 to n do
+                B_(i,j) = coefficient(X^i*Y^j,D)
         );
 
-    -- If the field is RR, ask the user to run the computation over QQ instead and then base change to RR
-    if instance(kk, RealField) then error "getGlobalUnstableA1Degree method does not work over the reals. Instead, define the polynomials over QQ to output an UnstableGrothendieckWittClass. Then extract the form, base change it to RR, and run getSumDecomposition().";    
-
-    -- Initialize a polynomial ring in X and Y in which to compute the Bezoutian
-    X := local X;
-    Y := local Y;
-    R' := kk[X,Y];
-    
-    fX := sub(fr,{u => X});
-    fY := sub(fr,{u => Y});
-    gX := sub(gr,{u => X});
-    gY := sub(gr,{u => Y});
-
-    D := lift((fX * gY - fY * gX)/(X-Y),R');
-    
-    m := degree(X,D);
-    n := degree(Y,D);
-        
-    B := mutableMatrix id_(kk^(m+1));  
-    
-    for i from 0 to m do(
-	for j from 0 to n do
-    	B_(i,j) = coefficient(X^i*Y^j,D)
-	);
-    
-    makeGWuClass matrix B
+        makeGWuClass matrix B
+    )
 )
 
--- Input: A rational function f/g, a root of f
+-- Input: A pair (q,r) where q is a rational function and r is a root of q
 -- Output: An unstable Grothendieck-Witt class
 
 getLocalUnstableA1Degree = method()
