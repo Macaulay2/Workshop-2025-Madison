@@ -74,95 +74,72 @@ getGlobalUnstableA1Degree RingElement := UnstableGrothendieckWittClass => q -> (
 -- Output: A pair (M,a) where M is a matrix and a is a scalar (the determinant of M)
 
 getGlobalUnstableA1Degree (RingElement, RingElement) := UnstableGrothendieckWittClass => (f, g) -> (
-
-    -- Make f monic
-    f1 := f / (leadCoefficient f);
-    g1 := g / (leadCoefficient f);
-
-    -- Use NumericalAlgebraicGeometry to compute roots (numerical in CC)
-    r1 := roots f1;
-    r2 := roots g1;
-
-    -- Cancel common roots
-    removeCommonApprox := (L1,L2,tol) -> (
-        L1new := {};
-        L2new := L2;
-        for r in L1 list (
-            i := position(L2new, s -> abs(r-s) < tol);
-            if i === null then (
-                L1new = append(L1new, r)
-            ) else (
-                L2new = (take(L2new,i)) | (drop(L2new,i+1));
-            )
-        );
-        (L1new, L2new)
-    );
-
-    -- Cancel common roots numerically
-    (r1, r2) = removeCommonApprox(r1, r2, 1e-8);
-
-    -- Rebuild cleaned numerator and denominator
-    x := (gens ring f1)#0;
-    fr := product(r1, r -> (x - r));
-    gr := (leadCoefficient g)*product(r2, r -> (x - r)); 
-
-    if not ((ring fr === ring gr) and length gens ring fr == 1) then
+    
+   if not ((ring f === ring g) and length gens ring f == 1) then
         error "the two polynomials must be in the same univariate polynomial ring";
 
-    R := ring fr;
-
-    -- Normalize the leading coefficient of g
-    gr = gr/leadCoefficient(fr);
+    R := ring f;
 
     -- Normalize the leading coefficient of f
-    fr = fr/leadCoefficient(fr);
+    f = f/leadCoefficient(f);
     
     -- Get the underlying ring and ensure it is a field
-    kk := coefficientRing ring(fr);
+    kk := coefficientRing ring(f);
     if not isField kk then kk = toField kk;
     
     -- Check whether the rational function has isolated zeros
-    if dim ideal(fr) > 0 then 
+    if dim ideal(f) > 0 then 
         error "rational function does not have isolated zeros";
 	
     -- Check whether the number of variables matches the number of polynomials
-    S := ring fr;
-    u := (gens ring fr)#0;
+    S := ring f;
+    u := (gens ring f)#0;
 
-    -- Check if rational fr/gr  function is pointed
-    if (degree fr)#0 <= (degree gr)#0 then
+    if #(gens S) != 1 then
+        error "the number of variables does not match the number of polynomials";    
+    
+    -- Check if rational f/g  function is pointed
+    if (degree f)#0 <= (degree g)#0 then
         error "the rational function is not pointed";
-        if instance(kk, ComplexField) then (
-        makeGWuClass(
+    
+    if instance(kk, ComplexField) then (
+
+	 -- Use NumericalAlgebraicGeometry to compute roots (numerical in CC)
+	 r1 := roots f;
+	 r2 := roots g;
+
+	 -- Cancel common roots
+	 removeCommonApprox := (L1,L2,tol) -> (
+	     L1new := {};
+	     L2new := L2;
+	     for r in L1 list (
+		 i := position(L2new, s -> abs(r-s) < tol);
+		 if i === null then (
+		     L1new = append(L1new, r)
+		     ) else (
+		     L2new = (take(L2new,i)) | (drop(L2new,i+1));
+		     )
+		 );
+	     (L1new, L2new)
+	     );
+
+	 -- Cancel common roots numerically
+	 (r1, r2) = removeCommonApprox(r1, r2, 1e-8);
+
+	 -- Rebuild cleaned numerator and denominator
+	 x := (gens ring f)#0;
+	 fr := product(r1, r -> (x - r));
+	 fr = fr/leadCoefficient(fr);
+	 gr := (leadCoefficient g)*product(r2, r -> (x - r));
+   	
+	 makeGWuClass(
             id_(CC^((degree fr)#0)),
             promote((-1)^(((degree fr)#0^2 - (degree fr)#0)/2), kk) * getResultant(fr, gr)
-        )
+	    )
     ) else if instance(kk, RealField) then (
-        error "getGlobalUnstableA1Degree method does not work over the reals. ..."
+        error "getGlobalUnstableA1Degree method does not work over the reals."
     ) else (
-
-        -- Bezoutian matrix
-	
-        X := local X;
-        Y := local Y;
-        R' := kk[X,Y];
-
-        fX := sub(fr,{u => X});
-        fY := sub(fr,{u => Y});
-        gX := sub(gr,{u => X});
-        gY := sub(gr,{u => Y});
-
-        D := lift((fX * gY - fY * gX)/(X-Y),R');
-        m := degree(X,D);
-        n := degree(Y,D);
-
-        B := mutableMatrix id_(kk^(m+1));  
-        for i from 0 to m do (
-            for j from 0 to n do
-                B_(i,j) = coefficient(X^i*Y^j,D)
-        );
-
-        makeGWuClass matrix B
+    getGlobalUnstableA1Degree(f/g)
     )
 )
 
