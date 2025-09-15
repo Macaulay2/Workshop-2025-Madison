@@ -158,6 +158,7 @@ diagonalizeViaCongruenceField Matrix := Matrix => AnonMut -> (
                 );
             );
         );
+    if instance(k, InexactField) then A = clean(1e-12, A);
     sub(matrix A,k) 
     )
 
