@@ -294,17 +294,6 @@ isIsomorphicForm (UnstableGrothendieckWittClass,UnstableGrothendieckWittClass) :
     k1 := ring r1;
     k2 := ring r2;
 
-    -- Numeric tolerance
-    makeGWuClassNumeric := (M, s) -> (                                                                            
-    eps := 1e-8;                                                                                                  
-    sInt := round(s);                                                                                             
-    if abs(s - sInt) < eps then (                                                                                
-        makeGWuClass(M, sInt)                                                                                
-    ) else (                                                                                                 
-        makeGWuClass(M, s)                                                                                   
-    )                                                                                                        
-    ); 
-
     -- Ensure both base fields are supported
     if not (instance(k1, ComplexField) or instance(k1, RealField) or k1 === QQ or (instance(k1, GaloisField) and k1.char != 2)) then
         error "Base field not supported; only implemented over QQ, RR, CC, and finite fields of characteristic not 2";
@@ -312,12 +301,15 @@ isIsomorphicForm (UnstableGrothendieckWittClass,UnstableGrothendieckWittClass) :
         error "Base field not supported; only implemented over QQ, RR, CC, and finite fields of characteristic not 2";
     
     -- In most cases, we can check equality directly
-    if (instance(k1, ComplexField) and instance(k2, ComplexField)) or (instance(k1, RealField) and instance(k2, RealField)) or (k1 === QQ and k2 === QQ) then (
-        --return (isIsomorphicForm(getMatrix alpha, getMatrix beta) and getScalar alpha == getScalar beta);
-	nalpha := getMatrix makeGWuClassNumeric(getMatrix alpha, r1);
-	nbeta  := getMatrix makeGWuClassNumeric(getMatrix beta, r2);
-	return isIsomorphicForm(nalpha, nbeta)
-		)   
+    if (instance(k1, ComplexField) and instance(k2, ComplexField)) or (instance(k1, RealField) and instance(k2, RealField)) then (
+	eps := 1e-8;                                                                                                                                                                        return(abs(r1 - r2) < eps and isIsomorphicForm(getMatrix alpha, getMatrix beta)
+	    );
+	)
+	
+    -- Over QQ
+    else if  (k1 === QQ and k2 === QQ) then (
+        return (isIsomorphicForm(getMatrix alpha, getMatrix beta) and r1 == r2);
+	)
     
     -- Over a finite field, the scalars are in the same square class if and only if they are either both squares or both not squares 
     else if instance(k1, GaloisField) and instance(k2, GaloisField) and k1.char !=2 and k2.char != 2 and k1.order == k2.order then (
@@ -326,4 +318,4 @@ isIsomorphicForm (UnstableGrothendieckWittClass,UnstableGrothendieckWittClass) :
     
     -- If we get here, then the base fields are not the same
     else error "Base fields are not the same";
-    )
+)
