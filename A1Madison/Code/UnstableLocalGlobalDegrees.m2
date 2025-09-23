@@ -3,9 +3,9 @@ loadPackage "NumericalAlgebraicGeometry";
 -- Input: A reduced pointed rational function q = f/g
 -- Output: A pair (M,a) where M is a matrix and a is a scalar (the determinant of M)
 
-getGlobalUnstableA1Degree = method()
+getGlobalUnstableA1Degree = method(Options => {linearTolerance => 1e-6})
 
-getGlobalUnstableA1Degree RingElement := UnstableGrothendieckWittClass => q -> (
+getGlobalUnstableA1Degree RingElement := UnstableGrothendieckWittClass => opts -> q -> (
 
     R := ring q;
 
@@ -73,8 +73,10 @@ getGlobalUnstableA1Degree RingElement := UnstableGrothendieckWittClass => q -> (
 -- Input: A pair (f,g) of univariate polynomials for which f/g is a pointed rational function
 -- Output: A pair (M,a) where M is a matrix and a is a scalar (the determinant of M)
 
-getGlobalUnstableA1Degree (RingElement, RingElement) := UnstableGrothendieckWittClass => (f, g) -> (
-    
+getGlobalUnstableA1Degree (RingElement, RingElement) := UnstableGrothendieckWittClass => opts -> (f, g) -> (
+
+   linTol := opts.linearTolerance;
+
    if not ((ring f === ring g) and length gens ring f == 1) then
         error "the two polynomials must be in the same univariate polynomial ring";
 
@@ -124,7 +126,7 @@ getGlobalUnstableA1Degree (RingElement, RingElement) := UnstableGrothendieckWitt
 	     );
 
 	 -- Cancel common roots numerically
-	 (r1, r2) = removeCommonApprox(r1, r2, 1e-8);
+	 (r1, r2) = removeCommonApprox(r1, r2, linTol);
 
 	 -- Rebuild cleaned numerator and denominator
 	 x := (gens ring f)#0;
@@ -140,8 +142,8 @@ getGlobalUnstableA1Degree (RingElement, RingElement) := UnstableGrothendieckWitt
         error "getGlobalUnstableA1Degree method does not work over the reals."
     ) else (
     getGlobalUnstableA1Degree(f/g)
+	 )
     )
-)
 
 -- Input: A pair (q,r) where q is a rational function and r is a root of q
 -- Output: An unstable Grothendieck-Witt class

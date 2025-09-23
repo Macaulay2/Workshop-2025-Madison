@@ -133,6 +133,9 @@ export{
     --UnstableLocalGlobalDegrees.m2
     "getGlobalUnstableA1Degree",
     "getLocalUnstableA1Degree",
+
+    --Options
+    "linearTolerance",
     }
 
 -- Basic arithmetic, p-adic, and commutative algebra operations we will use

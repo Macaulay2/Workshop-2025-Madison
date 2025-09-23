@@ -302,7 +302,7 @@ isIsomorphicForm (UnstableGrothendieckWittClass,UnstableGrothendieckWittClass) :
     
     -- In most cases, we can check equality directly
     if (instance(k1, ComplexField) and instance(k2, ComplexField)) or (instance(k1, RealField) and instance(k2, RealField)) then (
-	eps := 1e-8;                                                                                                                                                                        return(abs(r1 - r2) < eps and isIsomorphicForm(getMatrix alpha, getMatrix beta)
+	eps := 1e-5;                                                                                                                                                                        return(abs(r1 - r2) < eps and isIsomorphicForm(getMatrix alpha, getMatrix beta)
 	    );
 	)
 	
