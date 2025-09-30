@@ -290,7 +290,7 @@ isIsomorphicForm (UnstableGrothendieckWittClass,UnstableGrothendieckWittClass) :
                                                                                                                                                           
     linTol := opts.linearTolerance;
 
-    if linTol < 0 then error "linearTolerance must be a positive number";
+    if linTol <= 0 then error "linearTolerance must be a positive number";
     
     r1 := getScalar alpha;
     r2 := getScalar beta;
@@ -306,7 +306,7 @@ isIsomorphicForm (UnstableGrothendieckWittClass,UnstableGrothendieckWittClass) :
     
     -- In most cases, we can check equality directly
     if (instance(k1, ComplexField) and instance(k2, ComplexField)) or (instance(k1, RealField) and instance(k2, RealField)) then (
-	eps := 1e-5;                                                                                                                                                                        return(abs(r1 - r2) < linTol and isIsomorphicForm(getMatrix alpha, getMatrix beta)
+                                                                                                                                                                      return(abs(r1 - r2) < linTol and isIsomorphicForm(getMatrix alpha, getMatrix beta)
 	    );
 	)
 	

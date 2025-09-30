@@ -46,9 +46,7 @@ newPackage (
     )
 
     PackageImports=>{
-	"MinimalPrimes",
-    "NumericalAlgebraicGeometry",
-    "NAGtypes"
+	"MinimalPrimes"
 	},
 
 export{

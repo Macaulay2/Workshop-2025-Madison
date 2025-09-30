@@ -1,5 +1,3 @@
-needsPackage "NumericalAlgebraicGeometry";
-
 -- Input: A reduced pointed rational function q = f/g
 -- Output: A pair (M,a) where M is a matrix and a is a scalar (the determinant of M)
 
@@ -77,7 +75,7 @@ getGlobalUnstableA1Degree (RingElement, RingElement) := UnstableGrothendieckWitt
 
    linTol := opts.linearTolerance;
 
-   if linTol < 0 then error "linearTolerance must be a positive number";
+   if linTol <= 0 then error "linearTolerance must be a positive number";
 
    if not ((ring f === ring g) and length gens ring f == 1) then
         error "the two polynomials must be in the same univariate polynomial ring";
@@ -250,7 +248,7 @@ getLocalUnstableA1Degree (RingElement, RingElement, Number) := (UnstableGrothend
 
     linTol := opts.linearTolerance;
 
-    if linTol < 0 then error "linearTolerance must be a positive number";
+    if linTol <= 0 then error "linearTolerance must be a positive number";
     
     if not (instance(ring f, PolynomialRing) and instance(ring g, PolynomialRing) and ring f === ring g) then
         error "both input polynomials must be defined over the same univariate polynomial ring";
