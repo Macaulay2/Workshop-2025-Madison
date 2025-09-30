@@ -15,6 +15,7 @@ doc ///
             a polynomial $f\in k[x]$ where $k$ is a field of characteristic not 2
         g: RingElement
             a polynomial $g\in k[x]$ where $k$ is a field of characteristic not 2 and $g$ is not identically zero, such that $f/g$ is a pointed rational function
+--	linearTolerance:  add a numerical tolerance, with default value 1e-8
     Outputs
         : UnstableGrothendieckWittClass
             the class $\text{deg}^{\mathbb{A}^{1}}(f/g)$ in the unstable Grothendieck-Witt group $\text{GW}^{u}(k)$
@@ -43,6 +44,13 @@ doc ///
             deg3 = getLocalUnstableA1Degree(q, 2)
             degSum = addGWuDivisorial({deg1, deg2, deg3}, {-1, 1, 2})
             isIsomorphicForm(degSum, getGlobalUnstableA1Degree q)
+	Text
+	    Since $f/g$ is assumed to be reduced, $f$ and $g$ do not share a common factor. If the user chooses functions $f$ and $g$ with a common factor, we add a safeguard to remove common factors. Over the inexact field $\mathbb{C}$, this includes the option "linearTolerance".
+	Example
+	    R = CC[x];
+	    f = (x-1)*(x-2)*(x-3);
+	    g = (x-1)*(x-4);
+	    getGlobalUnstableA1Degree(f,g,linearTolerance => 1e-6)
     References
         [C12] C. Cazanave, "Algebraic homotopy classes of rational functions," @ITALIC("Ann. Scient. Ec. Norm. Sup.")@, 2012.
 
