@@ -54,8 +54,11 @@ isDiagonal Matrix := Boolean => M -> (
     true
     )
 
-diagonalizeViaCongruence = method()
-diagonalizeViaCongruence Matrix := Matrix => A -> (
+diagonalizeViaCongruence = method(Options => {linearTolerance => 1e-12})
+diagonalizeViaCongruence Matrix := Matrix => opts -> A -> (
+
+    eps := opts.linearTolerance;
+
     -- Return an error if the matrix is not square and symmetric.
     if not isSquareAndSymmetric A then
 	error "matrix is not symmetric";
@@ -64,7 +67,7 @@ diagonalizeViaCongruence Matrix := Matrix => A -> (
 
     -- If the matrix is defined over a field, run the diagonalizeViaCongruenceField
     if (isField k or instance(k, ComplexField) or instance(k, RR) or (instance(k, QuotientRing) and isField coefficientRing k and dim k == 0 and isPrime ideal(0_(k)))) then 
-    return diagonalizeViaCongruenceField A;
+    return diagonalizeViaCongruenceField(A, eps);
 
     -- If the matrix is defined only over a ring, run diagonalizeViaCongruenceRing
     diagonalizeViaCongruenceRing A
@@ -112,7 +115,7 @@ diagonalizeViaCongruenceRing (Matrix) := (Matrix) => (AnonMut) -> (
 -- Input: A symmetric matrix over a field
 -- Output: A diagonal matrix congruent to the original matrix
 diagonalizeViaCongruenceField = method()
-diagonalizeViaCongruenceField Matrix := Matrix => AnonMut -> (
+diagonalizeViaCongruenceField (Matrix, RR) := Matrix => (AnonMut, eps) -> (
     k := ring AnonMut;
     kk := k;
     if not isField k then kk = toField k;
@@ -158,7 +161,7 @@ diagonalizeViaCongruenceField Matrix := Matrix => AnonMut -> (
                 );
             );
         );
-    if instance(k, InexactField) then A = clean(1e-12, A);
+    if instance(k, InexactField) then A = clean(eps, A);
     sub(matrix A,k) 
     )
 
