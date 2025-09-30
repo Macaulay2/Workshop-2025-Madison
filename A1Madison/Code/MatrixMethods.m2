@@ -54,12 +54,8 @@ isDiagonal Matrix := Boolean => M -> (
     true
     )
 
-diagonalizeViaCongruence = method(Options => {linearTolerance => 1e-12})
-diagonalizeViaCongruence Matrix := Matrix => opts -> A -> (
-
-    eps := opts.linearTolerance;
-
-    if eps < 0 then error "linearTolerance must be a positive number";
+diagonalizeViaCongruence = method()
+diagonalizeViaCongruence Matrix := Matrix => A -> (
 
     -- Return an error if the matrix is not square and symmetric.
     if not isSquareAndSymmetric A then
@@ -69,7 +65,7 @@ diagonalizeViaCongruence Matrix := Matrix => opts -> A -> (
 
     -- If the matrix is defined over a field, run the diagonalizeViaCongruenceField
     if (isField k or instance(k, ComplexField) or instance(k, RR) or (instance(k, QuotientRing) and isField coefficientRing k and dim k == 0 and isPrime ideal(0_(k)))) then 
-    return diagonalizeViaCongruenceField(A, eps);
+    return diagonalizeViaCongruenceField(A);
 
     -- If the matrix is defined only over a ring, run diagonalizeViaCongruenceRing
     diagonalizeViaCongruenceRing A
@@ -117,7 +113,7 @@ diagonalizeViaCongruenceRing (Matrix) := (Matrix) => (AnonMut) -> (
 -- Input: A symmetric matrix over a field
 -- Output: A diagonal matrix congruent to the original matrix
 diagonalizeViaCongruenceField = method()
-diagonalizeViaCongruenceField (Matrix, RR) := Matrix => (AnonMut, eps) -> (
+diagonalizeViaCongruenceField (Matrix) := Matrix => (AnonMut) -> (
     k := ring AnonMut;
     kk := k;
     if not isField k then kk = toField k;
@@ -163,7 +159,7 @@ diagonalizeViaCongruenceField (Matrix, RR) := Matrix => (AnonMut, eps) -> (
                 );
             );
         );
-    if instance(k, InexactField) then A = clean(eps, A);
+    if instance(k, InexactField) then A = diagonalMatrix apply(n, i -> A_(i,i));
     sub(matrix A,k) 
     )
 
