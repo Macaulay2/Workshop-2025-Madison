@@ -1,4 +1,4 @@
-loadPackage "NumericalAlgebraicGeometry";
+needsPackage "NumericalAlgebraicGeometry";
 
 -- Input: A reduced pointed rational function q = f/g
 -- Output: A pair (M,a) where M is a matrix and a is a scalar (the determinant of M)
@@ -8,7 +8,7 @@ getGlobalUnstableA1Degree = method(Options => {linearTolerance => 1e-6})
 getGlobalUnstableA1Degree RingElement := UnstableGrothendieckWittClass => opts -> q -> (
 
     R := ring q;
-
+    
     -- Extract numerator f from q
     f := numerator(sub(q, frac R));
        
@@ -185,6 +185,7 @@ getLocalUnstableA1Degree (RingElement, Number) := (UnstableGrothendieckWittClass
     if not f(r) == 0 then
         error "the field element is not a zero of the function";
 
+    -- Check if rational f/g  function is pointed	
     if (degree f)#0 <= (degree g)#0 then
         error "the rational function is not pointed"; 
 
@@ -196,7 +197,7 @@ getLocalUnstableA1Degree (RingElement, Number) := (UnstableGrothendieckWittClass
 )
 
 getLocalUnstableA1Degree (RingElement, RingElement) := (UnstableGrothendieckWittClass) => (q, r) -> (
-
+    
     if not (instance(ring q, PolynomialRing) or instance(ring q, FractionField)) then
         error "input must be in polynomial ring or fraction field";
         
@@ -230,7 +231,8 @@ getLocalUnstableA1Degree (RingElement, RingElement) := (UnstableGrothendieckWitt
     -- Check whether the number of variables matches the number of polynomials
     if not f(r) == 0 then
         error "the field element is not a zero of the function";
-    
+	
+    -- Check if rational f/g  function is pointed   
     if (degree f)#0 <= (degree g)#0 then
         error "the rational function is not pointed"; 
 
@@ -243,7 +245,7 @@ getLocalUnstableA1Degree (RingElement, RingElement) := (UnstableGrothendieckWitt
 
 -- Variant that takes in numerator and denominator separately
 getLocalUnstableA1Degree (RingElement, RingElement, Number) := (UnstableGrothendieckWittClass) => (f, g, r) -> (
-
+    
     if not (instance(ring f, PolynomialRing) and instance(ring g, PolynomialRing) and ring f === ring g) then
         error "both input polynomials must be defined over the same univariate polynomial ring";
         
@@ -262,7 +264,6 @@ getLocalUnstableA1Degree (RingElement, RingElement, Number) := (UnstableGrothend
     if instance(kk, GaloisField) and not (ring r === QQ or ring r === ZZ or (instance(ring r, GaloisField) and kk.order == (ring r).order)) then error "root not from the base field of the polynomial";
 
     if numgens ring f != 1 then error "must input function of one variable";
-
     
     -- Check whether the rational function has isolated zeros
     if dim ideal(f) > 0 then 
@@ -274,6 +275,7 @@ getLocalUnstableA1Degree (RingElement, RingElement, Number) := (UnstableGrothend
     
     u := (gens ring f)#0;
 
+    -- Check if rational f/g  function is pointed
     if (degree f)#0 <= (degree g)#0 then
         error "the rational function is not pointed"; 
     
@@ -309,7 +311,6 @@ getLocalUnstableA1Degree (RingElement, RingElement, RingElement) := (UnstableGro
 
     if numgens ring f != 1 then error "must input function of one variable";
 
-    
     -- Check whether the rational function has isolated zeros
     if dim ideal(f) > 0 then 
         error "rational function does not have isolated zeros";
@@ -319,7 +320,8 @@ getLocalUnstableA1Degree (RingElement, RingElement, RingElement) := (UnstableGro
         error "the field element is not a zero of the function";
     
     u := (gens ring f)#0;
-
+    
+    -- Check if rational f/g  function is pointed
     if (degree f)#0 <= (degree g)#0 then
         error "the rational function is not pointed"; 
 
@@ -332,11 +334,15 @@ getLocalUnstableA1Degree (RingElement, RingElement, RingElement) := (UnstableGro
 
 -- Input: A rational function f/g, a root of f, and the multiplicity of that root
 -- Output: An unstable Grothendieck-Witt class
+
 getLocalUnstableA1DegreeCC = method()
 getLocalUnstableA1DegreeCC(RingElement, RingElement, Number) := UnstableGrothendieckWittClass => (f, g, r) -> (
-    Sf := solveSystem {f};
-    Sg := solveSystem {g};
 
+   -- solveSystemNAG := NumericalAlgebraicGeometry#"solveSystem";
+    
+    Sf := solveSystem {f};
+    Sg := solveSystem {g}; 
+    
     rootsf := apply(Sf, i -> i.Coordinates);
     rootsg := apply(Sg, i -> i.Coordinates);
 
@@ -345,6 +351,10 @@ getLocalUnstableA1DegreeCC(RingElement, RingElement, Number) := UnstableGrothend
     outputFormRank := number(rootsf, i -> areEqual(i#0, sub(r, CC_53)));
 
     LDdenom := sub(1, CC_53);
+
+    -- Check if rational f/g  function is pointed
+    -- if (degree f)#0 <= (degree g)#0 then
+    --    error "the rational function is not pointed";     
 
     -- compute the denominator of the local degree as the evaluation of the product of (x-ri) where ri range over the roots not equal to r
     for i from 0 to (#rootsfNotr) - 1 do (
