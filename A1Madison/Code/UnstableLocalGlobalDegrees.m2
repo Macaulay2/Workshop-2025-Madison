@@ -150,8 +150,8 @@ getGlobalUnstableA1Degree (RingElement, RingElement) := UnstableGrothendieckWitt
 -- Input: A pair (q,r) where q is a rational function and r is a root of q
 -- Output: An unstable Grothendieck-Witt class
 
-getLocalUnstableA1Degree = method()
-getLocalUnstableA1Degree (RingElement, Number) := (UnstableGrothendieckWittClass) => (q, r) -> (
+getLocalUnstableA1Degree = method(Options => {linearTolerance => 1e-6})
+getLocalUnstableA1Degree (RingElement, Number) := (UnstableGrothendieckWittClass) => opts -> (q, r) -> (
 
     if not (instance(ring q, PolynomialRing) or instance(ring q, FractionField)) then
         error "input must be in polynomial ring or fraction field";
@@ -198,7 +198,7 @@ getLocalUnstableA1Degree (RingElement, Number) := (UnstableGrothendieckWittClass
     makeAntidiagonalUnstableForm(kk, F(r), m)
 )
 
-getLocalUnstableA1Degree (RingElement, RingElement) := (UnstableGrothendieckWittClass) => (q, r) -> (
+getLocalUnstableA1Degree (RingElement, RingElement) := (UnstableGrothendieckWittClass) => opts -> (q, r) -> (
     
     if not (instance(ring q, PolynomialRing) or instance(ring q, FractionField)) then
         error "input must be in polynomial ring or fraction field";
@@ -246,7 +246,11 @@ getLocalUnstableA1Degree (RingElement, RingElement) := (UnstableGrothendieckWitt
 )
 
 -- Variant that takes in numerator and denominator separately
-getLocalUnstableA1Degree (RingElement, RingElement, Number) := (UnstableGrothendieckWittClass) => (f, g, r) -> (
+getLocalUnstableA1Degree (RingElement, RingElement, Number) := (UnstableGrothendieckWittClass) => opts -> (f, g, r) -> (
+
+    linTol := opts.linearTolerance;
+
+    if linTol < 0 then error "linearTolerance must be a positive number";
     
     if not (instance(ring f, PolynomialRing) and instance(ring g, PolynomialRing) and ring f === ring g) then
         error "both input polynomials must be defined over the same univariate polynomial ring";
@@ -264,35 +268,16 @@ getLocalUnstableA1Degree (RingElement, RingElement, Number) := (UnstableGrothend
 
     -- If the base field is a finite field, allow the root to be integer, rational, or from the same finite field
     if instance(kk, GaloisField) and not (ring r === QQ or ring r === ZZ or (instance(ring r, GaloisField) and kk.order == (ring r).order)) then error "root not from the base field of the polynomial";
-
-    if numgens ring f != 1 then error "must input function of one variable";
-    
-    -- Check whether the rational function has isolated zeros
-    if dim ideal(f) > 0 then 
-        error "rational function does not have isolated zeros";
-	
-    -- Check whether the number of variables matches the number of polynomials
-    if not f(r) == 0 then
-        error "the field element is not a zero of the function";
-    
-    u := (gens ring f)#0;
-
-    -- Check if rational f/g  function is pointed
-    if (degree f)#0 <= (degree g)#0 then
-        error "the rational function is not pointed"; 
     
     if instance(kk, ComplexField) then
-        return getLocalUnstableA1DegreeCC(f, g, r);
+        return getLocalUnstableA1DegreeCC(f, g, r, linTol);
 
-    m := getMultiplicity(f, r);
-
-    F := (u - sub(r, frac ring f))^m * g/f;
-
-    makeAntidiagonalUnstableForm(kk, F(r), m)
+    -- If the base field is not CC, then it is one of QQ or a finite field of characteristic not 2, so we can use the two-input method
+    getLocalUnstableA1Degree(f/g, r)
 )
 
 -- Variant that takes in numerator and denominator separately
-getLocalUnstableA1Degree (RingElement, RingElement, RingElement) := (UnstableGrothendieckWittClass) => (f, g, r) -> (
+getLocalUnstableA1Degree (RingElement, RingElement, RingElement) := (UnstableGrothendieckWittClass) => opts -> (f, g, r) -> (
 
     if not (instance(ring f, PolynomialRing) and instance(ring g, PolynomialRing) and ring f === ring g) then
         error "both input polynomials must be defined over the same univariate polynomial ring";
@@ -311,59 +296,65 @@ getLocalUnstableA1Degree (RingElement, RingElement, RingElement) := (UnstableGro
     -- If the base field is a finite field, allow the root to be integer, rational, or from the same finite field
     if instance(kk, GaloisField) and not (ring r === QQ or ring r === ZZ or (instance(ring r, GaloisField) and kk.order == (ring r).order)) then error "root not from the base field of the polynomial";
 
-    if numgens ring f != 1 then error "must input function of one variable";
-
-    -- Check whether the rational function has isolated zeros
-    if dim ideal(f) > 0 then 
-        error "rational function does not have isolated zeros";
-	
-    -- Check whether the number of variables matches the number of polynomials
-    if not f(r) == 0 then
-        error "the field element is not a zero of the function";
-    
-    u := (gens ring f)#0;
-    
-    -- Check if rational f/g  function is pointed
-    if (degree f)#0 <= (degree g)#0 then
-        error "the rational function is not pointed"; 
-
-    m := getMultiplicity(f, r);
-
-    F := (u - sub(r, frac ring f))^m * g/f;
-
-    makeAntidiagonalUnstableForm(kk, F(r), m)
+    -- If we are here, then we have already verified that the base field of f,g is a fintie field and that r is an element of the same finite field, so we can use the two-input method
+    getLocalUnstableA1Degree(f/g, r)
 )
 
 -- Input: A rational function f/g, a root of f, and the multiplicity of that root
 -- Output: An unstable Grothendieck-Witt class
 
 getLocalUnstableA1DegreeCC = method()
-getLocalUnstableA1DegreeCC(RingElement, RingElement, Number) := UnstableGrothendieckWittClass => (f, g, r) -> (
+getLocalUnstableA1DegreeCC(RingElement, RingElement, Number, RR) := UnstableGrothendieckWittClass => (f, g, r, eps) -> (
 
-   -- solveSystemNAG := NumericalAlgebraicGeometry#"solveSystem";
-    
-    Sf := solveSystem {f};
-    Sg := solveSystem {g}; 
-    
-    rootsf := apply(Sf, i -> i.Coordinates);
-    rootsg := apply(Sg, i -> i.Coordinates);
+    -- First put rational functions in reduced form
+    r1 := roots f;
+    r2 := roots g;
 
-    rootsfNotr := select(rootsf, i -> not areEqual(i#0, sub(r, CC_53)));
+    -- Cancel common roots
+    removeCommonApprox := (L1,L2,tol) -> (
+        L1new := {};
+        L2new := L2;
+        for r in L1 list (
+        i := position(L2new, s -> abs(r-s) < tol);
+        if i === null then (
+            L1new = append(L1new, r)
+            ) else (
+            L2new = (take(L2new,i)) | (drop(L2new,i+1));
+            )
+        );
+        (L1new, L2new)
+        );
 
-    outputFormRank := number(rootsf, i -> areEqual(i#0, sub(r, CC_53)));
+    -- Cancel common roots numerically
+    (r1, r2) = removeCommonApprox(r1, r2, eps);
 
-    LDdenom := sub(1, CC_53);
+    -- Rebuild cleaned numerator and denominator
+    x := (gens ring f)#0;
+    fr := product(r1, r -> (x - r));
+    fr = fr/leadCoefficient(fr);
+    gr := (leadCoefficient g)*product(r2, r -> (x - r));
 
-    -- Check if rational f/g  function is pointed
-    -- if (degree f)#0 <= (degree g)#0 then
-    --    error "the rational function is not pointed";     
+    -- Check if the rational function is still pointed after reduction, otherwise pointedness is handled by the one-input method
+    if (degree fr)#0 <= (degree gr)#0 then
+        error "the rational function is not pointed after reduction";
+
+    -- Check that r is a root of the rational function after reduction
+    if fr(r) > eps then
+        error "the field element is not a zero of the function after reduction";
+
+    -- The rank of the output form is given by the number of roots of fr that are numerically equal to r
+    outputFormRank := number(r1, i -> abs(i - r) < eps);
+
+    -- Select the roots distinct from r
+    rootsfNotr := select(r1, i -> abs(i - r) >= eps);
 
     -- compute the denominator of the local degree as the evaluation of the product of (x-ri) where ri range over the roots not equal to r
+    LDdenom := sub(1, CC_53);
     for i from 0 to (#rootsfNotr) - 1 do (
-        LDdenom = LDdenom * (r - rootsfNotr#i#0)
+        LDdenom = LDdenom * (r - rootsfNotr#i)
     );
 
-    makeGWuClass(id_(CC_53^(outputFormRank)), (-1)^((outputFormRank^2 - outputFormRank)/2)*(g(r)/LDdenom)^outputFormRank)        
+    makeGWuClass(id_(CC_53^(outputFormRank)), (-1)^((outputFormRank^2 - outputFormRank)/2)*(gr(r)/LDdenom)^outputFormRank)        
 )
 
 

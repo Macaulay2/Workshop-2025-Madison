@@ -76,6 +76,7 @@ doc ///
         (getLocalUnstableA1Degree, RingElement, Number)
         (getLocalUnstableA1Degree, RingElement, RingElement, Number)
         (getLocalUnstableA1Degree, RingElement, RingElement, RingElement)
+        [getLocalUnstableA1Degree, linearTolerance]
     Headline
         computes a local unstable $\mathbb{A}^{1}$-Brouwer degree of a pointed rational function $f/g:\mathbb{P}^{1}_{k}\to\mathbb{P}^{1}_{k}$ at a root $p\in\mathbb{P}^{1}_{k}$
     Usage
@@ -89,9 +90,11 @@ doc ///
         g: RingElement
             a polynomial $g\in k[x]$ where $k$ is a field of characteristic not 2 and $g$ is not identically zero, such that $f/g$ is a pointed rational function
         p: RingElement
-            a point $p\in\mathbb{P}^{1}_{k}$ corresponding to a root of the rational function $f/g$ in the field $k$.
+            a point $p\in\mathbb{P}^{1}_{k}$ corresponding to a root of the rational function $f/g$ in the field $k$
         p: Number
-            a point $p\in\mathbb{P}^{1}_{k}$ corresponding to a root of the rational function $f/g$ in the field $k$.
+            a point $p\in\mathbb{P}^{1}_{k}$ corresponding to a root of the rational function $f/g$ in the field $k$
+        linearTolerance => RR
+            a positive real number used to determine whether roots of @TT("f")@ and @TT("g")@ are considered equal when working over the inexact field $\mathbb{C}$, used to put rational functions over $\mathbb{C}$ in reduced form by cancelling roots that agree up to the tolerance
     Outputs
         : UnstableGrothendieckWittClass
             the class $\text{deg}_{p}^{\mathbb{A}^{1}}(f/g)$ in the unstable Grothendieck-Witt group $\text{GW}^{u}(k)$
@@ -100,6 +103,8 @@ doc ///
             Given a pointed rational function $f/g:\mathbb{P}^{1}_{k}\to\mathbb{P}^{1}_{k}$ (where $(f/g)(\infty)=\infty$) and a zero $p\in\mathbb{A}^{1}_{k}$ (as $f/g$ is pointed), we may compute its @ITALIC("local unstable")@ $\mathbb{A}^{1}$-@ITALIC("Brouwer degree")@ valued in the unstable Grothendieck-Witt group $\text{GW}^{u}(k)$.
 
             For mathematical background on the local unstable $\mathbb{A}^{1}$-Brouwer degree, see @TO2(getGlobalUnstableA1Degree, "global unstable A1-degrees")@.
+
+            If the rational function is non-reduced, then the reduction is computed, checked for pointedness, and the local degree computation run on the reduction. See @TO2(getGlobalUnstableA1Degree, "global unstable A1-degrees")@ for more details.
         Example
             frac QQ[x];
             q = (x^2 + x - 2)/(3*x + 5);
