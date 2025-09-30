@@ -286,8 +286,12 @@ getDiagonalClass UnstableGrothendieckWittClass := UnstableGrothendieckWittClass 
 -- Input: Two unstable Grothendieck-Witt classes over CC, RR, QQ, or a finite field of characteristic not 2
 -- Output: Boolean that gives whether the classes are isomorphic
 
-isIsomorphicForm (UnstableGrothendieckWittClass,UnstableGrothendieckWittClass) := Boolean => (alpha,beta) -> (
+isIsomorphicForm (UnstableGrothendieckWittClass,UnstableGrothendieckWittClass) := Boolean => opts -> (alpha,beta) -> (
                                                                                                                                                           
+    linTol := opts.linearTolerance;
+
+    if linTol < 0 then error "linearTolerance must be a positive number";
+    
     r1 := getScalar alpha;
     r2 := getScalar beta;
 
@@ -302,7 +306,7 @@ isIsomorphicForm (UnstableGrothendieckWittClass,UnstableGrothendieckWittClass) :
     
     -- In most cases, we can check equality directly
     if (instance(k1, ComplexField) and instance(k2, ComplexField)) or (instance(k1, RealField) and instance(k2, RealField)) then (
-	eps := 1e-5;                                                                                                                                                                        return(abs(r1 - r2) < eps and isIsomorphicForm(getMatrix alpha, getMatrix beta)
+	eps := 1e-5;                                                                                                                                                                        return(abs(r1 - r2) < linTol and isIsomorphicForm(getMatrix alpha, getMatrix beta)
 	    );
 	)
 	

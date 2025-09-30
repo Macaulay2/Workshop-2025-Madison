@@ -4,6 +4,7 @@ doc ///
         (isIsomorphicForm, GrothendieckWittClass, GrothendieckWittClass)
         (isIsomorphicForm, UnstableGrothendieckWittClass, UnstableGrothendieckWittClass)
         (isIsomorphicForm, Matrix, Matrix)
+        [isIsomorphicForm, linearTolerance]
     Headline
         determines whether two (unstable) Grothendieck-Witt classes over $\mathbb{C},\mathbb{R},\mathbb{Q}$ or a finite field of characteristic not 2 are isomorphic.
     Usage
@@ -22,6 +23,8 @@ doc ///
             a symmetric matrix of full rank denoted by @TT("M")@ over $\mathbb{C},\mathbb{R},\mathbb{Q}$ or a finite field of characteristic not 2
         N : Matrix
             a symmetric matrix of full rank denoted by @TT("N")@ over $\mathbb{C},\mathbb{R},\mathbb{Q}$ or a finite field of characteristic not 2
+        linearTolerance => RR
+            a positive number specifying the tolerance to which the $k^{\times}$-factors of unstable Grothendieck-Witt classes over $\mathbb{R}$ or $\mathbb{C}$ are considered equal 
     Outputs
         : Boolean
             whether the two Grothendieck-Witt classes (resp. unstable Grothendieck-Witt classes) are equal as elements of the Grothendieck-Witt ring (resp. unstable Grothendieck-Witt group)
@@ -81,6 +84,8 @@ doc ///
             alpha = makeGWuClass(matrix(CC, {{2,3,1},{3,-1,0},{1,0,0}}), 1)
             beta = makeGWuClass(matrix(CC, {{2,4,-1},{4,5,7},{-1,7,9}}), 1)
             isIsomorphicForm(alpha,beta)
+    Caveat
+        Over $\mathbb{C}$ and $\mathbb{R}$, the $k^{\times}$-factors of unstable Grothendieck-Witt classes are considered equal if the absolute value of their difference is less than the @TT("linearTolerance")@, which is a positive number specifying the tolerance to which the $k^{\times}$-factors are considered equal. The default tolerance is $10^{-6}$. Over $\mathbb{Q}$ and finite fields, the $k^{\times}$-factors of unstable Grothendieck-Witt classes must agree exactly.
     References
         [S73] J. P. Serre, @ITALIC("A course in arithmetic")@, Springer-Verlag, 1973. 
 
