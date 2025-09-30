@@ -59,6 +59,8 @@ diagonalizeViaCongruence Matrix := Matrix => opts -> A -> (
 
     eps := opts.linearTolerance;
 
+    if eps < 0 then error "linearTolerance must be a positive number";
+
     -- Return an error if the matrix is not square and symmetric.
     if not isSquareAndSymmetric A then
 	error "matrix is not symmetric";
