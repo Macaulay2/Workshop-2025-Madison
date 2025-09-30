@@ -77,6 +77,8 @@ getGlobalUnstableA1Degree (RingElement, RingElement) := UnstableGrothendieckWitt
 
    linTol := opts.linearTolerance;
 
+   if linTol < 0 then error "linearTolerance must be a positive number";
+
    if not ((ring f === ring g) and length gens ring f == 1) then
         error "the two polynomials must be in the same univariate polynomial ring";
 
@@ -99,10 +101,6 @@ getGlobalUnstableA1Degree (RingElement, RingElement) := UnstableGrothendieckWitt
 
     if #(gens S) != 1 then
         error "the number of variables does not match the number of polynomials";    
-    
-    -- Check if rational f/g  function is pointed
-    if (degree f)#0 <= (degree g)#0 then
-        error "the rational function is not pointed";
     
     if instance(kk, ComplexField) then (
 
@@ -133,6 +131,10 @@ getGlobalUnstableA1Degree (RingElement, RingElement) := UnstableGrothendieckWitt
 	 fr := product(r1, r -> (x - r));
 	 fr = fr/leadCoefficient(fr);
 	 gr := (leadCoefficient g)*product(r2, r -> (x - r));
+
+     -- Check if the rational function is still pointed after reduction, otherwise pointedness is handled by the one-input method
+    if (degree fr)#0 <= (degree gr)#0 then
+        error "the rational function is not pointed after reduction";
    	
 	 makeGWuClass(
             id_(CC^((degree fr)#0)),

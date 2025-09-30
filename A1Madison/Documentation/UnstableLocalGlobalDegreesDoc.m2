@@ -3,6 +3,7 @@ doc ///
         getGlobalUnstableA1Degree
         (getGlobalUnstableA1Degree, RingElement)
         (getGlobalUnstableA1Degree, RingElement, RingElement)
+        [getGlobalUnstableA1Degree, linearTolerance]
     Headline
         computes the global unstable $\mathbb{A}^{1}$-Brouwer degree of a pointed rational function $f/g:\mathbb{P}^{1}_{k}\to\mathbb{P}^{1}_{k}$
     Usage
@@ -15,13 +16,14 @@ doc ///
             a polynomial $f\in k[x]$ where $k$ is a field of characteristic not 2
         g: RingElement
             a polynomial $g\in k[x]$ where $k$ is a field of characteristic not 2 and $g$ is not identically zero, such that $f/g$ is a pointed rational function
---	linearTolerance:  add a numerical tolerance, with default value 1e-8
+        linearTolerance => RR
+            a positive real number used to determine whether roots of @TT("f")@ and @TT("g")@ are considered equal when working over the inexact field $\mathbb{C}$, used to put rational functions over $\mathbb{C}$ in reduced form by cancelling roots that agree up to the tolerance
     Outputs
         : UnstableGrothendieckWittClass
             the class $\text{deg}^{\mathbb{A}^{1}}(f/g)$ in the unstable Grothendieck-Witt group $\text{GW}^{u}(k)$
     Description
         Text
-            Given a pointed rational function $f/g:\mathbb{P}^{1}_{k}\to\mathbb{P}^{1}_{k}$, we may compute its @ITALIC("global unstable")@ $\mathbb{A}^{1}$-@ITALIC("Brouwer degree")@ valued in the unstable Grothendieck-Witt group $\text{GW}^{u}(k):=\text{GW}(k)\times_{k^{\times}/(k^{\times})^{2}}k^{\times}$.
+            Given a pointed rational function $f/g:\mathbb{P}^{1}_{k}\to\mathbb{P}^{1}_{k}$ (where $(f/g)(\infty)=\infty$), we may compute its @ITALIC("global unstable")@ $\mathbb{A}^{1}$-@ITALIC("Brouwer degree")@ valued in the unstable Grothendieck-Witt group $\text{GW}^{u}(k):=\text{GW}(k)\times_{k^{\times}/(k^{\times})^{2}}k^{\times}$.
 
             Morel's $\mathbb{A}^{1}$-Brouwer degree generalizes the classical Brouwer degree by associating to an endomorphism of the sphere a class in the Grothendieck-Witt ring of non-degenerate symmetric bilinear forms. While this morphism is an isomorphism in dimensions two and above, it is only surjective in dimension one [M12]. In this case, a computation of Morel [M12] and Cazanave [C12] furnish an isomorphism $[\mathbb{P}^{1}_{k},\mathbb{P}^{1}_{k}]\cong\text{GW}^{u}(k)$. 
 
@@ -45,7 +47,7 @@ doc ///
             degSum = addGWuDivisorial({deg1, deg2, deg3}, {-1, 1, 2})
             isIsomorphicForm(degSum, getGlobalUnstableA1Degree q)
 	Text
-	    Since $f/g$ is assumed to be reduced, $f$ and $g$ do not share a common factor. If the user chooses functions $f$ and $g$ with a common factor, we add a safeguard to remove common factors. Over the inexact field $\mathbb{C}$, this includes the option "linearTolerance".
+	    Since $f/g$ is assumed to be reduced, $f$ and $g$ do not share a common factor. If the user chooses functions $f$ and $g$ with a common factor, the reduction is computed, checked for pointedness, and the degree computation run on the reduction. Over $\mathbb{Q}$ and $\mathbb{F}_{q}$, rational functions are automatically reduced, and computing @TT("getGlobalUnstableA1Degree(f/g)")@ agrees with computing @TT("getGlobalUnstableA1Degree(f,g)")@ as the computation is done on the underlying rational function. Over $\mathbb{C}$, we consider roots of $f$ and $g$ to be equal if the absolute value of their difference is less than that of the  @TT("linearTolerance")@. The user may specify a tolerance for this cancellation via the option @TT("linearTolerance")@, with the default being @TT("1e-6")@.
 	Example
 	    R = CC[x];
 	    f = (x-1)*(x-2)*(x-3);
@@ -95,7 +97,7 @@ doc ///
             the class $\text{deg}_{p}^{\mathbb{A}^{1}}(f/g)$ in the unstable Grothendieck-Witt group $\text{GW}^{u}(k)$
     Description
         Text
-            Given a pointed rational function $f/g:\mathbb{P}^{1}_{k}\to\mathbb{P}^{1}_{k}$ and a zero $p\in\mathbb{A}^{1}_{k}$ (as $f/g$ is pointed), we may compute its @ITALIC("local unstable")@ $\mathbb{A}^{1}$-@ITALIC("Brouwer degree")@ valued in the unstable Grothendieck-Witt group $\text{GW}^{u}(k)$.
+            Given a pointed rational function $f/g:\mathbb{P}^{1}_{k}\to\mathbb{P}^{1}_{k}$ (where $(f/g)(\infty)=\infty$) and a zero $p\in\mathbb{A}^{1}_{k}$ (as $f/g$ is pointed), we may compute its @ITALIC("local unstable")@ $\mathbb{A}^{1}$-@ITALIC("Brouwer degree")@ valued in the unstable Grothendieck-Witt group $\text{GW}^{u}(k)$.
 
             For mathematical background on the local unstable $\mathbb{A}^{1}$-Brouwer degree, see @TO2(getGlobalUnstableA1Degree, "global unstable A1-degrees")@.
         Example
