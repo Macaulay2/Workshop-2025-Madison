@@ -1,41 +1,48 @@
 needsPackage "EliminationTemplates"
 
 TestCase = new Type of HashTable;
-testCase = method();
-testCase (String, Ideal, ZZ, ZZ) := (name, I, n, m) -> (
+testCase = method(Options => {"action polynomial" => null});
+testCase (String, Ideal, ZZ, ZZ) := o -> (name, I, n, m) -> (
+    R := ring I;
+    a := if instance(o#"action polynomial", Nothing) then random(1, R) else (
+	assert(instance(o#"action polynomial", R));
+	o#"action polynomial"
+	);
     new TestCase from {
         "name" => name,
         ideal => I,
-        "dims" => n | " x " | m
+        "dims" => n | " x " | m,
+	"action polynomial" => a
     }
 )
 
 runBenchmarks = method();
 runBenchmarks = () -> (
-    testCases = loadBenchmarks({});
+    testCases := loadBenchmarks({});
     testCases = loadKukelovaBenchmarks(testCases);
-    results = {};
+    results := {};
 
     for testCase in testCases do (
-        I = testCase#ideal;
-        template = eliminationTemplate(random(1, ring I), I);
-        M = getTemplateMatrix(template);
+        I := testCase#ideal;
+	a := testCase#"action polynomial";
+        template := eliminationTemplate(a, I);
+        M := getTemplateMatrix(template);
         results = results | {{testCase#"name", toString(numRows M) | " x " | toString(numColumns M), testCase#"dims"}};
     );
 
     -- print the table
-    nameLen = max(apply(results, r -> #toString(r#0)));
-    myDimLen = #"Template Dim";
-    litDimLen = #"Literature Dim";
-    header = "| " | pad("Problem", nameLen) | " | " | "Template Dim" | " | " | "Literature Dim" | " |";
-    separator = concatenate((nameLen + myDimLen + litDimLen + 10):"-");
+    nameLen := max(apply(results, r -> #toString(r#0)));
+    myDimLen := #"Template Dim";
+    litDimLen := #"Literature Dim";
+    header := "| " | pad("Problem", nameLen) | " | " | "Template Dim" | " | " | "Literature Dim" | " |";
+    separator := concatenate((nameLen + myDimLen + litDimLen + 10):"-");
 
     print separator;
     print header;
     print separator;
 
     for result in results do (
-        row = "| " | pad(result#0, nameLen) | " | " | pad(result#1, myDimLen) | " | " | pad(result#2, litDimLen) | " |";
+        row := "| " | pad(result#0, nameLen) | " | " | pad(result#1, myDimLen) | " | " | pad(result#2, litDimLen) | " |";
         print row;
     );
     print separator;
@@ -45,13 +52,13 @@ runBenchmarks = () -> (
 -- https://openaccess.thecvf.com/content_cvpr_2017/papers/Kukelova_A_Clever_Elimination_CVPR_2017_paper.pdf
 loadKukelovaBenchmarks = method();
 loadKukelovaBenchmarks (List) := (testCases) -> (
-    R = QQ[w,x,y];
-    Fs = apply(3, i -> random(QQ^3, QQ^3));
-    F = x * Fs#0 + y * Fs#1 + Fs#2;
-    Q = diagonalMatrix({1, 1, w});
+    R := QQ[w,x,y];
+    Fs := apply(3, i -> random(QQ^3, QQ^3));
+    F := x * Fs#0 + y * Fs#1 + Fs#2;
+    Q := diagonalMatrix({1, 1, w});
 
     -- f+E+f relative pose
-    I = ideal(F * Q * transpose F * Q * F - (1/2) * trace(F * Q * transpose F * Q) * F) + ideal(det F);
+    I := ideal(F * Q * transpose F * Q * F - (1/2) * trace(F * Q * transpose F * Q) * F) + ideal(det F);
     testCases = testCases | {testCase("Rel. pose + const. focal 6pt", I, 31, 46)};
 
     -- E+f 6pt relative pose
@@ -60,9 +67,9 @@ loadKukelovaBenchmarks (List) := (testCases) -> (
     
     -- E+f+k 7pt relative pose
     R = QQ[w,x,y,lambda];
-    mons = {x^2, y^2, lambda^2, x*y, x*lambda, y*lambda};
-    coeffs = apply(6, i -> random(QQ));
-    h = sum(0..#mons-1, i -> coeffs#i * mons#i);  -- random quadratic function
+    mons := {x^2, y^2, lambda^2, x*y, x*lambda, y*lambda};
+    coeffs := apply(6, i -> random(QQ));
+    h := sum(0..#mons-1, i -> coeffs#i * mons#i);  -- random quadratic function
     Fs = apply(4, i -> random(QQ^3, QQ^3));
     F = x * Fs#0 + y * Fs#1 + lambda * Fs#2 + Fs#3;
     Q = sub(Q, R);
@@ -72,11 +79,12 @@ loadKukelovaBenchmarks (List) := (testCases) -> (
 
 loadBenchmarks = method();
 loadBenchmarks (List) := (testCases) -> (
-    R = QQ[x,y,z];
-    Es = apply(4, i -> random(QQ^3, QQ^3));
-    E = x * Es#0 + y * Es#1 + z * Es#2 + Es#3;
-    I = ideal(E * transpose E * E - (1/2) * trace(E * transpose E) * E);
-    testCases | {testCase("Rel. Pose 5pt", I, 10, 20)}
+    R := QQ[x,y,z];
+    -- Rel. Pose 5 pt
+    Es := apply(4, i -> random(QQ^3, QQ^3));
+    E := x * Es#0 + y * Es#1 + z * Es#2 + Es#3;
+    I := ideal(E * transpose E * E - (1/2) * trace(E * transpose E) * E);
+    testCases | {testCase("Rel. Pose 5pt (random linear form)", I, 10, 20), testCase("Rel. Pose 5pt (x variable)", I, 10, 20, "action polynomial" => x)}
 
 -*
     Tests from https://openaccess.thecvf.com/content_cvpr_2017/papers/Larsson_Efficient_Solvers_for_CVPR_2017_paper.pdf

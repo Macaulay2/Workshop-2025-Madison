@@ -99,16 +99,16 @@ getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     assert(gens F * HGF - gens G == 0);
     H0 := HGF * HVG;
     H0 = sub(H0, ring J);
-
     if (o.Strategy === null) then H0 else if (o.Strategy == "Greedy") then (
         print("Using Greedy strategy to compute H0.");
-        H1 := sub(syz(gens G), ring J);
-        Theta := random(QQ^(numcols H1), QQ^(numcols H0));
-        H0 + H1*Theta -- every matrix in getH0 seems a transpose of the one in the paper
+        H1 := transpose sub(syz(gens G), ring J);
+        Theta := random(QQ^(numrows H0), QQ^(numrows H1)); -- !! not what we want: see Martyushev for correct Theta!!
+        H0 + Theta * H1 -- every matrix in getH0 seems a transpose of the one in the paper
     )
     else if (o.Strategy == "Larsson") then (
 	      print("Using Larsson's strategy to compute H0.");
-        H0%image(syz(gens(J)))
+        ret := H0 % image(syz(gens(J)));
+	ret 
     ) else (error "Strategy not yet implemented.") 
 )
 
@@ -474,7 +474,7 @@ J = ideal(x^3+y^3+z^3-4,x^2-y-z-1,x-y^2+z-3)
 E = eliminationTemplate(x, J)
 --H0 = getH0(x,J,Strategy=>"Larsson")
 --H0 = getH0(x,J,Strategy=> null)
-getTemplateMatrix(E, Strategy)
+getTemplateMatrix E
 getTemplateMatrix(E, Strategy => "Greedy")
 getActionMatrix E
 eigenvalues getActionMatrix E
@@ -504,7 +504,7 @@ TEST ///
 R = QQ[x,y,z]
 Es = apply(4, i -> random(QQ^3, QQ^3))
 E = x * Es#0 + y * Es#1 + z * Es#2 + Es#3  -- essential matrix
-I = ideal(E*transpose E * E - (1/2) * trace(E * transpose E) * E)  -- Dezure constraints
+I = ideal(E*transpose E * E - (1/2) * trace(E * transpose E) * E)  -- Demazure constraints
 l = random(1, R)
 sols=templateSolve(l, I)
 assert(all(sols, x -> 1e-6 > norm sub(sub(gens I, CC[gens R]), matrix{x})))
@@ -590,3 +590,44 @@ help EliminationTemplates
 help getTemplate
 
 viewHelp "EliminationTemplates"
+
+
+
+-- 5-point essential matrix problem: DEBUGGING TEMPLATE SIZE & STRATEGY
+restart
+needsPackage "EliminationTemplates"
+R = QQ[x,y,z]
+Es = apply(4, i -> random(QQ^3, QQ^3))
+E = x * Es#0 + y * Es#1 + z * Es#2 + Es#3  -- essential matrix
+I = ideal(E*transpose E * E - (1/2) * trace(E * transpose E) * E);  -- Demazure constraints
+l = random(1, R)
+ET = eliminationTemplate(x, I)
+getTemplateMatrix(ET, Strategy => "Larsson"); -- 24 x 34
+ET = eliminationTemplate(l, I)
+getTemplateMatrix(ET); -- 27 X 44
+getTemplateMatrix(ET, Strategy => "Larsson"); 
+-* 
+-- problem! should be 24 x 34
+Rosie's proposed solution: 
+  1. Store most recently used strategy in cache of ET
+  2. If NEW strategy is passed, recompute
+*-
+
+
+-- E+f+k 7pt relative pose
+restart
+needsPackage "EliminationTemplates"
+R = QQ[w,x,y,lambda];
+mons = {x^2, y^2, lambda^2, x*y, x*lambda, y*lambda};
+coeffs = apply(6, i -> random(QQ));
+h = sum(0..#mons-1, i -> coeffs#i * mons#i);  -- random quadratic function
+Fs = apply(4, i -> random(QQ^3, QQ^3));
+F = x * Fs#0 + y * Fs#1 + lambda * Fs#2 + Fs#3;
+Q = diagonalMatrix({1, 1, w});
+I = ideal(F * Q * transpose F * Q * F - (1/2) * trace(F * Q * transpose F * Q) * F) + ideal(det F) + ideal(lambda * y - h);
+l = random(1, R)
+errorDepth = 0 
+ET = eliminationTemplate(l, I)
+getTemplateMatrix(ET, Strategy => "Larsson"); -- 256 x 339
+ET = eliminationTemplate(l, I)
+getTemplateMatrix(ET); -- 788 x 530
