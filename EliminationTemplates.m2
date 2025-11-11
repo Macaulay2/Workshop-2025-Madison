@@ -32,6 +32,7 @@ newPackage(
     Headline => "elimination templates",
     PackageImports => {"EigenSolver", "NumericalAlgebraicGeometry"},
     Keywords => {"Documentation"},
+    HomePage => "",
     DebuggingMode => false
 )
 
@@ -41,7 +42,7 @@ export {
     "getTemplate",
     "getTemplateMatrix",
     "getActionMatrix",
-    "getEigenMatrix",
+--    "getEigenMatrix",
     "templateSolve",
     "EliminationTemplate",
     "eliminationTemplate",
@@ -436,7 +437,9 @@ doc ///
       A matrix whose columns are the eigenvectors of the action matrix
   Description
    Text
-      ????
+      In the example below, the ideal $J$ defines a zero-dimensional variety with four points.
+      This method finds numerical approximations to these four points by solving an eigenvalue problem, much like the package @TO EigenSolver@.
+      The main difference between this package and ours is that, for ours, the internal template matrix may be reused for problems of a "similar structure."
    Example
       R = QQ[x,y]
       J = ideal(x^2+y^2-1,x^2+x*y+y^2-1)
@@ -584,6 +587,7 @@ time runBenchmarks()
 uninstallPackage "EliminationTemplates"
 restart
 installPackage "EliminationTemplates"
+viewHelp "EliminationTemplates"
 check "EliminationTemplates"
 
 help EliminationTemplates
