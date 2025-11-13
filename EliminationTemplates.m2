@@ -129,7 +129,6 @@ getTemplate(RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     allMons := union(set \ flatten \ entries \ monomials \ shiftPolynomials(shifts, J));
     if (allMons == set {}) then error "allMons is empty!";
     monsB := set flatten entries(lift(B, ring J));
-    print monsB;
     monsR := set flatten entries(a * lift(B, ring J)) - set flatten entries(lift(B, ring J));
     monsE := allMons - union(monsR, monsB);
     monomialPartition := new MonomialPartition from rsort \ toList \ {monsE, monsR, monsB};
@@ -160,10 +159,8 @@ getTemplateMatrix(ShiftSet, MonomialPartition, Ideal) := o -> (shifts, monomialP
     sub(transpose fold(apply(shiftPolynomials(shifts, J), m -> last coefficients(m, Monomials => allMons)), (a,b) -> a|b), coefficientRing ring J)
 )
 getTemplateMatrix(EliminationTemplate) := o -> E -> (
-    print("Getting template matrix...");
     if (E.cache#?"lastTemplateStrategy" === o.Strategy) and (E.cache#?"templateMatrix") then E.cache#"templateMatrix" else (
         (shifts, monomialPartition) := getTemplate(E, o);
-        print shifts;
         J := ideal E;
         ret := getTemplateMatrix(shifts, monomialPartition, J, o);
         E.cache#"templateMatrix" = ret;
