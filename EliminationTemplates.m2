@@ -100,7 +100,11 @@ getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     assert(gens F * HGF - gens G == 0);
     H0 := HGF * HVG;
     H0 = sub(H0, ring J);
-    if (o.Strategy === null) then H0 else if (o.Strategy == "Greedy") then (
+    if (o.Strategy === null) then (
+        print("Using default strategy to compute H0.");
+        H0
+    )
+    else if (o.Strategy == "Greedy") then (
         print("Using Greedy strategy to compute H0.");
         H1 := transpose sub(syz(gens G), ring J);
         Theta := random(QQ^(numrows H0), QQ^(numrows H1)); -- !! not what we want: see Martyushev for correct Theta!!
@@ -109,7 +113,7 @@ getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     else if (o.Strategy == "Larsson") then (
 	      print("Using Larsson's strategy to compute H0.");
         ret := H0 % image(syz(gens(J)));
-	ret 
+        ret
     ) else (error "Strategy not yet implemented.") 
 )
 
@@ -123,15 +127,16 @@ getTemplate(RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     H0 := getH0(a, B, J, o);
     shifts := new ShiftSet from apply(numgens J, i -> monomials(H0^{i}));
     allMons := union(set \ flatten \ entries \ monomials \ shiftPolynomials(shifts, J));
-    if isEmpty(allMons) then error "allMons is empty!";
+    if (allMons == set {}) then error "allMons is empty!";
     monsB := set flatten entries(lift(B, ring J));
+    print monsB;
     monsR := set flatten entries(a * lift(B, ring J)) - set flatten entries(lift(B, ring J));
     monsE := allMons - union(monsR, monsB);
     monomialPartition := new MonomialPartition from rsort \ toList \ {monsE, monsR, monsB};
     (shifts, monomialPartition)
 )
 getTemplate(EliminationTemplate) := o -> E -> (
-    if (E.cache#?"shifts" and E.cache#?"monomialPartition") then (E.cache#"shifts", E.cache#"monomialPartition") else (
+    if (E.cache#?"lastShiftStrategy" === o.Strategy) and E.cache#?"shifts" and E.cache#?"monomialPartition" then (E.cache#"shifts", E.cache#"monomialPartition") else (
         aVar := actionVariable E;
         J := ideal E;
         R := ring J;
@@ -140,6 +145,7 @@ getTemplate(EliminationTemplate) := o -> E -> (
         (sh, mp) := getTemplate(aVar, B, J, o);
         E.cache#"shifts" = sh;
         E.cache#"monomialPartition" = mp;
+        E.cache#"lastShiftStrategy" = o.Strategy;
         (sh, mp)
     )
 )
@@ -154,11 +160,14 @@ getTemplateMatrix(ShiftSet, MonomialPartition, Ideal) := o -> (shifts, monomialP
     sub(transpose fold(apply(shiftPolynomials(shifts, J), m -> last coefficients(m, Monomials => allMons)), (a,b) -> a|b), coefficientRing ring J)
 )
 getTemplateMatrix(EliminationTemplate) := o -> E -> (
-    if E.cache#?"templateMatrix" then E.cache#"templateMatrix" else (
+    print("Getting template matrix...");
+    if (E.cache#?"lastTemplateStrategy" === o.Strategy) and (E.cache#?"templateMatrix") then E.cache#"templateMatrix" else (
         (shifts, monomialPartition) := getTemplate(E, o);
+        print shifts;
         J := ideal E;
         ret := getTemplateMatrix(shifts, monomialPartition, J, o);
         E.cache#"templateMatrix" = ret;
+        E.cache#"lastTemplateStrategy" = o.Strategy;
         ret
     )
 )
@@ -195,12 +204,13 @@ getActionMatrix(RingElement, MonomialPartition, Matrix) := o -> (actVar, mp, M) 
 	) else A
 )
 getActionMatrix(EliminationTemplate) := o -> E -> (
-    if E.cache#?"actionMatrix" then E.cache#"actionMatrix" else (
+    if (E.cache#?"lastActionStrategy" === o.Strategy) and E.cache#?"actionMatrix" then E.cache#"actionMatrix" else (
         actVar := actionVariable E;
         (sh, mp) := getTemplate E;
         templateMatrix := getTemplateMatrix E;
         ret := getActionMatrix(actVar, mp, templateMatrix);
 	      E.cache#"actionMatrix" = ret;
+        E.cache#"lastActionStrategy" = o.Strategy;
 	      ret
     )
 )
