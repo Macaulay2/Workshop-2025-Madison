@@ -176,7 +176,7 @@ net EliminationTemplate := E -> (
     str
 )
 
-getActionMatrix = method(Options => {MonomialOrder => null})
+getActionMatrix = method(Options => {MonomialOrder => null, Strategy => null})
 getActionMatrix(RingElement, MonomialPartition, Matrix) := o -> (actVar, mp, M) -> (
     a := length mp#0; -- number of "excessive monomials"
     b := length mp#1; -- number of "reducible monomials"
