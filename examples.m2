@@ -71,3 +71,16 @@ hStarVector = {1,1,2,1,2,1}
 
 Example:[Section 2, https://arxiv.org/pdf/2110.10204]
 P = [-1, 2/3] in RR^1
+
+
+
+
+-------------------
+
+M = matrix{{1,0,1},{0,1,1},{-1,0,1},{}}
+P = convexHull M
+vertices P
+
+gList = {matrix{{0,1,0},{1,0,0},{0,0,1}}}
+
+equivariantEhrhartSeries(P,gList)
