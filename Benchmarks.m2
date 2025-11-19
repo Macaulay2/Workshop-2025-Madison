@@ -1,7 +1,7 @@
 needsPackage "EliminationTemplates"
 
 TestCase = new Type of HashTable;
-testCase = method(Options => {"action polynomial" => null});
+testCase = method(Options => {"action polynomial" => null, "strategy" => null});
 testCase (String, Ideal, ZZ, ZZ) := o -> (name, I, n, m) -> (
     R := ring I;
     a := if instance(o#"action polynomial", Nothing) then random(1, R) else (
@@ -19,7 +19,7 @@ testCase (String, Ideal, ZZ, ZZ) := o -> (name, I, n, m) -> (
 runBenchmarks = method();
 runBenchmarks = () -> (
     testCases := loadRelPoseBenchmarks({});
-    --loadPnPBenchmarks(testCases);
+    testCases = loadPnPBenchmarks(testCases);
     results := {};
 
     for testCase in testCases do (
@@ -40,10 +40,10 @@ runBenchmarks = () -> (
     nameLen := max(apply(results, r -> #toString(r#0)));
     myDimLen := #"Template Dim";
     litDimLen := #"Literature Dim";
-    templateTimeLen := #"Template Time";
+    templateTimeLen := #"Template Build Time";
     solveTimeLen := #"Solve Time";
     header := "| " | pad("Problem", nameLen) | " | " | "Template Dim" | " | " | "Literature Dim" | " | ";
-    header = header | "Template Time" | " | " | "Solve Time" | " |";
+    header = header | "Template Build Time" | " | " | "Solve Time" | " |";
     separator := concatenate((nameLen + myDimLen + litDimLen + templateTimeLen + solveTimeLen + 16):"-");
 
     print separator;
@@ -99,12 +99,28 @@ loadRelPoseBenchmarks (List) := (testCases) -> (
 -- https://www.bmva-archive.org.uk/bmvc/2015/papers/paper078/paper078.pdf
 loadPnPBenchmarks = method();
 loadPnPBenchmarks (List) := (testCases) -> (
-    R := QQ[x_1..x_9];
-    M := random(QQ^9, QQ^9);
-    Fs := apply(9, i->random(QQ^3, QQ^3));
-    f = vector(flatten entries F);
+    -- Optimal PnP (quaternion)
+    R = QQ[a,b,c,d];
+    F = matrix {{a^2 + b^2 - c^2 - d^2, 2*(b*c - a*d), 2*(b*d + a*c)}, 
+        {2*(b*c + a*d), a^2 - b^2 + c^2 - d^2, 2*(c*d- a*b)}, 
+        {2*(b*d - a*c), 2*(c*d + a*b), a^2 - b^2 - c^2 + d^2}};
+    r = vector(flatten entries F);
+    q := vector {a,b,c,d};
 
-    -- Optimal PnP (Cayley) 124 × 164 
-    -- Optimal PnP (quaternion) 630 × 710
-    -- Optimal PnP (rot. matrix) 1936 × 1976
+    Mr = M * r;
+    Mat = matrix {{Mr_0, Mr_1, Mr_2}, {Mr_3, Mr_4, Mr_5}, {Mr_6, Mr_7, Mr_8}};
+    I = ideal(a^2 + b^2 + c^2 + d^2 - 1) + ideal(transpose F * Mat - transpose Mat * F) + ideal(Mat * transpose F - F * transpose Mat);
+    testCases = testCases | {testCase("Optimal PnP (quaternion)", I, 630, 710)};
+
+    -- Optimal PnP (Cayley)
+    R = QQ[b,c,d];
+    F = matrix {{1 + b^2 - c^2 - d^2, 2*(b*c - d), 2*(b*d + c)}, 
+        {2*(b*c + d), 1 - b^2 + c^2 - d^2, 2*(c*d- b)}, 
+        {2*(b*d - c), 2*(c*d + b), 1 - b^2 - c^2 + d^2}};
+    r = vector(flatten entries F);
+
+    Mr = M * r;
+    Mat = matrix {{Mr_0, Mr_1, Mr_2}, {Mr_3, Mr_4, Mr_5}, {Mr_6, Mr_7, Mr_8}};
+    I = ideal(transpose F * Mat - transpose Mat * F) + ideal(Mat * transpose F - F * transpose Mat);
+    testCases | {testCase("Optimal PnP (Cayley)", I, 124, 164)}
 )

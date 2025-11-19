@@ -541,6 +541,7 @@ assert(all(sols, x -> 1e-6 > norm sub(sub(gens J, QQ[gens R]), matrix{x})))
 end--
 
 -* Development section *-
+-- basic solve, compare with known solution
 restart
 debug needsPackage "EliminationTemplates"
 R=QQ[x,y,z]
@@ -552,6 +553,7 @@ templateSolve(x+2*y+3*z,J)
 templateSolve(x,J)
 netList solveSystem J_*
 
+-- change of basis
 restart
 debug needsPackage "EliminationTemplates"
 R=QQ[x,y]
@@ -584,11 +586,9 @@ J = ideal(x^3 + y^2 - 1, x - y - 1)
 templateSolve(x, J)
 
 -- Benchmark tests: just run these three lines
--- literature results are from 
--- https://openaccess.thecvf.com/content_cvpr_2017/papers/Larsson_Efficient_Solvers_for_CVPR_2017_paper.pdf
 restart
 load "Benchmarks.m2";
-time runBenchmarks()
+runBenchmarks()
 --
 
 uninstallPackage "EliminationTemplates"
