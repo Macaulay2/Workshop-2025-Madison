@@ -100,16 +100,17 @@ loadRelPoseBenchmarks (List) := (testCases) -> (
 loadPnPBenchmarks = method();
 loadPnPBenchmarks (List) := (testCases) -> (
     -- Optimal PnP (quaternion)
-    R = QQ[a,b,c,d];
-    F = matrix {{a^2 + b^2 - c^2 - d^2, 2*(b*c - a*d), 2*(b*d + a*c)}, 
+    R := QQ[a,b,c,d];
+    M := random(QQ^9, QQ^9);
+    F := matrix {{a^2 + b^2 - c^2 - d^2, 2*(b*c - a*d), 2*(b*d + a*c)}, 
         {2*(b*c + a*d), a^2 - b^2 + c^2 - d^2, 2*(c*d- a*b)}, 
         {2*(b*d - a*c), 2*(c*d + a*b), a^2 - b^2 - c^2 + d^2}};
-    r = vector(flatten entries F);
+    r := vector(flatten entries F);
     q := vector {a,b,c,d};
 
-    Mr = M * r;
-    Mat = matrix {{Mr_0, Mr_1, Mr_2}, {Mr_3, Mr_4, Mr_5}, {Mr_6, Mr_7, Mr_8}};
-    I = ideal(a^2 + b^2 + c^2 + d^2 - 1) + ideal(transpose F * Mat - transpose Mat * F) + ideal(Mat * transpose F - F * transpose Mat);
+    Mr := M * r;
+    Mat := matrix {{Mr_0, Mr_1, Mr_2}, {Mr_3, Mr_4, Mr_5}, {Mr_6, Mr_7, Mr_8}};
+    I := ideal(a^2 + b^2 + c^2 + d^2 - 1) + ideal(transpose F * Mat - transpose Mat * F) + ideal(Mat * transpose F - F * transpose Mat);
     testCases = testCases | {testCase("Optimal PnP (quaternion)", I, 630, 710)};
 
     -- Optimal PnP (Cayley)
