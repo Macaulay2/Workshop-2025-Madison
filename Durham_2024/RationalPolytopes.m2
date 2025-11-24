@@ -397,6 +397,11 @@ ehrhartSeries Polyhedron := opts -> P -> (
 -- Temporary version of Normaliz
 -- to use with computing rational polytopes
 --------------------------------------
+--
+-- Update: Opened a pull request for this code in Normaliz package
+-- https://github.com/Macaulay2/M2/pull/4039
+--
+
 
 debug Normaliz
 
