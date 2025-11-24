@@ -65,12 +65,6 @@ TEST /// -* cycleTypeRepresentatives on 2 *-
 assert(cycleTypeRepresentatives 2 == { matrix{{0,1},{1,0}},matrix{{1,0},{0,1}}})
 ///
 
-TEST /// -* conjugacyClasses of {{0,1},{1,0}} *-
-G = generateGroup {matrix{{0,1},{1,0}}};
-ccG = conjugacyClasses G;
-assert(ccG == {{matrix{{1,0},{0,1}}},{matrix{{0,1},{1,0}}}})
-///
-
 
 TEST /// -* simple isEffective tests *-
     -- Triangle in R4

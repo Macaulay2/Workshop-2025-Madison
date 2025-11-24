@@ -32,7 +32,6 @@ newPackage(
 
 export {
     -- methods
-    "conjugacyClasses",
     "cycleTypeRepresentatives",
     "equivariantEhrhartSeries",
     "fixedPolytope",
