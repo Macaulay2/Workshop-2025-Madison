@@ -13,8 +13,9 @@ isSymmetric(Polyhedron, Matrix) := Boolean => (P, M) -> (
     if numColumns M != numRows M then error("matrix must be square");
     if numColumns M != numRows V then error("matrix incompatible with polytope");
     MV := sort(M * V);
-    if ring MV =!= ring V then error("rings of matrices are different");
-    MV == V
+    R := ring MV;
+    VR := V ** R; -- promote V in case V lies over a different ring
+    MV == VR
     )
 
 -- isSymmetric(Polyhedron, Matrix) := Boolean => (P, M) -> (
