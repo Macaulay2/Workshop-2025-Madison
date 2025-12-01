@@ -401,7 +401,7 @@ ehrhartSeries Polyhedron := opts -> P -> (
 --
 -- Update: Opened a pull request for this code in Normaliz package
 -- https://github.com/Macaulay2/M2/pull/4039
---
+-- WHEN DOING PULL REQUEST DELETE THIS --
 
 
 debug Normaliz
@@ -430,27 +430,6 @@ doWriteNmzData List := matrices -> (
     outf << close
     )
 
-
--- lattice points of a rational polytope using Normaliz
--- returns a matrix whose columns are the lattice points
-latticePointsFromHData = method()
-latticePointsFromHData(Matrix, Matrix) := (I, v) -> (
-		-- polytope is given by Ix <= v
-		M := -I | v;
-		normalizOutput := normaliz(M, "inhom_inequalities");
-		n := numColumns normalizOutput#"gen";
-		transpose normalizOutput#"gen"_{0 .. n-2}
-		)
-
-latticePointsFromHData(Matrix, Matrix, Matrix, Matrix) := (I, v, E, w) -> (
-		-- polytope is given by Ix <= v, Ex = w
-		M   := -I |  v;
-		M'  := -E |  w;
-		M'' :=  E | -w;
-		normalizOutput := normaliz(M || M' || M'', "inhom_inequalities");
-		n := numColumns normalizOutput#"gen";
-		transpose normalizOutput#"gen"_{0 .. n-2}
-		)
 
 
 ---------------------------------------
@@ -911,9 +890,3 @@ elapsedTime runProgram(normalizProgram, getNmzExec(), collectNmzOptions() | base
 
     if nmzFilename == "" then rmNmzFiles();
     C
-
--- y <= x, x >= 0, y = 0
-latticePointsFromHData(matrix "-1, 1;1, 0", matrix "0; 10", matrix "0, 1", matrix "0")
-
--- strange output if the polyhedron is unbounded
-latticePointsFromHData(matrix "-1; 1", matrix "-1; 10")
