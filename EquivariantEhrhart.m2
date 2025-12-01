@@ -46,7 +46,8 @@ export {
     "OnlyListRepresentatives",
     "ReturnHStarList",
     "ReturnTable",
-    "ReturnClassReps"
+    "ReturnClassReps",
+    "MaxComputeTime"
 }
 
 -* Code section *-
