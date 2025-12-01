@@ -92,19 +92,27 @@ generateGroup List := List => opts -> L -> (
 
 
 -- replace the following with permutation [Partition type]
+-- i.e. make the following work:
+-- debug EquivariantEhrhart
+-- apply(partitions 3, partitionToPermutation)
 
 -- takes a partition L of n and returns a permutation
 -- with cycle type L
+-- Unexported
 partitionToPermutation = method()
 partitionToPermutation List := List => L -> (
     cycleStart := 1;
     flatten for cycleLength in L list (
-		cycleStart = cycleStart + cycleLength;
-		for i from cycleStart - cycleLength to cycleStart -1 list (
-			if i == cycleStart -1 then cycleStart - cycleLength else i + 1
-			)
-		)
+        cycleStart = cycleStart + cycleLength;
+        for i from cycleStart - cycleLength to cycleStart -1 list (
+            if i == cycleStart -1 then cycleStart - cycleLength else i + 1
+            )
+        )
     )
+
+----------
+-- MARK --
+----------
 
 -- get conjugacy class reps for Sn
 -- living as n x n permutation matrices
