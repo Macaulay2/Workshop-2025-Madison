@@ -27,7 +27,9 @@ newPackage(
     Keywords => {"Combinatorics", "Convex Geometry"},
     PackageExports => {"BettiCharacters", "Permutations", "RationalPolytopes", "Cyclotomic"},
     AuxiliaryFiles => true,
-    DebuggingMode => false
+    DebuggingMode => false,
+    HomePage => "https://github.com/Macaulay2/Workshop-2025-Madison/tree/EhrhartTheory" -- Temporary Homepage
+
 )
 
 export {
