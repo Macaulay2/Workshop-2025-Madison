@@ -37,9 +37,9 @@ newPackage(
 )
 
 export {
-    "getH0",
+--    "getH0",
     "shiftPolynomials",
-    "getTemplate",
+--    "getTemplate",
     "getTemplateMatrix",
     "getActionMatrix",
 --    "getEigenMatrix",
@@ -135,18 +135,13 @@ getTemplate(RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     (shifts, monomialPartition)
 )
 getTemplate(EliminationTemplate) := o -> E -> (
-    if (E.cache#?"lastShiftStrategy" === o.Strategy) and E.cache#?"shifts" and E.cache#?"monomialPartition" then (E.cache#"shifts", E.cache#"monomialPartition") else (
-        aVar := actionVariable E;
-        J := ideal E;
-        R := ring J;
-        B := lift(basis(R/J), R);
-        E.cache#basis = B;
-        (sh, mp) := getTemplate(aVar, B, J, o);
-        E.cache#"shifts" = sh;
-        E.cache#"monomialPartition" = mp;
-        E.cache#"lastShiftStrategy" = o.Strategy;
-        (sh, mp)
-    )
+    aVar := actionVariable E;
+    J := ideal E;
+    R := ring J;
+    B := lift(basis(R/J), R);
+    E.cache#basis = B;
+    (sh, mp) := getTemplate(aVar, B, J, o);
+    (sh, mp)
 )
 
 getTemplateMatrix = method(Options => {MonomialOrder => null, Strategy => null})
