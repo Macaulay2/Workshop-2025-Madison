@@ -37,12 +37,12 @@ newPackage(
 )
 
 export {
---    "getH0",
+    "getH0",
     "shiftPolynomials",
---    "getTemplate",
+    "getTemplate",
     "getTemplateMatrix",
     "getActionMatrix",
---    "getEigenMatrix",
+    "getEigenMatrix",
     "templateSolve",
     "EliminationTemplate",
     "eliminationTemplate",
@@ -105,10 +105,11 @@ getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
         H0
     )
     else if (o.Strategy == "Greedy") then (
-        print("Using Greedy strategy to compute H0.");
-        H1 := transpose sub(syz(gens G), ring J);
-        Theta := random(QQ^(numrows H0), QQ^(numrows H1)); -- !! not what we want: see Martyushev for correct Theta!!
-        H0 + Theta * H1 -- every matrix in getH0 seems a transpose of the one in the paper
+        print("Using Greedy strategy to compute H0. Not implemented yet, returning default H0.");
+        -- H1 := transpose sub(syz(gens G), ring J);
+        -- Theta := random(QQ^(numrows H0), QQ^(numrows H1)); -- !! not what we want: see Martyushev for correct Theta!!
+        -- H0 + Theta * H1; -- every matrix in getH0 seems a transpose of the one in the paper
+        H0
     )
     else if (o.Strategy == "Larsson") then (
 	      print("Using Larsson's strategy to compute H0.");
@@ -278,8 +279,8 @@ templateSolve(RingElement, Ideal) := o -> (a, J) -> (
 copyTemplate=method(Options => {})
 copyTemplate(EliminationTemplate, Ideal) := o -> (E,J) -> (
     F := eliminationTemplate(E#"actionVariable", J);
-    F.cache#"shifts"=E.cache#"shifts";
-    F.cache#"monomialPartition"=E.cache#"monomialPartition";
+--    F.cache#"shifts"=E.cache#"shifts";
+--    F.cache#"monomialPartition"=E.cache#"monomialPartition";
     F.cache#"basis"=basis(E);
     F
 )
