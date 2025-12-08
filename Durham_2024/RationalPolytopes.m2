@@ -20,7 +20,6 @@ newPackage(
 export {
     "hStarPolynomial",
     "hStarVector",
-    --"ehrhartConstituents",
     "ehrhartQP",
     "isPeriod",
     "quasiPolynomial",
@@ -42,8 +41,8 @@ denominator Polyhedron := ZZ => P -> (
     P.cache#"denominator"
     )
 
--* QuasiPolynomial Type *-
 
+-* QuasiPolynomial Type *-
 
 -- isPeriod(M, q)
 -- M: Matrix
@@ -96,7 +95,8 @@ net QuasiPolynomial := QP -> (
     stack {description, display}
     )
 
-
+-- construction of quasi polynomial from a list of constituents
+-- i.e. 'rows' of the matrix of coefficients
 quasiPolynomial List := L -> (
     if not isMember(false, for l in L list instance(l,List)) then (
         D:=max for p in L list length p;
@@ -118,17 +118,13 @@ quasiPolynomial List := L -> (
 QuasiPolynomial == QuasiPolynomial := (QP1, QP2) -> QP1 === QP2
 
 
--- QuasiPolynomial as a function.
-QuasiPolynomial ZZ := (QP, v) -> (
-    internalQuasiPolynomial(QP,v)
-    )
-
-internalQuasiPolynomial = method()
-internalQuasiPolynomial(QuasiPolynomial, ZZ) := (QP,t) -> (
+-- QuasiPolynomial as a function
+QuasiPolynomial ZZ := (QP, t) -> (
     r := (QP#coefficients)^{t%QP#period};
     T := matrix for i in 0..(numColumns QP#coefficients - 1) list {t^(numColumns QP#coefficients - i - 1)};
     (r*T)_(0,0)
     )
+
 
 -- Various methods associated to a QuasiPolynomial
 
@@ -179,8 +175,8 @@ period QuasiPolynomial := QP -> (
     QP#period
     )
 
-coefficients QuasiPolynomial := QP -> (
-		QP#coefficients
+coefficients QuasiPolynomial := opts -> QP -> (
+    QP#coefficients
 		)
 
 -- coefficientMonomial(QP, i)
@@ -194,10 +190,19 @@ coefficientMonomial(QuasiPolynomial,ZZ) := (QP,i) -> (
     M
     )
 
+
 -* Ehrhart Polynomial part *-
 
+
+-- ehrhartConstituents --
+-- if p is the period of the polytope P then
+-- ehrhartConstituents(P, i) gives the i-th part of the
+-- of the Ehrhart quasi polynomial of P
+-- in other words the (i mod p)th row of the matrix of
+-- coefficients of the Quasi polyomial
+
 ehrhartConstituents = method(TypicalValue=>RingElement)
-ehrhartConstituents (Polyhedron,ZZ):=(P, i) -> (
+ehrhartConstituents(Polyhedron, ZZ):=(P, i) -> (
     n:=dim P;
     k:=denominator P;
     R:=QQ[getSymbol "x"];
@@ -213,8 +218,6 @@ ehrhartConstituents (Polyhedron,ZZ):=(P, i) -> (
     v=promote(v,QQ);
     M:=promote(matrix apply(S,a->reverse apply(n+1,j->( a^j ))),QQ);
     M=flatten entries((inverse M)*v);
-
-
     1+sum apply(n+1,a->M_(a)*x^(n-a))
     )
 
@@ -657,6 +660,19 @@ doc ///
   ///
   
 
+-*
+    "hStarVector",
+    "ehrhartQP",
+
+    "quasiPolynomial",
+    "displayQP",
+    "ehrhartSeries",
+
+    "ReturnDenominator",
+    "latticePointsFromHData"
+    denominator
+*-
+
 
 -* Test section *-
 TEST /// -- (hStarPolynomial)
@@ -678,6 +694,15 @@ assert(2 == period(quasiPolynomial(matrix{{1,1},{1,2},{1,1},{1,2}})))
 TEST /// -- (coefficientMonomial)
 assert(matrix{{1},{1}} == coefficientMonomial(quasiPolynomial(matrix{{1,2,3},{1,4,5}}),2))
 ///
+
+TEST /// -- (coefficients QuasiPolynomial)
+P = convexHull transpose matrix "0,0;0,1;1,0";
+p = ehrhartQP P;
+assert(coefficients p == matrix "1/2, 3/2, 1")
+///
+
+
+
 
 end
 ----
