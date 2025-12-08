@@ -401,6 +401,7 @@ ehrhartSeries Polyhedron := opts -> P -> (
 -- to use with computing rational polytopes
 --------------------------------------
 --
+-- Update: Pull request in merged into development
 -- Update: Opened a pull request for this code in Normaliz package
 -- https://github.com/Macaulay2/M2/pull/4039
 -- WHEN DOING PULL REQUEST DELETE THIS --
@@ -665,8 +666,14 @@ doc ///
 
     "quasiPolynomial",
     "displayQP",
-    "ehrhartSeries",
+
+TODO:
+-- Get Vincenzo and Alex into M2 org to be able to push changes OR use PullRequests
+-- Merge in the remaining tests
+-- There is a problem with hStarPolynomial using cached results when ReturnDenominator => true
 *-
+
+
 
 
 -* Test section *-
