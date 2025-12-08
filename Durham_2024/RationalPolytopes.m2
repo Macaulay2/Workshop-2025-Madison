@@ -701,9 +701,6 @@ P = convexHull transpose matrix "0,0;0,1/2;1/3,0";
 H = hStarPolynomial(P, ReturnDenominator => true);
 assert(class H === Sequence);
 assert(#H == 2);
-H = hStarPolynomial(P, ReturnDenominator => true);
-assert(class H === Sequence);
-assert(#H == 2);
 ///
 
 TEST /// -- (ReturnDenominator) using cached result
@@ -719,6 +716,14 @@ P = convexHull transpose matrix "0,0;0,1/3;1/2,0";
 assert(denominator P == 6)
 ///
 
+TEST /// -- (ehrhartSeries)
+P = convexHull transpose matrix "0,0;0,1/3;1/2,0";
+ES = ehrhartSeries P;
+assert(class ES === Divide);
+(N, D) = hStarPolynomial(P, ReturnDenominator => true);
+assert value (ES#0 == N);
+assert value (ES#1 == D);
+///
 
 end
 ----
