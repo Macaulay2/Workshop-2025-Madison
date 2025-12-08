@@ -701,6 +701,13 @@ p = ehrhartQP P;
 assert(coefficients p == matrix "1/2, 3/2, 1")
 ///
 
+TEST /// -- (ReturnDenominator)
+P = convexHull transpose matrix "0,0;0,1;1,0";
+H = hStarPolynomial(P, ReturnDenominator => true);
+assert(class H === Sequence);
+assert(#H == 2);
+///
+
 
 
 
