@@ -27,8 +27,7 @@ export {
     "displayQP",
     "coefficientMonomial",
     "ehrhartSeries",
-    "ReturnDenominator",
-    "latticePointsFromHData"
+    "ReturnDenominator"
     }
 
 
@@ -667,10 +666,6 @@ doc ///
     "quasiPolynomial",
     "displayQP",
     "ehrhartSeries",
-
-    "ReturnDenominator",
-    "latticePointsFromHData"
-    denominator
 *-
 
 
@@ -702,13 +697,27 @@ assert(coefficients p == matrix "1/2, 3/2, 1")
 ///
 
 TEST /// -- (ReturnDenominator)
-P = convexHull transpose matrix "0,0;0,1;1,0";
+P = convexHull transpose matrix "0,0;0,1/2;1/3,0";
+H = hStarPolynomial(P, ReturnDenominator => true);
+assert(class H === Sequence);
+assert(#H == 2);
 H = hStarPolynomial(P, ReturnDenominator => true);
 assert(class H === Sequence);
 assert(#H == 2);
 ///
 
+TEST /// -- (ReturnDenominator) using cached result
+P = convexHull transpose matrix "0,0;0,1/2;1/3,0";
+H = hStarPolynomial(P, ReturnDenominator => true);
+H = hStarPolynomial(P, ReturnDenominator => true); -- second call from cache
+assert(class H === Sequence);
+assert(#H == 2);
+///
 
+TEST /// -- (denominator)
+P = convexHull transpose matrix "0,0;0,1/3;1/2,0";
+assert(denominator P == 6)
+///
 
 
 end
