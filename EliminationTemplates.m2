@@ -33,7 +33,8 @@ newPackage(
     PackageImports => {"EigenSolver", "NumericalAlgebraicGeometry"},
     Keywords => {"Documentation"},
     HomePage => "",
-    DebuggingMode => false
+    DebuggingMode => false,
+    AuxiliaryFiles => true
 )
 
 export {
@@ -77,6 +78,10 @@ actionVariable EliminationTemplate := E -> E#"actionVariable"
 
 ideal EliminationTemplate := E -> E#ideal
 
+-- Greedy-specific helper routines are maintained separately for readability.
+load "./EliminationTemplates/GreedyHelpers.m2"
+
+
 getH0 = method(Options => {MonomialOrder => null, Strategy => null})
 getH0 (RingElement, Ideal) := o -> (a, J) -> (
     R := ring J;
@@ -105,11 +110,51 @@ getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
         H0
     )
     else if (o.Strategy == "Greedy") then (
-        print("Using Greedy strategy to compute H0. Not implemented yet, returning default H0.");
-        -- H1 := transpose sub(syz(gens G), ring J);
-        -- Theta := random(QQ^(numrows H0), QQ^(numrows H1)); -- !! not what we want: see Martyushev for correct Theta!!
-        -- H0 + Theta * H1; -- every matrix in getH0 seems a transpose of the one in the paper
-        H0
+        print("Using Greedy strategy to compute H0.");
+        -- compute H = H0^T + Theta*H1, where H1 is the transposed syzygy matrix.
+        -- We keep columns aligned with generators of J for downstream greedy helpers.
+        H1 := transpose sub(syz(gens J), ring J);
+        -- print("H0: " | toString H0);
+        -- print("H1: " | toString H1);
+
+        -- create an extension ring of R with the theta variables
+        ThetaExt := R[apply(numcols H0 * numrows H1, i -> "t" | toString i)];
+
+        -- coerce H0 and H1 into the extension ring
+        toTheta := map(ThetaExt, R);
+        H0e := transpose(toTheta H0);
+        H1e := toTheta H1;
+
+        -- build Theta over the extension ring
+        Theta := genericMatrix(ThetaExt, ThetaExt_0, numcols H0, numrows H1);
+
+        -- now everything is in the same ring
+        H := H0e + Theta * H1e;
+
+        data := monomialVectorAndWData(H);
+        W := data#"W";
+        columnInfo := data#"columnInfo";
+        SH := ring H;
+        baseR := coefficientRing SH;
+        allVars := flatten entries vars SH;
+        baseVars := flatten entries vars baseR;
+        thetaVars := drop(allVars, #baseVars);
+        thetaToZeroMap := map(SH, SH, baseVars | apply(thetaVars, t -> 0_SH));
+
+        rowA := rowWiseGreedyAssignments(W, thetaVars, thetaToZeroMap, SH, baseR);
+        excessiveMons := computeExcessiveMonomials(a, B, J, columnInfo, baseR);
+        colA := columnWiseGreedyAssignments(W, excessiveMons, columnInfo, J, thetaVars, thetaToZeroMap, SH, baseR);
+
+        rowZero := countZeroColumns(W, rowA, SH);
+        colZero := countZeroColumns(W, colA, SH);
+        bestA := if colZero > rowZero then colA else rowA;
+        bestName := if colZero > rowZero then "Column-wise" else "Row-wise";
+        print("Greedy selected: " | bestName | " strategy.");
+        -- print("Zero columns in W (row-wise): " | toString rowZero);
+        -- print("Zero columns in W (column-wise): " | toString colZero);
+        Hbest := instantiateHWithAssignments(H, bestA, SH, baseR);
+
+        return Hbest;
     )
     else if (o.Strategy == "Larsson") then (
 	      print("Using Larsson's strategy to compute H0.");
@@ -638,6 +683,12 @@ R = QQ[x,y]
 J = ideal(x^3 + y^2 - 1, x - y - 1)
 templateSolve(x, J)
 
+restart
+debug needsPackage "EliminationTemplates"
+R = QQ[x]
+J = ideal(x^2-1, x^3-x)
+getH0(x, basis(R/J), J, Strategy => "Greedy")
+
 -- Benchmark tests: just run these three lines
 restart
 load "Benchmarks.m2";
@@ -663,11 +714,11 @@ Es = apply(4, i -> random(QQ^3, QQ^3))
 E = x * Es#0 + y * Es#1 + z * Es#2 + Es#3  -- essential matrix
 I = ideal(E*transpose E * E - (1/2) * trace(E * transpose E) * E);  -- Demazure constraints
 l = random(1, R)
-ET = eliminationTemplate(x, I)
-getTemplateMatrix(ET, Strategy => "Larsson"); -- 24 x 34
 ET = eliminationTemplate(l, I)
 getTemplateMatrix(ET); -- 27 X 44
-getTemplateMatrix(ET, Strategy => "Larsson"); 
+getTemplateMatrix(ET, Strategy => "Greedy"); -- 15 x 44
+getTemplateMatrix(ET, Strategy => "Larsson"); -- 24 x 44
+
 -* 
 -- problem! should be 24 x 34
 Rosie's proposed solution: 
@@ -690,6 +741,6 @@ I = ideal(F * Q * transpose F * Q * F - (1/2) * trace(F * Q * transpose F * Q) *
 l = random(1, R)
 errorDepth = 0 
 ET = eliminationTemplate(l, I)
-getTemplateMatrix(ET, Strategy => "Larsson"); -- 256 x 339
-ET = eliminationTemplate(l, I)
 getTemplateMatrix(ET); -- 788 x 530
+getTemplateMatrix(ET, Strategy => "Larsson"); -- 256 x 339
+-- getTemplateMatrix(ET, Strategy => "Larsson"); -- will exceed runtime limit
