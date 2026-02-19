@@ -33,7 +33,8 @@ newPackage(
     PackageImports => {"EigenSolver", "NumericalAlgebraicGeometry"},
     Keywords => {"Documentation"},
     HomePage => "",
-    DebuggingMode => false
+    DebuggingMode => false,
+    AuxiliaryFiles => true
 )
 
 export {
@@ -78,7 +79,7 @@ actionVariable EliminationTemplate := E -> E#"actionVariable"
 ideal EliminationTemplate := E -> E#ideal
 
 -- Greedy-specific helper routines are maintained separately for readability.
-load "GreedyHelpers.m2"
+load "./EliminationTemplates/GreedyHelpers.m2"
 
 
 getH0 = method(Options => {MonomialOrder => null, Strategy => null})
@@ -688,4 +689,3 @@ ET = eliminationTemplate(l, I)
 getTemplateMatrix(ET); -- 788 x 530
 getTemplateMatrix(ET, Strategy => "Larsson"); -- 256 x 339
 -- getTemplateMatrix(ET, Strategy => "Larsson"); -- will exceed runtime limit
-
