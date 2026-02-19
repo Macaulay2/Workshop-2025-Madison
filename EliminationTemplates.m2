@@ -39,7 +39,7 @@ newPackage(
 export {
     "getH0",
     "shiftPolynomials",
-    "getTemplate",
+    -- "getTemplate",
     "getTemplateMatrix",
     "getActionMatrix",
     "getEigenMatrix",
@@ -318,7 +318,7 @@ doc ///
     Key
         EliminationTemplate
     Headline
-        Type for elimination template objects
+        type for elimination template objects
     Description
         Text
             The type `EliminationTemplate` represents objects that store the data required for elimination template computations.
@@ -337,7 +337,7 @@ doc ///
       eliminationTemplate
       (eliminationTemplate, RingElement, Ideal)
     Headline
-      Constructor for a EliminationTemplate object
+      constructor for an EliminationTemplate object
     Usage
       E = eliminationTemplate(a, J)
     Inputs
@@ -347,7 +347,7 @@ doc ///
         a zero-dimensional ideal
     Outputs
       E:EliminationTemplate
-        An EliminationTemplate object encoding the data for elimination template computations
+        an EliminationTemplate object encoding the data for elimination template computations
     Description
       Text
         This function constructs an EliminationTemplate object, which stores the action variable and ideal, and provides a cache for storing computed template data.
@@ -358,58 +358,59 @@ doc ///
         E = eliminationTemplate(x, J)
 ///
 
-doc ///
- Node
-  Key
-    getTemplate
-    (getTemplate, RingElement, Matrix, Ideal)
-    (getTemplate, EliminationTemplate)
-  Headline
-    extracts a "sparse" representation of an elimination template
-  Usage
-    (sh, mp) = getTemplate(a, B, J)
-  Inputs
-    a:RingElement
-      the action polynomial defining a multiplication matrix
-    B:Matrix
-      a basis for a zero-dimensional quotient ring
-    J:Ideal
-      a zero-dimensional ideal
-  Outputs
-    shifts:ShiftSet
-      A list of matrices, each encoding rows of the template matrix
-    monomialPartition:MonomialPartition
-      A list of monomials encoding columns of the template matrix
-  Description
-    Text
-      This method builds an elimination template. It returns a Sequence of length two, which can be used to recover the template matrix.
+--Do not want to export this function potentially?
+--doc ///
+ --Node
+  --Key
+    --getTemplate
+    --(getTemplate, RingElement, Matrix, Ideal)
+    --(getTemplate, EliminationTemplate)
+  --Headline
+    --extracts a "sparse" representation of an elimination template
+  --Usage
+    --(sh, mp) = getTemplate(a, B, J)
+  --Inputs
+    --a:RingElement
+      --the action polynomial defining a multiplication matrix
+    --B:Matrix
+      --a basis for a zero-dimensional quotient ring
+    --J:Ideal
+      --a zero-dimensional ideal
+  --Outputs
+    --shifts:ShiftSet
+      --A list of matrices, each encoding rows of the template matrix
+    --monomialPartition:MonomialPartition
+      --A list of monomials encoding columns of the template matrix
+  --Description
+    --Text
+      --This method builds an elimination template. It returns a Sequence of length two, which can be used to recover the template matrix.
 
-      The elements of this sequence encode the rows and columns of a Macaulay matrix (the template matrix.)
-      The last element consists of lists of three monomials supported on equations indexing the rows of the template matrix.
-      These are called excessive monomials, reducible monomials, and basic monomials.
-    Example
-      R = QQ[x,y];
-      J = ideal(x^2+y^2-1, x^2+x*y+y^2-1);    
-      actVar = x;
-      B = lift(basis(R/J), R);
-      (sh, mp) = getTemplate(actVar, B, J)
-///
+      --The elements of this sequence encode the rows and columns of a Macaulay matrix (the template matrix.)
+      --The last element consists of lists of three monomials supported on equations indexing the rows of the template matrix.
+      --These are called excessive monomials, reducible monomials, and basic monomials.
+    --Example
+      --R = QQ[x,y];
+      --J = ideal(x^2+y^2-1, x^2+x*y+y^2-1);    
+      --actVar = x;
+      --B = lift(basis(R/J), R);
+      --(sh, mp) = getTemplate(actVar, B, J)
+--///
 
-doc ///
- Node
-  Key
-   [getTemplate, MonomialOrder]
-  Headline
-    the monomial order used on the ambient ring, 
-  Usage
-    getTemplate(a, B, J, MonomialOrder => Eliminate 1)
-  Description
-    Text
-      The monomial order used on the ambient ring. This is used to determine the ordering of the columns of the template matrix.
-      The default is `Eliminate 1`, which is a monomial order that eliminates the first variable.
-      Other monomial orders can be used, such as `Eliminate 2` or `Eliminate 3`.
-      See the documentation for `Macaulay2` for more information on monomial orders.
-///
+--doc ///
+ --Node
+  --Key
+viewH   --[getTemplate, MonomialOrder]
+  --Headline
+    --the monomial order used on the ambient ring, 
+  --Usage
+    --getTemplate(a, B, J, MonomialOrder => Eliminate 1)
+  --Description
+    --Text
+      --The monomial order used on the ambient ring. This is used to determine the ordering of the columns of the template matrix.
+      --The default is `Eliminate 1`, which is a monomial order that eliminates the first variable.
+      --Other monomial orders can be used, such as `Eliminate 2` or `Eliminate 3`.
+      --See the documentation for `Macaulay2` for more information on monomial orders.
+--///
 
 doc ///
  Node
@@ -419,7 +420,7 @@ doc ///
     (templateSolve, Ideal)
     (templateSolve, RingElement, Ideal)
   Headline
-    Polynomial system solver using elimination templates
+    polynomial system solver using elimination templates
   Usage
     (B, ev) = templateSolve(et)
     (B, ev) = templateSolve(J)
@@ -435,9 +436,9 @@ doc ///
       the monomial order used on the ambient ring
   Outputs
     B:Matrix
-      A column matrix containing the basis for R/J used
+      a column matrix containing the basis for R/J used
     ev:Matrix
-      A matrix whose columns are the eigenvectors of the action matrix
+      a matrix whose columns are the eigenvectors of the action matrix
   Description
    Text
       In the example below, the ideal $J$ defines a zero-dimensional variety with four points.
@@ -448,6 +449,61 @@ doc ///
       J = ideal(x^2+y^2-1,x^2+x*y+y^2-1)
       actVar = x + 2*y
       templateSolve(actVar, J)
+///
+
+doc ///
+ Node
+    Key
+      copyTemplate
+      (copyTemplate, EliminationTemplate, Ideal)
+    Headline
+      copies EliminationTemplate object
+    Usage
+      F = copyTemplate(E, J)
+    Inputs
+      E:EliminationTemplate
+        the elimination template to copy
+      J:Ideal
+        a zero-dimensional ideal
+    Outputs
+      F:EliminationTemplate
+        an EliminationTemplate object
+    --Description
+      --Text
+      --Example
+    SeeAlso
+      eliminationTemplate
+///
+
+doc ///
+ Node
+    Key
+      getTemplateMatrix
+      (getTemplateMatrix, RingElement, Matrix, Ideal)
+      (getTemplateMatrix, ShiftSet, MonomialPartition, Ideal)
+      (getTemplateMatrix, EliminationTemplate)
+    --Headline
+    --Usage
+    --Inputs
+    --Outputs
+    --Description
+      --Text
+      --Example
+    --SeeAlso
+///
+
+doc ///
+ Node
+    Key
+      actionVariable
+    --Headline
+    --Usage
+    --Inputs
+    --Outputs
+    --Description
+      --Text
+      --Example
+    --SeeAlso
 ///
 
 TEST ///
@@ -540,6 +596,7 @@ end--
 -- basic solve, compare with known solution
 restart
 debug needsPackage "EliminationTemplates"
+needsPackage "NumericalAlgebraicGeometry"
 R=QQ[x,y,z]
 J=ideal(x^3+y^3+z^3-4,x^2-y-z-1,x-y^2+z-3)
 B=basis(R/J)
@@ -597,8 +654,6 @@ help EliminationTemplates
 help getTemplate
 
 viewHelp "EliminationTemplates"
-
-
 
 -- 5-point essential matrix problem: DEBUGGING TEMPLATE SIZE & STRATEGY
 restart
