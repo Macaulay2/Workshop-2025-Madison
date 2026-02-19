@@ -337,32 +337,35 @@ getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     )
     else if (o.Strategy == "Greedy") then (
         print("Using Greedy strategy to compute H0.");
-        -- compute H = H0 + Theta * H1, where H1 is the syzygy matrix of G
-
-        H1 := transpose sub(syz(gens J), ring J); -- syzygy matrix H1. TODO: change gens J to gens G
+        -- compute H = H0^T + Theta*H1, where H1 is the transposed syzygy matrix.
+        -- We keep columns aligned with generators of J for downstream greedy helpers.
+        H1 := transpose sub(syz(gens J), ring J);
         print("H0: " | toString H0);
         print("H1: " | toString H1);
 
         -- create an extension ring of R with the theta variables
-        ThetaExt := R[apply(numrows H0 * numrows H1, i -> "t" | toString i)];
+        ThetaExt := R[apply(numcols H0 * numrows H1, i -> "t" | toString i)];
 
         -- coerce H0 and H1 into the extension ring
-        H0e := transpose sub(H0, ThetaExt);
-        H1e := sub(H1, ThetaExt);
+        toTheta := map(ThetaExt, R);
+        H0e := transpose(toTheta H0);
+        H1e := toTheta H1;
 
         -- build Theta over the extension ring
-        Theta := genericMatrix(ThetaExt, ThetaExt_0, numrows H0, numrows H1);
+        Theta := genericMatrix(ThetaExt, ThetaExt_0, numcols H0, numrows H1);
 
         -- now everything is in the same ring
-        H := H0e + Theta * H1e; -- every matrix in getH0 seems a transpose of the one in the paper
+        H := H0e + Theta * H1e;
 
         data := monomialVectorAndWData(H);
         W := data#"W";
         columnInfo := data#"columnInfo";
         SH := ring H;
         baseR := coefficientRing SH;
-        thetaVars := flatten entries vars SH;
-        thetaToZeroMap := map(SH, SH, apply(thetaVars, t -> 0_SH));
+        allVars := flatten entries vars SH;
+        baseVars := flatten entries vars baseR;
+        thetaVars := drop(allVars, #baseVars);
+        thetaToZeroMap := map(SH, SH, baseVars | apply(thetaVars, t -> 0_SH));
 
         rowA := rowWiseGreedyAssignments(W, thetaVars, thetaToZeroMap, SH, baseR);
         excessiveMons := computeExcessiveMonomials(a, B, J, columnInfo, baseR);
@@ -377,7 +380,7 @@ getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
         print("Zero columns in W (column-wise): " | toString colZero);
         Hbest := instantiateHWithAssignments(H, bestA, SH, baseR);
 
-        return Hbest; -- TODO: transpose H0 in the end
+        return Hbest;
     )
     else if (o.Strategy == "Larsson") then (
 	      print("Using Larsson's strategy to compute H0.");
@@ -882,11 +885,11 @@ Es = apply(4, i -> random(QQ^3, QQ^3))
 E = x * Es#0 + y * Es#1 + z * Es#2 + Es#3  -- essential matrix
 I = ideal(E*transpose E * E - (1/2) * trace(E * transpose E) * E);  -- Demazure constraints
 l = random(1, R)
-ET = eliminationTemplate(x, I)
-getTemplateMatrix(ET, Strategy => "Larsson"); -- 24 x 34
 ET = eliminationTemplate(l, I)
 getTemplateMatrix(ET); -- 27 X 44
-getTemplateMatrix(ET, Strategy => "Larsson"); 
+getTemplateMatrix(ET, Strategy => "Greedy"); -- 15 x 44
+getTemplateMatrix(ET, Strategy => "Larsson"); -- 24 x 44
+
 -* 
 -- problem! should be 24 x 34
 Rosie's proposed solution: 
@@ -909,6 +912,8 @@ I = ideal(F * Q * transpose F * Q * F - (1/2) * trace(F * Q * transpose F * Q) *
 l = random(1, R)
 errorDepth = 0 
 ET = eliminationTemplate(l, I)
-getTemplateMatrix(ET, Strategy => "Larsson"); -- 256 x 339
-ET = eliminationTemplate(l, I)
 getTemplateMatrix(ET); -- 788 x 530
+getTemplateMatrix(ET, Strategy => "Larsson"); -- 256 x 339
+-- getTemplateMatrix(ET, Strategy => "Larsson"); -- will exceed runtime limit
+
+
