@@ -101,8 +101,8 @@ monomialVectorAndWData Matrix := (H) -> (
     -- turn into a column vector vH (as a matrix with 1 column)
     vH := matrix apply(#mons, i -> {mons#i});  -- (#mons) x 1
 
-    print("=== Debug: vH (monomial column vector) ===");
-    print vH;
+    -- print("=== Debug: vH (monomial column vector) ===");
+    -- print vH;
 
     -- 2) for each column h_k, find Z_k such that h_k = Z_k * vH
     ncols := numColumns H;
@@ -125,8 +125,8 @@ monomialVectorAndWData Matrix := (H) -> (
             ))
         ));
 
-        print("=== Debug: Z_" | toString k | " ===");
-        print Zk;
+        -- print("=== Debug: Z_" | toString k | " ===");
+        -- print Zk;
 
         -- sanity check (optional)
         -- print("Check hk - Zk*vH = "); print(hk - Zk*vH);
@@ -143,8 +143,8 @@ monomialVectorAndWData Matrix := (H) -> (
         })
     );
 
-    print("=== Debug: W = [Z_0 Z_1 ... Z_{n-1}] ===");
-    print W;
+    -- print("=== Debug: W = [Z_0 Z_1 ... Z_{n-1}] ===");
+    -- print W;
 
     new HashTable from {
         "vH" => vH,
@@ -340,8 +340,8 @@ getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
         -- compute H = H0^T + Theta*H1, where H1 is the transposed syzygy matrix.
         -- We keep columns aligned with generators of J for downstream greedy helpers.
         H1 := transpose sub(syz(gens J), ring J);
-        print("H0: " | toString H0);
-        print("H1: " | toString H1);
+        -- print("H0: " | toString H0);
+        -- print("H1: " | toString H1);
 
         -- create an extension ring of R with the theta variables
         ThetaExt := R[apply(numcols H0 * numrows H1, i -> "t" | toString i)];
@@ -376,8 +376,8 @@ getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
         bestA := if colZero > rowZero then colA else rowA;
         bestName := if colZero > rowZero then "Column-wise" else "Row-wise";
         print("Greedy selected: " | bestName | " strategy.");
-        print("Zero columns in W (row-wise): " | toString rowZero);
-        print("Zero columns in W (column-wise): " | toString colZero);
+        -- print("Zero columns in W (row-wise): " | toString rowZero);
+        -- print("Zero columns in W (column-wise): " | toString colZero);
         Hbest := instantiateHWithAssignments(H, bestA, SH, baseR);
 
         return Hbest;
