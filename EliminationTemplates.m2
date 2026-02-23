@@ -40,7 +40,7 @@ newPackage(
 export {
     "getH0",
     "shiftPolynomials",
-    -- "getTemplate",
+    "getTemplate",
     "getTemplateMatrix",
     "getActionMatrix",
     "getEigenMatrix",
@@ -444,7 +444,7 @@ doc ///
 --doc ///
  --Node
   --Key
-viewH   --[getTemplate, MonomialOrder]
+--viewH   --[getTemplate, MonomialOrder]
   --Headline
     --the monomial order used on the ambient ring, 
   --Usage
