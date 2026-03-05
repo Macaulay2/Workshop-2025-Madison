@@ -37,6 +37,9 @@ newPackage(
     AuxiliaryFiles => true
 )
 
+-- Greedy-specific helper routines are maintained separately for readability.
+load "./EliminationTemplates/GreedyHelpers.m2"
+
 export {
     "getH0",
     "shiftPolynomials",
@@ -73,20 +76,31 @@ eliminationTemplate (RingElement, Ideal) := o -> (aVar, J) -> (
     }
 )
 
+net EliminationTemplate := E -> (
+    str := " action variable: " | toString(actionVariable E);
+    if E.cache#?"templateMatrix" then str = "Template matrix:\n" | net(E.cache#"templateMatrix") | str;
+    if E.cache#?"actionMatrix" then str = "Action matrix:\n" | net(E.cache#"actionMatrix") | str;
+    str
+)
+
+copyTemplate = method(Options => {})
+copyTemplate(EliminationTemplate, Ideal) := o -> (E, J) -> (
+    F := eliminationTemplate(E#"actionVariable", J);
+    -- anything else to copy??
+    F.cache#basis = basis E;
+    F
+)
+
 actionVariable = method()
 actionVariable EliminationTemplate := E -> E#"actionVariable"
-
 ideal EliminationTemplate := E -> E#ideal
-
--- Greedy-specific helper routines are maintained separately for readability.
-load "./EliminationTemplates/GreedyHelpers.m2"
-
+basis EliminationTemplate := o -> E -> E.cache#basis
 
 getH0 = method(Options => {MonomialOrder => null, Strategy => null})
 getH0 (RingElement, Ideal) := o -> (a, J) -> (
     R := ring J;
     B := basis(R/J);
-    H0 := getH0(a, B, J, o)
+    getH0(a, B, J, o)
 )    
 getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     R := ring J;
@@ -105,6 +119,7 @@ getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     assert(gens F * HGF - gens G == 0);
     H0 := HGF * HVG;
     H0 = sub(H0, ring J);
+
     if (o.Strategy === null) then (
         print("Using default strategy to compute H0.");
         H0
@@ -152,15 +167,13 @@ getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
         print("Greedy selected: " | bestName | " strategy.");
         -- print("Zero columns in W (row-wise): " | toString rowZero);
         -- print("Zero columns in W (column-wise): " | toString colZero);
-        Hbest := instantiateHWithAssignments(H, bestA, SH, baseR);
-
-        return Hbest;
+        instantiateHWithAssignments(H, bestA, SH, baseR)
     )
     else if (o.Strategy == "Larsson") then (
 	      print("Using Larsson's strategy to compute H0.");
-        ret := H0 % image(syz(gens(J)));
-        ret
-    ) else (error "Strategy not yet implemented.") 
+        H0 % image(syz(gens(J)))
+    )
+    else (error "Strategy not yet implemented.") 
 )
 
 shiftPolynomials = (shifts, J) -> (
@@ -169,6 +182,21 @@ shiftPolynomials = (shifts, J) -> (
 )
 
 getTemplate = method(Options => {MonomialOrder => null, Strategy => null})
+getTemplate(EliminationTemplate) := o -> E -> (
+    J := ideal E;
+    a := actionVariable E;
+
+    R := ring J;
+    K := coefficientRing R;
+    ringVars := flatten entries vars R;
+    R = K[prepend("s", ringVars), MonomialOrder => Eliminate 1];
+    I := sub(J, R) + ideal(R_0 - sub(a, R));
+    actVar := R_0;
+
+    B := lift(basis(R/I), R);
+    E.cache#basis = B;
+    getTemplate(actVar, B, I, o)
+)
 getTemplate(RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     H0 := getH0(a, B, J, o);
     shifts := new ShiftSet from apply(numgens J, i -> monomials(H0^{i}));
@@ -179,15 +207,6 @@ getTemplate(RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     monsE := allMons - union(monsR, monsB);
     monomialPartition := new MonomialPartition from rsort \ toList \ {monsE, monsR, monsB};
     (shifts, monomialPartition)
-)
-getTemplate(EliminationTemplate) := o -> E -> (
-    aVar := actionVariable E;
-    J := ideal E;
-    R := ring J;
-    B := lift(basis(R/J), R);
-    E.cache#basis = B;
-    (sh, mp) := getTemplate(aVar, B, J, o);
-    (sh, mp)
 )
 
 getTemplateMatrix = method(Options => {MonomialOrder => null, Strategy => null})
@@ -203,18 +222,16 @@ getTemplateMatrix(EliminationTemplate) := o -> E -> (
     if (E.cache#?"lastTemplateStrategy" === o.Strategy) and (E.cache#?"templateMatrix") then E.cache#"templateMatrix" else (
         (shifts, monomialPartition) := getTemplate(E, o);
         J := ideal E;
-        ret := getTemplateMatrix(shifts, monomialPartition, J, o);
+        R := ring J;
+        K := coefficientRing R;
+        ringVars := flatten entries vars R;
+        R = K[prepend("s", ringVars), MonomialOrder => Eliminate 1];
+        I := sub(J, R) + ideal(R_0 - sub(actionVariable E, R));
+        ret := getTemplateMatrix(shifts, monomialPartition, I, o);
         E.cache#"templateMatrix" = ret;
         E.cache#"lastTemplateStrategy" = o.Strategy;
         ret
     )
-)
-    
-net EliminationTemplate := E -> (
-    str := " action variable: " | toString(actionVariable E);
-    if E.cache#?"templateMatrix" then str = "Template matrix:\n" | net(E.cache#"templateMatrix") | str;
-    if E.cache#?"actionMatrix" then str = "Action matrix:\n" | net(E.cache#"actionMatrix") | str;
-    str
 )
 
 getActionMatrix = method(Options => {MonomialOrder => null, Strategy => null})
@@ -239,13 +256,14 @@ getActionMatrix(RingElement, MonomialPartition, Matrix) := o -> (actVar, mp, M) 
     if #extraMonomials > 0 then (
         binaryMatrix := matrix apply(extraMonomials, m -> apply(mp#2, n -> if m == n then 1_CC else 0_CC));
         A || binaryMatrix
-	) else A
+	  ) else A
 )
 getActionMatrix(EliminationTemplate) := o -> E -> (
     if (E.cache#?"lastActionStrategy" === o.Strategy) and E.cache#?"actionMatrix" then E.cache#"actionMatrix" else (
-        actVar := actionVariable E;
         (sh, mp) := getTemplate E;
         templateMatrix := getTemplateMatrix E;
+        R := ring first first mp;
+        actVar := R_0;
         ret := getActionMatrix(actVar, mp, templateMatrix);
 	      E.cache#"actionMatrix" = ret;
         E.cache#"lastActionStrategy" = o.Strategy;
@@ -253,10 +271,14 @@ getActionMatrix(EliminationTemplate) := o -> E -> (
     )
 )
 
-basis EliminationTemplate := o -> E -> E.cache#basis
-
 getEigenMatrix = method(Options => {MonomialOrder => null})
-getEigenMatrix(EliminationTemplate) := o -> (E) -> getEigenMatrix(actionVariable E, ideal E, o)
+getEigenMatrix(EliminationTemplate) := o -> (E) -> (
+    Ma := getActionMatrix(E);
+    (svals, P) := eigenvectors Ma;
+    cleanEvecs := clean_(1e-10) (P * inverse diagonalMatrix(P^{numColumns P - 1}));
+
+    (transpose rsort basis E, cleanEvecs)
+)
 getEigenMatrix(Ideal) := o -> (I) -> getEigenMatrix(random(1, ring I), I, o)
 getEigenMatrix(RingElement, Ideal) := o -> (a, J) -> (
     R := ring J;
@@ -267,9 +289,9 @@ getEigenMatrix(RingElement, Ideal) := o -> (a, J) -> (
     actvar := R_0;
     
     B := lift(basis(R/I), R);
-    (sh, mp) := getTemplate(actvar, B, I);
-    M := getTemplateMatrix(sh, mp, I);
-    Ma := getActionMatrix(actvar, mp, M);
+    (sh, mp) := getTemplate(actvar, B, I, o);
+    M := getTemplateMatrix(sh, mp, I, o);
+    Ma := getActionMatrix(actvar, mp, M, o);
     (svals, P) := eigenvectors Ma;
     cleanEvecs := clean_(1e-10) (P * inverse diagonalMatrix(P^{numColumns P - 1}));
 
@@ -277,10 +299,19 @@ getEigenMatrix(RingElement, Ideal) := o -> (a, J) -> (
 )
 
 templateSolve = method(Options => {MonomialOrder => null})
-templateSolve(EliminationTemplate) := o -> (E) -> templateSolve(actionVariable E, ideal E, o)
+templateSolve(EliminationTemplate) := o -> (E) -> (
+    (B, M) := getEigenMatrix(E, o);
+    recoverSolutions(B, M, ideal E)
+)
 templateSolve(Ideal) := o -> (I) -> templateSolve(random(1,ring I), I, o)
 templateSolve(RingElement, Ideal) := o -> (a, J) -> (
-    (B, M) := getEigenMatrix(a, J);
+    (B, M) := getEigenMatrix(a, J, o);
+    recoverSolutions(B, M, J)
+)
+
+-- Helper method, don't export
+recoverSolutions = method()
+recoverSolutions(Matrix, Matrix, Ideal) := (B, M, J) -> (
     basisMons := apply(flatten entries B, m -> sub(m, ring J));
     solutions := {};
     varsList := flatten entries vars ring J;
@@ -319,15 +350,6 @@ templateSolve(RingElement, Ideal) := o -> (a, J) -> (
         solutions = append(solutions, root);
     );
     solutions
-)
-
-copyTemplate=method(Options => {})
-copyTemplate(EliminationTemplate, Ideal) := o -> (E,J) -> (
-    F := eliminationTemplate(E#"actionVariable", J);
---    F.cache#"shifts"=E.cache#"shifts";
---    F.cache#"monomialPartition"=E.cache#"monomialPartition";
-    F.cache#"basis"=basis(E);
-    F
 )
 
 beginDocumentation()
@@ -552,87 +574,84 @@ doc ///
 ///
 
 TEST ///
-R = QQ[x,y]
-J = ideal(x^2+y^2-1,x^2+x*y+y^2-1)
-actVar = x
-B = lift(basis(R/J), R)
-(sh, mp) = getTemplate(actVar, B, J)
-M = getTemplateMatrix(sh, mp, J)
-Ma = getActionMatrix(actVar, mp, M) 
-evals = eigenvalues Ma
-assert(all(sort evals, {-1,0,0,1}, (e1, e2) -> abs(e1 - e2) < 1e-4))
+  R = QQ[x,y]
+  J = ideal(x^2+y^2-1,x^2+x*y+y^2-1)
+  actVar = x
+  B = lift(basis(R/J), R)
+  (sh, mp) = getTemplate(actVar, B, J)
+  M = getTemplateMatrix(sh, mp, J)
+  Ma = getActionMatrix(actVar, mp, M) 
+  evals = eigenvalues Ma
+  assert(all(sort evals, {-1,0,0,1}, (e1, e2) -> abs(e1 - e2) < 1e-4))
 ///
 
 TEST ///
-R = QQ[x,y]
-J = ideal(x^3 + y^2 - 1, x - y - 1)
-B = lift(basis(R/J), R)
-getH0(x, B, J)
-(sh, mp) = getTemplate(x, B, J)
-M = getTemplateMatrix(x, B, J)
-Mx = getActionMatrix(x, mp, M)
-evals = eigenvalues Mx
-assert(all(sort evals, {-2,0,1}, (e1, e2) -> abs(e1 - e2) < 1e-4))
+  R = QQ[x,y]
+  J = ideal(x^3 + y^2 - 1, x - y - 1)
+  B = lift(basis(R/J), R)
+  getH0(x, B, J)
+  (sh, mp) = getTemplate(x, B, J)
+  M = getTemplateMatrix(x, B, J)
+  Mx = getActionMatrix(x, mp, M)
+  evals = eigenvalues Mx
+  assert(all(sort evals, {-2,0,1}, (e1, e2) -> abs(e1 - e2) < 1e-4))
 ///
 
 TEST ///
-R = QQ[x,y,z]
-J = ideal(x^3+y^3+z^3-4,x^2-y-z-1,x-y^2+z-3)
-E = eliminationTemplate(x, J)
---H0 = getH0(x,J,Strategy=>"Larsson")
---H0 = getH0(x,J,Strategy=> null)
-getTemplateMatrix E
-getTemplateMatrix(E, Strategy => "Greedy")
-getActionMatrix E
-eigenvalues getActionMatrix E
+  R = QQ[x,y,z]
+  J = ideal(x^3+y^3+z^3-4,x^2-y-z-1,x-y^2+z-3)
+  E = eliminationTemplate(x, J)
+  --H0 = getH0(x,J,Strategy=>"Larsson")
+  --H0 = getH0(x,J,Strategy=> null)
+  getTemplateMatrix E
+  -- getTemplateMatrix(E, Strategy => "Greedy")
+  getActionMatrix E
+  eigenvalues getActionMatrix E
 ///
 
 TEST ///
-R = QQ[x,y,z]
-J = ideal(x^3+y^3+z^3-4,x^2-y-z-1,x-y^2+z-3)
-E1 = eliminationTemplate(x, J)
-E2 = eliminationTemplate(x, J)
-E3 = eliminationTemplate(x, J)
---H0 = getH0(x,J,Strategy=>"Larsson")
---H0 = getH0(x,J,Strategy=> null)
-getTemplateMatrix(E1, Strategy => null)
-getActionMatrix E1
-eigenvalues getActionMatrix E1
-getTemplateMatrix(E2, Strategy => "Larsson")
-getActionMatrix E2
-eigenvalues getActionMatrix E2
-getTemplateMatrix(E3, Strategy => "Greedy")
-getActionMatrix E3
-eigenvalues getActionMatrix E3
+  R = QQ[x,y,z]
+  J = ideal(x^3+y^3+z^3-4,x^2-y-z-1,x-y^2+z-3)
+  E1 = eliminationTemplate(x, J)
+  E2 = eliminationTemplate(x, J)
+  E3 = eliminationTemplate(x, J)
+  --H0 = getH0(x,J,Strategy=>"Larsson")
+  --H0 = getH0(x,J,Strategy=> null)
+  getTemplateMatrix(E1, Strategy => null)
+  getActionMatrix E1
+  eigenvalues getActionMatrix E1
+  getTemplateMatrix(E2, Strategy => "Larsson")
+  getActionMatrix E2
+  eigenvalues getActionMatrix E2
+  getTemplateMatrix(E3, Strategy => "Greedy")
+  getActionMatrix E3
+  eigenvalues getActionMatrix E3
 ///
 
-TEST ///
--- 5-point essential matrix problem
-R = QQ[x,y,z]
-Es = apply(4, i -> random(QQ^3, QQ^3))
-E = x * Es#0 + y * Es#1 + z * Es#2 + Es#3  -- essential matrix
-I = ideal(E*transpose E * E - (1/2) * trace(E * transpose E) * E)  -- Demazure constraints
-l = random(1, R)
-sols=templateSolve(l, I)
-assert(all(sols, x -> 1e-6 > norm sub(sub(gens I, CC[gens R]), matrix{x})))
+TEST /// -- 5-point essential matrix problem
+  R = QQ[x,y,z]
+  Es = apply(4, i -> random(QQ^3, QQ^3))
+  E = x * Es#0 + y * Es#1 + z * Es#2 + Es#3  -- essential matrix
+  I = ideal(E*transpose E * E - (1/2) * trace(E * transpose E) * E)  -- Demazure constraints
+  l = random(1, R)
+  sols=templateSolve(l, I)
+  assert(all(sols, x -> 1e-6 > norm sub(sub(gens I, CC[gens R]), matrix{x})))
 ///
 
-TEST ///
--- change of ideals
-R=QQ[x,y]
-I=ideal(x^2+y^2-1,x^2+y^3+x*y-2)
-J=ideal(x^2+y^2-2,x^2+y^3+3*x*y-5)
-B=basis(R/I)
-E=eliminationTemplate(x+4*y,I)
-getTemplate(E)
-getEigenMatrix(E)
-sols = templateSolve(E)
-assert(all(sols, x -> 1e-6 > norm sub(sub(gens I, QQ[gens R]), matrix{x})))
+TEST /// -- change of ideals
+  R=QQ[x,y]
+  I=ideal(x^2+y^2-1,x^2+y^3+x*y-2)
+  E=eliminationTemplate(x+4*y,I)
+  --getTemplate(E)
+  --getEigenMatrix(E)
+  sols = templateSolve(E)
+  assert(all(sols, x -> 1e-6 > norm sub(sub(gens I, QQ[gens R]), matrix{x})))
 
-F=copyTemplate(E,J)
-getEigenMatrix(F)
-sols = templateSolve(F)
-assert(all(sols, x -> 1e-6 > norm sub(sub(gens J, QQ[gens R]), matrix{x})))
+  J=ideal(x^2+y^2-2,x^2+y^3+3*x*y-5)
+  F=copyTemplate(E,J)
+  --getEigenMatrix(F)
+  sols = templateSolve(F)
+  assert(all(sols, x -> 1e-6 > norm sub(sub(gens J, QQ[gens R]), matrix{x})))
 ///
 
 end--
