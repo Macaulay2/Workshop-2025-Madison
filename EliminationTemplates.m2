@@ -189,12 +189,14 @@ getTemplate(EliminationTemplate) := o -> E -> (
     R := ring J;
     K := coefficientRing R;
     ringVars := flatten entries vars R;
-    R = K[prepend("s", ringVars), MonomialOrder => Eliminate 1];
+    MO := if not instance(o.MonomialOrder, Nothing) then o.MonomialOrder else (options R).MonomialOrder;
+    R = K[prepend("s", ringVars), MonomialOrder => {Eliminate 1, MO}];
     I := sub(J, R) + ideal(R_0 - sub(a, R));
     actVar := R_0;
 
     B := lift(basis(R/I), R);
     E.cache#basis = B;
+    E.cache#"graphIdeal" = I;
     getTemplate(actVar, B, I, o)
 )
 getTemplate(RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
@@ -221,13 +223,7 @@ getTemplateMatrix(ShiftSet, MonomialPartition, Ideal) := o -> (shifts, monomialP
 getTemplateMatrix(EliminationTemplate) := o -> E -> (
     if (E.cache#?"lastTemplateStrategy" === o.Strategy) and (E.cache#?"templateMatrix") then E.cache#"templateMatrix" else (
         (shifts, monomialPartition) := getTemplate(E, o);
-        J := ideal E;
-        R := ring J;
-        K := coefficientRing R;
-        ringVars := flatten entries vars R;
-        R = K[prepend("s", ringVars), MonomialOrder => Eliminate 1];
-        I := sub(J, R) + ideal(R_0 - sub(actionVariable E, R));
-        ret := getTemplateMatrix(shifts, monomialPartition, I, o);
+        ret := getTemplateMatrix(shifts, monomialPartition, E.cache#"graphIdeal", o);
         E.cache#"templateMatrix" = ret;
         E.cache#"lastTemplateStrategy" = o.Strategy;
         ret
@@ -284,7 +280,8 @@ getEigenMatrix(RingElement, Ideal) := o -> (a, J) -> (
     R := ring J;
     K := coefficientRing R;
     ringVars := flatten entries vars R;
-    R = K[prepend("s", ringVars), MonomialOrder => Eliminate 1];
+    MO := if not instance(o.MonomialOrder, Nothing) then o.MonomialOrder else (options R).MonomialOrder;
+    R = K[prepend("s", ringVars), MonomialOrder => {Eliminate 1, MO}];
     I := sub(J, R) + ideal(R_0 - sub(a, R));
     actvar := R_0;
     
@@ -634,27 +631,24 @@ TEST /// -- 5-point essential matrix problem
   E = x * Es#0 + y * Es#1 + z * Es#2 + Es#3  -- essential matrix
   I = ideal(E*transpose E * E - (1/2) * trace(E * transpose E) * E)  -- Demazure constraints
   l = random(1, R)
-  sols=templateSolve(l, I)
+  sols = templateSolve(l, I)
   assert(all(sols, x -> 1e-6 > norm sub(sub(gens I, CC[gens R]), matrix{x})))
 ///
 
 TEST /// -- change of ideals
-  R=QQ[x,y]
-  I=ideal(x^2+y^2-1,x^2+y^3+x*y-2)
-  E=eliminationTemplate(x+4*y,I)
-  --getTemplate(E)
-  --getEigenMatrix(E)
+  R = QQ[x,y]
+  I = ideal(x^2+y^2-1,x^2+y^3+x*y-2)
+  E = eliminationTemplate(x+4*y,I)
   sols = templateSolve(E)
   assert(all(sols, x -> 1e-6 > norm sub(sub(gens I, QQ[gens R]), matrix{x})))
 
-  J=ideal(x^2+y^2-2,x^2+y^3+3*x*y-5)
-  F=copyTemplate(E,J)
-  --getEigenMatrix(F)
+  J = ideal(x^2+y^2-2,x^2+y^3+3*x*y-5)
+  F = copyTemplate(E,J)
   sols = templateSolve(F)
   assert(all(sols, x -> 1e-6 > norm sub(sub(gens J, QQ[gens R]), matrix{x})))
 ///
 
-end--
+end
 
 -* Development section *-
 -- basic solve, compare with known solution
