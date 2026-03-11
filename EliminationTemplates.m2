@@ -535,8 +535,9 @@ doc ///
     Outputs
       F:EliminationTemplate
         an EliminationTemplate object
-    --Description
-      --Text
+    Description
+      Text
+        This method copies an elimination template object, using the same action variable and basis, but a different defining ideal.
       --Example
     SeeAlso
       eliminationTemplate
@@ -550,27 +551,50 @@ doc ///
       (getTemplateMatrix, ShiftSet, MonomialPartition, Ideal)
       (getTemplateMatrix, EliminationTemplate)
     --Headline
-    --Usage
-    --Inputs
-    --Outputs
+    Usage
+      M = (a, B, J)
+      M = getTemplateMatrix(sh, mp, J)
+      getTemplateMatrix(E)
+    Inputs
+      a:RingElement
+      B:Matrix
+      E:EliminationTemplate
+        the elimination template for this problem
+      J:Ideal
+      MonomialOrder=>Thing
+        the monomial order used on the ambient ring
+      mp:MonomialPartition
+      sh:ShiftSet
+      Strategy=>Thing
+        the strategy used to compute H0
+    Outputs
+      M:Matrix
     --Description
       --Text
       --Example
-    --SeeAlso
+    SeeAlso
+      EliminationTemplate
 ///
 
 doc ///
  Node
     Key
       actionVariable
-    --Headline
-    --Usage
-    --Inputs
-    --Outputs
+    Headline
+      returns the action variable associated to the elimination template
+    Usage
+      actionVariable(E)
+    Inputs
+      E:EliminationTemplate
+        the elimination template for this problem
+    Outputs
+      a:RingElement
+        the action variable associated to E
     --Description
       --Text
       --Example
-    --SeeAlso
+    SeeAlso
+      EliminationTemplate
 ///
 
 TEST ///
@@ -667,7 +691,7 @@ B=basis(R/J)
 getEigenMatrix(x,J)
 templateSolve(x, J)
 templateSolve(x+2*y+3*z,J)
-templateSolve(x,J)
+templateSolve(x,J) -- Why do we have two of these lines?
 netList solveSystem J_*
 
 -- change of basis
