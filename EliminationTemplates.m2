@@ -208,7 +208,7 @@ getTemplateHelper = (a, B, J, o) -> (
 
 getTemplate = method(Options => {MonomialOrder => null, Strategy => null})
 getTemplate(EliminationTemplate) := o -> E -> (
-    if E.cache#?"monomialPartition" and E.cache#?"lastTemplateStrategy" === o.Strategy then (
+    if E.cache#?"monomialPartition" and E.cache#?"lastTemplateStrategy" and E.cache#"lastTemplateStrategy" === o.Strategy then (
         (E.cache#"shifts", E.cache#"monomialPartition")
     ) else (
         J := ideal E;
@@ -264,7 +264,7 @@ getTemplateMatrix(ShiftSet, MonomialPartition, Ideal) := o -> (shifts, monomialP
     sub(transpose fold(apply(shiftPolynomials(shifts, J), m -> last coefficients(m, Monomials => allMons)), (a,b) -> a|b), coefficientRing ring J)
 )
 getTemplateMatrix(EliminationTemplate) := o -> E -> (
-    if (E.cache#?"lastTemplateStrategy" === o.Strategy) and (E.cache#?"templateMatrix") then E.cache#"templateMatrix" else (
+    if (E.cache#?"lastTemplateStrategy") and (E.cache#"lastTemplateStrategy" === o.Strategy) and (E.cache#?"templateMatrix") then E.cache#"templateMatrix" else (
         (shifts, monomialPartition) := getTemplate(E, o);
         ret := getTemplateMatrix(shifts, monomialPartition, E.cache#"graphIdeal", o);
         E.cache#"templateMatrix" = ret;
@@ -289,7 +289,7 @@ getActionMatrix(RingElement, MonomialPartition, Matrix) := o -> (actVar, mp, M) 
     MbotE * X - MbotB
 )
 getActionMatrix(EliminationTemplate) := o -> E -> (
-    if (E.cache#?"lastActionStrategy" === o.Strategy) and E.cache#?"actionMatrix" then E.cache#"actionMatrix" else (
+    if (E.cache#?"lastActionStrategy") and (E.cache#"lastActionStrategy" === o.Strategy) and E.cache#?"actionMatrix" then E.cache#"actionMatrix" else (
         (sh, mp) := getTemplate(E, o);
         templateMatrix := getTemplateMatrix(E, o);
         
@@ -598,23 +598,21 @@ TEST ///
   R = QQ[x,y,z]
   J = ideal(x^3+y^3+z^3-4,x^2-y-z-1,x-y^2+z-3)
   -- 3 templates, 3 strategies
-  E1 = eliminationTemplate(x, J)
-  E2 = eliminationTemplate(x, J)
-  E3 = eliminationTemplate(x, J)
+  E1 = eliminationTemplate(x, J);
+  E2 = eliminationTemplate(x, J);
+  E3 = eliminationTemplate(x, J);
   -- Test 1: Default Strategy
   M1 = getActionMatrix(E1);
   evals1 = eigenvalues M1;
   assert(#evals1 == 12)
   -- Test 2: Larsson Strategy
   M2 = getActionMatrix(E2, Strategy => "Larsson");
-  evals2 = eigenvalues M2
-  assert(#evals2 == 12)
-  -- Test 3: Greedy Strategy -- !! this is a good example, but 20s is probably too slow for a test
--*
+  evals2 = eigenvalues M2;
+  assert(#evals2 == 12);
+  -- Test 3: Greedy Strategy
   M3 = getActionMatrix(E3, Strategy => "Greedy")
   evals3 = eigenvalues M3
   assert(#evals3 == 12)
-*-
 ///
 
 TEST /// -- 5-point essential matrix problem
