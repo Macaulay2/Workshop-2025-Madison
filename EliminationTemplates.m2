@@ -182,6 +182,51 @@ shiftPolynomials = (shifts, J) -> (
 )
 
 getTemplate = method(Options => {MonomialOrder => null, Strategy => null})
+getTemplate(RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
+    H0 := getH0(a, B, J, o);
+    shifts := new ShiftSet from apply(numgens J, i -> monomials(H0^{i}));
+    allMons := union(set \ flatten \ entries \ monomials \ shiftPolynomials(shifts, J));
+    if (allMons == set {}) then error "allMons is empty!";
+    monsB := set flatten entries(lift(B, ring J));
+    monsR := set flatten entries(a * lift(B, ring J)) - set flatten entries(lift(B, ring J));
+    monsE := allMons - union(monsR, monsB);
+    monomialPartition := new MonomialPartition from rsort \ toList \ {monsE, monsR, monsB};
+    (shifts, monomialPartition)
+)
+getTemplate(EliminationTemplate) := o -> E -> (
+    J := ideal E;
+    a := actionVariable E;
+    -- 1. Compute shifts for the original ideal without 's' variable (avoids template matrix bloat)
+    R := ring J;
+    B := lift(basis(R/J), R);
+    (shOrig, mpOrig) := getTemplate(a, B, J, o);
+    -- 2. Set up the extended ring with the 's' variable
+    K := coefficientRing R;
+    ringVars := flatten entries vars R;
+    MO := if not instance(o.MonomialOrder, Nothing) then o.MonomialOrder else (options R).MonomialOrder;
+    Rs := K[prepend("s", ringVars), MonomialOrder => {Eliminate 1, MO}];
+    aS := sub(a, Rs);
+    Js := sub(J, Rs);
+    actVar := Rs_0;
+    Is := Js + ideal(actVar - aS);
+    Bs := sub(B, Rs);
+    -- 3. Construct shifts for the graph ideal Is directly
+    -- The first generators use the original shifts.
+    -- The last generator (s - a) is shifted perfectly by the basis elements Bs.
+    shiftsGraph := new ShiftSet from (
+        apply(shOrig, sh -> sub(sh, Rs)) | {matrix {flatten entries Bs}}
+    );
+    E.cache#basis = Bs;
+    E.cache#"graphIdeal" = Is;
+    -- 4. Construct the monomial partition in the extended ring
+    allMons := union(set \ flatten \ entries \ monomials \ shiftPolynomials(shiftsGraph, Is));
+    monsB := set flatten entries Bs;
+    monsR := set flatten entries(actVar * Bs);
+    monsE := allMons - union(monsR, monsB);
+    mpGraph := new MonomialPartition from rsort \ toList \ {monsE, monsR, monsB};
+    (shiftsGraph, mpGraph)
+)
+-*
 getTemplate(EliminationTemplate) := o -> E -> (
     J := ideal E;
     a := actionVariable E;
@@ -199,17 +244,7 @@ getTemplate(EliminationTemplate) := o -> E -> (
     E.cache#"graphIdeal" = I;
     getTemplate(actVar, B, I, o)
 )
-getTemplate(RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
-    H0 := getH0(a, B, J, o);
-    shifts := new ShiftSet from apply(numgens J, i -> monomials(H0^{i}));
-    allMons := union(set \ flatten \ entries \ monomials \ shiftPolynomials(shifts, J));
-    if (allMons == set {}) then error "allMons is empty!";
-    monsB := set flatten entries(lift(B, ring J));
-    monsR := set flatten entries(a * lift(B, ring J)) - set flatten entries(lift(B, ring J));
-    monsE := allMons - union(monsR, monsB);
-    monomialPartition := new MonomialPartition from rsort \ toList \ {monsE, monsR, monsB};
-    (shifts, monomialPartition)
-)
+*-
 
 getTemplateMatrix = method(Options => {MonomialOrder => null, Strategy => null})
 getTemplateMatrix(RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
@@ -650,6 +685,26 @@ TEST /// -- change of ideals
 
 end
 
+
+-- 5-point essential matrix problem: DEBUGGING TEMPLATE SIZE & STRATEGY
+restart
+path = prepend("./", path)
+needsPackage "EliminationTemplates"
+check "EliminationTemplates"
+R = QQ[x,y,z]
+Es = apply(4, i -> random(QQ^3, QQ^3))
+E = x * Es#0 + y * Es#1 + z * Es#2 + Es#3  -- essential matrix
+I = ideal(E*transpose E * E - (1/2) * trace(E * transpose E) * E, det E);  -- Demazure constraints
+--l = random(1, R)
+l = y
+ET = eliminationTemplate(l, I)
+printWidth = 10000
+getTemplateMatrix ET
+getTemplateMatrix(ET, Strategy => "Greedy"); -- 15 x 44
+getTemplateMatrix(ET, Strategy => "Larsson"); -- 24 x 44
+
+
+
 -* Development section *-
 -- basic solve, compare with known solution
 restart
@@ -721,12 +776,15 @@ viewHelp "EliminationTemplates"
 
 -- 5-point essential matrix problem: DEBUGGING TEMPLATE SIZE & STRATEGY
 restart
+path = prepend("./", path)
 needsPackage "EliminationTemplates"
 R = QQ[x,y,z]
 Es = apply(4, i -> random(QQ^3, QQ^3))
 E = x * Es#0 + y * Es#1 + z * Es#2 + Es#3  -- essential matrix
-I = ideal(E*transpose E * E - (1/2) * trace(E * transpose E) * E);  -- Demazure constraints
-l = random(1, R)
+I = ideal(E*transpose E * E - (1/2) * trace(E * transpose E) * E, det E);  -- Demazure constraints
+--l = random(1, R)
+(sh, mp) = getTemplate ET
+l = y
 ET = eliminationTemplate(l, I)
 getTemplateMatrix(ET); -- 27 X 44
 getTemplateMatrix(ET, Strategy => "Greedy"); -- 15 x 44
