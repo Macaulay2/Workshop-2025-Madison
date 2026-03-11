@@ -78,32 +78,6 @@ net EliminationTemplate := E -> (
     str
 )
 
-copyTemplate = method(Options => {})
-copyTemplate(EliminationTemplate, Ideal) := o -> (E, J) -> (
-    Rnew := ring J;
-    
-    -- 1. Safely substitute the action variable into the new ring 
-    aNew := sub(actionVariable E, Rnew);
-    F := eliminationTemplate(aNew, J);
-    
-    -- 2. Promote and copy the basis 
-    F.cache#basis = sub(basis E, Rnew);
-    
-    -- 3. Promote and copy the offline structure (fixed list substitution) 
-    if E.cache#?"shifts" then 
-        F.cache#"shifts" = apply(E.cache#"shifts", sh -> sub(sh, Rnew));
-        
-    if E.cache#?"monomialPartition" then 
-        -- Deep apply: monomialPartition is a List of Lists 
-        F.cache#"monomialPartition" = apply(E.cache#"monomialPartition", 
-            mons -> apply(mons, m -> sub(m, Rnew)));
-        
-    if E.cache#?"graphIdeal" then
-        F.cache#"graphIdeal" = sub(E.cache#"graphIdeal", Rnew);
-
-    F
-)
-
 actionVariable = method()
 actionVariable EliminationTemplate := E -> E#"actionVariable"
 ideal EliminationTemplate := E -> E#ideal
@@ -136,7 +110,7 @@ getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     if (o.Strategy === null) then (
         H0
     )
-    else if (o.Strategy == "Greedy") then (
+    else if (o.Strategy === "Greedy") then (
         print("Using Greedy strategy to compute H0.");
         -- compute H = H0^T + Theta*H1, where H1 is the transposed syzygy matrix.
         -- We keep columns aligned with generators of J for downstream greedy helpers.
@@ -181,7 +155,7 @@ getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
         -- print("Zero columns in W (column-wise): " | toString colZero);
         instantiateHWithAssignments(H, bestA, SH, baseR)
     )
-    else if (o.Strategy == "Larsson") then (
+    else if (o.Strategy === "Larsson") then (
         print("Using Larsson's strategy to compute H0.");
         -- Ensure the reduction stays in the base ring R
         H0res := H0 % image(syz(gens(J)));
@@ -195,7 +169,6 @@ shiftPolynomials = (shifts, J) -> (
     apply(shifts, J_*, (m, f) -> f * sub(m, ring J))
 )
 
-
 getTemplateHelper = (a, B, J, o) -> (
     H0 := getH0(a, B, J, o);
     shifts := new ShiftSet from apply(numgens J, i -> monomials(H0^{i}));
@@ -208,7 +181,7 @@ getTemplateHelper = (a, B, J, o) -> (
 
 getTemplate = method(Options => {MonomialOrder => null, Strategy => null})
 getTemplate(EliminationTemplate) := o -> E -> (
-    if E.cache#?"monomialPartition" and E.cache#?"lastTemplateStrategy" and E.cache#"lastTemplateStrategy" === o.Strategy then (
+    if E.cache#?"monomialPartition" and (o.Strategy === null or (E.cache#?"lastPartitionStrategy" and E.cache#"lastPartitionStrategy" === o.Strategy)) then (
         (E.cache#"shifts", E.cache#"monomialPartition")
     ) else (
         J := ideal E;
@@ -216,59 +189,85 @@ getTemplate(EliminationTemplate) := o -> E -> (
         R := ring J;
         B := lift(basis(R/J), R);
 
-        -- Step A: Compute original ideal shifts in base ring R
         (shOrig, mpOrig) := getTemplateHelper(a, B, J, o);
 
-        -- Step B: Transition to the extended s-ring (Rs)
         K := coefficientRing R;
         ringVars := flatten entries vars R;
         MO := if not instance(o.MonomialOrder, Nothing) then o.MonomialOrder else (options R).MonomialOrder;
         Rs := K[prepend("s", ringVars), MonomialOrder => {Eliminate 1, MO}];
-        
-        aS := sub(a, Rs);
-        Js := sub(J, Rs);
+
+        toRs := map(Rs, R, apply(numgens R, i -> Rs_(i+1)));
+
+        aS := toRs(a);
+        JsGens := toRs(gens J);
         actVar := Rs_0;
-        Is := Js + ideal(actVar - aS);
-        Bs := sub(B, Rs);
-        sortedBs := rsort flatten entries Bs;
         
-        -- Step C: Build the structural graph ideal shifts
+        Is := ideal(JsGens | matrix{{actVar - aS}});
+
+        Bs := toRs(B);
+        sortedBs := rsort flatten entries Bs;
+
         shiftsGraph := new ShiftSet from (
-            apply(shOrig, sh -> sub(sh, Rs)) | {matrix {sortedBs}}
+            apply(shOrig, sh -> toRs(sh)) | {matrix {sortedBs}}
         );
 
-        -- Step D: Final Partitioning in Rs
         allMons := union(set \ flatten \ entries \ monomials \ shiftPolynomials(shiftsGraph, Is));
         monsB := set sortedBs;
         monsR := set apply(sortedBs, b -> actVar * b);
         monsE := allMons - union(monsR, monsB);
         mpGraph := new MonomialPartition from rsort \ toList \ {monsE, monsR, monsB};
 
-        -- Cache and Return
         E.cache#basis = Bs;
         E.cache#"graphIdeal" = Is;
         E.cache#"shifts" = shiftsGraph;
         E.cache#"monomialPartition" = mpGraph;
-        E.cache#"lastTemplateStrategy" = o.Strategy;
+        E.cache#"lastPartitionStrategy" = o.Strategy;
         (shiftsGraph, mpGraph)
     )
 )
 
+copyTemplate = method(Options => {})
+copyTemplate(EliminationTemplate, Ideal) := o -> (E, J) -> (
+    Rnew := ring J;
+    aNew := sub(actionVariable E, Rnew);
+    F := eliminationTemplate(aNew, J);
+    
+    F.cache#basis = E.cache#basis;
+    
+    if E.cache#?"graphIdeal" then (
+        Rs := ring E.cache#"graphIdeal";
+        
+        if E.cache#?"shifts" then F.cache#"shifts" = E.cache#"shifts";
+        if E.cache#?"monomialPartition" then F.cache#"monomialPartition" = E.cache#"monomialPartition";
+        if E.cache#?"lastPartitionStrategy" then F.cache#"lastPartitionStrategy" = E.cache#"lastPartitionStrategy";
+            
+        toRs := map(Rs, Rnew, apply(numgens Rnew, i -> Rs_(i+1)));
+        JsGens := toRs(gens J);
+        aS := toRs(aNew);
+        actVar := Rs_0;
+        
+        F.cache#"graphIdeal" = ideal(JsGens | matrix{{actVar - aS}});
+    );
+    F
+)
+
 getTemplateMatrix = method(Options => {MonomialOrder => null, Strategy => null})
 getTemplateMatrix(RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
-    (shifts, monomialPartition) := getTemplate(a, B, J, o);
+    (shifts, monomialPartition) := getTemplate(eliminationTemplate(a, J), o);
     getTemplateMatrix(shifts, monomialPartition, J, o)
 )
 getTemplateMatrix(ShiftSet, MonomialPartition, Ideal) := o -> (shifts, monomialPartition, J) -> (
-    allMons := apply(monomialPartition#0 | monomialPartition#2, m -> sub(m, ring J));
+    allMons := monomialPartition#0 | monomialPartition#2;
     sub(transpose fold(apply(shiftPolynomials(shifts, J), m -> last coefficients(m, Monomials => allMons)), (a,b) -> a|b), coefficientRing ring J)
 )
 getTemplateMatrix(EliminationTemplate) := o -> E -> (
-    if (E.cache#?"lastTemplateStrategy") and (E.cache#"lastTemplateStrategy" === o.Strategy) and (E.cache#?"templateMatrix") then E.cache#"templateMatrix" else (
+    if E.cache#?"templateMatrix" and (o.Strategy === null or (E.cache#?"lastMatrixStrategy" and E.cache#"lastMatrixStrategy" === o.Strategy)) then (
+        E.cache#"templateMatrix"
+    ) else (
         (shifts, monomialPartition) := getTemplate(E, o);
         ret := getTemplateMatrix(shifts, monomialPartition, E.cache#"graphIdeal", o);
         E.cache#"templateMatrix" = ret;
-        E.cache#"lastTemplateStrategy" = o.Strategy;
+        E.cache#"lastMatrixStrategy" = o.Strategy;
         ret
     )
 )
@@ -285,15 +284,15 @@ getActionMatrix(RingElement, MonomialPartition, Matrix) := o -> (actVar, mp, M) 
     X := solve(MtopE, MtopB);
     MbotE := M_{0 .. numE-1}^{numTop .. m-1};
     MbotB := M_{numE .. n-1}^{numTop .. m-1};
-    -- Schur complement
     MbotE * X - MbotB
 )
 getActionMatrix(EliminationTemplate) := o -> E -> (
-    if (E.cache#?"lastActionStrategy") and (E.cache#"lastActionStrategy" === o.Strategy) and E.cache#?"actionMatrix" then E.cache#"actionMatrix" else (
+    if E.cache#?"actionMatrix" and (o.Strategy === null or (E.cache#?"lastActionStrategy" and E.cache#"lastActionStrategy" === o.Strategy)) then (
+        E.cache#"actionMatrix"
+    ) else (
         (sh, mp) := getTemplate(E, o);
         templateMatrix := getTemplateMatrix(E, o);
         
-        -- The action variable in the extended ring is always the first variable (Rs_0)
         Rs := ring first first mp;
         actVar := Rs_0;
         
@@ -304,25 +303,25 @@ getActionMatrix(EliminationTemplate) := o -> E -> (
     )
 )
 
-getEigenMatrix = method(Options => {MonomialOrder => null})
+getEigenMatrix = method(Options => {MonomialOrder => null, Strategy => null})
 getEigenMatrix(EliminationTemplate) := o -> (E) -> (
-    Ma := getActionMatrix(E);
+    Ma := getActionMatrix(E, o);
     (svals, P) := eigenvectors Ma;
     cleanEvecs := clean_(1e-10) (P * inverse diagonalMatrix(P^{numColumns P - 1}));
 
     (transpose rsort basis E, cleanEvecs)
 )
-
 getEigenMatrix(Ideal) := o -> (I) -> getEigenMatrix(random(1, ring I), I, o)
 getEigenMatrix(RingElement, Ideal) := o -> (a, J) -> (
     E := eliminationTemplate(a, J);
     getEigenMatrix(E, o)
 )
 
-templateSolve = method(Options => {MonomialOrder => null})
+templateSolve = method(Options => {MonomialOrder => null, Strategy => null})
 templateSolve(EliminationTemplate) := o -> (E) -> (
-    (B, M) := getEigenMatrix(E, o);
-    recoverSolutions(B, M, ideal E)
+    (Bmat, M) := getEigenMatrix(E, o);
+    templateMat := getTemplateMatrix(E, o);
+    recoverSolutions(Bmat, M, E, templateMat)
 )
 templateSolve(Ideal) := o -> (I) -> templateSolve(random(1,ring I), I, o)
 templateSolve(RingElement, Ideal) := o -> (a, J) -> (
@@ -330,43 +329,74 @@ templateSolve(RingElement, Ideal) := o -> (a, J) -> (
     templateSolve(E, o)
 )
 
-
--- Helper method, don't export
 recoverSolutions = method()
-recoverSolutions(Matrix, Matrix, Ideal) := (B, M, J) -> (
-    basisMons := apply(flatten entries B, m -> sub(m, ring J));
+recoverSolutions(Matrix, Matrix, EliminationTemplate, Matrix) := (Bmat, M, E, templateMat) -> (
+    J := ideal E;
+    Rnew := ring J;
+    
+    mp := E.cache#"monomialPartition";
+    Rs := ring first first mp;
+    
+    toRnew := map(Rnew, Rs, {0_Rnew} | flatten entries vars Rnew);
+    toRs := map(Rs, Rnew, apply(numgens Rnew, i -> Rs_(i+1)));
+    
+    basisMonsRnew := apply(flatten entries Bmat, m -> toRnew(m));
+    
+    monsE := mp#0;
+    monsR := mp#1;
+    monsB := mp#2;
+    
+    numE := length monsE;
+    numR := length monsR;
+    numB := length monsB;
+    numTop := numrows templateMat - numB;
+    
+    -- Pure linear algebra: solve only for the excessive block, skipping action variables
+    MtopE := templateMat_{0 .. numE-1}^{0..numTop-1};
+    MtopB := templateMat_{numE + numR .. numcols templateMat -1}^{0..numTop-1};
+    
+    X := solve(MtopE, MtopB);
+    
     solutions := {};
-    varsList := flatten entries vars ring J;
-
+    varsList := flatten entries vars Rnew;
+    
     for rootIndex from 0 to numColumns M - 1 do (
         monomialValues := new MutableHashTable;
-        for i from 0 to #basisMons - 1 do (
-            m := basisMons#i;
-            monomialValues#m = M_(i, rootIndex);
+        for i from 0 to #basisMonsRnew - 1 do (
+            monomialValues#(basisMonsRnew#i) = M_(i, rootIndex);
         );
-
-        -- TODO: check excessive polynomials first before falling back to Groebner basis
 
         root := {};
         for v in varsList do (
-            -- If the variable is in the basis, use directly
             if monomialValues#?v then (
               root = append(root, monomialValues#v);
             )
             else (
-                -- Otherwise, reduce modulo ideal: x_i mod J
-                r := sub(v % J, ring J);
-
-                -- write r as linear combination of basis monomials
-                coeffs := last coefficients(r, Monomials => basisMons);
-                value := 0;
-                for i from 0 to #basisMons - 1 do (
-                    m := basisMons#i;
-                    if monomialValues#?m then (
-                      value += sub(coeffs_(i,0), coefficientRing ring J) * monomialValues#m;
-                    )
+                vRs := toRs(v);
+                -- Only search monsE, because v is a base ring variable, not an action variable!
+                posInE := position(monsE, m -> m == vRs);
+                if posInE =!= null then (
+                    local val;
+                    val = 0;
+                    for j from 0 to numB - 1 do (
+                        bMapped := toRnew(monsB#j);
+                        val = val - sub(X_(posInE, j), coefficientRing Rnew) * monomialValues#bMapped;
+                    );
+                    root = append(root, val);
+                )
+                else (
+                    r := v % J;
+                    coeffs := last coefficients(r, Monomials => basisMonsRnew);
+                    local val;
+                    val = 0;
+                    for j from 0 to numB - 1 do (
+                        bMapped := basisMonsRnew#j;
+                        if monomialValues#?bMapped then (
+                          val = val + sub(coeffs_(j,0), coefficientRing Rnew) * monomialValues#bMapped;
+                        )
+                    );
+                    root = append(root, val);
                 );
-                root = append(root, value);
             );
         );
         solutions = append(solutions, root);
@@ -643,9 +673,10 @@ end
 
 -- 5-point essential matrix problem: DEBUGGING TEMPLATE SIZE & STRATEGY
 restart
-path = prepend("./", path)
+--path = prepend("./", path)
 needsPackage "EliminationTemplates"
 check "EliminationTemplates"
+installPackage("EliminationTemplates", RemakeAllDocumentation => true)
 R = QQ[x,y,z]
 Es = apply(4, i -> random(QQ^3, QQ^3))
 E = x * Es#0 + y * Es#1 + z * Es#2 + Es#3  -- essential matrix
