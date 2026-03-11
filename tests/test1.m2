@@ -1,4 +1,3 @@
-path = prepend("../", path)
 needsPackage "EliminationTemplates"
 R = QQ[x,y]
 J = ideal(x^3 + y^2 - 1, x - y - 1)
