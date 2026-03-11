@@ -23,11 +23,11 @@ runBenchmarks = () -> (
     results := {};
 
     for testCase in testCases do (
-        --print testCase#"name";
+        print testCase#"name";
         I := testCase#ideal;
 	    a := testCase#"action polynomial";
         template := eliminationTemplate(a, I);
-        templateTest := timing getTemplateMatrix(template);
+        templateTest := timing getTemplateMatrix(template, Strategy=>"Larsson");
         templateTime = templateTest#0;
         M = templateTest#1;
         solveTime := (timing (templateSolve(template)))#0;
@@ -68,8 +68,7 @@ loadRelPoseBenchmarks (List) := (testCases) -> (
     Es := apply(4, i -> random(QQ^3, QQ^3));
     E := x * Es#0 + y * Es#1 + z * Es#2 + Es#3;
     I := ideal(E * transpose E * E - (1/2) * trace(E * transpose E) * E, det E);
-    testCases = testCases | {testCase("Rel. Pose 5pt (random linear form)", I, 10, 20), 
-        testCase("Rel. Pose 5pt (x variable)", I, 10, 20, "action polynomial" => x)};
+    testCases = testCases | {testCase("Rel. Pose 5pt (random linear form)", I, 10, 20)};
 
     -- f+E+f 6pt relative pose
     R = QQ[w,x,y];

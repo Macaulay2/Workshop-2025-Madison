@@ -280,15 +280,12 @@ getActionMatrix(RingElement, MonomialPartition, Matrix) := o -> (actVar, mp, M) 
     m := numrows M;
     n := numcols M;
     numTop := m - numB;
-    -- Slice the top block (original ideal shifts)
-    MtopE := M_{0 .. numE-1}^{0 .. numTop-1};
-    MtopB := M_{numE .. n-1}^{0 .. numTop-1};
-    -- Solve the Excessive block: MtopE * X = MtopB
+    MtopE := M_{0 .. numE-1}^{0..numTop-1};
+    MtopB := M_{numE .. n-1}^{0..numTop-1};
     X := solve(MtopE, MtopB);
-    -- Slice the bottom block (the f*B coefficients in the s-f shifts)
     MbotE := M_{0 .. numE-1}^{numTop .. m-1};
     MbotB := M_{numE .. n-1}^{numTop .. m-1};
-    -- Final Schur complement: A = MbotE * X - MbotB
+    -- Schur complement
     MbotE * X - MbotB
 )
 getActionMatrix(EliminationTemplate) := o -> E -> (
