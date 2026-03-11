@@ -260,7 +260,7 @@ getTemplateMatrix(RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     getTemplateMatrix(shifts, monomialPartition, J, o)
 )
 getTemplateMatrix(ShiftSet, MonomialPartition, Ideal) := o -> (shifts, monomialPartition, J) -> (
-    allMons := apply(fold(monomialPartition, (a,b) -> a|b), m -> sub(m, ring J));
+    allMons := apply(monomialPartition#0 | monomialPartition#2, m -> sub(m, ring J));
     sub(transpose fold(apply(shiftPolynomials(shifts, J), m -> last coefficients(m, Monomials => allMons)), (a,b) -> a|b), coefficientRing ring J)
 )
 getTemplateMatrix(EliminationTemplate) := o -> E -> (
@@ -275,55 +275,21 @@ getTemplateMatrix(EliminationTemplate) := o -> E -> (
 
 getActionMatrix = method(Options => {MonomialOrder => null, Strategy => null})
 getActionMatrix(RingElement, MonomialPartition, Matrix) := o -> (actVar, mp, M) -> (
-    a := length mp#0; -- number of "excessive monomials"
-    b := length mp#1; -- number of "reducible monomials"
-    c := length mp#2; -- number of "basic monomials"
-    (m, n) := (numrows M, numcols M);
-    
-    -- eliminate "excessive monomials" w/ LU
-    Ma := M_{0..a-1};
-    (P, L, U) := LUdecomposition Ma;
-    L = L | matrix apply(m, i -> apply(m - a, j -> if i == j + a then 1_CC else 0_CC));
-    M1 := solve(id_(CC^m)_P * L, sub(M, CC));
-
-    -- extract action matrix from reduced and basic monomials in template
-    Mr := M1_{a..a+b-1}^{m-b..m-1};
-    Mb := M1_{a+b..n-1}^{m-b..m-1};
-    A := -solve(Mr, Mb);
-    
-    extraMonomials := rsort toList(mp#2 - set apply(mp#2, p -> numerator(p/actVar)));
-    if #extraMonomials > 0 then (
-        binaryMatrix := matrix apply(extraMonomials, m -> apply(mp#2, n -> if m == n then 1_CC else 0_CC));
-        A || binaryMatrix
-	  ) else A
-)
-getActionMatrix(RingElement, MonomialPartition, Matrix) := o -> (actVar, mp, M) -> (
     numE := length mp#0;
-    numR := length mp#1;
     numB := length mp#2;
     m := numrows M;
     n := numcols M;
-
-    -- The bottom numR rows are exactly the shifts of s - a.
-    -- The top rows belong to the original ideal J.
-    numTop := m - numR;
-
-    if numE == 0 then (
-        -- If there are no excessive monomials, the action matrix is just the basic block.
-        -M_{numE+numR .. n-1}^{numTop .. m-1}
-    ) else (
-        -- Slice the top block (original ideal shifts)
-        MtopE := M_{0 .. numE-1}^{0 .. numTop-1};
-        MtopB := M_{numE+numR .. n-1}^{0 .. numTop-1};
-
-        -- Slice the bottom block (s - a shifts)
-        MbotE := M_{0 .. numE-1}^{numTop .. m-1};
-        MbotB := M_{numE+numR .. n-1}^{numTop .. m-1};
-
-        -- solve(A,B) finds X such that A*X = B. 
-        -- Action Matrix A = MbotE * X - MbotB
-        MbotE * solve(MtopE, MtopB) - MbotB
-    )
+    numTop := m - numB;
+    -- Slice the top block (original ideal shifts)
+    MtopE := M_{0 .. numE-1}^{0 .. numTop-1};
+    MtopB := M_{numE .. n-1}^{0 .. numTop-1};
+    -- Solve the Excessive block: MtopE * X = MtopB
+    X := solve(MtopE, MtopB);
+    -- Slice the bottom block (the f*B coefficients in the s-f shifts)
+    MbotE := M_{0 .. numE-1}^{numTop .. m-1};
+    MbotB := M_{numE .. n-1}^{numTop .. m-1};
+    -- Final Schur complement: A = MbotE * X - MbotB
+    MbotE * X - MbotB
 )
 getActionMatrix(EliminationTemplate) := o -> E -> (
     if (E.cache#?"lastActionStrategy" === o.Strategy) and E.cache#?"actionMatrix" then E.cache#"actionMatrix" else (
@@ -484,59 +450,6 @@ doc ///
         E = eliminationTemplate(x, J)
 ///
 
---Do not want to export this function potentially?
---doc ///
- --Node
-  --Key
-    --getTemplate
-    --(getTemplate, RingElement, Matrix, Ideal)
-    --(getTemplate, EliminationTemplate)
-  --Headline
-    --extracts a "sparse" representation of an elimination template
-  --Usage
-    --(sh, mp) = getTemplate(a, B, J)
-  --Inputs
-    --a:RingElement
-      --the action polynomial defining a multiplication matrix
-    --B:Matrix
-      --a basis for a zero-dimensional quotient ring
-    --J:Ideal
-      --a zero-dimensional ideal
-  --Outputs
-    --shifts:ShiftSet
-      --A list of matrices, each encoding rows of the template matrix
-    --monomialPartition:MonomialPartition
-      --A list of monomials encoding columns of the template matrix
-  --Description
-    --Text
-      --This method builds an elimination template. It returns a Sequence of length two, which can be used to recover the template matrix.
-
-      --The elements of this sequence encode the rows and columns of a Macaulay matrix (the template matrix.)
-      --The last element consists of lists of three monomials supported on equations indexing the rows of the template matrix.
-      --These are called excessive monomials, reducible monomials, and basic monomials.
-    --Example
-      --R = QQ[x,y];
-      --J = ideal(x^2+y^2-1, x^2+x*y+y^2-1);    
-      --actVar = x;
-      --B = lift(basis(R/J), R);
-      --(sh, mp) = getTemplate(actVar, B, J)
---///
-
---doc ///
- --Node
-  --Key
---viewH   --[getTemplate, MonomialOrder]
-  --Headline
-    --the monomial order used on the ambient ring, 
-  --Usage
-    --getTemplate(a, B, J, MonomialOrder => Eliminate 1)
-  --Description
-    --Text
-      --The monomial order used on the ambient ring. This is used to determine the ordering of the columns of the template matrix.
-      --The default is `Eliminate 1`, which is a monomial order that eliminates the first variable.
-      --Other monomial orders can be used, such as `Eliminate 2` or `Eliminate 3`.
-      --See the documentation for `Macaulay2` for more information on monomial orders.
---///
 
 doc ///
  Node
@@ -656,52 +569,25 @@ TEST ///
   R = QQ[x,y,z]
   J = ideal(x^3+y^3+z^3-4,x^2-y-z-1,x-y^2+z-3)
   E = eliminationTemplate(x, J)
-  --H0 = getH0(x,J,Strategy=>"Larsson")
-  --H0 = getH0(x,J,Strategy=> null)
   getTemplateMatrix E
-  -- getTemplateMatrix(E, Strategy => "Greedy")
   getActionMatrix E
   eigenvalues getActionMatrix E
 ///
-
--*TEST ///
-  R = QQ[x,y,z]
-  J = ideal(x^3+y^3+z^3-4,x^2-y-z-1,x-y^2+z-3)
-  E1 = eliminationTemplate(x, J)
-  E2 = eliminationTemplate(x, J)
-  E3 = eliminationTemplate(x, J)
-  --H0 = getH0(x,J,Strategy=>"Larsson")
-  --H0 = getH0(x,J,Strategy=> null)
-  getTemplateMatrix(E1, Strategy => null)
-  getActionMatrix E1
-  eigenvalues getActionMatrix E1
-  getTemplateMatrix(E2, Strategy => "Larsson")
-  getActionMatrix E2
-  eigenvalues getActionMatrix E2
-  getTemplateMatrix(E3, Strategy => "Greedy")
-  getActionMatrix E3
-  eigenvalues getActionMatrix E3
-///
-*-
 TEST ///
   R = QQ[x,y,z]
   J = ideal(x^3+y^3+z^3-4,x^2-y-z-1,x-y^2+z-3)
-
   -- 3 templates, 3 strategies
   E1 = eliminationTemplate(x, J)
   E2 = eliminationTemplate(x, J)
   E3 = eliminationTemplate(x, J)
-  
   -- Test 1: Default Strategy
   M1 = getActionMatrix(E1);
   evals1 = eigenvalues M1;
   assert(#evals1 == 12)
-  
   -- Test 2: Larsson Strategy
   M2 = getActionMatrix(E2, Strategy => "Larsson");
   evals2 = eigenvalues M2
   assert(#evals2 == 12)
-  
   -- Test 3: Greedy Strategy -- !! this is a good example, but 20s is probably too slow for a test
 -*
   M3 = getActionMatrix(E3, Strategy => "Greedy")
@@ -745,12 +631,12 @@ R = QQ[x,y,z]
 Es = apply(4, i -> random(QQ^3, QQ^3))
 E = x * Es#0 + y * Es#1 + z * Es#2 + Es#3  -- essential matrix
 I = ideal(E*transpose E * E - (1/2) * trace(E * transpose E) * E, det E);  -- Demazure constraints
---l = random(1, R)
 l = y
 ET = eliminationTemplate(l, I)
 printWidth = 10000
 M = getTemplateMatrix ET
-(sh, mp) = getTemplate ET
+(sh, mp) = getTemplate ET;
+
 
 load "Benchmarks.m2";
 runBenchmarks()
