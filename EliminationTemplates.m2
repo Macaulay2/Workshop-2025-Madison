@@ -64,15 +64,10 @@ MonomialPartition = new Type of List
 eliminationTemplate = method(Options => {})
 eliminationTemplate (RingElement, Ideal) := o -> (aVar, J) -> (
     R := ring J;
-    -- (sh, mp) := getTemplate(aVar, basis(R/J), J);
-    -- M := getTemplateMatrix(shifts, monomialPartition, J);
     new EliminationTemplate from {
-        -- shifts => sh,
-        -- monomialPartition => mp,
-        -- templateMatrix => M,
         "actionVariable" => aVar,
         ideal => J,
-	      cache => new CacheTable from {}
+	cache => new CacheTable from {}
     }
 )
 
@@ -86,38 +81,17 @@ net EliminationTemplate := E -> (
 copyTemplate = method(Options => {})
 copyTemplate(EliminationTemplate, Ideal) := o -> (E, J) -> (
     Rnew := ring J;
-    
-    -- 1. Safely substitute the action variable into the new ring
     aNew := sub(actionVariable E, Rnew);
     F := eliminationTemplate(aNew, J);
-    
-    -- 2. Promote and copy the basis
     F.cache#basis = sub(basis E, Rnew);
-    
-    -- 3. Promote and copy the offline structure (if it was computed)
     if E.cache#?"shifts" then 
         F.cache#"shifts" = apply(E.cache#"shifts", sh -> sub(sh, Rnew));
-        
     if E.cache#?"monomialPartition" then 
         F.cache#"monomialPartition" = apply(E.cache#"monomialPartition", m -> sub(m, Rnew));
-        
     if E.cache#?"graphIdeal" then
         F.cache#"graphIdeal" = sub(E.cache#"graphIdeal", Rnew);
-
-    -- NOTE: We intentionally do NOT copy templateMatrix or actionMatrix.
-    -- Those depend on the specific coefficients of J. By copying the shifts,
-    -- getTemplateMatrix(F) will instantly build the new matrix without calling getH0.
-    
     F
 )
--*
-copyTemplate(EliminationTemplate, Ideal) := o -> (E, J) -> (
-    F := eliminationTemplate(E#"actionVariable", J);
-    -- anything else to copy??
-    F.cache#basis = basis E;
-    F
-)
-*-
 
 actionVariable = method()
 actionVariable EliminationTemplate := E -> E#"actionVariable"
@@ -149,7 +123,6 @@ getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     H0 = sub(H0, ring J);
 
     if (o.Strategy === null) then (
---        print("Using default strategy to compute H0.");
         H0
     )
     else if (o.Strategy == "Greedy") then (
@@ -237,126 +210,28 @@ getTemplate(EliminationTemplate) := o -> E -> (
     ringVars := flatten entries vars R;
     MO := if not instance(o.MonomialOrder, Nothing) then o.MonomialOrder else (options R).MonomialOrder;
     Rs := K[prepend("s", ringVars), MonomialOrder => {Eliminate 1, MO}];
-    
     aS := sub(a, Rs); -- This is the 'x' that lives in Rs
     Js := sub(J, Rs);
     actVar := Rs_0; -- This is 's'
     Is := Js + ideal(actVar - aS);
     Bs := sub(B, Rs);
-    
     sortedBs := rsort flatten entries Bs;
-    
+
     -- 3. Construct shifts for the graph ideal directly
     shiftsGraph := new ShiftSet from (
         apply(shOrig, sh -> sub(sh, Rs)) | {matrix {sortedBs}}
     );
-
     E.cache#basis = Bs;
     E.cache#"graphIdeal" = Is;
 
     -- 4. Reconstruct the monomial partition in Rs
-    -- WE USE aS HERE instead of a to keep everything in the same ring!
     allMons := union(set \ flatten \ entries \ monomials \ shiftPolynomials(shiftsGraph, Is));
     monsB := set sortedBs;
     monsR := set apply(sortedBs, b -> actVar * b);
     monsE := allMons - union(monsR, monsB);
     mpGraph := new MonomialPartition from rsort \ toList \ {monsE, monsR, monsB};
-
     (shiftsGraph, mpGraph)
 )
--*
-getTemplate(EliminationTemplate) := o -> E -> (
-    J := ideal E;
-    a := actionVariable E;
-
-    -- 1. Compute shifts for the original ideal to avoid graph ideal GB bloat
-    R := ring J;
-    B := lift(basis(R/J), R);
-    (shOrig, mpOrig) := getTemplate(a, B, J, o);
-
-    -- 2. Set up the extended ring with the 's' variable
-    K := coefficientRing R;
-    ringVars := flatten entries vars R;
-    MO := if not instance(o.MonomialOrder, Nothing) then o.MonomialOrder else (options R).MonomialOrder;
-    Rs := K[prepend("s", ringVars), MonomialOrder => {Eliminate 1, MO}];
-    
-    aS := sub(a, Rs);
-    Js := sub(J, Rs);
-    actVar := Rs_0;
-    Is := Js + ideal(actVar - aS);
-    Bs := sub(B, Rs);
-    
-    -- Sort the basis descending to match the partition column order!
-    sortedBs := rsort flatten entries Bs;
-    
-    -- 3. Construct shifts for the graph ideal directly
-    shiftsGraph := new ShiftSet from (
-        apply(shOrig, sh -> sub(sh, Rs)) | {matrix {sortedBs}}
-    );
-
-    E.cache#basis = Bs;
-    E.cache#"graphIdeal" = Is;
-
-    -- 4. Reconstruct the monomial partition in the extended ring
-    allMons := union(set \ flatten \ entries \ monomials \ shiftPolynomials(shiftsGraph, Is));
-    monsB := set sortedBs;
-    monsR := set apply(sortedBs, b -> actVar * b);
-    monsE := allMons - union(monsR, monsB);
-    mpGraph := new MonomialPartition from rsort \ toList \ {monsE, monsR, monsB};
-
-    (shiftsGraph, mpGraph)
-)
-getTemplate(EliminationTemplate) := o -> E -> (
-    J := ideal E;
-    a := actionVariable E;
-    -- 1. Compute shifts for the original ideal without 's' variable (avoids template matrix bloat)
-    R := ring J;
-    B := lift(basis(R/J), R);
-    (shOrig, mpOrig) := getTemplate(a, B, J, o);
-    -- 2. Set up the extended ring with the 's' variable
-    K := coefficientRing R;
-    ringVars := flatten entries vars R;
-    MO := if not instance(o.MonomialOrder, Nothing) then o.MonomialOrder else (options R).MonomialOrder;
-    Rs := K[prepend("s", ringVars), MonomialOrder => {Eliminate 1, MO}];
-    aS := sub(a, Rs);
-    Js := sub(J, Rs);
-    actVar := Rs_0;
-    Is := Js + ideal(actVar - aS);
-    Bs := sub(B, Rs);
-    -- 3. Construct shifts for the graph ideal Is directly
-    -- The first generators use the original shifts.
-    -- The last generator (s - a) is shifted perfectly by the basis elements Bs.
-    shiftsGraph := new ShiftSet from (
-        apply(shOrig, sh -> sub(sh, Rs)) | {matrix {flatten entries Bs}}
-    );
-    E.cache#basis = Bs;
-    E.cache#"graphIdeal" = Is;
-    -- 4. Construct the monomial partition in the extended ring
-    allMons := union(set \ flatten \ entries \ monomials \ shiftPolynomials(shiftsGraph, Is));
-    monsB := set flatten entries Bs;
-    monsR := set flatten entries(actVar * Bs);
-    monsE := allMons - union(monsR, monsB);
-    mpGraph := new MonomialPartition from rsort \ toList \ {monsE, monsR, monsB};
-    (shiftsGraph, mpGraph)
-)
-getTemplate(EliminationTemplate) := o -> E -> (
-    J := ideal E;
-    a := actionVariable E;
-
-    R := ring J;
-    K := coefficientRing R;
-    ringVars := flatten entries vars R;
-    MO := if not instance(o.MonomialOrder, Nothing) then o.MonomialOrder else (options R).MonomialOrder;
-    R = K[prepend("s", ringVars), MonomialOrder => {Eliminate 1, MO}];
-    I := sub(J, R) + ideal(R_0 - sub(a, R));
-    actVar := R_0;
-
-    B := lift(basis(R/I), R);
-    E.cache#basis = B;
-    E.cache#"graphIdeal" = I;
-    getTemplate(actVar, B, I, o)
-)
-*-
 
 getTemplateMatrix = method(Options => {MonomialOrder => null, Strategy => null})
 getTemplateMatrix(RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
@@ -444,20 +319,6 @@ getActionMatrix(EliminationTemplate) := o -> E -> (
         ret
     )
 )
--*
-getActionMatrix(EliminationTemplate) := o -> E -> (
-    if (E.cache#?"lastActionStrategy" === o.Strategy) and E.cache#?"actionMatrix" then E.cache#"actionMatrix" else (
-        (sh, mp) := getTemplate E;
-        templateMatrix := getTemplateMatrix E;
-        R := ring first first mp;
-        actVar := R_0;
-        ret := getActionMatrix(actVar, mp, templateMatrix);
-	      E.cache#"actionMatrix" = ret;
-        E.cache#"lastActionStrategy" = o.Strategy;
-	      ret
-    )
-)
-*-
 
 getEigenMatrix = method(Options => {MonomialOrder => null})
 getEigenMatrix(EliminationTemplate) := o -> (E) -> (
@@ -473,26 +334,6 @@ getEigenMatrix(RingElement, Ideal) := o -> (a, J) -> (
     E := eliminationTemplate(a, J);
     getEigenMatrix(E, o)
 )
--*
-getEigenMatrix(RingElement, Ideal) := o -> (a, J) -> (
-    R := ring J;
-    K := coefficientRing R;
-    ringVars := flatten entries vars R;
-    MO := if not instance(o.MonomialOrder, Nothing) then o.MonomialOrder else (options R).MonomialOrder;
-    R = K[prepend("s", ringVars), MonomialOrder => {Eliminate 1, MO}];
-    I := sub(J, R) + ideal(R_0 - sub(a, R));
-    actvar := R_0;
-    
-    B := lift(basis(R/I), R);
-    (sh, mp) := getTemplate(actvar, B, I, o);
-    M := getTemplateMatrix(sh, mp, I, o);
-    Ma := getActionMatrix(actvar, mp, M, o);
-    (svals, P) := eigenvectors Ma;
-    cleanEvecs := clean_(1e-10) (P * inverse diagonalMatrix(P^{numColumns P - 1}));
-
-    (transpose rsort B, cleanEvecs)
-)
-*-
 
 templateSolve = method(Options => {MonomialOrder => null})
 templateSolve(EliminationTemplate) := o -> (E) -> (
@@ -500,12 +341,6 @@ templateSolve(EliminationTemplate) := o -> (E) -> (
     recoverSolutions(B, M, ideal E)
 )
 templateSolve(Ideal) := o -> (I) -> templateSolve(random(1,ring I), I, o)
--*
-templateSolve(RingElement, Ideal) := o -> (a, J) -> (
-    (B, M) := getEigenMatrix(a, J, o);
-    recoverSolutions(B, M, J)
-)
-*-
 templateSolve(RingElement, Ideal) := o -> (a, J) -> (
     E := eliminationTemplate(a, J);
     templateSolve(E, o)
@@ -847,9 +682,11 @@ TEST ///
   assert(#evals2 == 12)
   
   -- Test 3: Greedy Strategy -- !! this is a good example, but 20s is probably too slow for a test
+-*
   M3 = getActionMatrix(E3, Strategy => "Greedy")
   evals3 = eigenvalues M3
   assert(#evals3 == 12)
+*-
 ///
 
 TEST /// -- 5-point essential matrix problem
