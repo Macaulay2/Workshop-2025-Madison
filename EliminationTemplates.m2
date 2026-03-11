@@ -81,15 +81,26 @@ net EliminationTemplate := E -> (
 copyTemplate = method(Options => {})
 copyTemplate(EliminationTemplate, Ideal) := o -> (E, J) -> (
     Rnew := ring J;
+    
+    -- 1. Safely substitute the action variable into the new ring 
     aNew := sub(actionVariable E, Rnew);
     F := eliminationTemplate(aNew, J);
+    
+    -- 2. Promote and copy the basis 
     F.cache#basis = sub(basis E, Rnew);
+    
+    -- 3. Promote and copy the offline structure (fixed list substitution) 
     if E.cache#?"shifts" then 
         F.cache#"shifts" = apply(E.cache#"shifts", sh -> sub(sh, Rnew));
+        
     if E.cache#?"monomialPartition" then 
-        F.cache#"monomialPartition" = apply(E.cache#"monomialPartition", m -> sub(m, Rnew));
+        -- Deep apply: monomialPartition is a List of Lists 
+        F.cache#"monomialPartition" = apply(E.cache#"monomialPartition", 
+            mons -> apply(mons, m -> sub(m, Rnew)));
+        
     if E.cache#?"graphIdeal" then
         F.cache#"graphIdeal" = sub(E.cache#"graphIdeal", Rnew);
+
     F
 )
 
@@ -184,53 +195,63 @@ shiftPolynomials = (shifts, J) -> (
     apply(shifts, J_*, (m, f) -> f * sub(m, ring J))
 )
 
-getTemplate = method(Options => {MonomialOrder => null, Strategy => null})
-getTemplate(RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
+
+getTemplateHelper = (a, B, J, o) -> (
     H0 := getH0(a, B, J, o);
     shifts := new ShiftSet from apply(numgens J, i -> monomials(H0^{i}));
     allMons := union(set \ flatten \ entries \ monomials \ shiftPolynomials(shifts, J));
-    if (allMons == set {}) then error "allMons is empty!";
     monsB := set flatten entries(lift(B, ring J));
-    monsR := set flatten entries(a * lift(B, ring J)) - set flatten entries(lift(B, ring J));
+    monsR := set flatten entries(a * lift(B, ring J)) - monsB;
     monsE := allMons - union(monsR, monsB);
-    monomialPartition := new MonomialPartition from rsort \ toList \ {monsE, monsR, monsB};
-    (shifts, monomialPartition)
+    (shifts, new MonomialPartition from rsort \ toList \ {monsE, monsR, monsB})
 )
+
+getTemplate = method(Options => {MonomialOrder => null, Strategy => null})
 getTemplate(EliminationTemplate) := o -> E -> (
-    J := ideal E;
-    a := actionVariable E;
-    R := ring J;
-    B := lift(basis(R/J), R);
+    if E.cache#?"monomialPartition" and E.cache#?"lastTemplateStrategy" === o.Strategy then (
+        (E.cache#"shifts", E.cache#"monomialPartition")
+    ) else (
+        J := ideal E;
+        a := actionVariable E;
+        R := ring J;
+        B := lift(basis(R/J), R);
 
-    -- 1. Compute shifts for the original ideal in R
-    (shOrig, mpOrig) := getTemplate(a, B, J, o);
+        -- Step A: Compute original ideal shifts in base ring R
+        (shOrig, mpOrig) := getTemplateHelper(a, B, J, o);
 
-    -- 2. Set up the extended ring Rs
-    K := coefficientRing R;
-    ringVars := flatten entries vars R;
-    MO := if not instance(o.MonomialOrder, Nothing) then o.MonomialOrder else (options R).MonomialOrder;
-    Rs := K[prepend("s", ringVars), MonomialOrder => {Eliminate 1, MO}];
-    aS := sub(a, Rs); -- This is the 'x' that lives in Rs
-    Js := sub(J, Rs);
-    actVar := Rs_0; -- This is 's'
-    Is := Js + ideal(actVar - aS);
-    Bs := sub(B, Rs);
-    sortedBs := rsort flatten entries Bs;
+        -- Step B: Transition to the extended s-ring (Rs)
+        K := coefficientRing R;
+        ringVars := flatten entries vars R;
+        MO := if not instance(o.MonomialOrder, Nothing) then o.MonomialOrder else (options R).MonomialOrder;
+        Rs := K[prepend("s", ringVars), MonomialOrder => {Eliminate 1, MO}];
+        
+        aS := sub(a, Rs);
+        Js := sub(J, Rs);
+        actVar := Rs_0;
+        Is := Js + ideal(actVar - aS);
+        Bs := sub(B, Rs);
+        sortedBs := rsort flatten entries Bs;
+        
+        -- Step C: Build the structural graph ideal shifts
+        shiftsGraph := new ShiftSet from (
+            apply(shOrig, sh -> sub(sh, Rs)) | {matrix {sortedBs}}
+        );
 
-    -- 3. Construct shifts for the graph ideal directly
-    shiftsGraph := new ShiftSet from (
-        apply(shOrig, sh -> sub(sh, Rs)) | {matrix {sortedBs}}
-    );
-    E.cache#basis = Bs;
-    E.cache#"graphIdeal" = Is;
+        -- Step D: Final Partitioning in Rs
+        allMons := union(set \ flatten \ entries \ monomials \ shiftPolynomials(shiftsGraph, Is));
+        monsB := set sortedBs;
+        monsR := set apply(sortedBs, b -> actVar * b);
+        monsE := allMons - union(monsR, monsB);
+        mpGraph := new MonomialPartition from rsort \ toList \ {monsE, monsR, monsB};
 
-    -- 4. Reconstruct the monomial partition in Rs
-    allMons := union(set \ flatten \ entries \ monomials \ shiftPolynomials(shiftsGraph, Is));
-    monsB := set sortedBs;
-    monsR := set apply(sortedBs, b -> actVar * b);
-    monsE := allMons - union(monsR, monsB);
-    mpGraph := new MonomialPartition from rsort \ toList \ {monsE, monsR, monsB};
-    (shiftsGraph, mpGraph)
+        -- Cache and Return
+        E.cache#basis = Bs;
+        E.cache#"graphIdeal" = Is;
+        E.cache#"shifts" = shiftsGraph;
+        E.cache#"monomialPartition" = mpGraph;
+        E.cache#"lastTemplateStrategy" = o.Strategy;
+        (shiftsGraph, mpGraph)
+    )
 )
 
 getTemplateMatrix = method(Options => {MonomialOrder => null, Strategy => null})
@@ -728,7 +749,9 @@ I = ideal(E*transpose E * E - (1/2) * trace(E * transpose E) * E, det E);  -- De
 l = y
 ET = eliminationTemplate(l, I)
 printWidth = 10000
-getTemplateMatrix ET
+M = getTemplateMatrix ET
+(sh, mp) = getTemplate ET
+
 load "Benchmarks.m2";
 runBenchmarks()
 
