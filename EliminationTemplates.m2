@@ -85,11 +85,39 @@ net EliminationTemplate := E -> (
 
 copyTemplate = method(Options => {})
 copyTemplate(EliminationTemplate, Ideal) := o -> (E, J) -> (
+    Rnew := ring J;
+    
+    -- 1. Safely substitute the action variable into the new ring
+    aNew := sub(actionVariable E, Rnew);
+    F := eliminationTemplate(aNew, J);
+    
+    -- 2. Promote and copy the basis
+    F.cache#basis = sub(basis E, Rnew);
+    
+    -- 3. Promote and copy the offline structure (if it was computed)
+    if E.cache#?"shifts" then 
+        F.cache#"shifts" = apply(E.cache#"shifts", sh -> sub(sh, Rnew));
+        
+    if E.cache#?"monomialPartition" then 
+        F.cache#"monomialPartition" = apply(E.cache#"monomialPartition", m -> sub(m, Rnew));
+        
+    if E.cache#?"graphIdeal" then
+        F.cache#"graphIdeal" = sub(E.cache#"graphIdeal", Rnew);
+
+    -- NOTE: We intentionally do NOT copy templateMatrix or actionMatrix.
+    -- Those depend on the specific coefficients of J. By copying the shifts,
+    -- getTemplateMatrix(F) will instantly build the new matrix without calling getH0.
+    
+    F
+)
+-*
+copyTemplate(EliminationTemplate, Ideal) := o -> (E, J) -> (
     F := eliminationTemplate(E#"actionVariable", J);
     -- anything else to copy??
     F.cache#basis = basis E;
     F
 )
+*-
 
 actionVariable = method()
 actionVariable EliminationTemplate := E -> E#"actionVariable"
@@ -121,7 +149,7 @@ getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     H0 = sub(H0, ring J);
 
     if (o.Strategy === null) then (
-        print("Using default strategy to compute H0.");
+--        print("Using default strategy to compute H0.");
         H0
     )
     else if (o.Strategy == "Greedy") then (
@@ -170,8 +198,10 @@ getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
         instantiateHWithAssignments(H, bestA, SH, baseR)
     )
     else if (o.Strategy == "Larsson") then (
-	      print("Using Larsson's strategy to compute H0.");
-        H0 % image(syz(gens(J)))
+        print("Using Larsson's strategy to compute H0.");
+        -- Ensure the reduction stays in the base ring R
+        H0res := H0 % image(syz(gens(J)));
+        sub(H0res, ring J)
     )
     else (error "Strategy not yet implemented.") 
 )
@@ -192,6 +222,89 @@ getTemplate(RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     monsE := allMons - union(monsR, monsB);
     monomialPartition := new MonomialPartition from rsort \ toList \ {monsE, monsR, monsB};
     (shifts, monomialPartition)
+)
+getTemplate(EliminationTemplate) := o -> E -> (
+    J := ideal E;
+    a := actionVariable E;
+    R := ring J;
+    B := lift(basis(R/J), R);
+
+    -- 1. Compute shifts for the original ideal in R
+    (shOrig, mpOrig) := getTemplate(a, B, J, o);
+
+    -- 2. Set up the extended ring Rs
+    K := coefficientRing R;
+    ringVars := flatten entries vars R;
+    MO := if not instance(o.MonomialOrder, Nothing) then o.MonomialOrder else (options R).MonomialOrder;
+    Rs := K[prepend("s", ringVars), MonomialOrder => {Eliminate 1, MO}];
+    
+    aS := sub(a, Rs); -- This is the 'x' that lives in Rs
+    Js := sub(J, Rs);
+    actVar := Rs_0; -- This is 's'
+    Is := Js + ideal(actVar - aS);
+    Bs := sub(B, Rs);
+    
+    sortedBs := rsort flatten entries Bs;
+    
+    -- 3. Construct shifts for the graph ideal directly
+    shiftsGraph := new ShiftSet from (
+        apply(shOrig, sh -> sub(sh, Rs)) | {matrix {sortedBs}}
+    );
+
+    E.cache#basis = Bs;
+    E.cache#"graphIdeal" = Is;
+
+    -- 4. Reconstruct the monomial partition in Rs
+    -- WE USE aS HERE instead of a to keep everything in the same ring!
+    allMons := union(set \ flatten \ entries \ monomials \ shiftPolynomials(shiftsGraph, Is));
+    monsB := set sortedBs;
+    monsR := set apply(sortedBs, b -> actVar * b);
+    monsE := allMons - union(monsR, monsB);
+    mpGraph := new MonomialPartition from rsort \ toList \ {monsE, monsR, monsB};
+
+    (shiftsGraph, mpGraph)
+)
+-*
+getTemplate(EliminationTemplate) := o -> E -> (
+    J := ideal E;
+    a := actionVariable E;
+
+    -- 1. Compute shifts for the original ideal to avoid graph ideal GB bloat
+    R := ring J;
+    B := lift(basis(R/J), R);
+    (shOrig, mpOrig) := getTemplate(a, B, J, o);
+
+    -- 2. Set up the extended ring with the 's' variable
+    K := coefficientRing R;
+    ringVars := flatten entries vars R;
+    MO := if not instance(o.MonomialOrder, Nothing) then o.MonomialOrder else (options R).MonomialOrder;
+    Rs := K[prepend("s", ringVars), MonomialOrder => {Eliminate 1, MO}];
+    
+    aS := sub(a, Rs);
+    Js := sub(J, Rs);
+    actVar := Rs_0;
+    Is := Js + ideal(actVar - aS);
+    Bs := sub(B, Rs);
+    
+    -- Sort the basis descending to match the partition column order!
+    sortedBs := rsort flatten entries Bs;
+    
+    -- 3. Construct shifts for the graph ideal directly
+    shiftsGraph := new ShiftSet from (
+        apply(shOrig, sh -> sub(sh, Rs)) | {matrix {sortedBs}}
+    );
+
+    E.cache#basis = Bs;
+    E.cache#"graphIdeal" = Is;
+
+    -- 4. Reconstruct the monomial partition in the extended ring
+    allMons := union(set \ flatten \ entries \ monomials \ shiftPolynomials(shiftsGraph, Is));
+    monsB := set sortedBs;
+    monsR := set apply(sortedBs, b -> actVar * b);
+    monsE := allMons - union(monsR, monsB);
+    mpGraph := new MonomialPartition from rsort \ toList \ {monsE, monsR, monsB};
+
+    (shiftsGraph, mpGraph)
 )
 getTemplate(EliminationTemplate) := o -> E -> (
     J := ideal E;
@@ -226,7 +339,6 @@ getTemplate(EliminationTemplate) := o -> E -> (
     mpGraph := new MonomialPartition from rsort \ toList \ {monsE, monsR, monsB};
     (shiftsGraph, mpGraph)
 )
--*
 getTemplate(EliminationTemplate) := o -> E -> (
     J := ideal E;
     a := actionVariable E;
@@ -276,7 +388,7 @@ getActionMatrix(RingElement, MonomialPartition, Matrix) := o -> (actVar, mp, M) 
     Ma := M_{0..a-1};
     (P, L, U) := LUdecomposition Ma;
     L = L | matrix apply(m, i -> apply(m - a, j -> if i == j + a then 1_CC else 0_CC));
-    M1 := inverse(id_(CC^m)_P * L) * M;
+    M1 := solve(id_(CC^m)_P * L, sub(M, CC));
 
     -- extract action matrix from reduced and basic monomials in template
     Mr := M1_{a..a+b-1}^{m-b..m-1};
@@ -289,6 +401,50 @@ getActionMatrix(RingElement, MonomialPartition, Matrix) := o -> (actVar, mp, M) 
         A || binaryMatrix
 	  ) else A
 )
+getActionMatrix(RingElement, MonomialPartition, Matrix) := o -> (actVar, mp, M) -> (
+    numE := length mp#0;
+    numR := length mp#1;
+    numB := length mp#2;
+    m := numrows M;
+    n := numcols M;
+
+    -- The bottom numR rows are exactly the shifts of s - a.
+    -- The top rows belong to the original ideal J.
+    numTop := m - numR;
+
+    if numE == 0 then (
+        -- If there are no excessive monomials, the action matrix is just the basic block.
+        -M_{numE+numR .. n-1}^{numTop .. m-1}
+    ) else (
+        -- Slice the top block (original ideal shifts)
+        MtopE := M_{0 .. numE-1}^{0 .. numTop-1};
+        MtopB := M_{numE+numR .. n-1}^{0 .. numTop-1};
+
+        -- Slice the bottom block (s - a shifts)
+        MbotE := M_{0 .. numE-1}^{numTop .. m-1};
+        MbotB := M_{numE+numR .. n-1}^{numTop .. m-1};
+
+        -- solve(A,B) finds X such that A*X = B. 
+        -- Action Matrix A = MbotE * X - MbotB
+        MbotE * solve(MtopE, MtopB) - MbotB
+    )
+)
+getActionMatrix(EliminationTemplate) := o -> E -> (
+    if (E.cache#?"lastActionStrategy" === o.Strategy) and E.cache#?"actionMatrix" then E.cache#"actionMatrix" else (
+        (sh, mp) := getTemplate(E, o);
+        templateMatrix := getTemplateMatrix(E, o);
+        
+        -- The action variable in the extended ring is always the first variable (Rs_0)
+        Rs := ring first first mp;
+        actVar := Rs_0;
+        
+        ret := getActionMatrix(actVar, mp, templateMatrix, o);
+        E.cache#"actionMatrix" = ret;
+        E.cache#"lastActionStrategy" = o.Strategy;
+        ret
+    )
+)
+-*
 getActionMatrix(EliminationTemplate) := o -> E -> (
     if (E.cache#?"lastActionStrategy" === o.Strategy) and E.cache#?"actionMatrix" then E.cache#"actionMatrix" else (
         (sh, mp) := getTemplate E;
@@ -301,6 +457,7 @@ getActionMatrix(EliminationTemplate) := o -> E -> (
 	      ret
     )
 )
+*-
 
 getEigenMatrix = method(Options => {MonomialOrder => null})
 getEigenMatrix(EliminationTemplate) := o -> (E) -> (
@@ -310,7 +467,13 @@ getEigenMatrix(EliminationTemplate) := o -> (E) -> (
 
     (transpose rsort basis E, cleanEvecs)
 )
+
 getEigenMatrix(Ideal) := o -> (I) -> getEigenMatrix(random(1, ring I), I, o)
+getEigenMatrix(RingElement, Ideal) := o -> (a, J) -> (
+    E := eliminationTemplate(a, J);
+    getEigenMatrix(E, o)
+)
+-*
 getEigenMatrix(RingElement, Ideal) := o -> (a, J) -> (
     R := ring J;
     K := coefficientRing R;
@@ -329,6 +492,7 @@ getEigenMatrix(RingElement, Ideal) := o -> (a, J) -> (
 
     (transpose rsort B, cleanEvecs)
 )
+*-
 
 templateSolve = method(Options => {MonomialOrder => null})
 templateSolve(EliminationTemplate) := o -> (E) -> (
@@ -336,10 +500,17 @@ templateSolve(EliminationTemplate) := o -> (E) -> (
     recoverSolutions(B, M, ideal E)
 )
 templateSolve(Ideal) := o -> (I) -> templateSolve(random(1,ring I), I, o)
+-*
 templateSolve(RingElement, Ideal) := o -> (a, J) -> (
     (B, M) := getEigenMatrix(a, J, o);
     recoverSolutions(B, M, J)
 )
+*-
+templateSolve(RingElement, Ideal) := o -> (a, J) -> (
+    E := eliminationTemplate(a, J);
+    templateSolve(E, o)
+)
+
 
 -- Helper method, don't export
 recoverSolutions = method()
@@ -609,10 +780,9 @@ TEST ///
   R = QQ[x,y]
   J = ideal(x^2+y^2-1,x^2+x*y+y^2-1)
   actVar = x
-  B = lift(basis(R/J), R)
-  (sh, mp) = getTemplate(actVar, B, J)
-  M = getTemplateMatrix(sh, mp, J)
-  Ma = getActionMatrix(actVar, mp, M) 
+  E = eliminationTemplate(actVar, J)
+  M = getTemplateMatrix(E)
+  Ma = getActionMatrix(E)
   evals = eigenvalues Ma
   assert(all(sort evals, {-1,0,0,1}, (e1, e2) -> abs(e1 - e2) < 1e-4))
 ///
@@ -620,11 +790,8 @@ TEST ///
 TEST ///
   R = QQ[x,y]
   J = ideal(x^3 + y^2 - 1, x - y - 1)
-  B = lift(basis(R/J), R)
-  getH0(x, B, J)
-  (sh, mp) = getTemplate(x, B, J)
-  M = getTemplateMatrix(x, B, J)
-  Mx = getActionMatrix(x, mp, M)
+  E = eliminationTemplate(x, J)
+  Mx = getActionMatrix(E)
   evals = eigenvalues Mx
   assert(all(sort evals, {-2,0,1}, (e1, e2) -> abs(e1 - e2) < 1e-4))
 ///
@@ -641,7 +808,7 @@ TEST ///
   eigenvalues getActionMatrix E
 ///
 
-TEST ///
+-*TEST ///
   R = QQ[x,y,z]
   J = ideal(x^3+y^3+z^3-4,x^2-y-z-1,x-y^2+z-3)
   E1 = eliminationTemplate(x, J)
@@ -659,13 +826,38 @@ TEST ///
   getActionMatrix E3
   eigenvalues getActionMatrix E3
 ///
+*-
+TEST ///
+  R = QQ[x,y,z]
+  J = ideal(x^3+y^3+z^3-4,x^2-y-z-1,x-y^2+z-3)
+
+  -- 3 templates, 3 strategies
+  E1 = eliminationTemplate(x, J)
+  E2 = eliminationTemplate(x, J)
+  E3 = eliminationTemplate(x, J)
+  
+  -- Test 1: Default Strategy
+  M1 = getActionMatrix(E1);
+  evals1 = eigenvalues M1;
+  assert(#evals1 == 12)
+  
+  -- Test 2: Larsson Strategy
+  M2 = getActionMatrix(E2, Strategy => "Larsson");
+  evals2 = eigenvalues M2
+  assert(#evals2 == 12)
+  
+  -- Test 3: Greedy Strategy -- !! this is a good example, but 20s is probably too slow for a test
+  M3 = getActionMatrix(E3, Strategy => "Greedy")
+  evals3 = eigenvalues M3
+  assert(#evals3 == 12)
+///
 
 TEST /// -- 5-point essential matrix problem
   R = QQ[x,y,z]
-  Es = apply(4, i -> random(QQ^3, QQ^3))
-  E = x * Es#0 + y * Es#1 + z * Es#2 + Es#3  -- essential matrix
-  I = ideal(E*transpose E * E - (1/2) * trace(E * transpose E) * E)  -- Demazure constraints
-  l = random(1, R)
+  Es = apply(4, i -> random(QQ^3, QQ^3));
+  E = x * Es#0 + y * Es#1 + z * Es#2 + Es#3;  -- essential matrix
+  I = ideal(E*transpose E * E - (1/2) * trace(E * transpose E) * E);  -- Demazure constraints
+  l = random(1, R);
   sols = templateSolve(l, I)
   assert(all(sols, x -> 1e-6 > norm sub(sub(gens I, CC[gens R]), matrix{x})))
 ///
@@ -700,8 +892,8 @@ l = y
 ET = eliminationTemplate(l, I)
 printWidth = 10000
 getTemplateMatrix ET
-getTemplateMatrix(ET, Strategy => "Greedy"); -- 15 x 44
-getTemplateMatrix(ET, Strategy => "Larsson"); -- 24 x 44
+load "Benchmarks.m2";
+runBenchmarks()
 
 
 
