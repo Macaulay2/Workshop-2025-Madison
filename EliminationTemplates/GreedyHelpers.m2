@@ -1,38 +1,25 @@
 -- Greedy strategy helper methods used by EliminationTemplates.m2.
-
 -- Input: a matrix H over a polynomial ring
 -- Output: (vH, W, Zlist)
 
 monomialVectorAndW = method()
-
 monomialVectorAndWData = method()
 
 monomialVectorAndWData Matrix := (H) -> (
     R := ring H;
-
-    -- 1) collect monomials from the coefficient ring of H's entries
-    -- (e.g. if ring H = R[t], collect monomials in R, not in t)
     SH := ring H;
     baseR := coefficientRing SH;
     monsList := flatten apply(flatten entries H, f -> (
         coeffsF := flatten entries(last coefficients f);
         flatten apply(coeffsF, c -> flatten entries monomials sub(c, baseR))
     ));
-
     mons := toList set monsList;
-
-    -- turn into a column vector vH (as a matrix with 1 column)
-    vH := matrix apply(#mons, i -> {mons#i});  -- (#mons) x 1
-
-    -- 2) for each column h_k, find Z_k such that h_k = Z_k * vH
+    vH := matrix apply(#mons, i -> {mons#i});
     ncols := numColumns H;
     nrows := numRows H;
 
     Zlist := for k from 0 to ncols-1 list (
-        hk := submatrix(H, (0..nrows-1), {k});  -- nrows x 1 column
-
-        -- Build Zk as nrows x (#mons) matrix:
-        -- entry (i,j) is coefficient of monomial mons#j in hk_i
+        hk := submatrix(H, (0..nrows-1), {k}); 
         Zk := matrix apply(nrows, i -> (
             fi := hk_(i,0);
             (tMonsMat, coeffsMat) := coefficients fi;
@@ -44,11 +31,9 @@ monomialVectorAndWData Matrix := (H) -> (
                 if #parts == 0 then 0_SH else fold(parts, (a,b) -> a+b)
             ))
         ));
-
         Zk
     );
-
-    -- 3) stack all Z_k horizontally to get W
+    
     W := fold((A,B) -> A | B, first Zlist, drop(Zlist,1));
     columnInfo := flatten for k from 0 to ncols-1 list (
         apply(#mons, j -> new HashTable from {
@@ -56,7 +41,7 @@ monomialVectorAndWData Matrix := (H) -> (
             "monomial" => mons#j
         })
     );
-
+    
     new HashTable from {
         "vH" => vH,
         "W" => W,
@@ -68,23 +53,14 @@ monomialVectorAndWData Matrix := (H) -> (
 
 monomialVectorAndW Matrix := (H) -> (monomialVectorAndWData H)#"W";
 
--- Usage:
--- (vH, W, Zlist) = monomialVectorAndW(H);
-
 copyAssignments = (A) -> (
     B := new MutableHashTable from {};
     scan(keys A, k -> B#k = A#k);
     B
 );
 
-assignmentIdeal = (A, SH) -> (
-    if #keys A == 0 then ideal(0_SH)
-    else ideal apply(keys A, v -> v - A#v)
-);
-
-reduceWithAssignments = (f, A, SH) -> (
-    if #keys A == 0 then f else f % assignmentIdeal(A, SH)
-);
+-- THE GOATED SPEED HACK: Generate substitution rules instead of Gröbner ideals
+getRules = (A) -> toList apply(keys A, k -> k => A#k);
 
 isConstantInBaseRing = (c, baseR) -> (
     mons := flatten entries monomials c;
@@ -95,39 +71,53 @@ sumInRing = (L, SH) -> if #L == 0 then 0_SH else fold(L, (a,b) -> a+b);
 
 countZeroColumns = (W, A, SH) -> (
     if numColumns W == 0 then 0
-    else #select(0..numColumns W - 1, k -> (
-        all(0..numRows W - 1, i -> (
-            reduceWithAssignments(W_(i,k), A, SH) == 0_SH
+    else (
+        rules := getRules(A);
+        -- Massive speedup: Substitute the entire matrix at once at the C++ level
+        Wred := if #rules == 0 then W else sub(W, rules);
+        #select(0..numColumns W - 1, k -> (
+            all(0..numRows Wred - 1, i -> Wred_(i,k) == 0_SH)
         ))
-    ))
+    )
 );
 
 enforceZeroForColumns = (W, colsToZero, thetaVars, thetaToZeroMap, A, SH, baseR) -> (
+    rules := getRules(A);
     scan(colsToZero, k -> (
         scan(0..numRows W - 1, i -> (
-            eq0 := reduceWithAssignments(W_(i,k), A, SH);
+            eq0 := if #rules == 0 then W_(i,k) else sub(W_(i,k), rules);
             if eq0 =!= 0_SH then (
-                coeffs := apply(thetaVars, t -> reduceWithAssignments(coefficient(t, eq0), A, SH));
+                coeffs := apply(thetaVars, t -> if #rules == 0 then coefficient(t, eq0) else sub(coefficient(t, eq0), rules));
                 linPart := sumInRing(apply(#thetaVars, q -> coeffs#q * thetaVars#q), SH);
-                constPart := reduceWithAssignments(eq0 - linPart, A, SH);
-                -- We only support affine-linear constraints in theta variables.
+                constPart := if #rules == 0 then (eq0 - linPart) else sub(eq0 - linPart, rules);
+                
                 if (constPart - thetaToZeroMap constPart) =!= 0_SH then return false;
+                
                 active := select(0..#thetaVars - 1, q -> coeffs#q =!= 0_SH);
                 if #active == 0 then return false;
                 if #active > 1 then return false;
+                
                 q := first active;
                 t := thetaVars#q;
                 aCoeff := sub(coeffs#q, baseR);
                 bCoeff := sub(constPart, baseR);
+                
                 if not isConstantInBaseRing(aCoeff, baseR) then return false;
                 if not isConstantInBaseRing(bCoeff, baseR) then return false;
+                
                 aScalar := coefficient(1_baseR, aCoeff);
                 bScalar := coefficient(1_baseR, bCoeff);
                 if aScalar == 0_(coefficientRing baseR) then return false;
+                
                 val := sub(-bScalar / aScalar, SH);
                 if A#?t then (
-                    if reduceWithAssignments(A#t - val, A, SH) =!= 0_SH then return false
-                ) else A#t = val;
+                    checkVal := if #rules == 0 then (A#t - val) else sub(A#t - val, rules);
+                    if checkVal =!= 0_SH then return false;
+                ) else (
+                    A#t = val;
+                    -- Refresh rules dynamically since we added a new assignment
+                    rules = getRules(A);
+                );
             );
         ));
     ));
@@ -214,6 +204,8 @@ columnWiseGreedyAssignments = (W, excessiveMons, columnInfo, J, thetaVars, theta
 );
 
 instantiateHWithAssignments = (H, A, SH, baseR) -> (
-    Hred := matrix apply(numRows H, i -> apply(numColumns H, j -> reduceWithAssignments(H_(i,j), A, SH)));
+    rules := getRules(A);
+    -- Substitute the entire matrix H in one shot
+    Hred := if #rules == 0 then H else sub(H, rules);
     sub(Hred, baseR)
 );
