@@ -507,7 +507,12 @@ doc ///
     Description
       Text
         This method copies an elimination template object, using the same action variable and basis, but a different defining ideal.
-      --Example
+      Example
+        R = QQ[x,y]
+        I = ideal(x^4+y^2+x*y-3, x^2*y+y^3-2)
+        J = ideal(x^3+y^2-1,x^2+y^3-1)
+        E = eliminationTemplate(x,I)
+        F = copyTemplate(E, J)
     SeeAlso
       eliminationTemplate
 ///
@@ -526,6 +531,7 @@ doc ///
       getTemplateMatrix(E)
     Inputs
       a:RingElement
+        the action polynomial defining a multiplication matrix
       B:Matrix
       E:EliminationTemplate
         the elimination template for this problem
@@ -538,9 +544,15 @@ doc ///
         the strategy used to compute H0
     Outputs
       M:Matrix
-    --Description
+    Description
       --Text
-      --Example
+      Example
+        R = QQ[x,y]
+        I = ideal(x^4+y^2+x*y-3, x^2*y+y^3-2)
+        E = eliminationTemplate(x,I)
+        --getTemplateMatrix()
+        --getTemplateMatrix()
+        getTemplateMatrix(E)
     SeeAlso
       EliminationTemplate
 ///
@@ -559,9 +571,14 @@ doc ///
     Outputs
       a:RingElement
         the action variable associated to E
-    --Description
-      --Text
-      --Example
+    Description
+      Text
+        This method outputs the action variable associated to the inputted elimination template E.
+      Example
+        R = QQ[x,y]
+        I = ideal(x^4+y^2+x*y-3, x^2*y+y^3-2)
+        E = eliminationTemplate(x,I)
+        actionVariable(E)
     SeeAlso
       EliminationTemplate
 ///
@@ -638,6 +655,15 @@ TEST /// -- change of ideals
   F = copyTemplate(E,J)
   sols = templateSolve(F)
   assert(all(sols, x -> 1e-6 > norm sub(sub(gens J, QQ[gens R]), matrix{x})))
+///
+
+TEST /// -- example used for section 3
+  R = QQ[x,y]
+  I = ideal(x^4+y^2+x*y-3, x^2*y+y^3-2)
+  E = eliminationTemplate(x,I)
+  sols = templateSolve(E)
+  assert(all(sols, x -> 1e-6 > norm sub(sub(gens I, QQ[gens R]), matrix{x})))
+  actionVariable(E)
 ///
 
 end
