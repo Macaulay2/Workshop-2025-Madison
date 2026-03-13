@@ -232,7 +232,7 @@ copyTemplate(EliminationTemplate, Ideal) := o -> (E, J) -> (
     aNew := sub(actionVariable E, Rnew);
     F := eliminationTemplate(aNew, J);
     
-    F.cache#basis = E.cache#basis;
+    F.cache#basis = if E.cache#?basis then E.cache#basis else basis E;
     
     if E.cache#?"graphIdeal" then (
         Rs := ring E.cache#"graphIdeal";
@@ -699,7 +699,7 @@ end
 
 -- 5-point essential matrix problem: DEBUGGING TEMPLATE SIZE & STRATEGY
 restart
---path = prepend("./", path)
+path = prepend("./", path)
 needsPackage "EliminationTemplates"
 check "EliminationTemplates"
 installPackage("EliminationTemplates", RemakeAllDocumentation => true)
