@@ -233,19 +233,19 @@ copyTemplate(EliminationTemplate, Ideal) := o -> (E, J) -> (
     aNew := sub(actionVariable E, Rnew);
     Enew := eliminationTemplate(aNew, J);
     
-    Enew.cache#basis = sub(if E.cache#?basis then E.cache#basis else basis E, Rnew);
-    
     if E.cache#?"graphIdeal" then (
-        Rs := FFnew[gens ring E.cache#"graphIdeal"];
-        
-        if E.cache#?"shifts" then Enew.cache#"shifts" = apply(E.cache#"shifts", sh -> sub(sh, Rs));
-        if E.cache#?"monomialPartition" then Enew.cache#"monomialPartition" = apply(E.cache#"monomialPartition", mp -> apply(mp, m -> sub(m, Rs)));
+	Rs := ring E.cache#"graphIdeal";
+        Rsnew := FFnew[gens ring E.cache#"graphIdeal", MonomialOrder => (options Rs).MonomialOrder];
+
+	if E.cache#?basis then Enew.cache#basis = sub(if E.cache#?basis then E.cache#basis else basis E, Rsnew);
+        if E.cache#?"shifts" then Enew.cache#"shifts" = apply(E.cache#"shifts", sh -> sub(sh, Rsnew));
+        if E.cache#?"monomialPartition" then Enew.cache#"monomialPartition" = apply(E.cache#"monomialPartition", mp -> apply(mp, m -> sub(m, Rsnew)));
         if E.cache#?"lastPartitionStrategy" then Enew.cache#"lastPartitionStrategy" = E.cache#"lastPartitionStrategy";
             
-        toRs := map(Rs, Rnew, apply(numgens Rnew, i -> Rs_(i+1)));
-        JsGens := toRs(gens J);
-        aS := toRs(aNew);
-        actVar := Rs_0;
+        toRsnew := map(Rsnew, Rnew, apply(numgens Rnew, i -> Rsnew_(i+1)));
+        JsGens := toRsnew(gens J);
+        aS := toRsnew(aNew);
+        actVar := Rsnew_0;
         
         Enew.cache#"graphIdeal" = ideal(JsGens | matrix{{actVar - aS}});
     );
@@ -642,26 +642,6 @@ TEST ///
   getActionMatrix E
   eigenvalues getActionMatrix E
 ///
-TEST ///
-  R = QQ[x,y,z]
-  J = ideal(x^3+y^3+z^3-4,x^2-y-z-1,x-y^2+z-3)
-  -- 3 templates, 3 strategies
-  E1 = eliminationTemplate(x, J);
-  E2 = eliminationTemplate(x, J);
-  E3 = eliminationTemplate(x, J);
-  -- Test 1: Default Strategy
-  M1 = getActionMatrix(E1);
-  evals1 = eigenvalues M1;
-  assert(#evals1 == 12)
-  -- Test 2: Larsson Strategy
-  M2 = getActionMatrix(E2, Strategy => "Larsson");
-  evals2 = eigenvalues M2;
-  assert(#evals2 == 12);
-  -- Test 3: Greedy Strategy
-  M3 = getActionMatrix(E3, Strategy => "Greedy")
-  evals3 = eigenvalues M3
-  assert(#evals3 == 12)
-///
 
 TEST /// -- 5-point essential matrix problem
   R = QQ[x,y,z]
@@ -695,6 +675,28 @@ TEST /// -- example used for section 3
   actionVariable(E)
 ///
 
+TEST ///
+  R = QQ[x,y,z]
+  J = ideal(x^3+y^3+z^3-4,x^2-y-z-1,x-y^2+z-3)
+  -- 3 templates, 3 strategies
+  E1 = eliminationTemplate(x, J);
+  E2 = eliminationTemplate(x, J);
+  E3 = eliminationTemplate(x, J);
+  -- Test 1: Default Strategy
+  M1 = getActionMatrix(E1);
+  evals1 = eigenvalues M1;
+  assert(#evals1 == 12)
+  -- Test 2: Larsson Strategy
+  M2 = getActionMatrix(E2, Strategy => "Larsson");
+  evals2 = eigenvalues M2;
+  assert(#evals2 == 12);
+  -- Test 3: Greedy Strategy
+  M3 = getActionMatrix(E3, Strategy => "Greedy")
+  evals3 = eigenvalues M3
+  assert(#evals3 == 12)
+///
+
+
 end
 
 
@@ -702,8 +704,8 @@ end
 restart
 path = prepend("./", path)
 needsPackage "EliminationTemplates"
---check "EliminationTemplates"
---installPackage("EliminationTemplates", RemakeAllDocumentation => true)
+check "EliminationTemplates"
+installPackage("EliminationTemplates", RemakeAllDocumentation => true)
 R = QQ[x,y,z]
 Es = apply(4, i -> random(QQ^3, QQ^3))
 E = x * Es#0 + y * Es#1 + z * Es#2 + Es#3  -- essential matrix
