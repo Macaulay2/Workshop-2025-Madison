@@ -229,26 +229,27 @@ getTemplate(EliminationTemplate) := o -> E -> (
 copyTemplate = method(Options => {})
 copyTemplate(EliminationTemplate, Ideal) := o -> (E, J) -> (
     Rnew := ring J;
+    FFnew := coefficientRing Rnew;
     aNew := sub(actionVariable E, Rnew);
-    F := eliminationTemplate(aNew, J);
+    Enew := eliminationTemplate(aNew, J);
     
-    F.cache#basis = if E.cache#?basis then E.cache#basis else basis E;
+    Enew.cache#basis = sub(if E.cache#?basis then E.cache#basis else basis E, Rnew);
     
     if E.cache#?"graphIdeal" then (
-        Rs := ring E.cache#"graphIdeal";
+        Rs := FFnew[gens ring E.cache#"graphIdeal"];
         
-        if E.cache#?"shifts" then F.cache#"shifts" = E.cache#"shifts";
-        if E.cache#?"monomialPartition" then F.cache#"monomialPartition" = E.cache#"monomialPartition";
-        if E.cache#?"lastPartitionStrategy" then F.cache#"lastPartitionStrategy" = E.cache#"lastPartitionStrategy";
+        if E.cache#?"shifts" then Enew.cache#"shifts" = apply(E.cache#"shifts", sh -> sub(sh, Rs));
+        if E.cache#?"monomialPartition" then Enew.cache#"monomialPartition" = apply(E.cache#"monomialPartition", mp -> apply(mp, m -> sub(m, Rs)));
+        if E.cache#?"lastPartitionStrategy" then Enew.cache#"lastPartitionStrategy" = E.cache#"lastPartitionStrategy";
             
         toRs := map(Rs, Rnew, apply(numgens Rnew, i -> Rs_(i+1)));
         JsGens := toRs(gens J);
         aS := toRs(aNew);
         actVar := Rs_0;
         
-        F.cache#"graphIdeal" = ideal(JsGens | matrix{{actVar - aS}});
+        Enew.cache#"graphIdeal" = ideal(JsGens | matrix{{actVar - aS}});
     );
-    F
+    Enew
 )
 
 getTemplateMatrix = method(Options => {MonomialOrder => null, Strategy => null})
@@ -701,18 +702,34 @@ end
 restart
 path = prepend("./", path)
 needsPackage "EliminationTemplates"
-check "EliminationTemplates"
-installPackage("EliminationTemplates", RemakeAllDocumentation => true)
+--check "EliminationTemplates"
+--installPackage("EliminationTemplates", RemakeAllDocumentation => true)
 R = QQ[x,y,z]
 Es = apply(4, i -> random(QQ^3, QQ^3))
 E = x * Es#0 + y * Es#1 + z * Es#2 + Es#3  -- essential matrix
 I = ideal(E*transpose E * E - (1/2) * trace(E * transpose E) * E, det E);  -- Demazure constraints
 l = y
 ET = eliminationTemplate(l, I)
-printWidth = 10000
 M = getTemplateMatrix ET
-(sh, mp) = getTemplate ET;
+FF=frac(QQ[e_(0,0,0)..e_(3,2,2)])
+Es = apply(4, i -> matrix apply(3, j -> apply(3, k -> e_(i,j,k))))
+R = FF[x,y,z]
+E = x * Es#0 + y * Es#1 + z * Es#2 + Es#3  -- essential matrix
+J = ideal(E*transpose E * E - (1/2) * trace(E * transpose E) * E, det E);  -- Demazure constraints
+errorDepth=3
+ETP =  copyTemplate(ET, J)
+printWidth = 1000000
+getTemplateMatrix ETP
 
+FF = frac(QQ[a,b,c,d])
+R = FF[x,y,MonomialOrder=>Lex]
+l = c*x + d*y
+I = ideal(x^2+a*y^2-1, x*y-b)
+needsPackage "EliminationTemplates"
+ET = eliminationTemplate(l, I)
+M = getTemplateMatrix ET
+(P, L, U) = LUdecomposition M
+reducedRowEchelonForm M
 
 load "Benchmarks.m2";
 runBenchmarks()
