@@ -54,6 +54,57 @@ The paper proposes two greedy heuristics. In both, “zeroing out a column” me
   3. Add constraints enforcing $w_k = 0$ (update parameter assignments / feasible space).
   4. Repeat while some $\sigma(k) > 0$.
 
+Example. Suppose
+
+```text
+      col0    col1    col2
+row0  t0+1    t0+1      0
+row1  t1-2      0     t1-2
+```
+
+so
+
+```text
+W = | t0+1  t0+1   0   |
+    | t1-2   0    t1-2 |
+```
+
+Start with no assignments, so $A = \emptyset$.
+
+- Try zeroing `col0`. This requires
+  $t_0 + 1 = 0$ and $t_1 - 2 = 0$, so $t_0 = -1$ and $t_1 = 2$.
+  After substitution,
+
+  ```text
+  W = | 0  0  0 |
+      | 0  0  0 |
+  ```
+
+  so all $3$ columns are zero. Thus $\sigma(0) = 3$.
+
+- Try zeroing `col1`. This only requires $t_0 + 1 = 0$, so $t_0 = -1$.
+  Then
+
+  ```text
+  W = | 0   0   0 |
+      | t1-2  0  t1-2 |
+  ```
+
+  and only `col1` is guaranteed to be zero. Thus $\sigma(1) = 1$.
+
+- Try zeroing `col2`. This only requires $t_1 - 2 = 0$, so $t_1 = 2$.
+  Then
+
+  ```text
+  W = | t0+1  t0+1  0 |
+      | 0      0    0 |
+  ```
+
+  and only `col2` is guaranteed to be zero. Thus $\sigma(2) = 1$.
+
+The greedy choice is therefore `col0`, since it gives the largest score. The algorithm keeps the assignments
+$t_0 = -1$, $t_1 = 2$, and then stops because every column of $W$ is already zero.
+
 ### B) Column-wise greedy (targets removing excessive monomial columns)
 
 - Let $\mathcal{E}$ be the set of excessive monomials of the parametrized template.

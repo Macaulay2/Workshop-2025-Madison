@@ -111,19 +111,19 @@ enforceZeroForColumns = (W, colsToZero, thetaVars, thetaToZeroMap, A, SH, baseR)
     true
 );
 
-rowWiseGreedyAssignments = (W, thetaVars, thetaToZeroMap, SH, baseR) -> (
+rowWiseGreedyAssignments = (W, thetaVars, thetaToZeroMap, ThetaExt, R) -> (
     A := new MutableHashTable from {};
     improved := true;
     while improved do (
         improved = false;
-        baseZeroCount := countZeroColumns(W, A, SH);
+        baseZeroCount := countZeroColumns(W, A, ThetaExt);
         bestScore := 0;
         bestA := null;
         if numColumns W > 0 then (
             for k from 0 to numColumns W - 1 do (
                 trial := copyAssignments A;
-                if enforceZeroForColumns(W, {k}, thetaVars, thetaToZeroMap, trial, SH, baseR) then (
-                    score := countZeroColumns(W, trial, SH) - baseZeroCount;
+                if enforceZeroForColumns(W, {k}, thetaVars, thetaToZeroMap, trial, ThetaExt, R) then (
+                    score := countZeroColumns(W, trial, ThetaExt) - baseZeroCount;
                     if score > bestScore then (
                         bestScore = score;
                         bestA = trial;
