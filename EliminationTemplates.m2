@@ -716,6 +716,7 @@ path = prepend("./", path)
 needsPackage "EliminationTemplates"
 check "EliminationTemplates"
 installPackage("EliminationTemplates", RemakeAllDocumentation => true)
+viewHelp EliminationTemplates
 R = QQ[x,y,z]
 Es = apply(4, i -> random(QQ^3, QQ^3))
 E = x * Es#0 + y * Es#1 + z * Es#2 + Es#3  -- essential matrix
@@ -859,6 +860,34 @@ ET = eliminationTemplate(l, I)
 getTemplateMatrix(ET); -- 788 x 530
 getTemplateMatrix(ET, Strategy => "Larsson"); -- 256 x 339
 getTemplateMatrix(ET, Strategy => "Greedy"); -- will exceed runtime limit
+
+
+restart
+path = prepend("./", path)
+needsPackage "EliminationTemplates"
+check "EliminationTemplates"
+installPackage("EliminationTemplates", RemakeAllDocumentation => true)
+viewHelp EliminationTemplates
+
+-- generate a template over finite field
+FF = ZZ/3
+R = FF[x,y,z]
+Es = apply(4, i -> random(FF^3, FF^3))
+E = x * Es#0 + y * Es#1 + z * Es#2 + Es#3  -- essential matrix
+I = ideal(2 * E*transpose E * E - trace(E * transpose E) * E, det E);  -- Demazure constraints
+l = y
+ET = eliminationTemplate(l, I)
+M = getTemplateMatrix ET
+
+-- try copying this template into a rational problem instance
+FF = QQ
+Es = apply(4, i -> random(FF^3, FF^3))
+R = QQ[x,y,z]
+E = x * Es#0 + y * Es#1 + z * Es#2 + Es#3  -- essential matrix
+J = ideal(E*transpose E * E - (1/2) * trace(E * transpose E) * E, det E);  -- Demazure constraints
+E = copyTemplate(ET, J)
+sols = templateSolve(E)
+apply(sols, x -> 1e-6 > norm sub(sub(gens J, QQ[gens R]), matrix{x}))
 
 -- Test case
 restart
