@@ -112,48 +112,58 @@ getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     )
     else if (o.Strategy === "Greedy") then (
         print("Using Greedy strategy to compute H0.");
-        -- compute H = H0^T + Theta*H1, where H1 is the transposed syzygy matrix.
-        -- We keep columns aligned with generators of J for downstream greedy helpers.
+        
+        -- compute the syzygy matrix of J (transposed to be consistent with the literature conventions)
         H1 := transpose sub(syz(gens J), ring J);
-        -- print("H0: " | toString H0);
+
+        -- === DEBUG ===
+        print("H0: " | toString H0);
         -- print("H1: " | toString H1);
+        -- == END DEBUG ==
 
-        -- create an extension ring of R with the theta variables
+        -- compute H = H0 + Theta * H1, where Theta is a matrix of the variables theat_ij
+        -- H lives in the ThetaExt ring, which is R[theta_ij]
+
+        -- Do we really need this?
         ThetaExt := R[apply(numcols H0 * numrows H1, i -> "t" | toString i)];
-
-        -- coerce H0 and H1 into the extension ring
-        toTheta := map(ThetaExt, R);
+        toTheta := map(ThetaExt, R);           
         H0e := transpose(toTheta H0);
-        H1e := toTheta H1;
-
-        -- build Theta over the extension ring
+        H1e := toTheta H1;    -- map entries of H0 and H1 to the extension ring ThetaExt
         Theta := genericMatrix(ThetaExt, ThetaExt_0, numcols H0, numrows H1);
-
-        -- now everything is in the same ring
         H := H0e + Theta * H1e;
 
+        -- == DEBUG ==
+        -- print("H: " | toString H);
+        -- == END DEBUG ==
+
+        -- Find Z such that (column h_k of H) = Z_k v(H), where v(H) are the monomials in H
+        -- Stack Z horizontally to get W
         data := monomialVectorAndWData(H);
         W := data#"W";
         columnInfo := data#"columnInfo";
-        SH := ring H;
-        baseR := coefficientRing SH;
-        allVars := flatten entries vars SH;
-        baseVars := flatten entries vars baseR;
+        
+        -- Run row-wise greedy strategy
+        allVars := flatten entries vars ThetaExt;
+        baseVars := flatten entries vars R;
         thetaVars := drop(allVars, #baseVars);
-        thetaToZeroMap := map(SH, SH, baseVars | apply(thetaVars, t -> 0_SH));
+        thetaToZeroMap := map(ThetaExt, ThetaExt, baseVars | apply(thetaVars, t -> 0_ThetaExt));
+        rowA := rowWiseGreedyAssignments(W, thetaVars, thetaToZeroMap, ThetaExt, R);
+        
+        -- Run column-wise greedy strategy
+        excessiveMons := computeExcessiveMonomials(a, B, J, columnInfo, R);
+        colA := columnWiseGreedyAssignments(W, excessiveMons, columnInfo, J, thetaVars, thetaToZeroMap, ThetaExt, R);
 
-        rowA := rowWiseGreedyAssignments(W, thetaVars, thetaToZeroMap, SH, baseR);
-        excessiveMons := computeExcessiveMonomials(a, B, J, columnInfo, baseR);
-        colA := columnWiseGreedyAssignments(W, excessiveMons, columnInfo, J, thetaVars, thetaToZeroMap, SH, baseR);
-
-        rowZero := countZeroColumns(W, rowA, SH);
-        colZero := countZeroColumns(W, colA, SH);
+        -- Compare two greedy strategies
+        rowZero := countZeroColumns(W, rowA, ThetaExt);
+        colZero := countZeroColumns(W, colA, ThetaExt);
         bestA := if colZero > rowZero then colA else rowA;
         bestName := if colZero > rowZero then "Column-wise" else "Row-wise";
         print("Greedy selected: " | bestName | " strategy.");
-        -- print("Zero columns in W (row-wise): " | toString rowZero);
-        -- print("Zero columns in W (column-wise): " | toString colZero);
-        instantiateHWithAssignments(H, bestA, SH, baseR)
+        print("Zero columns in W (row-wise): " | toString rowZero);
+        print("Zero columns in W (column-wise): " | toString colZero);
+
+        -- Set theta variables to obtain H
+        transpose instantiateHWithAssignments(H, bestA, ThetaExt, R)
     )
     else if (o.Strategy === "Larsson") then (
         print("Using Larsson's strategy to compute H0.");
@@ -812,10 +822,11 @@ restart
 path = prepend("./", path)
 needsPackage "EliminationTemplates"
 R = QQ[x,y,z]
+
 Es = apply(4, i -> random(QQ^3, QQ^3))
 E = x * Es#0 + y * Es#1 + z * Es#2 + Es#3  -- essential matrix
 I = ideal(E*transpose E * E - (1/2) * trace(E * transpose E) * E, det E);  -- Demazure constraints
---l = random(1, R)
+-- l = random(1, R)
 (sh, mp) = getTemplate ET
 l = y
 ET = eliminationTemplate(l, I)
@@ -847,4 +858,17 @@ errorDepth = 0
 ET = eliminationTemplate(l, I)
 getTemplateMatrix(ET); -- 788 x 530
 getTemplateMatrix(ET, Strategy => "Larsson"); -- 256 x 339
--- getTemplateMatrix(ET, Strategy => "Larsson"); -- will exceed runtime limit
+getTemplateMatrix(ET, Strategy => "Greedy"); -- will exceed runtime limit
+
+-- Test case
+restart
+needsPackage "EliminationTemplates"
+R = QQ[x,y,z]
+J = ideal(x^3+y^3+z^3-4,x^2-y-z-1,x-y^2+z-3)
+-- 3 templates, 3 strategies
+E1 = eliminationTemplate(x, J);
+E2 = eliminationTemplate(x, J);
+E3 = eliminationTemplate(x, J);
+getTemplateMatrix(E1); -- 27 X 44
+getTemplateMatrix(E2, Strategy => "Greedy"); -- 15 x 44
+getTemplateMatrix(E3, Strategy => "Larsson")

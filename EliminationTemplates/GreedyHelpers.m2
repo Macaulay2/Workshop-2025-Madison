@@ -6,7 +6,6 @@ monomialVectorAndW = method()
 monomialVectorAndWData = method()
 
 monomialVectorAndWData Matrix := (H) -> (
-    R := ring H;
     SH := ring H;
     baseR := coefficientRing SH;
     monsList := flatten apply(flatten entries H, f -> (
