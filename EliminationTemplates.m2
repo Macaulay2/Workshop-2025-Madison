@@ -116,10 +116,10 @@ getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
         -- compute the syzygy matrix of J (transposed to be consistent with the literature conventions)
         H1 := transpose sub(syz(gens J), ring J);
 
-        -- === DEBUG ===
-        print("H0: " | toString H0);
+        -- print("=== DEBUG ===")
+        -- print("H0: " | toString H0);
         -- print("H1: " | toString H1);
-        -- == END DEBUG ==
+        -- print("== END DEBUG ==")
 
         -- compute H = H0 + Theta * H1, where Theta is a matrix of the variables theat_ij
         -- H lives in the ThetaExt ring, which is R[theta_ij]
@@ -132,26 +132,30 @@ getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
         Theta := genericMatrix(ThetaExt, ThetaExt_0, numcols H0, numrows H1);
         H := H0e + Theta * H1e;
 
-        -- == DEBUG ==
+        -- print("== DEBUG ==")
         -- print("H: " | toString H);
-        -- == END DEBUG ==
+        -- print("== END DEBUG ==")
 
         -- Find Z such that (column h_k of H) = Z_k v(H), where v(H) are the monomials in H
         -- Stack Z horizontally to get W
-        data := monomialVectorAndWData(H);
-        W := data#"W";
-        columnInfo := data#"columnInfo";
+        (W, mons) := monomialVectorAndW(H);
+        -- print("== DEBUG ==")
+        -- print("W: " | toString W);
+        -- print("mons: " | toString mons);
+        -- print("== END DEBUG ==")
         
         -- Run row-wise greedy strategy
-        allVars := flatten entries vars ThetaExt;
-        baseVars := flatten entries vars R;
+        -- Use actual ring generators here; `vars` can yield symbols, but the
+        -- greedy helpers call `coefficient`, which expects generators.
+        allVars := gens ThetaExt;
+        baseVars := gens R;
         thetaVars := drop(allVars, #baseVars);
         thetaToZeroMap := map(ThetaExt, ThetaExt, baseVars | apply(thetaVars, t -> 0_ThetaExt));
         rowA := rowWiseGreedyAssignments(W, thetaVars, thetaToZeroMap, ThetaExt, R);
         
         -- Run column-wise greedy strategy
-        excessiveMons := computeExcessiveMonomials(a, B, J, columnInfo, R);
-        colA := columnWiseGreedyAssignments(W, excessiveMons, columnInfo, J, thetaVars, thetaToZeroMap, ThetaExt, R);
+        excessiveMons := computeExcessiveMonomials(a, B, J, H, R);
+        colA := columnWiseGreedyAssignments(W, excessiveMons, mons, J, thetaVars, thetaToZeroMap, ThetaExt, R);
 
         -- Compare two greedy strategies
         rowZero := countZeroColumns(W, rowA, ThetaExt);

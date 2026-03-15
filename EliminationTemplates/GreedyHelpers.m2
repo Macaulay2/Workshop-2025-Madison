@@ -1,11 +1,9 @@
 -- Greedy strategy helper methods used by EliminationTemplates.m2.
 -- Input: a matrix H over a polynomial ring
--- Output: (vH, W, Zlist)
+-- Output: the pair (W, mons), where mons is the ordered monomial list
+-- used to build W's column blocks
 
-monomialVectorAndW = method()
-monomialVectorAndWData = method()
-
-monomialVectorAndWData Matrix := (H) -> (
+monomialVectorAndW = (H) -> (
     SH := ring H;
     baseR := coefficientRing SH;
     monsList := flatten apply(flatten entries H, f -> (
@@ -13,7 +11,6 @@ monomialVectorAndWData Matrix := (H) -> (
         flatten apply(coeffsF, c -> flatten entries monomials sub(c, baseR))
     ));
     mons := toList set monsList;
-    vH := matrix apply(#mons, i -> {mons#i});
     ncols := numColumns H;
     nrows := numRows H;
 
@@ -33,24 +30,12 @@ monomialVectorAndWData Matrix := (H) -> (
         Zk
     );
     
+    -- Columns of W are grouped by generator index, with the full monomial
+    -- list repeated in the same order inside each block.
     W := fold((A,B) -> A | B, first Zlist, drop(Zlist,1));
-    columnInfo := flatten for k from 0 to ncols-1 list (
-        apply(#mons, j -> new HashTable from {
-            "generatorIndex" => k,
-            "monomial" => mons#j
-        })
-    );
-    
-    new HashTable from {
-        "vH" => vH,
-        "W" => W,
-        "Zlist" => Zlist,
-        "mons" => mons,
-        "columnInfo" => columnInfo
-    }
-);
 
-monomialVectorAndW Matrix := (H) -> (monomialVectorAndWData H)#"W";
+    (W, mons)
+);
 
 copyAssignments = (A) -> (
     B := new MutableHashTable from {};
@@ -86,9 +71,12 @@ enforceZeroForColumns = (W, colsToZero, thetaVars, thetaToZeroMap, A, SH, baseR)
         scan(0..numRows W - 1, i -> (
             eq0 := if #rules == 0 then W_(i,k) else sub(W_(i,k), rules);
             if eq0 =!= 0_SH then (
-                coeffs := apply(thetaVars, t -> if #rules == 0 then coefficient(t, eq0) else sub(coefficient(t, eq0), rules));
+                -- `eq0` has already had the current assignments substituted into
+                -- it, so re-substituting its coefficients can drop to the base
+                -- ring and fail when a theta generator is not present there.
+                coeffs := apply(thetaVars, t -> coefficient(t, eq0));
                 linPart := sumInRing(apply(#thetaVars, q -> coeffs#q * thetaVars#q), SH);
-                constPart := if #rules == 0 then (eq0 - linPart) else sub(eq0 - linPart, rules);
+                constPart := eq0 - linPart;
                 
                 if (constPart - thetaToZeroMap constPart) =!= 0_SH then return false;
                 
@@ -110,7 +98,7 @@ enforceZeroForColumns = (W, colsToZero, thetaVars, thetaToZeroMap, A, SH, baseR)
                 
                 val := sub(-bScalar / aScalar, SH);
                 if A#?t then (
-                    checkVal := if #rules == 0 then (A#t - val) else sub(A#t - val, rules);
+                    checkVal := A#t - val;
                     if checkVal =!= 0_SH then return false;
                 ) else (
                     A#t = val;
@@ -151,29 +139,38 @@ rowWiseGreedyAssignments = (W, thetaVars, thetaToZeroMap, SH, baseR) -> (
     A
 );
 
-computeExcessiveMonomials = (a, B, J, columnInfo, baseR) -> (
+computeExcessiveMonomials = (a, B, J, H, baseR) -> (
     gensJ := toList J_*;
-    allMons := set flatten apply(columnInfo, info -> (
-        genIdx := info#"generatorIndex";
-        m := info#"monomial";
-        flatten entries monomials(m * sub(gensJ#genIdx, baseR))
+    monsList := flatten apply(flatten entries H, f -> (
+        coeffsF := flatten entries(last coefficients f);
+        flatten apply(coeffsF, c -> flatten entries monomials sub(c, baseR))
     ));
-    monsB := set flatten entries(lift(B, baseR));
-    monsR := set flatten entries(a * lift(B, baseR)) - set flatten entries(lift(B, baseR));
+    mons := toList set monsList;
+    allMons := set flatten apply(0..numColumns H - 1, k -> (
+        flatten apply(mons, m -> (
+            flatten entries monomials(m * sub(gensJ#k, baseR))
+        ))
+    ));
+    monsB := set flatten entries(lift(B, ring J));
+    monsR := set flatten entries(a * lift(B, ring J)) - set flatten entries(lift(B, ring J));
     toList(allMons - union(monsR, monsB))
 );
 
-columnsForExcessiveMonomial = (e, columnInfo, J, baseR) -> (
+columnsForExcessiveMonomial = (e, mons, J, baseR) -> (
     gensJ := toList J_*;
-    select(0..#columnInfo - 1, c -> (
-        info := columnInfo#c;
-        genIdx := info#"generatorIndex";
-        m := info#"monomial";
-        coefficient(e, m * sub(gensJ#genIdx, baseR)) =!= 0_baseR
-    ))
+    nMons := #mons;
+    cols := {};
+    for genIdx from 0 to #gensJ - 1 do (
+        for monIdx from 0 to nMons - 1 do (
+            m := mons#monIdx;
+            if coefficient(e, m * sub(gensJ#genIdx, baseR)) =!= 0_baseR then
+                cols = append(cols, genIdx * nMons + monIdx);
+        );
+    );
+    cols
 );
 
-columnWiseGreedyAssignments = (W, excessiveMons, columnInfo, J, thetaVars, thetaToZeroMap, SH, baseR) -> (
+columnWiseGreedyAssignments = (W, excessiveMons, mons, J, thetaVars, thetaToZeroMap, SH, baseR) -> (
     A := new MutableHashTable from {};
     improved := true;
     while improved do (
@@ -182,7 +179,7 @@ columnWiseGreedyAssignments = (W, excessiveMons, columnInfo, J, thetaVars, theta
         bestScore := 0;
         bestA := null;
         scan(excessiveMons, e -> (
-            colsE := columnsForExcessiveMonomial(e, columnInfo, J, baseR);
+            colsE := columnsForExcessiveMonomial(e, mons, J, baseR);
             if #colsE > 0 then (
                 trial := copyAssignments A;
                 if enforceZeroForColumns(W, colsE, thetaVars, thetaToZeroMap, trial, SH, baseR) then (
