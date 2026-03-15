@@ -77,234 +77,66 @@ actionVariable EliminationTemplate := E -> E#"actionVariable"
 
 ideal EliminationTemplate := E -> E#ideal
 
--- Input: a matrix H over a polynomial ring
--- Output: (vH, W, Zlist)
+load (currentFileDirectory | "GreedyHelpers.m2")
+load (currentFileDirectory | "GreedyThetaAdjust.m2")
 
-monomialVectorAndW = method()
-
-monomialVectorAndWData = method()
-
-monomialVectorAndWData Matrix := (H) -> (
-    R := ring H;
-
-    -- 1) collect monomials from the coefficient ring of H's entries
-    -- (e.g. if ring H = R[t], collect monomials in R, not in t)
-    SH := ring H;
-    baseR := coefficientRing SH;
-    monsList := flatten apply(flatten entries H, f -> (
-        coeffsF := flatten entries(last coefficients f);
-        flatten apply(coeffsF, c -> flatten entries monomials sub(c, baseR))
-    ));
-
-    mons := toList set monsList;
-
-    -- turn into a column vector vH (as a matrix with 1 column)
-    vH := matrix apply(#mons, i -> {mons#i});  -- (#mons) x 1
-
-    print("=== Debug: vH (monomial column vector) ===");
-    print vH;
-
-    -- 2) for each column h_k, find Z_k such that h_k = Z_k * vH
-    ncols := numColumns H;
-    nrows := numRows H;
-
-    Zlist := for k from 0 to ncols-1 list (
-        hk := submatrix(H, (0..nrows-1), {k});  -- nrows x 1 column
-
-        -- Build Zk as nrows x (#mons) matrix:
-        -- entry (i,j) is coefficient of monomial mons#j in hk_i
-        Zk := matrix apply(nrows, i -> (
-            fi := hk_(i,0);
-            (tMonsMat, coeffsMat) := coefficients fi;
-            tMons := flatten entries tMonsMat;
-            coeffs := flatten entries coeffsMat;
-            apply(#mons, j -> (
-                m := mons#j;
-                parts := apply(#tMons, q -> sub(coefficient(m, sub(coeffs#q, baseR)), SH) * tMons#q);
-                if #parts == 0 then 0_SH else fold(parts, (a,b) -> a+b)
-            ))
-        ));
-
-        print("=== Debug: Z_" | toString k | " ===");
-        print Zk;
-
-        -- sanity check (optional)
-        -- print("Check hk - Zk*vH = "); print(hk - Zk*vH);
-
-        Zk
-    );
-
-    -- 3) stack all Z_k horizontally to get W
-    W := fold((A,B) -> A | B, first Zlist, drop(Zlist,1));
-    columnInfo := flatten for k from 0 to ncols-1 list (
-        apply(#mons, j -> new HashTable from {
-            "generatorIndex" => k,
-            "monomial" => mons#j
-        })
-    );
-
-    print("=== Debug: W = [Z_0 Z_1 ... Z_{n-1}] ===");
-    print W;
-
-    new HashTable from {
-        "vH" => vH,
-        "W" => W,
-        "Zlist" => Zlist,
-        "mons" => mons,
-        "columnInfo" => columnInfo
-    }
+deterministicActionMix = (seed, cand) -> (
+    m := 2147483647;
+    h := hash(toString cand);
+    y := ((seed + 16127) * 1103515245 + h * 12345 + 1013904223) % m;
+    if y < 0 then y + m else y
 );
 
-monomialVectorAndW Matrix := (H) -> (monomialVectorAndWData H)#"W";
-
--- Usage:
--- (vH, W, Zlist) = monomialVectorAndW(H);
-
-copyAssignments = (A) -> (
-    B := new MutableHashTable from {};
-    scan(keys A, k -> B#k = A#k);
-    B
+greedyActionCandidates = (a, B, J, trials, seed) -> (
+    if trials <= 1 then return {a};
+    R := ring J;
+    basisMons := toList(set flatten entries monomials lift(B, R));
+    varsR := flatten entries vars R;
+    pool := toList set(varsR | basisMons | {a});
+    if #pool == 0 then return {a};
+    ranked := sort apply(pool, cand -> {deterministicActionMix(seed, cand), toString(cand), cand});
+    takeN := min(trials, #ranked);
+    chosen := if takeN == 0 then {} else apply(0..takeN-1, idx -> (ranked#idx)#2);
+    if any(chosen, cand -> cand == a) then chosen else (
+        if #chosen >= trials and trials > 1 then prepend(a, apply(0..trials-2, idx -> chosen#idx))
+        else prepend(a, chosen)
+    )
 );
 
-assignmentIdeal = (A, SH) -> (
-    if #keys A == 0 then ideal(0_SH)
-    else ideal apply(keys A, v -> v - A#v)
+greedyTemplateScoreFromH0 = (H0, J) -> (
+    shifts := apply(numgens J, i -> monomials(H0^{i}));
+    shifted := apply(shifts, J_*, (m, f) -> f * sub(m, ring J));
+    #union(set \ flatten \ entries \ monomials \ shifted)
 );
 
-reduceWithAssignments = (f, A, SH) -> (
-    if #keys A == 0 then f else f % assignmentIdeal(A, SH)
-);
+runGreedyActionSweep = (a, B, J, H0, H1, monomialOrder, greedyOpts) -> (
+    trials := if greedyOpts#?"actionTrials" then greedyOpts#"actionTrials" else 1;
+    if trials <= 1 then return greedyAGThetaAdjustH0(a, B, J, H0, H1, greedyOpts);
 
-isConstantInBaseRing = (c, baseR) -> (
-    mons := flatten entries monomials c;
-    all(mons, m -> m == 1_baseR)
-);
+    seed := if greedyOpts#?"actionTrialSeed" then greedyOpts#"actionTrialSeed" else 12345;
+    candidates := greedyActionCandidates(a, B, J, trials, seed);
+    debugRun := greedyOpts#?"debug" and greedyOpts#"debug";
 
-sumInRing = (L, SH) -> if #L == 0 then 0_SH else fold(L, (a,b) -> a+b);
+    bestA := a;
+    bestH := greedyAGThetaAdjustH0(a, B, J, H0, H1, greedyOpts);
+    bestScore := greedyTemplateScoreFromH0(bestH, J);
+    if debugRun then print("Greedy debug: action sweep start trials=" | toString(#candidates) | ", base score=" | toString(bestScore));
 
-countZeroColumns = (W, A, SH) -> (
-    if numColumns W == 0 then 0
-    else #select(0..numColumns W - 1, k -> (
-        all(0..numRows W - 1, i -> (
-            reduceWithAssignments(W_(i,k), A, SH) == 0_SH
-        ))
-    ))
-);
-
-enforceZeroForColumns = (W, colsToZero, thetaVars, thetaToZeroMap, A, SH, baseR) -> (
-    scan(colsToZero, k -> (
-        scan(0..numRows W - 1, i -> (
-            eq0 := reduceWithAssignments(W_(i,k), A, SH);
-            if eq0 =!= 0_SH then (
-                coeffs := apply(thetaVars, t -> reduceWithAssignments(coefficient(t, eq0), A, SH));
-                linPart := sumInRing(apply(#thetaVars, q -> coeffs#q * thetaVars#q), SH);
-                constPart := reduceWithAssignments(eq0 - linPart, A, SH);
-                -- We only support affine-linear constraints in theta variables.
-                if (constPart - thetaToZeroMap constPart) =!= 0_SH then return false;
-                active := select(0..#thetaVars - 1, q -> coeffs#q =!= 0_SH);
-                if #active == 0 then return false;
-                if #active > 1 then return false;
-                q := first active;
-                t := thetaVars#q;
-                aCoeff := sub(coeffs#q, baseR);
-                bCoeff := sub(constPart, baseR);
-                if not isConstantInBaseRing(aCoeff, baseR) then return false;
-                if not isConstantInBaseRing(bCoeff, baseR) then return false;
-                aScalar := coefficient(1_baseR, aCoeff);
-                bScalar := coefficient(1_baseR, bCoeff);
-                if aScalar == 0_(coefficientRing baseR) then return false;
-                val := sub(-bScalar / aScalar, SH);
-                if A#?t then (
-                    if reduceWithAssignments(A#t - val, A, SH) =!= 0_SH then return false
-                ) else A#t = val;
+    scan(candidates, cand -> (
+        if cand =!= a then (
+            H0cand := getH0(cand, B, J, MonomialOrder => monomialOrder, Strategy => null);
+            Hcand := greedyAGThetaAdjustH0(cand, B, J, H0cand, H1, greedyOpts);
+            scoreCand := greedyTemplateScoreFromH0(Hcand, J);
+            if debugRun then print("Greedy debug: action candidate " | toString(cand) | " score=" | toString(scoreCand));
+            if scoreCand < bestScore then (
+                bestA = cand;
+                bestH = Hcand;
+                bestScore = scoreCand;
             );
-        ));
+        );
     ));
-    true
-);
-
-rowWiseGreedyAssignments = (W, thetaVars, thetaToZeroMap, SH, baseR) -> (
-    A := new MutableHashTable from {};
-    improved := true;
-    while improved do (
-        improved = false;
-        baseZeroCount := countZeroColumns(W, A, SH);
-        bestScore := 0;
-        bestA := null;
-        if numColumns W > 0 then (
-            for k from 0 to numColumns W - 1 do (
-                trial := copyAssignments A;
-                if enforceZeroForColumns(W, {k}, thetaVars, thetaToZeroMap, trial, SH, baseR) then (
-                    score := countZeroColumns(W, trial, SH) - baseZeroCount;
-                    if score > bestScore then (
-                        bestScore = score;
-                        bestA = trial;
-                    );
-                );
-            )
-        );
-        if bestScore > 0 then (
-            A = bestA;
-            improved = true;
-        );
-    );
-    A
-);
-
-computeExcessiveMonomials = (a, B, J, columnInfo, baseR) -> (
-    gensJ := toList J_*;
-    allMons := set flatten apply(columnInfo, info -> (
-        genIdx := info#"generatorIndex";
-        m := info#"monomial";
-        flatten entries monomials(m * sub(gensJ#genIdx, baseR))
-    ));
-    monsB := set flatten entries(lift(B, baseR));
-    monsR := set flatten entries(a * lift(B, baseR)) - set flatten entries(lift(B, baseR));
-    toList(allMons - union(monsR, monsB))
-);
-
-columnsForExcessiveMonomial = (e, columnInfo, J, baseR) -> (
-    gensJ := toList J_*;
-    select(0..#columnInfo - 1, c -> (
-        info := columnInfo#c;
-        genIdx := info#"generatorIndex";
-        m := info#"monomial";
-        coefficient(e, m * sub(gensJ#genIdx, baseR)) =!= 0_baseR
-    ))
-);
-
-columnWiseGreedyAssignments = (W, excessiveMons, columnInfo, J, thetaVars, thetaToZeroMap, SH, baseR) -> (
-    A := new MutableHashTable from {};
-    improved := true;
-    while improved do (
-        improved = false;
-        baseZeroCount := countZeroColumns(W, A, SH);
-        bestScore := 0;
-        bestA := null;
-        scan(excessiveMons, e -> (
-            colsE := columnsForExcessiveMonomial(e, columnInfo, J, baseR);
-            if #colsE > 0 then (
-                trial := copyAssignments A;
-                if enforceZeroForColumns(W, colsE, thetaVars, thetaToZeroMap, trial, SH, baseR) then (
-                    score := countZeroColumns(W, trial, SH) - baseZeroCount;
-                    if score > bestScore then (
-                        bestScore = score;
-                        bestA = trial;
-                    );
-                );
-            );
-        ));
-        if bestScore > 0 then (
-            A = bestA;
-            improved = true;
-        );
-    );
-    A
-);
-
-instantiateHWithAssignments = (H, A, SH, baseR) -> (
-    Hred := matrix apply(numRows H, i -> apply(numColumns H, j -> reduceWithAssignments(H_(i,j), A, SH)));
-    sub(Hred, baseR)
+    if debugRun and bestA =!= a then print("Greedy debug: action sweep selected " | toString(bestA) | " (base was " | toString(a) | ")");
+    bestH
 );
 
 
@@ -336,51 +168,27 @@ getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
         H0
     )
     else if (o.Strategy == "Greedy") then (
-        print("Using Greedy strategy to compute H0.");
-        -- compute H = H0 + Theta * H1, where H1 is the syzygy matrix of G
-
-        H1 := transpose sub(syz(gens J), ring J); -- syzygy matrix H1. TODO: change gens J to gens G
-        print("H0: " | toString H0);
-        print("H1: " | toString H1);
-
-        -- create an extension ring of R with the theta variables
-        ThetaExt := R[apply(numrows H0 * numrows H1, i -> "t" | toString i)];
-
-        -- coerce H0 and H1 into the extension ring
-        H0e := transpose sub(H0, ThetaExt);
-        H1e := sub(H1, ThetaExt);
-
-        -- build Theta over the extension ring
-        Theta := genericMatrix(ThetaExt, ThetaExt_0, numrows H0, numrows H1);
-
-        -- now everything is in the same ring
-        H := H0e + Theta * H1e; -- every matrix in getH0 seems a transpose of the one in the paper
-
-        data := monomialVectorAndWData(H);
-        W := data#"W";
-        columnInfo := data#"columnInfo";
-        SH := ring H;
-        baseR := coefficientRing SH;
-        thetaVars := flatten entries vars SH;
-        thetaToZeroMap := map(SH, SH, apply(thetaVars, t -> 0_SH));
-
-        rowA := rowWiseGreedyAssignments(W, thetaVars, thetaToZeroMap, SH, baseR);
-        excessiveMons := computeExcessiveMonomials(a, B, J, columnInfo, baseR);
-        colA := columnWiseGreedyAssignments(W, excessiveMons, columnInfo, J, thetaVars, thetaToZeroMap, SH, baseR);
-
-        rowZero := countZeroColumns(W, rowA, SH);
-        colZero := countZeroColumns(W, colA, SH);
-        bestA := if colZero > rowZero then colA else rowA;
-        bestName := if colZero > rowZero then "Column-wise" else "Row-wise";
-        print("Greedy selected: " | bestName | " strategy.");
-        print("Zero columns in W (row-wise): " | toString rowZero);
-        print("Zero columns in W (column-wise): " | toString colZero);
-        Hbest := instantiateHWithAssignments(H, bestA, SH, baseR);
-
-        return Hbest; -- TODO: transpose H0 in the end
+        H1 := transpose sub(syz(gens J), ring J);
+        greedyOpts := new HashTable from {
+            "shortlistMax" => 200,
+            "shortlistMin" => 20,
+            "rowRestarts" => 4,
+            "restartSeed" => 12345,
+            "restartSeedStep" => 7919,
+            "lookaheadTopK" => 6,
+            "lookaheadPairPool" => 10,
+            "lookaheadOnZeroOnly" => true,
+            "trialWithRollback" => true,
+            "fallbackLarsson" => true,
+            "actionTrials" => 1,
+            "actionTrialSeed" => 12345,
+            "debug" => false,
+            "progressEvery" => 10
+        };
+        return runGreedyActionSweep(a, B, J, H0, H1, MO, greedyOpts)
     )
     else if (o.Strategy == "Larsson") then (
-	      print("Using Larsson's strategy to compute H0.");
+	      -- print("Using Larsson's strategy to compute H0.");
         ret := H0 % image(syz(gens(J)));
         ret
     ) else (error "Strategy not yet implemented.") 
@@ -893,6 +701,7 @@ Rosie's proposed solution:
   1. Store most recently used strategy in cache of ET
   2. If NEW strategy is passed, recompute
 *-
+getTemplateMatrix(ET, Strategy => "Greedy");
 
 
 -- E+f+k 7pt relative pose
@@ -909,6 +718,9 @@ I = ideal(F * Q * transpose F * Q * F - (1/2) * trace(F * Q * transpose F * Q) *
 l = random(1, R)
 errorDepth = 0 
 ET = eliminationTemplate(l, I)
+getH0(x, basis(R/I), I);
+getTemplateMatrix(ET, Strategy => "Greedy");
 getTemplateMatrix(ET, Strategy => "Larsson"); -- 256 x 339
 ET = eliminationTemplate(l, I)
 getTemplateMatrix(ET); -- 788 x 530
+

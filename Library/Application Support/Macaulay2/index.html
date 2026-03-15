@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Macaulay2</title>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <link type="text/css" rel="stylesheet" href="/opt/homebrew/share/Macaulay2/Style/doc.css">
+
+    <link rel="stylesheet" href="/opt/homebrew/share/Macaulay2/Style/katex/katex.min.css">
+    <script defer="defer" src="/opt/homebrew/share/Macaulay2/Style/katex/katex.min.js"></script>
+    <script defer="defer" src="/opt/homebrew/share/Macaulay2/Style/katex/contrib/auto-render.min.js"></script>
+    <script>
+      var macros = {
+          "\\break": "\\\\",
+          "\\ZZ": "\\mathbb{Z}",
+          "\\NN": "\\mathbb{N}",
+          "\\QQ": "\\mathbb{Q}",
+          "\\RR": "\\mathbb{R}",
+          "\\CC": "\\mathbb{C}",
+          "\\PP": "\\mathbb{P}"
+      }, delimiters = [
+          { left: "$$",  right: "$$",  display: true},
+          { left: "\\[", right: "\\]", display: true},
+          { left: "$",   right: "$",   display: false},
+          { left: "\\(", right: "\\)", display: false}
+      ], ignoredTags = [
+	  "kbd", "var", "samp", "script", "noscript",
+	  "style", "textarea", "pre", "code", "option" ];
+      document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, { delimiters: delimiters, macros: macros, ignoredTags: ignoredTags, trust: true });
+      });
+    </script>
+    <style>.katex { font-size: 1em; }</style>
+    <script defer="defer" src="/opt/homebrew/share/Macaulay2/Style/katex/contrib/copy-tex.min.js"></script>
+    <script defer="defer" src="/opt/homebrew/share/Macaulay2/Style/katex/contrib/render-a11y-string.min.js"></script>
+    <script src="/opt/homebrew/share/Macaulay2/Style/prism.js"></script>
+    <script>var current_version = '1.25.06';</script>
+    <script src="/opt/homebrew/share/Macaulay2/Style/version-select.js"></script>
+    <link type="image/x-icon" rel="icon" href="/opt/homebrew/share/Macaulay2/Style/icon.gif">
+  </head>
+  <body>
+    <p>This is the directory for Macaulay2 and its packages. Bookmark this page for future reference,
+		or run the <span class="tt">viewHelp</span> command in Macaulay2 to open up your browser on this page.
+		See the <a href="https://macaulay2.com/">Macaulay2</a> website for the latest version.</p>
+    <h3>Documentation</h3>
+    <ul>
+      <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Macaulay2Doc/html/index.html">Macaulay2 documentation</a></li>
+      <li>        <h3>Packages in <span class="tt">/opt/homebrew/Cellar/macaulay2/1.25.06_2/</span></h3>
+        <ul>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/A1BrouwerDegrees/html/index.html">A1BrouwerDegrees</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- A1-Brouwer degree computations</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/AbstractSimplicialComplexes/html/index.html">AbstractSimplicialComplexes</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- Abstract Simplicial Complexes</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/AbstractToricVarieties/html/index.html">AbstractToricVarieties</a> -- links abstract simplicial (normal) toric varieties to Schubert2</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/AdjointIdeal/html/index.html">AdjointIdeal</a> -- adjoint ideals of plane curves and related computations</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/AdjunctionForSurfaces/html/index.html">AdjunctionForSurfaces</a> -- Adjunction for Surfaces</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/AInfinity/html/index.html">AInfinity</a> -- AInfinity structures on free resolutions</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/AlgebraicSplines/html/index.html">AlgebraicSplines</a> -- splines on simplicial complexes, polytopal complexes, and graphs</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/AllMarkovBases/html/index.html">AllMarkovBases</a> -- computing all minimal Markov bases of a configuration matrix</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/AnalyzeSheafOnP1/html/index.html">AnalyzeSheafOnP1</a> -- decompose a Sheaf on P1</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/AssociativeAlgebras/html/index.html">AssociativeAlgebras</a> -- Noncommutative algebra</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/BeginningMacaulay2/html/index.html">BeginningMacaulay2</a> -- Mathematicians' Introduction to Macaulay2</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Benchmark/html/index.html">Benchmark</a> -- standard Macaulay2 benchmarks</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/BernsteinSato/html/index.html">BernsteinSato</a> -- Bernstein-Sato</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Bertini/html/index.html">Bertini</a> -- interface to Bertini</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/BettiCharacters/html/index.html">BettiCharacters</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- finite group characters on free resolutions and graded modules</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/BGG/html/index.html">BGG</a> -- Bernstein-Gelfand-Gelfand correspondence</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/BIBasis/html/index.html">BIBasis</a> -- involutive Pommaret basis in a Boolean ring</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/BinomialEdgeIdeals/html/index.html">BinomialEdgeIdeals</a> -- binomial edge ideals</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Binomials/html/index.html">Binomials</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- specialized routines for binomial ideals</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/BoijSoederberg/html/index.html">BoijSoederberg</a> -- Betti diagram operations useful for investigating the Boij-Soederberg conjectures</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Book3264Examples/html/index.html">Book3264Examples</a> -- examples to accompany the eponymous book by Eisenbud and Harris</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/BooleanGB/html/index.html">BooleanGB</a> -- Groebner bases for ideals in Boolean polynomial quotient rings</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Brackets/html/index.html">Brackets</a> -- Brackets, Grassmann-Cayley Algebra, and Projective Geometry</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Browse/html/index.html">Browse</a> -- a method for browsing and examining Macaulay2 data structures</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Bruns/html/index.html">Bruns</a> -- make a 3-generator ideal with an &quot;any&quot; resolution</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/CellularResolutions/html/index.html">CellularResolutions</a> -- cellular resolutions of monomial ideals</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/ChainComplexExtras/html/index.html">ChainComplexExtras</a> -- some additional ChainComplex Functions</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/ChainComplexOperations/html/index.html">ChainComplexOperations</a> -- sym2, wedge2, chi2 of a ChainComplex</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/CharacteristicClasses/html/index.html">CharacteristicClasses</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- CSM and Segre classes and the Euler characteristic for subschemes of smooth complete toric varieties</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Chordal/html/index.html">Chordal</a> -- routines that exploit chordal structure</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Classic/html/index.html">Classic</a> -- a classic Macaulay parser</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/CodingTheory/html/index.html">CodingTheory</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- tools for coding theory</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/CohomCalg/html/index.html">CohomCalg</a> -- interface to cohomCalg software for computing sheaf cohomology of line bundles on toric varieties</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/CoincidentRootLoci/html/index.html">CoincidentRootLoci</a> -- coincident root loci</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/CompleteIntersectionResolutions/html/index.html">CompleteIntersectionResolutions</a> -- Analyzing Resolutions over a Complete Intersection</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Complexes/html/index.html">Complexes</a> -- beta testing new version of chain complexes</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/ConformalBlocks/html/index.html">ConformalBlocks</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- for conformal block divisors</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/ConnectionMatrices/html/index.html">ConnectionMatrices</a> -- connection matrices and integrable systems from D-ideals</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/ConvexInterface/html/index.html">ConvexInterface</a> -- interface to Convex</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/ConwayPolynomials/html/index.html">ConwayPolynomials</a> -- a database of Conway polynomials</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/CorrespondenceScrolls/html/index.html">CorrespondenceScrolls</a> -- correspondence scrolls</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/CotangentSchubert/html/index.html">CotangentSchubert</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- Cotangent Schubert calculus</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Cremona/html/index.html">Cremona</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- rational maps between projective varieties</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Cyclotomic/html/index.html">Cyclotomic</a> -- cyclotomic fields</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/DecomposableSparseSystems/html/index.html">DecomposableSparseSystems</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- Solving decomposable sparse systems</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Depth/html/index.html">Depth</a> -- aids in computations related to depth</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/DeterminantalRepresentations/html/index.html">DeterminantalRepresentations</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- determinantal representations</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/DGAlgebras/html/index.html">DGAlgebras</a> -- Data type for DG algebras</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/DiffAlg/html/index.html">DiffAlg</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- specialized routines for differential forms</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Divisor/html/index.html">Divisor</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- Weil divisors</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Dmodules/html/index.html">Dmodules</a> -- D-modules</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/EagonResolution/html/index.html">EagonResolution</a> -- Compute the Eagon Resolution of the residue field</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/EdgeIdeals/html/index.html">EdgeIdeals</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- edge ideals</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/EigenSolver/html/index.html">EigenSolver</a> -- polynomial system solver via eigen-computations</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Elimination/html/index.html">Elimination</a> -- elimination of variables</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/EliminationMatrices/html/index.html">EliminationMatrices</a> -- resultants</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/EllipticCurves/html/index.html">EllipticCurves</a> -- group law on elliptic curves (and counting points with brute force methods)</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/EllipticIntegrals/html/index.html">EllipticIntegrals</a> -- uniformization of elliptic curves</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/EngineTests/html/index.html">EngineTests</a> -- a test suite for the Macaulay2 engine</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/EnumerationCurves/html/index.html">EnumerationCurves</a> -- Enumeration of rational curves via torus actions</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/EquivariantGB/html/index.html">EquivariantGB</a> -- Equivariant Groebner bases and related algorithms</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/ExampleSystems/html/index.html">ExampleSystems</a> -- database of polynomial systems</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/ExteriorIdeals/html/index.html">ExteriorIdeals</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- monomial ideals over exterior algebras</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/ExteriorModules/html/index.html">ExteriorModules</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- monomial modules over exterior algebras</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/FastMinors/html/index.html">FastMinors</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- faster linear algebra operations</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/FGLM/html/index.html">FGLM</a> -- Groebner bases via the FGLM algorithm</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/FiniteFittingIdeals/html/index.html">FiniteFittingIdeals</a> -- Fitting ideals of finite modules</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/FirstPackage/html/index.html">FirstPackage</a> -- an example Macaulay2 package</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/ForeignFunctions/html/index.html">ForeignFunctions</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- foreign function interface</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/FormalGroupLaws/html/index.html">FormalGroupLaws</a> -- commutative formal group laws</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/FourierMotzkin/html/index.html">FourierMotzkin</a> -- convex hulls and polar cones</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/FourTiTwo/html/index.html">FourTiTwo</a> -- Interface to 4ti2</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/FrobeniusThresholds/html/index.html">FrobeniusThresholds</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- F-thresholds</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/FunctionFieldDesingularization/html/index.html">FunctionFieldDesingularization</a> -- desingularization of function fields</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/GameTheory/html/index.html">GameTheory</a> -- computing equilibria in game theory</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/GenericInitialIdeal/html/index.html">GenericInitialIdeal</a> -- find the generic initial ideal of a given ideal</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/GeometricDecomposability/html/index.html">GeometricDecomposability</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- checking whether ideals are geometrically vertex decomposable</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/gfanInterface/html/index.html">gfanInterface</a> -- interface to Anders Jensen's Gfan software</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/GKMVarieties/html/index.html">GKMVarieties</a> -- computations with GKM manifolds and moment graphs</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/GradedLieAlgebras/html/index.html">GradedLieAlgebras</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- computations in graded Lie algebras</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/GraphicalModels/html/index.html">GraphicalModels</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- discrete and Gaussian graphical models</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/GraphicalModelsMLE/html/index.html">GraphicalModelsMLE</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- maximum likelihood estimates for graphical statistical models</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Graphics/html/index.html">Graphics</a> -- create graphics</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Graphs/html/index.html">Graphs</a> -- graphs and directed graphs (digraphs)</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/GroebnerStrata/html/index.html">GroebnerStrata</a> -- computing Groebner loci in Hilbert schemes</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/GroebnerWalk/html/index.html">GroebnerWalk</a> -- Groebner bases via the Groebner walk</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Hadamard/html/index.html">Hadamard</a> -- Hadamard products of projective subvarieties</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/HigherCIOperators/html/index.html">HigherCIOperators</a> -- higher CI operators</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/HighestWeights/html/index.html">HighestWeights</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- decompose free resolutions and graded modules with a semisimple Lie group action</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/HodgeIntegrals/html/index.html">HodgeIntegrals</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- Hodge integrals on the moduli space of curves</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/HolonomicSystems/html/index.html">HolonomicSystems</a> -- Holonomic Systems</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/HomotopyLieAlgebra/html/index.html">HomotopyLieAlgebra</a> -- Homotopy Lie algebra</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/HyperplaneArrangements/html/index.html">HyperplaneArrangements</a> -- manipulating finite sets of hyperplanes</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/IncidenceCorrespondenceCohomology/html/index.html">IncidenceCorrespondenceCohomology</a> -- Cohomology on the incidence correspondence, bundle of principal parts, and Lefschetz properties</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/IntegerProgramming/html/index.html">IntegerProgramming</a> -- solving integer programs with Gröbner bases</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/IntegralClosure/html/index.html">IntegralClosure</a> -- integral closure</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/InvariantRing/html/index.html">InvariantRing</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- invariants of group actions</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/InverseSystems/html/index.html">InverseSystems</a> -- equivariant Macaulay inverse systems</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/InvolutiveBases/html/index.html">InvolutiveBases</a> -- Methods for Janet bases and Pommaret bases in Macaulay 2</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Isomorphism/html/index.html">Isomorphism</a> -- probabilistic test of isomorphism between modules</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Jets/html/index.html">Jets</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- compute jets of various algebraic, geometric and combinatorial objects</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/JSON/html/index.html">JSON</a> -- JSON encoding and decoding</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/K3Carpets/html/index.html">K3Carpets</a> -- K3 double structure on scrolls</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/K3Surfaces/html/index.html">K3Surfaces</a> -- Explicit constructions of K3 surfaces</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Kronecker/html/index.html">Kronecker</a> -- Kronecker and rational normal forms</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/KustinMiller/html/index.html">KustinMiller</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- unprojection and the Kustin-Miller complex construction</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/LatticePolytopes/html/index.html">LatticePolytopes</a> -- lattice polytopes</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/LexIdeals/html/index.html">LexIdeals</a> -- lexicographic-type monomial ideals</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/LieTypes/html/index.html">LieTypes</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- common types and methods for Lie groups and Lie algebras</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/LinearTruncations/html/index.html">LinearTruncations</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- find the multigraded truncations that give linear resolutions</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/LLLBases/html/index.html">LLLBases</a> -- Lenstra-Lenstra-Lovasz bases</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/LocalRings/html/index.html">LocalRings</a> -- operations over a local ring R_p</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/M0nbar/html/index.html">M0nbar</a> -- calculations for divisors and F-curves on the moduli space of stable n-pointed genus zero curves</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Macaulay2Doc/html/index.html">Macaulay2Doc</a> -- Macaulay2 documentation</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/MapleInterface/html/index.html">MapleInterface</a> -- interface to Maple</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Markov/html/index.html">Markov</a> -- Markov ideals arising from Bayesian networks in statistics</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/MatchingFields/html/index.html">MatchingFields</a> -- Toric degenerations of flag varieties via matching fields</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/MatrixSchubert/html/index.html">MatrixSchubert</a> -- functions for investigating ASM and matrix Schubert varieties</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Matroids/html/index.html">Matroids</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- computations with matroids</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/MCMApproximations/html/index.html">MCMApproximations</a> -- MCM approximations and complete intersections</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/MergeTeX/html/index.html">MergeTeX</a> -- Run Macaulay2 code inside a LaTeX file</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/MinimalPrimes/html/index.html">MinimalPrimes</a> -- minimal primes and radical routines for ideals</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Miura/html/index.html">Miura</a> -- arithmetic of Miura curves</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/MixedMultiplicity/html/index.html">MixedMultiplicity</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- Mixed Multiplicities of ideals</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/ModuleDeformations/html/index.html">ModuleDeformations</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- versal deformations of maximal Cohen-Macaulay modules</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/MonodromySolver/html/index.html">MonodromySolver</a> -- solving polynomial systems via monodromy</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/MonomialAlgebras/html/index.html">MonomialAlgebras</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- monomial algebras</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/MonomialIntegerPrograms/html/index.html">MonomialIntegerPrograms</a> -- using integer programming for fast computations with monomial ideals</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/MonomialOrbits/html/index.html">MonomialOrbits</a> -- Orbit representatives of monomial ideals</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Msolve/html/index.html">Msolve</a> -- interface to the msolve library for solving multivariate polynomial systems using Groebner Bases</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/MultigradedBGG/html/index.html">MultigradedBGG</a> -- the multigraded BGG correspondence and differential modules</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/MultigradedImplicitization/html/index.html">MultigradedImplicitization</a> -- solving implicitization problems using multigradings</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/MultiGradedRationalMap/html/index.html">MultiGradedRationalMap</a> -- degree and birationality of multi-graded rational maps</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/MultiplicitySequence/html/index.html">MultiplicitySequence</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- computing the multiplicity sequence of an ideal</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/MultiplierIdeals/html/index.html">MultiplierIdeals</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- multiplier ideals, log canonical thresholds, and jumping numbers</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/MultiplierIdealsDim2/html/index.html">MultiplierIdealsDim2</a> -- multiplier ideals in 2-dimensional rings</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/MultiprojectiveVarieties/html/index.html">MultiprojectiveVarieties</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- multi-projective varieties and multi-rational maps</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/NAGtypes/html/index.html">NAGtypes</a> -- types used in Numerical Algebraic Geometry</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Nauty/html/index.html">Nauty</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- interface to nauty</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/NautyGraphs/html/index.html">NautyGraphs</a> -- interface to nauty (Graphs fork)</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/NCAlgebra/html/index.html">NCAlgebra</a> -- data types for noncommutative algebras</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/NoetherianOperators/html/index.html">NoetherianOperators</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- algorithms for computing local dual spaces and sets of Noetherian operators</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/NoetherNormalization/html/index.html">NoetherNormalization</a> -- place an ideal in Noether normal position</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/NonminimalComplexes/html/index.html">NonminimalComplexes</a> -- non-minimal strands of a non-minimal resolution of a homogeneous module</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Normaliz/html/index.html">Normaliz</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- interface to Normaliz in Macaulay2</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/NormalToricVarieties/html/index.html">NormalToricVarieties</a> -- routines for working with normal toric varieties and related objects</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/NumericalAlgebraicGeometry/html/index.html">NumericalAlgebraicGeometry</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- numerical algebraic geometry</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/NumericalCertification/html/index.html">NumericalCertification</a> -- numerical certification</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/NumericalImplicitization/html/index.html">NumericalImplicitization</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- numerical invariants of images of varieties</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/NumericalLinearAlgebra/html/index.html">NumericalLinearAlgebra</a> -- numerically compute local dual space and Hilbert functions</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/NumericalSchubertCalculus/html/index.html">NumericalSchubertCalculus</a> -- numerical methods in Schubert Calculus</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/NumericalSemigroups/html/index.html">NumericalSemigroups</a> -- Compute the Apery set and invariants of a numerical semigroup ring</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/NumericSolutions/html/index.html">NumericSolutions</a> -- solving systems of polynomial equalities</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/OIGroebnerBases/html/index.html">OIGroebnerBases</a> -- OI-modules over Noetherian polynomial OI-algebras</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/OldChainComplexes/html/index.html">OldChainComplexes</a> -- consolidating legacy chain complex code</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/OldPolyhedra/html/index.html">OldPolyhedra</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- convex polyhedra</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/OldToricVectorBundles/html/index.html">OldToricVectorBundles</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- vector bundles on toric varieties</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/OnlineLookup/html/index.html">OnlineLookup</a> -- Look up mathematical information online</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/OpenMath/html/index.html">OpenMath</a> -- OpenMath for Macaulay2</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Oscillators/html/index.html">Oscillators</a> -- code to analyze graph oscillators</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/PackageCitations/html/index.html">PackageCitations</a> -- citation of Macaulay2 packages</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/PackageTemplate/html/index.html">PackageTemplate</a> -- an example Macaulay2 package</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Parametrization/html/index.html">Parametrization</a> -- rational parametrization of rational plane curves and related computations</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Parsing/html/index.html">Parsing</a> -- a framework for creating recursive descent parsers</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/PencilsOfQuadrics/html/index.html">PencilsOfQuadrics</a> -- Clifford Algebra of a pencil of quadratic forms</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Permanents/html/index.html">Permanents</a> -- permanents of a matrix</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Permutations/html/index.html">Permutations</a> -- functions for working with permutations</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/PHCpack/html/index.html">PHCpack</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- interface to PHCpack</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/PhylogeneticTrees/html/index.html">PhylogeneticTrees</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- invariants for group-based phylogenetic models</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/PieriMaps/html/index.html">PieriMaps</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- maps between representations of the general linear group based on the Pieri formulas</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/PlaneCurveLinearSeries/html/index.html">PlaneCurveLinearSeries</a> -- Linear series on the normalization of a plane curve</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Points/html/index.html">Points</a> -- sets of points</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Polyhedra/html/index.html">Polyhedra</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- convex polyhedra</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Polymake/html/index.html">Polymake</a> -- interfacing with polymake</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/PolyominoIdeals/html/index.html">PolyominoIdeals</a> -- binomial ideals of collections of cells</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Posets/html/index.html">Posets</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- partially ordered sets (posets)</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/PositivityToricBundles/html/index.html">PositivityToricBundles</a> -- check positivity of toric vector bundles</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/PrimaryDecomposition/html/index.html">PrimaryDecomposition</a> -- primary decomposition and associated primes routines</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Probability/html/index.html">Probability</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- basic probability functions</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/PruneComplex/html/index.html">PruneComplex</a> -- pruning chain complexes over polynomial and local rings</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/PseudomonomialPrimaryDecomposition/html/index.html">PseudomonomialPrimaryDecomposition</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- Primary decomposition of square free pseudomonomial ideals</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Pullback/html/index.html">Pullback</a> -- pullback of rings</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/PushForward/html/index.html">PushForward</a> -- push forwards of finite ring maps</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Python/html/index.html">Python</a> -- interface to Python</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/QthPower/html/index.html">QthPower</a> -- An implementation of the Qth-Power algorithm for computing integral closures</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/QuadraticIdealExamplesByRoos/html/index.html">QuadraticIdealExamplesByRoos</a> -- Examples of Quadratic Ideals with Embedding Dimension Four by Jan-Erik Roos</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Quasidegrees/html/index.html">Quasidegrees</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- quasidegrees and graded local cohomology</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/QuaternaryQuartics/html/index.html">QuaternaryQuartics</a> -- code to support the paper 'Quaternary Quartic Forms and Gorenstein Rings'</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/QuillenSuslin/html/index.html">QuillenSuslin</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- the Quillen-Suslin algorithm for bases of projective modules</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/RandomCanonicalCurves/html/index.html">RandomCanonicalCurves</a> -- Construction of random smooth canonical curves up to genus 14</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/RandomComplexes/html/index.html">RandomComplexes</a> -- random complexes over fields or the integers</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/RandomCurves/html/index.html">RandomCurves</a> -- random curves</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/RandomCurvesOverVerySmallFiniteFields/html/index.html">RandomCurvesOverVerySmallFiniteFields</a> -- general canonical curves of genus &lt;= 15 over fields with small characteristic</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/RandomGenus14Curves/html/index.html">RandomGenus14Curves</a> -- random smooth curves of genus 14</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/RandomIdeals/html/index.html">RandomIdeals</a> -- creating random ideals of various sorts</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/RandomMonomialIdeals/html/index.html">RandomMonomialIdeals</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- Erdos-Renyi-type random monomial ideals</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/RandomObjects/html/index.html">RandomObjects</a> -- a framework for making random objects in algebraic geometry</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/RandomPlaneCurves/html/index.html">RandomPlaneCurves</a> -- random plane curves</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/RandomPoints/html/index.html">RandomPoints</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- find a point in a given variety over a finite field</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/RandomSpaceCurves/html/index.html">RandomSpaceCurves</a> -- random smooth space curves</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/RationalMaps/html/index.html">RationalMaps</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- rational maps between varieties</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/RationalPoints/html/index.html">RationalPoints</a> -- find the common zeroes of a set of polynomials with coefficients in a finite field</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/RationalPoints2/html/index.html">RationalPoints2</a> -- find the rational points on a variety</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/ReactionNetworks/html/index.html">ReactionNetworks</a> -- reaction networks</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/RealRoots/html/index.html">RealRoots</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- symbolically exploring, counting, and locating real solutions to general polynomial systems</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/ReesAlgebra/html/index.html">ReesAlgebra</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- Rees algebras</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/ReflexivePolytopesDB/html/index.html">ReflexivePolytopesDB</a> -- simple access to Kreuzer-Skarke database of reflexive polytopes of dimensions 3 and 4</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Regularity/html/index.html">Regularity</a> -- Castelnuovo-Mumford regularity of a homogeneous ideal</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/RelativeCanonicalResolution/html/index.html">RelativeCanonicalResolution</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- the relative canonical resolution for g-nodal canonical curves with a fixed g^1_k</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/ResidualIntersections/html/index.html">ResidualIntersections</a> -- conditions associated to residual intersection theory</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/ResLengthThree/html/index.html">ResLengthThree</a> -- Multiplication in free resolutions of length three</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/ResolutionsOfStanleyReisnerRings/html/index.html">ResolutionsOfStanleyReisnerRings</a> -- Comparing resolutions of Stanley-Reisner rings and computing various systems of parameters</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Resultants/html/index.html">Resultants</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- resultants, discriminants, and Chow forms</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/RInterface/html/index.html">RInterface</a> -- interface to R for statistical computing</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/RunExternalM2/html/index.html">RunExternalM2</a> -- run Macaulay2 functions outside the current Macaulay2 process</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/SagbiGbDetection/html/index.html">SagbiGbDetection</a> -- finding term orders for which the given generators of an ideal/algebra form a Gröbner/SAGBI basis</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Saturation/html/index.html">Saturation</a> -- quotient, saturation, and annihilator routines for ideals and modules</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Schubert2/html/index.html">Schubert2</a> -- characteristic classes for varieties without equations</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/SchurComplexes/html/index.html">SchurComplexes</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- Schur functors of complexes</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/SchurFunctors/html/index.html">SchurFunctors</a> -- Schur modules and maps between them</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/SchurRings/html/index.html">SchurRings</a> -- representation rings of general linear groups and of symmetric groups</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/SchurVeronese/html/index.html">SchurVeronese</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- Data for Veronese embeddings of projective space</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/SCMAlgebras/html/index.html">SCMAlgebras</a> -- sequentially Cohen-Macaulay modules or ideals</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/SCSCP/html/index.html">SCSCP</a> -- SCSCP for Macaulay2</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/SectionRing/html/index.html">SectionRing</a> -- the section ring of a Weil Divisor</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/SegreClasses/html/index.html">SegreClasses</a> -- Segre class computations for containment of varieties and Fulton-MacPherson intersection products</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/SemidefiniteProgramming/html/index.html">SemidefiniteProgramming</a> -- semidefinite programming</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Seminormalization/html/index.html">Seminormalization</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- seminormalization of rings</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Serialization/html/index.html">Serialization</a> -- reversible conversion of all Macaulay2 objects to strings</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/SimpleDoc/html/index.html">SimpleDoc</a> -- a simple documentation function</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/SimplicialComplexes/html/index.html">SimplicialComplexes</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- exploring abstract simplicial complexes within commutative algebra</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/SimplicialDecomposability/html/index.html">SimplicialDecomposability</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- various decomposability routines for simplicial complexes</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/SimplicialPosets/html/index.html">SimplicialPosets</a> -- constructing Stanley simplicial poset rings</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/SlackIdeals/html/index.html">SlackIdeals</a> -- Slack ideals of polytopes and matroids</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/SLnEquivariantMatrices/html/index.html">SLnEquivariantMatrices</a> -- file ancillary to the paper &quot;A construction of equivariant bundles on the space of symmetric forms&quot;</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/SLPexpressions/html/index.html">SLPexpressions</a> -- straight line programs and algebraic circuits</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/SpaceCurves/html/index.html">SpaceCurves</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- space curves</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/SparseResultants/html/index.html">SparseResultants</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- computations with sparse resultants</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/SpechtModule/html/index.html">SpechtModule</a> -- invariants for permutation groups</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/SpecialFanoFourfolds/html/index.html">SpecialFanoFourfolds</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- Hodge-special fourfolds</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/SpectralSequences/html/index.html">SpectralSequences</a> -- spectral sequences</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/SRdeformations/html/index.html">SRdeformations</a> -- deformations of Stanley-Reisner rings and related computations</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/StatePolytope/html/index.html">StatePolytope</a> -- the state polytope of an ideal</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/StatGraphs/html/index.html">StatGraphs</a> -- Graphs specific for algebraic statistics</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/StronglyStableIdeals/html/index.html">StronglyStableIdeals</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- studying strongly stable ideals related to Hilbert polynomials</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Style/html/index.html">Style</a> -- style sheets and images for the documentation</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/SubalgebraBases/html/index.html">SubalgebraBases</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- Canonical subalgebra bases (aka SAGBI/Khovanskii bases)</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/SumsOfSquares/html/index.html">SumsOfSquares</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- sums of squares</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/SuperLinearAlgebra/html/index.html">SuperLinearAlgebra</a> -- computations related to supermatrices</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/SVDComplexes/html/index.html">SVDComplexes</a> -- SVD (singular value decomposition) of a complex over the reals and related functions</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/SwitchingFields/html/index.html">SwitchingFields</a> -- Switch Base Fields and Obtain Natural Maps</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/SymbolicPowers/html/index.html">SymbolicPowers</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- symbolic powers</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/SymmetricPolynomials/html/index.html">SymmetricPolynomials</a> -- symmetric polynomials</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/TangentCone/html/index.html">TangentCone</a> -- tangent cones</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/TateOnProducts/html/index.html">TateOnProducts</a> -- Tate resolutions on products of projective spaces</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/TensorComplexes/html/index.html">TensorComplexes</a> -- multilinear algebra with labeled bases</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/TerraciniLoci/html/index.html">TerraciniLoci</a> -- Terracini loci of projective varieties</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/TestIdeals/html/index.html">TestIdeals</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- singularities in positive characteristic</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Text/html/index.html">Text</a> -- documentation and hypertext</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/ThinSincereQuivers/html/index.html">ThinSincereQuivers</a> -- Construction of flow polytopes and their associated quivers</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/ThreadedGB/html/index.html">ThreadedGB</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- Compute a Groebner basis using the classical Buchberger with multiple threads</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Topcom/html/index.html">Topcom</a> -- interface to the topcom software package which in particular computes triangulations</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/TorAlgebra/html/index.html">TorAlgebra</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- classification of local rings based on multiplication in homology</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/ToricHigherDirectImages/html/index.html">ToricHigherDirectImages</a> -- computations involving pushforwards and higher direct images of toric maps</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/ToricInvariants/html/index.html">ToricInvariants</a> -- Euclidean distance degrees, polar degrees, and Chern-Mather classes of toric varieties</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/ToricTopology/html/index.html">ToricTopology</a> -- toric topology</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/ToricVectorBundles/html/index.html">ToricVectorBundles</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- vector bundles on toric varieties</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/TriangularSets/html/index.html">TriangularSets</a> -- triangular decompositions of ideals</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Triangulations/html/index.html">Triangulations</a> -- triangulations of polyhedra and point sets</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Triplets/html/index.html">Triplets</a> -- triplets of degree sequences and associated Betti diagrams and cohomology tables</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Tropical/html/index.html">Tropical</a> -- computations in tropical geometry</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/TropicalToric/html/index.html">TropicalToric</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- tropical methods for toric intersection theory</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Truncations/html/index.html">Truncations</a> -- truncation of a module</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/TSpreadIdeals/html/index.html">TSpreadIdeals</a> -- t-spread ideals of a polynomial ring</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Units/html/index.html">Units</a> -- units conversion and physical constants</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Valuations/html/index.html">Valuations</a> -- implementation of valuations for rings</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Varieties/html/index.html">Varieties</a> -- routines for working with affine and projective varieties and coherent sheaves on them</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/VectorFields/html/index.html">VectorFields</a> -- vector fields</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/VectorGraphics/html/index.html">VectorGraphics</a> -- producing SVG graphics</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/VersalDeformations/html/index.html">VersalDeformations</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- versal deformations and local Hilbert schemes</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/VirtualResolutions/html/index.html">VirtualResolutions</a>             <img src="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/Macaulay2/Style/GoldStar.png" alt="a gold star">
+ -- Methods for virtual resolutions on products of projective spaces</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/Visualize/html/index.html">Visualize</a> -- interactive visualization and manipulation of combinatorial objects in a browser</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/VNumber/html/index.html">VNumber</a> -- compute v-number of homogeneous ideals and v-function of monomial ideals</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/WeylAlgebras/html/index.html">WeylAlgebras</a> -- D-modules</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/WeylGroups/html/index.html">WeylGroups</a> -- root systems and Weyl groups</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/WhitneyStratifications/html/index.html">WhitneyStratifications</a> -- Compute Whitney Statifications Algebraically &amp; Stratifies Maps</li>
+          <li><a href="file:///opt/homebrew/Cellar/macaulay2/1.25.06_2/share/doc/Macaulay2/XML/html/index.html">XML</a> -- an XML parser</li>
+        </ul>
+      </li>
+    </ul>
+  </body>
+
+</html>
