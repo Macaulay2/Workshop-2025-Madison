@@ -91,6 +91,8 @@ getH0 (RingElement, Ideal) := o -> (a, J) -> (
 )    
 getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     R := ring J;
+    a = sub(a, R);
+    B = sub(B, R);
     FF := coefficientRing R;
     MO := if not instance(o.MonomialOrder, Nothing) then o.MonomialOrder else (options R).MonomialOrder;
     S := newRing(R, MonomialOrder => MO);
@@ -199,8 +201,8 @@ getTemplate(EliminationTemplate) := o -> E -> (
         (E.cache#"shifts", E.cache#"monomialPartition")
     ) else (
         J := ideal E;
-        a := actionVariable E;
         R := ring J;
+        a := sub(actionVariable E, R);
         B := lift(basis(R/J), R);
 
         (shOrig, mpOrig) := getTemplateHelper(a, B, J, o);
@@ -268,8 +270,7 @@ copyTemplate(EliminationTemplate, Ideal) := o -> (E, J) -> (
 
 getTemplateMatrix = method(Options => {MonomialOrder => null, Strategy => null})
 getTemplateMatrix(RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
-    (shifts, monomialPartition) := getTemplate(eliminationTemplate(a, J), o);
-    getTemplateMatrix(shifts, monomialPartition, J, o)
+    getTemplateMatrix(eliminationTemplate(a, J), o)
 )
 getTemplateMatrix(ShiftSet, MonomialPartition, Ideal) := o -> (shifts, monomialPartition, J) -> (
     allMons := monomialPartition#0 | monomialPartition#2;

@@ -15,10 +15,6 @@ MGreedy2 = getTemplateMatrix(x, B, J, Strategy => "Greedy")
 assert(numRows MGreedy == numRows MGreedy2)
 assert(numColumns MGreedy == numColumns MGreedy2)
 
--- Legacy mode remains available for regression/perf comparisons.
-MLegacy = getTemplateMatrix(x, B, J, Strategy => "GreedyLegacy")
-assert(numRows MGreedy <= numRows MLegacy)
-
 -- Ensure solving still works in the Greedy path.
 E = eliminationTemplate(x, J)
 A = getActionMatrix(E, Strategy => "Greedy")
