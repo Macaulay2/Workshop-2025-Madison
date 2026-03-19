@@ -19,14 +19,7 @@ Goal: recover a linear projection P : PP^3 --> PP^2
   1 DOF for f
 *-
 
--- create a synthetic problem-solution pair
--- point where 3D lines intersect
-FF = QQ
-a = random(FF^3, FF^1) || matrix{{1}}
--- other 2 points defining two 3D lines
--- L_1 = <a, b1>, L_2 = <a, b2>
-b1 = random(FF^3, FF^1) || matrix{{1}}
-b2 = random(FF^3, FF^1) || matrix{{1}}
+
 -- this method function creates the quaternion parametrization of SO3
 -*
 Q : PP^3 --> P(C^(3\times 3)) = PP^8
@@ -56,39 +49,48 @@ Q2R (Thing, Thing, Thing, Thing) := o -> (w, x, y, z) -> (
     )
 Q2R List := o -> L -> Q2R(L#0, L#1, L#2, L#3, o)
 
--- unknown camera parameters: goal is to recover these
-(w0, x0, y0, z0, f0) = (random FF, random FF, random FF, random FF, random FF)
-R0 = Q2R(w0, x0, y0, z0, Normalized=>true)
--- check this a rotation matrix
-R0 * transpose R0, det R0
-
--- generate "ground truth" camera matrix
-P0 = diagonalMatrix{f0, f0, 1} * (R0 | matrix{{0},{0},{0}})
--- implicit equations of 2D lines obtained by projection
-l1 = gens ker transpose(P0 * (a | b1))
-l2 = gens ker transpose(P0 * (a | b2))
--*
-Goal: recover P0 just from the data of (L1,L2,l1,l2)
-*-
-
-S = FF[w..z,f]
-R = Q2R(w,x,y,z) -- _SCALED_ rotation matrix
-
-P = diagonalMatrix{f,f,1} * (R | matrix{{0},{0},{0}})
--- 5 equations in 5 unknowns f, w, x, y, z
-I = ideal(
-    transpose l1 * P * a,
-    transpose l1 * P * b1,
-    transpose l2 * P * a,
-    transpose l2 * P * b2,
-    w^2+x^2+y^2+z^2-1
+-- create a synthetic problem-solution pair
+fabricateIdealAndGroundTruth = () -> (
+    -- point where 3D lines intersect
+    FF := QQ;
+    a := random(FF^3, FF^1) || matrix{{1}};
+    -- other 2 points defining two 3D lines
+    -- L_1 := <a, b1>, L_2 := <a, b2>
+    b1 := random(FF^3, FF^1) || matrix{{1}};
+    b2 := random(FF^3, FF^1) || matrix{{1}};
+    -- unknown camera parameters: goal is to recover these
+    (w0, x0, y0, z0, f0) := (random FF, random FF, random FF, random FF, random FF);
+    R0 := Q2R(w0, x0, y0, z0, Normalized => true);
+    -- generate "ground truth" camera matrix
+    P0 := diagonalMatrix{f0, f0, 1} * (R0 | matrix{{0},{0},{0}});
+    -- implicit equations of 2D lines obtained by projection
+    l1 := gens ker transpose(P0 * (a | b1));
+    l2 := gens ker transpose(P0 * (a | b2));
+    -*
+    Goal: recover P0 just from the data of (L1,L2,l1,l2)
+    *-
+    S := FF[w..z,f];
+    R := Q2R(w,x,y,z); -- _SCALED_ rotation matrix
+    P := diagonalMatrix{f,f,1} * (R | matrix{{0},{0},{0}});
+    -- 5 equations in 5 unknowns f, w, x, y, z
+    I := ideal(
+	transpose l1 * P * a,
+	transpose l1 * P * b1,
+	transpose l2 * P * a,
+	transpose l2 * P * b2,
+	w^2+x^2+y^2+z^2-1
+	);
+    groundTruthSolution := matrix{(1/sqrt(w0^2+x0^2+y0^2+z0^2)*{w0,x0,y0,z0})|{f0}};
+    (I, groundTruthSolution)
     )
+
+
+(I, groundTruthSolution) = fabricateIdealAndGroundTruth()
 dim I, degree I, radical I == I
 needsPackage "EigenSolver"
-minimalProblemSolutions = zeroDimSolve I
 -- did we recover the ground-truth solution
-groundTruthSolution = matrix{(1/sqrt(w0^2+x0^2+y0^2+z0^2)*{w0,x0,y0,z0})|{f0}}
 -- yes! some ways to verify this below
+minimalProblemSolutions = zeroDimSolve I
 select(minimalProblemSolutions, x -> norm(matrix x- groundTruthSolution) < 1e-10)
 position(minimalProblemSolutions, x -> norm(matrix x- groundTruthSolution) < 1e-10)
 -*
@@ -102,3 +104,25 @@ IDEA:
    (1) getTemplate (solve for initial data (L1, L2, l1, l2)
    (2) copyTemplate (solve for new initial data, "with less pain") 
 *-
+end
+restart
+load "camera-example.m2"
+needsPackage "EliminationTemplates"
+l = random(1, ring I)
+ET = eliminationTemplate(l, I)
+elapsedTime templateSolve ET;
+-- check caching: is the next run faster?
+elapsedTime templateSolve ET;
+-- did we recover GT?
+select(templateSolve ET, x -> norm(matrix{x}- groundTruthSolution) < 1e-10)
+-- compare w/ eigensolver
+netList templateSolve ET
+netList minimalProblemSolutions
+-- copy template?
+(I2, groundTwothSolution) = fabricateIdealAndGroundTruth()
+elapsedTime ET2 = copyTemplate(ET, I2);
+keys ET2.cache
+keys ET.cache
+-- must be action matrix slowing the first solve down...
+elapsedTime netList templateSolve ET2
+select(templateSolve ET2, x -> norm(matrix{x}- groundTwothSolution) < 1e-10)
