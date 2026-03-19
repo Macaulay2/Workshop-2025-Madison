@@ -50,9 +50,8 @@ Q2R (Thing, Thing, Thing, Thing) := o -> (w, x, y, z) -> (
 Q2R List := o -> L -> Q2R(L#0, L#1, L#2, L#3, o)
 
 -- create a synthetic problem-solution pair
-fabricateIdealAndGroundTruth = () -> (
+fabricateIdealAndGroundTruth = FF -> (
     -- point where 3D lines intersect
-    FF := QQ;
     a := random(FF^3, FF^1) || matrix{{1}};
     -- other 2 points defining two 3D lines
     -- L_1 := <a, b1>, L_2 := <a, b2>
@@ -85,7 +84,7 @@ fabricateIdealAndGroundTruth = () -> (
     )
 
 
-(I, groundTruthSolution) = fabricateIdealAndGroundTruth()
+(I, groundTruthSolution) = fabricateIdealAndGroundTruth QQ
 dim I, degree I, radical I == I
 needsPackage "EigenSolver"
 -- did we recover the ground-truth solution
@@ -110,6 +109,7 @@ load "camera-example.m2"
 needsPackage "EliminationTemplates"
 l = random(1, ring I)
 ET = eliminationTemplate(l, I)
+errorDepth = 0
 elapsedTime templateSolve ET;
 -- check caching: is the next run faster?
 elapsedTime templateSolve ET;
@@ -119,10 +119,9 @@ select(templateSolve ET, x -> norm(matrix{x}- groundTruthSolution) < 1e-10)
 netList templateSolve ET
 netList minimalProblemSolutions
 -- copy template?
-(I2, groundTwothSolution) = fabricateIdealAndGroundTruth()
+(I2, groundTwothSolution) = fabricateIdealAndGroundTruth RR
 elapsedTime ET2 = copyTemplate(ET, I2);
-keys ET2.cache
-keys ET.cache
 -- must be action matrix slowing the first solve down...
+errorDepth = 0
 elapsedTime netList templateSolve ET2
 select(templateSolve ET2, x -> norm(matrix{x}- groundTwothSolution) < 1e-10)

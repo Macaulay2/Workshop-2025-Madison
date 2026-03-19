@@ -295,12 +295,13 @@ getActionMatrix = method(Options => {MonomialOrder => null, Strategy => null})
 getActionMatrix(RingElement, MonomialPartition, Matrix) := o -> (actVar, mp, M) -> (
     numE := length mp#0;
     numB := length mp#2;
+    FF := ring M;
     m := numrows M;
     n := numcols M;
     numTop := m - numB;
     MtopE := M_{0 .. numE-1}^{0..numTop-1};
     MtopB := M_{numE .. n-1}^{0..numTop-1};
-    X := solve(MtopE, MtopB);
+    X := solve(MtopE, MtopB, ClosestFit => if instance(FF, InexactFieldFamily) or instance(FF, InexactField) then true else false);
     MbotE := M_{0 .. numE-1}^{numTop .. m-1};
     MbotB := M_{numE .. n-1}^{numTop .. m-1};
     MbotE * X - MbotB
