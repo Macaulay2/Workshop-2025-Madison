@@ -257,13 +257,16 @@ copyTemplate(EliminationTemplate, Ideal) := o -> (E, J) -> (
         if E.cache#?"shifts" then Enew.cache#"shifts" = apply(E.cache#"shifts", sh -> sub(sh, Rsnew));
         if E.cache#?"monomialPartition" then Enew.cache#"monomialPartition" = apply(E.cache#"monomialPartition", mp -> apply(mp, m -> sub(m, Rsnew)));
         if E.cache#?"lastPartitionStrategy" then Enew.cache#"lastPartitionStrategy" = E.cache#"lastPartitionStrategy";
-            
-        toRsnew := map(Rsnew, Rnew, apply(numgens Rnew, i -> Rsnew_(i+1)));
+        if E.cache#?"lastMatrixStrategy" then Enew.cache#"lastMatrixStrategy" = E.cache#"lastMatrixStrategy";
+	if E.cache#?"lastActionStrategy" then Enew.cache#"lastActionStrategy" = E.cache#"lastActionStrategy";
+
+	toRsnew := map(Rsnew, Rnew, apply(numgens Rnew, i -> Rsnew_(i+1)));
         JsGens := toRsnew(gens J);
         aS := toRsnew(aNew);
         actVar := Rsnew_0;
         
         Enew.cache#"graphIdeal" = ideal(JsGens | matrix{{actVar - aS}});
+	if E.cache#?"templateMatrix" then Enew.cache#"templateMatrix" = getTemplateMatrix(Enew.cache#"shifts", Enew.cache#"monomialPartition", Enew.cache#"graphIdeal");
     );
     Enew
 )
@@ -319,6 +322,9 @@ getActionMatrix(EliminationTemplate) := o -> E -> (
     )
 )
 
+-*
+
+*-
 getEigenMatrix = method(Options => {MonomialOrder => null, Strategy => null})
 getEigenMatrix(EliminationTemplate) := o -> (E) -> (
     Ma := getActionMatrix(E, o);
