@@ -913,3 +913,18 @@ E3 = eliminationTemplate(x, J);
 getTemplateMatrix(E1); -- 27 X 44
 getTemplateMatrix(E2, Strategy => "Greedy"); -- 15 x 44
 getTemplateMatrix(E3, Strategy => "Larsson")
+
+-- This example doesn't work :(
+loadPackage "EliminationTemplates"
+R = QQ[x,y,z];
+E0 = matrix {{7/3, 9, 3}, {5/6, 3, 1/8}, {10/9, 7/5, 3/4}};
+E1 = matrix {{1/6, 5/8, 3/10}, {9/4, 9/7, 1/3}, {7/4, 2, 7/10}};
+E2 = matrix {{8/9, 7/5, 9/4}, {10/3, 9/4, 4/7}, {5/2, 7/5, 2/9}};
+E3 = matrix {{5/6, 1/7, 6}, {6/7, 8/3, 3/10}, {9/8, 1, 4/7}};
+Es = {E0, E1, E2, E3}
+E = x * Es#0 + y * Es#1 + z * Es#2 + Es#3;  -- essential matrix
+I = ideal(E*transpose E * E - (1/2) * trace(E * transpose E) * E);  -- Demazure constraints
+sols = templateSolve(random(1, R), I);
+norms = apply(sols, x -> norm sub(sub(gens I, CC[gens R]), matrix{x}));
+all(norms, x -> 1e-6 > x)
+print(toString norms);
