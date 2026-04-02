@@ -376,7 +376,7 @@ recoverSolutions(Matrix, Matrix, EliminationTemplate, Matrix) := (Bmat, M, E, te
     
     -- Pure linear algebra: solve only for the excessive block, skipping action variables
     MtopE := templateMat_{0 .. numE-1}^{0..numTop-1};
-    MtopB := templateMat_{numE + numR .. numcols templateMat -1}^{0..numTop-1};
+    MtopB := templateMat_{numE .. numcols templateMat -1}^{0..numTop-1};
     
     X := solve(MtopE, MtopB);
     
@@ -392,22 +392,24 @@ recoverSolutions(Matrix, Matrix, EliminationTemplate, Matrix) := (Bmat, M, E, te
         root := {};
         for v in varsList do (
             if monomialValues#?v then (
+		-- v is basic monomial
               root = append(root, monomialValues#v);
             )
             else (
+		-- v is an excessive monomial
                 vRs := toRs(v);
-                -- Only search monsE, because v is a base ring variable, not an action variable!
                 posInE := position(monsE, m -> m == vRs);
                 if posInE =!= null then (
                     local val;
                     val = 0;
                     for j from 0 to numB - 1 do (
                         bMapped := toRnew(monsB#j);
-                        val = val - sub(X_(posInE, j), coefficientRing Rnew) * monomialValues#bMapped;
+                        val = val - sub(X_(posInE, j), CC) * monomialValues#bMapped;
                     );
                     root = append(root, val);
                 )
                 else (
+		    -- failsafe in case v is neither a basic nor an excessive monomial
                     r := v % J;
                     coeffs := last coefficients(r, Monomials => basisMonsRnew);
                     local val;
@@ -797,6 +799,7 @@ restart
 debug needsPackage "EliminationTemplates"
 R = QQ[x,y]
 J = ideal(x^3 + y^2 - 1, x - y - 1)
+errorDepth = 2
 templateSolve(x, J)
 actVar = x
 getEigenMatrix(x, J)
@@ -805,6 +808,7 @@ restart
 debug needsPackage "EliminationTemplates"
 R = QQ[x,y]
 J = ideal(x^3 + y^2 - 1, x - y - 1)
+errorDepth = 0
 templateSolve(x, J)
 
 restart
@@ -924,7 +928,24 @@ E3 = matrix {{5/6, 1/7, 6}, {6/7, 8/3, 3/10}, {9/8, 1, 4/7}};
 Es = {E0, E1, E2, E3}
 E = x * Es#0 + y * Es#1 + z * Es#2 + Es#3;  -- essential matrix
 I = ideal(E*transpose E * E - (1/2) * trace(E * transpose E) * E);  -- Demazure constraints
-sols = templateSolve(random(1, R), I);
+l = 5*x + (3/8)*y + (9/7)*z
+sols = templateSolve(l, I);
 norms = apply(sols, x -> norm sub(sub(gens I, CC[gens R]), matrix{x}));
-all(norms, x -> 1e-6 > x)
+all(norms, x -> tol > x)
+
+--(1/9)*x+(3/5)*y+(5/6)*z
+
+
+tol = 1.0
+done = false
+i = 0;
+while not done do (
+    l = random(1, R);
+    sols = templateSolve(l, I);
+    norms = apply(sols, x -> norm sub(sub(gens I, CC[gens R]), matrix{x}));
+    done = not all(norms, x -> tol > x);
+    i = i + 1;
+    )
 print(toString norms);
+toString l
+print i
