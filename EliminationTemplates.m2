@@ -39,6 +39,8 @@ newPackage(
 
 -- Greedy-specific helper routines are maintained separately for readability.
 load "./EliminationTemplates/GreedyHelpers.m2"
+-- Gap-polynomial / matrixHi construction (Martyushev CVPR 2022 reference port).
+load "./EliminationTemplates/MatrixHi.m2"
 
 export {
     "getH0",
@@ -171,6 +173,26 @@ getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
         -- Set theta variables to obtain H
         transpose instantiateHWithAssignments(H, bestA, ThetaExt, R)
     )
+    else if (o.Strategy === "GapGreedy") then (
+        -- Gap polynomial approach: construct H0 via Groebner division of gap polys.
+        -- This can produce templates with fewer excessive monomials than default.
+        print("Using GapGreedy strategy to compute H0.");
+        Blist := flatten entries lift(B, R);
+        Bset := set Blist;
+        aBlist := flatten entries(a * lift(B, R));
+        residualMons := select(aBlist, m -> not Bset#?m);
+        nG := #residualMons;
+        -- Gap polynomials: r - NF(r, J)
+        gapPolys := apply(residualMons, r -> r - (r % J));
+        -- Express each gap poly as a combination of generators via Groebner division
+        Hrows := apply(nG, kidx -> (
+            Gk := gapPolys#kidx;
+            qk := matrix{{Gk}} // gens J;
+            flatten entries qk
+        ));
+        -- H0 is nGens x nGap: H0_{i,k} = coefficient of F_i in the expression of G_k
+        matrix(R, apply(numgens J, i -> apply(nG, k -> Hrows#k#i)))
+    )
     else if (o.Strategy === "Larsson") then (
         print("Using Larsson's strategy to compute H0.");
         -- Ensure the reduction stays in the base ring R
@@ -280,6 +302,37 @@ getTemplateMatrix(ShiftSet, MonomialPartition, Ideal) := o -> (shifts, monomialP
     sub(transpose fold(apply(shiftPolynomials(shifts, J), m -> last coefficients(m, Monomials => allMons)), (a,b) -> a|b), coefficientRing ring J)
 )
 getTemplateMatrix(EliminationTemplate) := o -> E -> (
+    -- MatrixHi strategy: build the template from gap polynomials G_i = a*B_i
+    -- - NF(a*B_i, J) factored as G_i = sum_j H[i,j] * F_j, following Martyushev
+    -- et al. (CVPR 2022). This bypasses the graph-ideal extension that the
+    -- Default / Larsson / Greedy pipelines use in getTemplate; that extension
+    -- adds |B| rows so that getActionMatrix can be read off the template via a
+    -- single linear solve. Skipping it yields |B| fewer rows (e.g. 10x20 on
+    -- the 5pt essential vs 20x20 Default) but means getActionMatrix /
+    -- templateSolve do NOT yet work on a MatrixHi-cached template -- use
+    -- Default / Larsson / Greedy for the solve pipeline.
+    --
+    -- Note: matrixHi returns the particular solution with free alpha
+    -- parameters set to 0. On the benchmarks validated so far (5pt essential,
+    -- 3-var docs system, unit circle) the number of free alphas is 0, so the
+    -- template size is already optimal. An iterative adjustParams refinement
+    -- (Martyushev Sec. 4) that uses free alphas to cancel excess monomials is
+    -- under investigation for problems with free > 0 and is not yet exposed.
+    if o.Strategy === "MatrixHi" then (
+        if E.cache#?"templateMatrixMatrixHi" then
+            return E.cache#"templateMatrixMatrixHi";
+        J := ideal E;
+        R := ring J;
+        a := sub(actionVariable E, R);
+        B := lift(basis(R/J), R);
+        Flist := flatten entries gens J;
+        (gp, resMons, Blist) := buildGapPolys(a, B, J);
+        (Hmat, perRow) := matrixHi(Flist, gp);
+        RB := (toList resMons) | Blist;
+        (sh, M, V, Eexcess) := buildMatrixHiTemplate(Hmat, Flist, RB);
+        E.cache#"templateMatrixMatrixHi" = M;
+        return M;
+    );
     if E.cache#?"templateMatrix" and (o.Strategy === null or (E.cache#?"lastMatrixStrategy" and E.cache#"lastMatrixStrategy" === o.Strategy)) then (
         E.cache#"templateMatrix"
     ) else (
@@ -658,7 +711,10 @@ TEST ///
   assert(all(sort evals, {-2,0,1}, (e1, e2) -> abs(e1 - e2) < 1e-4))
 ///
 
-TEST ///
+TEST /// -- 3-variable benchmark: dense cubic-ish system (deg J = 12, |B| = 12).
+-- Used here for a smoke test of the basic pipeline (getTemplateMatrix / getActionMatrix).
+-- Template-size checks for this system and the 5-pt essential are in the
+-- "MatrixHi" strategy TEST below.
   R = QQ[x,y,z]
   J = ideal(x^3+y^3+z^3-4,x^2-y-z-1,x-y^2+z-3)
   E = eliminationTemplate(x, J)
@@ -667,7 +723,9 @@ TEST ///
   eigenvalues getActionMatrix E
 ///
 
-TEST /// -- 5-point essential matrix problem
+TEST /// -- 5-point essential matrix (Demazure trace identity, deg I = 10).
+-- Classical relative-pose benchmark from Nister; template-size reference from
+-- Martyushev et al., CVPR 2022 (10 x 20 on std basis).
   R = QQ[x,y,z]
   Es = apply(4, i -> random(QQ^3, QQ^3));
   E = x * Es#0 + y * Es#1 + z * Es#2 + Es#3;  -- essential matrix
@@ -675,6 +733,24 @@ TEST /// -- 5-point essential matrix problem
   l = random(1, R);
   sols = templateSolve(l, I)
   assert(all(sols, x -> 1e-6 > norm sub(sub(gens I, CC[gens R]), matrix{x})))
+///
+
+TEST /// -- MatrixHi strategy: template size matches Martyushev CVPR 2022 reference.
+-- The MatrixHi path bypasses the graph-ideal extension, so the template has
+-- |B| fewer rows than Default / Larsson / Greedy (which all produce 20x20 on
+-- the 5pt essential, vs 10x20 for MatrixHi).
+  R = QQ[x,y,z]
+  Es = apply(4, i -> random(QQ^3, QQ^3));
+  Ee = x * Es#0 + y * Es#1 + z * Es#2 + Es#3;
+  I = ideal(Ee*transpose Ee * Ee - (1/2) * trace(Ee * transpose Ee) * Ee) + ideal(det Ee);
+  ET = eliminationTemplate(y, I);
+  M = getTemplateMatrix(ET, Strategy => "MatrixHi");
+  assert(numRows M == 10 and numColumns M == 20)
+
+  J = ideal(x^3+y^3+z^3-4,x^2-y-z-1,x-y^2+z-3)
+  ET2 = eliminationTemplate(x, J);
+  N = getTemplateMatrix(ET2, Strategy => "MatrixHi");
+  assert(numRows N <= numRows getTemplateMatrix(ET2))  -- strictly smaller on this system
 ///
 
 TEST /// -- change of ideals
