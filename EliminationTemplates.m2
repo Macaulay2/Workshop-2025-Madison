@@ -564,7 +564,7 @@ doc ///
         This method copies an elimination template object, using the same action variable and basis, but a different defining ideal.
       Example
         R = QQ[x,y]
-        I = ideal(x^4+y^2+x*y-3, x^2*y+y^3-2)
+        I = ideal(x^4+x*y+y^2-3, x^2*y+y^3-2)
         J = ideal(x^3+y^2-1,x^2+y^3-1)
         E = eliminationTemplate(x,I)
         F = copyTemplate(E, J)
@@ -579,7 +579,8 @@ doc ///
       (getTemplateMatrix, RingElement, Matrix, Ideal)
       (getTemplateMatrix, ShiftSet, MonomialPartition, Ideal)
       (getTemplateMatrix, EliminationTemplate)
-    --Headline
+    Headline
+      computes template matrix
     Usage
       M = (a, B, J)
       M = getTemplateMatrix(sh, mp, J)
@@ -600,13 +601,12 @@ doc ///
     Outputs
       M:Matrix
     Description
-      --Text
+      Text
+        This method computes the template matrix corresponding to the inputted elimination template.
       Example
         R = QQ[x,y]
-        I = ideal(x^4+y^2+x*y-3, x^2*y+y^3-2)
+        I = ideal(x^4+x*y+y^2-3, x^2*y+y^3-2)
         E = eliminationTemplate(x,I)
-        --getTemplateMatrix()
-        --getTemplateMatrix()
         getTemplateMatrix(E)
     SeeAlso
       EliminationTemplate
@@ -631,7 +631,7 @@ doc ///
         This method outputs the action variable associated to the inputted elimination template E.
       Example
         R = QQ[x,y]
-        I = ideal(x^4+y^2+x*y-3, x^2*y+y^3-2)
+        I = ideal(x^4+x*y+y^2-3, x^2*y+y^3-2)
         E = eliminationTemplate(x,I)
         actionVariable(E)
     SeeAlso
