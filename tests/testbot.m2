@@ -23,6 +23,9 @@
 --capture get "tests/example.m2"
 
 installPackage("EliminationTemplates")
+-- Run the package's own TEST /// blocks (19 of them). installPackage
+-- alone only runs doc-examples, not TEST blocks.
+check "EliminationTemplates"
 
 -- The following lines automatically run every file in the "tests" directory.
 -- If you wish, you can change testDir to any other directory.
