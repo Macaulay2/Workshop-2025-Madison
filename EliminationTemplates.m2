@@ -1035,65 +1035,230 @@ E = eliminationTemplate(x, I)
 getTemplateMatrix(E, Strategy => "MatrixHi")  -- 11 x 20 (paper std: 11 x 19)
 
 
---------------------------------------------------------------------------
--- Misc dev recipes (self-contained blocks; each starts with `restart`).
---------------------------------------------------------------------------
 
--- Install / check / help helpers.
+
+-- 5-point essential matrix problem: DEBUGGING TEMPLATE SIZE & STRATEGY
 restart
+path = prepend("./", path)
+needsPackage "EliminationTemplates"
+check "EliminationTemplates"
+installPackage("EliminationTemplates", RemakeAllDocumentation => true)
+viewHelp EliminationTemplates
+R = QQ[x,y,z]
+Es = apply(4, i -> random(QQ^3, QQ^3))
+E = x * Es#0 + y * Es#1 + z * Es#2 + Es#3  -- essential matrix
+I = ideal(E*transpose E * E - (1/2) * trace(E * transpose E) * E, det E);  -- Demazure constraints
+l = y
+ET = eliminationTemplate(l, I)
+M = getTemplateMatrix ET
+FF=frac(QQ[e_(0,0,0)..e_(3,2,2)])
+Es = apply(4, i -> matrix apply(3, j -> apply(3, k -> e_(i,j,k))))
+R = FF[x,y,z]
+E = x * Es#0 + y * Es#1 + z * Es#2 + Es#3  -- essential matrix
+J = ideal(E*transpose E * E - (1/2) * trace(E * transpose E) * E, det E);  -- Demazure constraints
+errorDepth=3
+ETP =  copyTemplate(ET, J)
+printWidth = 1000000
+getTemplateMatrix ETP
+
+FF = frac(QQ[a,b,c,d])
+R = FF[x,y,MonomialOrder=>Lex]
+l = c*x + d*y
+I = ideal(x^2+a*y^2-1, x*y-b)
+needsPackage "EliminationTemplates"
+ET = eliminationTemplate(l, I)
+M = getTemplateMatrix ET
+(P, L, U) = LUdecomposition M
+reducedRowEchelonForm M
+
+load "Benchmarks.m2";
+runBenchmarks()
+
+
+
+-* Development section *-
+-- basic solve, compare with known solution
+restart
+debug needsPackage "EliminationTemplates"
+needsPackage "NumericalAlgebraicGeometry"
+R=QQ[x,y,z]
+J=ideal(x^3+y^3+z^3-4,x^2-y-z-1,x-y^2+z-3)
+B=basis(R/J)
+getEigenMatrix(x,J)
+templateSolve(x, J)
+templateSolve(x+2*y+3*z,J)
+templateSolve(x,J) -- Why do we have two of these lines?
+netList solveSystem J_*
+
+-- change of basis
+restart
+debug needsPackage "EliminationTemplates"
+R=QQ[x,y]
+I=ideal(x^2+y^2-1,x^2+y^3+x*y-2)
+J=ideal(x^2+y^2-2,x^2+y^3+3*x*y-5)
+B=basis(R/I)
+E=eliminationTemplate(x+4*y,I)
+getTemplate(E)
+getEigenMatrix(E)
+sols = templateSolve(E)
+assert(all(sols, x -> 1e-6 > norm sub(sub(gens I, QQ[gens R]), matrix{x})))
+
+F=copyTemplate(E,J)
+getEigenMatrix(F)
+sols = templateSolve(F)
+assert(all(sols, x -> 1e-6 > norm sub(sub(gens J, QQ[gens R]), matrix{x})))
+
+restart
+debug needsPackage "EliminationTemplates"
+R = QQ[x,y]
+J = ideal(x^3 + y^2 - 1, x - y - 1)
+errorDepth = 2
+templateSolve(x, J)
+actVar = x
+getEigenMatrix(x, J)
+
+restart
+debug needsPackage "EliminationTemplates"
+R = QQ[x,y]
+J = ideal(x^3 + y^2 - 1, x - y - 1)
+errorDepth = 0
+templateSolve(x, J)
+
+restart
+debug needsPackage "EliminationTemplates"
+R = QQ[x]
+J = ideal(x^2-1, x^3-x)
+getH0(x, basis(R/J), J, Strategy => "Greedy")
+
+-- Benchmark tests: just run these three lines
+restart
+load "Benchmarks.m2";
+runBenchmarks()
+--
+
+uninstallPackage "EliminationTemplates"
+restart
+installPackage "EliminationTemplates"
+viewHelp "EliminationTemplates"
+check "EliminationTemplates"
+
+help EliminationTemplates
+help getTemplate
+
+viewHelp "EliminationTemplates"
+
+-- 5-point essential matrix problem: DEBUGGING TEMPLATE SIZE & STRATEGY
+restart
+path = prepend("./", path)
+needsPackage "EliminationTemplates"
+R = QQ[x,y,z]
+
+Es = apply(4, i -> random(QQ^3, QQ^3))
+E = x * Es#0 + y * Es#1 + z * Es#2 + Es#3  -- essential matrix
+I = ideal(E*transpose E * E - (1/2) * trace(E * transpose E) * E, det E);  -- Demazure constraints
+-- l = random(1, R)
+(sh, mp) = getTemplate ET
+l = y
+ET = eliminationTemplate(l, I)
+getTemplateMatrix(ET); -- 27 X 44
+getTemplateMatrix(ET, Strategy => "Greedy"); -- 15 x 44
+getTemplateMatrix(ET, Strategy => "Larsson"); -- 24 x 44
+
+-* 
+-- problem! should be 24 x 34
+Rosie's proposed solution: 
+  1. Store most recently used strategy in cache of ET
+  2. If NEW strategy is passed, recompute
+*-
+
+
+-- E+f+k 7pt relative pose
+getTemplateMatrix(ET, Strategy => "Greedy"); 
+needsPackage "EliminationTemplates"
+R = QQ[w,x,y,lambda];
+mons = {x^2, y^2, lambda^2, x*y, x*lambda, y*lambda};
+coeffs = apply(6, i -> random(QQ));
+h = sum(0..#mons-1, i -> coeffs#i * mons#i);  -- random quadratic function
+Fs = apply(4, i -> random(QQ^3, QQ^3));
+F = x * Fs#0 + y * Fs#1 + lambda * Fs#2 + Fs#3;
+Q = diagonalMatrix({1, 1, w});
+I = ideal(F * Q * transpose F * Q * F - (1/2) * trace(F * Q * transpose F * Q) * F) + ideal(det F) + ideal(lambda * y - h);
+l = random(1, R)
+errorDepth = 0 
+ET = eliminationTemplate(l, I)
+getTemplateMatrix(ET); -- 788 x 530
+getTemplateMatrix(ET, Strategy => "Larsson"); -- 256 x 339
+getTemplateMatrix(ET, Strategy => "Greedy"); -- will exceed runtime limit
+
+
+restart
+path = prepend("./", path)
 needsPackage "EliminationTemplates"
 check "EliminationTemplates"
 installPackage("EliminationTemplates", RemakeAllDocumentation => true)
 viewHelp EliminationTemplates
 
-
--- Basic solve on the 3-var docs system.
-restart
-debug needsPackage "EliminationTemplates"
-needsPackage "NumericalAlgebraicGeometry"
-R = QQ[x,y,z]
-J = ideal(x^3+y^3+z^3-4, x^2-y-z-1, x-y^2+z-3)
-templateSolve(x, J)                            -- graph-ideal Default path
-templateSolve(x+2*y+3*z, J)                    -- random linear form (works)
-netList solveSystem J_*                        -- cross-check via NAG
-
-
--- copyTemplate across two ideals sharing the same generator structure.
-restart
-debug needsPackage "EliminationTemplates"
-R = QQ[x,y]
-I = ideal(x^2+y^2-1, x^2+y^3+x*y-2)
-J = ideal(x^2+y^2-2, x^2+y^3+3*x*y-5)
-E = eliminationTemplate(x+4*y, I)
-sols = templateSolve E
-assert(all(sols, s -> 1e-6 > norm sub(sub(gens I, QQ[gens R]), matrix{s})))
-F = copyTemplate(E, J)
-sols = templateSolve F
-assert(all(sols, s -> 1e-6 > norm sub(sub(gens J, QQ[gens R]), matrix{s})))
-
-
--- Generate template over ZZ/p, transplant to QQ via copyTemplate.
-restart
-needsPackage "EliminationTemplates"
-setRandomSeed 42
-FF = ZZ/32749
+-- generate a template over finite field
+FF = ZZ/3
 R = FF[x,y,z]
 Es = apply(4, i -> random(FF^3, FF^3))
-Em = x * Es#0 + y * Es#1 + z * Es#2 + Es#3
-I  = ideal(2*Em*transpose(Em)*Em - trace(Em*transpose(Em))*Em, det Em)
-ET = eliminationTemplate(y, I)
-getTemplateMatrix ET                           -- fast over ZZ/p
+E = x * Es#0 + y * Es#1 + z * Es#2 + Es#3  -- essential matrix
+I = ideal(2 * E*transpose E * E - trace(E * transpose E) * E, det E);  -- Demazure constraints
+l = y
+ET = eliminationTemplate(l, I)
+M = getTemplateMatrix ET
 
-Rq = QQ[x,y,z]
-Esq = apply(4, i -> random(QQ^3, QQ^3))
-Emq = x * Esq#0 + y * Esq#1 + z * Esq#2 + Esq#3
-J   = ideal(2*Emq*transpose(Emq)*Emq - trace(Emq*transpose(Emq))*Emq, det Emq)
-ETq = copyTemplate(ET, J)
-sols = templateSolve ETq
-all(sols, s -> 1e-6 > norm sub(sub(gens J, CC[gens Rq]), matrix{s}))
+-- try copying this template into a rational problem instance
+FF = QQ
+Es = apply(4, i -> random(FF^3, FF^3))
+R = QQ[x,y,z]
+E = x * Es#0 + y * Es#1 + z * Es#2 + Es#3  -- essential matrix
+J = ideal(E*transpose E * E - (1/2) * trace(E * transpose E) * E, det E);  -- Demazure constraints
+E = copyTemplate(ET, J)
+sols = templateSolve(E)
+apply(sols, x -> 1e-6 > norm sub(sub(gens J, QQ[gens R]), matrix{x}))
 
-
--- Run the full benchmark suite (Benchmarks.m2, shared by all strategies).
+-- Test case
 restart
-load "Benchmarks.m2"
-runBenchmarks()
+needsPackage "EliminationTemplates"
+R = QQ[x,y,z]
+J = ideal(x^3+y^3+z^3-4,x^2-y-z-1,x-y^2+z-3)
+-- 3 templates, 3 strategies
+E1 = eliminationTemplate(x, J);
+E2 = eliminationTemplate(x, J);
+E3 = eliminationTemplate(x, J);
+getTemplateMatrix(E1); -- 27 X 44
+getTemplateMatrix(E2, Strategy => "Greedy"); -- 15 x 44
+getTemplateMatrix(E3, Strategy => "Larsson")
+
+-- This example doesn't work :(
+loadPackage "EliminationTemplates"
+R = QQ[x,y,z];
+E0 = matrix {{7/3, 9, 3}, {5/6, 3, 1/8}, {10/9, 7/5, 3/4}};
+E1 = matrix {{1/6, 5/8, 3/10}, {9/4, 9/7, 1/3}, {7/4, 2, 7/10}};
+E2 = matrix {{8/9, 7/5, 9/4}, {10/3, 9/4, 4/7}, {5/2, 7/5, 2/9}};
+E3 = matrix {{5/6, 1/7, 6}, {6/7, 8/3, 3/10}, {9/8, 1, 4/7}};
+Es = {E0, E1, E2, E3}
+E = x * Es#0 + y * Es#1 + z * Es#2 + Es#3;  -- essential matrix
+I = ideal(E*transpose E * E - (1/2) * trace(E * transpose E) * E);  -- Demazure constraints
+l = 5*x + (3/8)*y + (9/7)*z
+sols = templateSolve(l, I);
+norms = apply(sols, x -> norm sub(sub(gens I, CC[gens R]), matrix{x}));
+all(norms, x -> tol > x)
+
+--(1/9)*x+(3/5)*y+(5/6)*z
+
+
+tol = 1.0
+done = false
+i = 0;
+while not done do (
+    l = random(1, R);
+    sols = templateSolve(l, I);
+    norms = apply(sols, x -> norm sub(sub(gens I, CC[gens R]), matrix{x}));
+    done = not all(norms, x -> tol > x);
+    i = i + 1;
+    )
+print(toString norms);
+toString l
+print i
