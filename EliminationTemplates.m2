@@ -917,7 +917,7 @@ TEST ///
   J = ideal(x^3+y^3+z^3-4,x^2-y-z-1,x-y^2+z-3)
   -- getActionMatrix is only defined on the graph-ideal pipeline (Default,
   -- Larsson). MatrixHi / Greedy templates skip the graph extension, so the
-  -- action matrix must be recovered separately (see tests/bench_5pt_all.m2).
+  -- action matrix must be recovered separately (see benchmarks/bench_5pt_all.m2).
   E1 = eliminationTemplate(x, J);
   E2 = eliminationTemplate(x, J);
   -- Default Strategy

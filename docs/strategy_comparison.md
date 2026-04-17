@@ -1,6 +1,6 @@
 # Strategy Comparison — Benchmark Results
 
-Measured by `workshop/tests/bench_problems.m2` with `setRandomSeed 42`. Template sizes are rows × cols. `build+solve` is `cpuTime` in seconds. "res" is max `|F_j(x*)|` over recovered solutions (QQ only; skipped for `ZZ/p`).
+Measured by `benchmarks/bench_problems.m2` with `setRandomSeed 42`. Template sizes are rows × cols. `build+solve` is `cpuTime` in seconds. "res" is max `|F_j(x*)|` over recovered solutions (QQ only; skipped for `ZZ/p`).
 
 Supporting analysis (bottlenecks, comparison with Martyushev CVPR 2022 upstream, roadmap to close the size gap) is in `matrixhi_scaling_gap.md`.
 
@@ -49,13 +49,13 @@ On every other problem above, free α = 0 and Greedy = MatrixHi.
 cd workshop
 
 # Single-problem bench (5pt essential, all three active strategies)
-M2 tests/bench_5pt_all.m2
+M2 benchmarks/bench_5pt_all.m2
 
 # adjustParams shrinking demo (6 Demazure cubics, no det)
-M2 tests/bench_greedy_effect.m2
+M2 benchmarks/bench_greedy_effect.m2
 
 # 10-problem matrix (the source of this document)
-M2 tests/bench_problems.m2
+M2 benchmarks/bench_problems.m2
 
 # Package regression tests (19 TEST blocks)
 M2 -e 'needsPackage "EliminationTemplates"; check "EliminationTemplates"; exit 0'

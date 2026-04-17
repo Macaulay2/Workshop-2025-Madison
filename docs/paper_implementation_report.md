@@ -214,7 +214,7 @@ This is **exactly `matrixHsyz`** — the variant the paper's author dropped. All
 - **`buildHSymbolic` in `MartyushevClean.m2`** ports `matrixHi` with a flat extended ring, the degree-bumping loop, and the per-monomial α linear system. Returns `(Hsym, Rext, alphaVars, perRowData)` with free α's retained as ring variables.
 - **`adjustParams` in `MartyushevClean.m2`** commits free α's to zero excessive monomials (Martyushev CVPR 2022 §4). Empirically eliminates ~10× more excessive monomials than the earlier Maple-faithful `adjustParams` port.
 - **`buildTemplateFromH` in `MartyushevClean.m2`** assembles the template matrix over $\KK$ from an $H$ matrix and the shift monomials — the "constructTemplate" step of the paper.
-- **Solve-side extraction** (RREF pivots per residual column → action matrix → eigendecompose) is in `workshop/tests/bench_5pt_all.m2:buildMatrixHiLike`. Verified on 5pt essential over $\mathbb{Q}$.
+- **Solve-side extraction** (RREF pivots per residual column → action matrix → eigendecompose) is in `benchmarks/bench_5pt_all.m2:buildMatrixHiLike`. Verified on 5pt essential over $\mathbb{Q}$.
 
 ### Missing / broken
 
