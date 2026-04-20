@@ -87,11 +87,87 @@ Caching per-monomial contribution tables across iterations (instead of rebuildin
 In priority order, highest expected-impact first:
 
 ### 4.1 Port basis / monomial-order search (biggest win)
-Replicate `basisFinder` / `monOrdFinder` logic from Maple. For each benchmark, enumerate candidate bases (possibly from the cached `bases/b_<problem>` files), run matrixHi + adjustParams on each, keep the smallest template.
 
-Expected win: **10× template-size reduction on the problems where we're currently far from paper** (#2, #3, #12, P4P+fr). This is the single intervention that would let us match paper sizes on most Table-1 entries.
+**Context — what the paper actually does.** Martyushev CVPR 2022 §5 (note
+1) reports every template in two columns per problem:
+- **std** — smallest template across the *entire Gröbner fan* (via Gfan)
+  **or** across 1,000 randomly-selected Gröbner bases when Gfan cannot
+  terminate in reasonable time.
+- **nstd** — smallest template across 500 *non-standard* quotient bases
+  sampled via the random strategy from Larsson CVPR 2018.
 
-Scope: substantial — several hundred lines, likely a new file `BasisFinder.m2`. Requires understanding of Gröbner fan / monomial-order geometry.
+To reach those numbers, matrixHi + adjustParams is run against every
+candidate basis from the chosen route and the smallest template is
+kept. Our current code runs matrixHi on exactly one basis (GRevLex, from
+`basis(R/J)`), i.e. roughly 1/500 to 1/1,000 of the search the paper
+does. That is the dominant source of the gap on `#2 E+f 6pt`,
+`#3 f+E+f 6pt`, `#6 P4P+fr`, `#12 E+fλ 7pt`, etc.
+
+**The reference `_greedyAG/` directory caches artifacts for four
+different routes.** The paper uses whichever route is tractable per
+problem:
+
+| Route | Cache | # cached problems | What it unlocks |
+|---|---|---:|---|
+| (a) Gfan + basisFinder (full treatment) | `gfan/gf_<prob>` + `bases/b_<prob>` | 8 | std column when Gfan terminates |
+| (b) 1,000 random Gröbner bases | (no cache — generated on demand) | — | std column when Gfan does not terminate |
+| (c) 500 random non-standard bases (Larsson 2018) | (no cache — generated on demand) | — | nstd column whenever nstd < std |
+| (d) Weighted-degree orderings | `weights/w_<prob>` | 12 | alternate route for specific problems |
+| (e) Precomputed change matrices | `cm/cm_<prob>` | 2 | shortcut for 5p and toy |
+
+**A candidate basis is "good"** only empirically: it must be a set of
+`|B| = degree(I)` monomials that spans `K[X]/J`. For std bases that is
+automatic (every Gröbner basis produces one); for nstd bases you pick
+random monomial subsets and keep those with full-rank coefficient
+matrix modulo `J`. No closed-form heuristic ranks candidates — you run
+matrixHi + adjustParams on each and sort by template size. That is why
+`bases/b_5p` has 200 candidates rather than 1.
+
+**The 8 problems with a cached `bases/b_<prob>` file** are mostly the
+smaller benchmarks:
+
+| Cache file | Paper problem | Paper target (std / nstd) |
+|---|---|---|
+| `b_5p` | 5-point essential (§3 reference) | 10×20 / 10×20 |
+| `b_8ptF_radial` | #22 λ+F+λ 8pt (both-sided radial) | 31×47 / 31×47 |
+| `b_stitching` | #5 Stitching f+R+f+λ 3pt | 48×66 / 18×36 |
+| `b_4pra` | #25 Rel. pose E+angle 4pt v2 | 16×36 / 16×36 |
+| `b_3pra_st0` | 3-pt relative pose variant (supplementary) | — |
+| `b_toy` | toy 2-var example | — |
+| `b_wpnp` | "weighted PnP" variant | — |
+| `b_wpnp_2x2sym` | symmetric-weighted PnP variant | — |
+
+None of the hard problems (`#2`, `#3`, `#6`, `#12`) are in `bases/`.
+Reaching paper sizes on those requires route (b) or (c), which do not
+ship with a cache.
+
+**Realistic port, in priority order:**
+
+1. **Stage A — cache consumer (route a).** Read `bases/b_<prob>`, loop
+   over its candidates, run matrixHi + adjustParams, return smallest
+   template. ~100 LOC. Covers exactly those 8 problems. Validates the
+   mechanism empirically before any bigger investment.
+2. **Route (b) — random Gröbner-basis sampling.** Draw 1,000 random
+   monomial orders, compute the reduced Gröbner basis for each, treat
+   the resulting standard basis as a candidate, run matrixHi +
+   adjustParams. ~200 LOC. This is the route that actually closes the
+   gap on `#6 P4P+fr`, `#12 E+fλ 7pt`, and every large problem where
+   Gfan itself would not finish.
+3. **Route (c) — Larsson 2018 non-standard sampling.** Sample random
+   `|B|`-monomial subsets, test full-rank against `R/J`, keep 500 valid
+   ones, run matrixHi + adjustParams on each. ~200–300 LOC. Needed to
+   match paper's strictly-smaller nstd column on the ~15 problems
+   where that column is smaller than std.
+4. **Route (d) — weighted-degree orderings.** ~100 LOC plus a weight-
+   vector parser. Low marginal value; most of the 12 weighted-cached
+   problems are also reachable via (b) or (c).
+5. **Route (e).** Skip — already subsumed by our graph-ideal `getH0`.
+
+Sweet-spot path: **A → (b) → (c)**. Total ~600 LOC. Would match paper
+sizes on most of the `strategy_comparison.md` bench. Stage A alone
+unlocks 8 problems but only a subset of those have template sizes we
+don't already match (we already reproduce `5p` at 10×20 via MatrixHi /
+Greedy without any basis search).
 
 ### 4.2 Tighten `adjustParams` heuristic
 Port the sort / lookahead criteria from Martyushev's `adjustParams`. Cache per-monomial contribution tables across outer iterations.
@@ -125,11 +201,26 @@ Scope: small — ~50 lines in `MartyushevClean.m2`.
 
 ## 5. What would success look like?
 
-After (4.1) + (4.2) + (4.3):
+After Stage A (4.1 route a) alone: we can reproduce paper sizes on the
+8 problems with cached `bases/` files. Most impact is on problems where
+we currently use GRevLex and Martyushev's best basis differs from it.
+Several of those 8 (like `5p`) we already match without any basis
+search, so Stage A measures the *upper bound* on what basis-search
+buys us on those problems rather than being a guaranteed win.
 
-- Match paper std sizes on #1–#5, #7, #22 (most of Table 1 row count).
-- Close to paper nstd on problems where we've also ported basis search.
-- `adjustParams` runtime drops an order of magnitude through `ZZ/p` pinning and caching.
-- Still slower than Maple on very large problems (#6, #8, #18–#21) where `|α| > 1000`; that's the inherent algorithm, not an implementation gap.
+After Stage A + route (b): we match paper **std** sizes on essentially
+all Table 1 / Table 2 problems — including `#6 P4P+fr` and `#12 E+fλ 7pt`
+where the current output is ~6× too large.
 
-Not a session's work. Each of 4.1, 4.2, 4.3 is its own project with its own validation plan.
+After A + (b) + (c): we also match paper **nstd** on the ~15 problems
+where nstd is strictly smaller than std (e.g. `#1 F+λ 8pt` 11×19 →
+7×15; `#5 Stitching` 48×66 → 18×36).
+
+After (4.2) + (4.3) on top: `adjustParams` runtime drops an order of
+magnitude through `ZZ/p` pinning and per-iteration caching. Still
+slower than Maple on very large problems where `|α| > 1000` — that is
+the inherent algorithm, not an implementation gap.
+
+None of these is a session's work. Stage A is roughly a day; each of
+routes (b), (c), and items 4.2/4.3 is its own project with its own
+validation plan.
