@@ -220,30 +220,58 @@ adjustParams(List, Matrix, Ring, Sequence) := o -> (F, Hsym, Rext, pair) -> (
 
     if #initialExcessive == 0 then return matrix Hcurrent;
 
-    -- Process excessive monomials in order (smallest producing-count first)
-    -- For each, try to zero it out by setting alphas
+    -- Martyushev CVPR 2022 / `adjustParams` (Maple): sort excessives DESC by
+    -- (|rm|, np) where rm[e] = set of (j,k) positions whose m*F[j] contains e,
+    -- and np[e] = sum over positions p in rm[e] of (number of excessives using
+    -- p). Intuition: attack excessives controlled by the most positions first,
+    -- breaking ties by "downstream impact" so we spend positions that are most
+    -- contested. Our earlier port sorted ASC and did not compute np.
     iterations := 0;
     remainingExc := initialExcessive;
+
+    -- rm[e] is a LIST of unique (j, monomial m) pairs such that m appears in
+    -- some H[i,j] and m*F[j] contains e. (We use a list, not a set, because
+    -- M2's `for pos in set` doesn't iterate the set directly.)
+    rmOf := (HM, e) -> (
+        unique flatten apply(nF, j -> (
+            sh := unique flatten apply(nG, i -> (
+                entry := HM_(i,j);
+                if entry == 0 then {} else (
+                    (mm, cc) := coefficients(entry, Variables => baseVars);
+                    flatten entries mm
+                )
+            ));
+            apply(select(sh, m -> coefficient(e, m * Fext#j) != 0_Rext), m -> (j, m))
+        ))
+    );
 
     while iterations < o.MaxIter and #remainingExc > 0 do (
         iterations = iterations + 1;
         improved := false;
 
-        -- Sort by difficulty
-        exWithCount := apply(remainingExc, e -> (
-            cnt := sum apply(nF, j -> (
-                sh := unique flatten apply(nG, i -> (
-                    entry := Hcurrent_(i,j);
-                    if entry == 0 then {} else (
-                        (mm, cc) := coefficients(entry, Variables => baseVars);
-                        flatten entries mm
-                    )
-                ));
-                #select(sh, m -> coefficient(e, m * Fext#j) != 0_Rext)
-            ));
-            (cnt, e)
+        -- Compute rm and np for every remaining excessive.
+        HcurMat := matrix Hcurrent;
+        rmTable := hashTable apply(remainingExc, e -> e => rmOf(HcurMat, e));
+        posCounts := new MutableHashTable;
+        for e in remainingExc do (
+            for pos in rmTable#e do (
+                posCounts#pos = if posCounts#?pos then posCounts#pos + 1 else 1;
+            );
+        );
+        -- Sort DESC by (|rm|, np). M2 sort is ASC by default, so negate keys.
+        exWithKey := apply(remainingExc, e -> (
+            rmList := rmTable#e;
+            rmSize := #rmList;
+            np := sum prepend(0, apply(rmList, pos -> posCounts#pos));
+            (- rmSize, - np, e)
         ));
-        sortedEx := apply(sort exWithCount, p -> p#1);
+        sortedEx := apply(sort exWithKey, t -> t#2);
+
+        -- Early break (Martyushev): if every H entry is already numeric (no
+        -- free α survives), adjusting anything further is impossible.
+        allEntries := flatten apply(nG, i -> apply(nF, j -> Hcurrent_(i,j)));
+        aliveAlphas := any(allEntries, e -> any(alphaVars, a -> coefficient(a, e) != 0_Rext));
+        if not aliveAlphas then break;
 
         -- Try each in order
         tookStep := false;
