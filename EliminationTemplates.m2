@@ -97,6 +97,24 @@ getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     a = sub(a, R);
     B = sub(B, R);
     FF := coefficientRing R;
+
+    -- Greedy (Martyushev CVPR 2022) computes H via gap polynomials + α-commit,
+    -- then lifts to the mainline H0 shape (nF x nB). No Groebner detour needed.
+    -- Downstream (getTemplateHelper, getTemplate, getTemplateMatrix default,
+    -- getActionMatrix default, recoverSolutions) consumes this H0 unchanged.
+    if (o.Strategy === "Greedy") then (
+        BlistGr := flatten entries B;
+        (gp, resMons, BlistChk) := buildGapPolys(a, matrix{BlistGr}, J);
+        nFGr := numgens J;
+        nBGr := #BlistGr;
+        if #gp == 0 then return map(R^nFGr, R^nBGr, 0);
+        FlistGr := flatten entries gens J;
+        RB := (toList resMons) | BlistGr;
+        (Hsym, Rext, alphaVars, perRow) := buildHSymbolic(FlistGr, gp);
+        Hfinal := adjustParams(FlistGr, Hsym, Rext, (alphaVars, RB));
+        return liftGreedyHToH0(Hfinal, a, BlistGr, nFGr);
+    );
+
     MO := if not instance(o.MonomialOrder, Nothing) then o.MonomialOrder else (options R).MonomialOrder;
     S := newRing(R, MonomialOrder => MO);
     F := sub(J, S);
@@ -120,7 +138,7 @@ getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
         H0res := H0 % image(syz(gens(J)));
         sub(H0res, ring J)
     )
-    else (error "Strategy not supported here. getH0 accepts only null (default) or \"Larsson\". MatrixHi / Greedy strategies bypass getH0 — call getTemplateMatrix directly.")
+    else (error "Strategy not supported here. getH0 accepts null / \"Larsson\" / \"Greedy\". MatrixHi bypasses getH0 — call getTemplateMatrix directly.")
 )
 
 shiftPolynomials = (shifts, J) -> (
@@ -227,22 +245,17 @@ getTemplateMatrix(EliminationTemplate) := o -> E -> (
     --   G_i = a*b_i - NF(a*b_i, J)
     -- factored over F as G_i = sum_j H[i,j] * F_j (Martyushev CVPR 2022 §3).
     --
-    -- Both strategies share buildHSymbolic (solves per-row linear system with
-    -- undetermined α's) and buildTemplateFromH (assembles the template over
-    -- the base field). They differ only in what they do with the free α's:
-    --   "MatrixHi" — set all free α's to 0 (particular solution).
-    --   "Greedy"   — run adjustParams (Martyushev CVPR 2022 §4) to commit
-    --                free α's so excessive monomials cancel. This is the
-    --                greedy from CVPR 2022; when # free α == 0, it is a
-    --                no-op and output matches "MatrixHi".
+    -- MatrixHi (Martyushev CVPR 2022 §3 particular solution; α := 0) bypasses
+    -- getH0 and builds the template directly from gap polynomials
+    -- G_i = a*b_i - NF(a*b_i, J) via buildHSymbolic + buildTemplateFromH.
+    -- The output skips the graph-ideal extension (`s - a`) that Default /
+    -- Larsson use; getActionMatrix / templateSolve then read the action via
+    -- extractActionFromTemplate + recoverSolutionsMatrixHi.
     --
-    -- These paths bypass the graph-ideal extension (`s - a`) that the
-    -- Default / Larsson pipelines use in getTemplate; that extension adds |B|
-    -- rows so that getActionMatrix can be read off the template via a single
-    -- linear solve. Skipping it yields |B| fewer rows (e.g. 10x20 on the 5pt
-    -- essential vs 20x20 Default). getActionMatrix and templateSolve for
-    -- these strategies now work via extractActionFromTemplate +
-    -- recoverSolutionsMatrixHi in MartyushevClean.m2.
+    -- Greedy used to share this branch, but is now routed through getH0 +
+    -- default downstream (Route A): adjustParams produces H, liftGreedyHToH0
+    -- reshapes to the H0 contract (nF x nB), and getTemplate / default
+    -- getActionMatrix / recoverSolutions consume it unchanged.
     --
     -- Limitation: the action variable must be a ring *variable* (monomial),
     -- not a linear combination. `buildGapPolys` constructs residual
@@ -250,9 +263,8 @@ getTemplateMatrix(EliminationTemplate) := o -> E -> (
     -- is a single monomial. Polynomial actions like `x + y + z` make every
     -- `a * b_i` a polynomial; residual detection degenerates and
     -- buildTemplateFromH errors in `coefficient`.
-    if o.Strategy === "MatrixHi" or o.Strategy === "Greedy" then (
-        cacheKey := if o.Strategy === "MatrixHi" then "templateMatrixMatrixHi"
-                    else "templateMatrixGreedy";
+    if o.Strategy === "MatrixHi" then (
+        cacheKey := "templateMatrixMatrixHi";
         if E.cache#?cacheKey then return E.cache#cacheKey;
         J := ideal E;
         R := ring J;
@@ -262,21 +274,14 @@ getTemplateMatrix(EliminationTemplate) := o -> E -> (
         (gp, resMons, Blist) := buildGapPolys(a, B, J);
         RB := (toList resMons) | Blist;
         (Hsym, Rext, alphaVars, perRow) := buildHSymbolic(Flist, gp);
-        Hfinal := if o.Strategy === "Greedy"
-            then adjustParams(Flist, Hsym, Rext, (alphaVars, RB))
-            else (
-                -- Particular solution: evaluate all alphas at 0, project to R.
-                if #alphaVars > 0 then (
-                    finalSubst := map(R, Rext,
-                        apply(numgens R, i -> R_i) | apply(#alphaVars, k -> 0_R));
-                    matrix apply(numRows Hsym, i ->
-                        apply(numColumns Hsym, j -> finalSubst(Hsym_(i,j))))
-                ) else Hsym
-            );
+        -- Particular solution: evaluate all alphas at 0, project to R.
+        Hfinal := if #alphaVars > 0 then (
+                finalSubst := map(R, Rext,
+                    apply(numgens R, i -> R_i) | apply(#alphaVars, k -> 0_R));
+                matrix apply(numRows Hsym, i ->
+                    apply(numColumns Hsym, j -> finalSubst(Hsym_(i,j))))
+            ) else Hsym;
         (sh, M, V, Eexcess) := buildTemplateFromH(Hfinal, Flist, RB);
-        -- Cache (Blist, resMons) for downstream getActionMatrix / templateSolve.
-        -- Both "MatrixHi" and "Greedy" share this data — the H matrix differs
-        -- but B and the residual monomials a*B \ B are determined by (a, J).
         E.cache#"matrixHiBlist" = Blist;
         E.cache#"matrixHiResMons" = toList resMons;
         E.cache#cacheKey = M;
@@ -309,10 +314,13 @@ getActionMatrix(RingElement, MonomialPartition, Matrix) := o -> (actVar, mp, M) 
     MbotE * X - MbotB
 )
 getActionMatrix(EliminationTemplate) := o -> E -> (
-    -- MatrixHi / Greedy: read action matrix off the template via RREF + pivot
-    -- extraction. These strategies skip the graph-ideal extension, so the
+    -- MatrixHi: read action matrix off the template via RREF + pivot
+    -- extraction. This strategy skips the graph-ideal extension, so the
     -- monomialPartition cache used by the default branch is not populated.
-    if o.Strategy === "MatrixHi" or o.Strategy === "Greedy" then (
+    -- Greedy now flows through the default branch (Route A): its H0 is
+    -- greedy-computed in getH0, but the downstream is the shared graph
+    -- linear-solve path below.
+    if o.Strategy === "MatrixHi" then (
         cacheKey := "actionMatrix_" | toString o.Strategy;
         if E.cache#?cacheKey then return E.cache#cacheKey;
         M := getTemplateMatrix(E, o);  -- populates matrixHiBlist / matrixHiResMons
@@ -344,9 +352,10 @@ getActionMatrix(EliminationTemplate) := o -> E -> (
 getEigenMatrix = method(Options => {MonomialOrder => null, Strategy => null})
 getEigenMatrix(EliminationTemplate) := o -> (E) -> (
     Ma := getActionMatrix(E, o);
-    -- MatrixHi / Greedy: action matrix is over the base ring R (not the
-    -- graph ring Rs), so basis monomials are in R as well.
-    if o.Strategy === "MatrixHi" or o.Strategy === "Greedy" then (
+    -- MatrixHi: action matrix is over the base ring R (not the graph ring
+    -- Rs), so basis monomials are in R as well. Greedy uses the default
+    -- graph-ring branch below.
+    if o.Strategy === "MatrixHi" then (
         (svals, P) := eigenvectors sub(Ma, CC);
         Blist := E.cache#"matrixHiBlist";
         (matrix{Blist}, P)
@@ -364,14 +373,43 @@ getEigenMatrix(RingElement, Ideal) := o -> (a, J) -> (
 
 templateSolve = method(Options => {MonomialOrder => null, Strategy => null})
 templateSolve(EliminationTemplate) := o -> (E) -> (
-    -- MatrixHi / Greedy: read variable values straight off basis-indexed
-    -- eigenvector entries (no graph-ring monomialPartition required).
-    if o.Strategy === "MatrixHi" or o.Strategy === "Greedy" then (
+    -- MatrixHi: read variable values straight off basis-indexed eigenvector
+    -- entries.
+    --
+    -- Greedy (Route A): H0 and action matrix go through the shared graph-ring
+    -- pipeline, but the downstream recover is done via recoverSolutionsMatrixHi,
+    -- matching Greedy's pre-refactor correctness on multivariable QQ problems
+    -- where the graph-ring recoverSolutions has pre-existing numerical issues
+    -- (e.g. 5pt essential+det, 6 Demazure cubics). The action matrix Ma is
+    -- intrinsic to (a, J) up to basis permutation, so eigen-recovery gives
+    -- the right solutions regardless of which path produced Ma.
+    if o.Strategy === "MatrixHi" then (
         recoverSolutionsMatrixHi(getActionMatrix(E, o), E.cache#"matrixHiBlist", ring ideal E)
+    ) else if o.Strategy === "Greedy" then (
+        -- recoverSolutionsMatrixHi reads a variable's coordinate directly
+        -- from its slot in the basis, so it only works when every ring
+        -- variable appears in the quotient basis. When that fails (e.g.
+        -- circle+line where the basis is {1, y} and x is eliminated), fall
+        -- back to the graph-ring recoverSolutions which reads coordinates
+        -- through the full monomial partition.
+        Ma := getActionMatrix(E, o);  -- populates monomialPartition cache
+        R := ring ideal E;
+        mp := E.cache#"monomialPartition";
+        Rs := ring first first mp;
+        toR := map(R, Rs, {0_R} | apply(numgens R, i -> R_i));
+        Blist := apply(mp#2, b -> toR(b));
+        BlistSet := set Blist;
+        if all(numgens R, i -> BlistSet#?(R_i)) then (
+            recoverSolutionsMatrixHi(Ma, Blist, R)
+        ) else (
+            (Bmat, M) := getEigenMatrix(E, o);
+            templateMat := getTemplateMatrix(E, o);
+            recoverSolutions(Bmat, M, E, templateMat)
+        )
     ) else (
-        (Bmat, M) := getEigenMatrix(E, o);
-        templateMat := getTemplateMatrix(E, o);
-        recoverSolutions(Bmat, M, E, templateMat)
+        (Bmat2, M2) := getEigenMatrix(E, o);
+        templateMat2 := getTemplateMatrix(E, o);
+        recoverSolutions(Bmat2, M2, E, templateMat2)
     )
 )
 templateSolve(Ideal) := o -> (I) -> templateSolve(random(1,ring I), I, o)
@@ -712,8 +750,9 @@ TEST /// -- 5-point essential matrix (Demazure trace identity, deg I = 10).
 
 TEST /// -- MatrixHi strategy: template size matches Martyushev CVPR 2022 reference.
 -- The MatrixHi path bypasses the graph-ideal extension, so the template has
--- |B| fewer rows than Default / Larsson / Greedy (which all produce 20x20 on
--- the 5pt essential, vs 10x20 for MatrixHi).
+-- |B| fewer rows than Default / Larsson (and now Greedy, which under Route A
+-- flows through the graph-ideal pipeline). On 5pt essential: 10×20 for
+-- MatrixHi vs 20×20 for the graph-ideal strategies.
   R = QQ[x,y,z]
   Es = apply(4, i -> random(QQ^3, QQ^3));
   Ee = x * Es#0 + y * Es#1 + z * Es#2 + Es#3;
@@ -728,15 +767,16 @@ TEST /// -- MatrixHi strategy: template size matches Martyushev CVPR 2022 refere
   assert(numRows N <= numRows getTemplateMatrix(ET2))  -- strictly smaller on this system
 ///
 
-TEST /// -- Greedy: on 5pt essential (0 free alphas), adjustParams is a no-op
--- and output matches Strategy => "MatrixHi" exactly (both 10x20).
+TEST /// -- Greedy (Route A): on 5pt essential (0 free alphas), adjustParams
+-- is a no-op, so the lifted greedy H0 equals the Default H0, and Greedy's
+-- graph-ideal template matches Default's (20x20).
   R = QQ[x,y,z]
   Es = apply(4, i -> random(QQ^3, QQ^3));
   Ee = x * Es#0 + y * Es#1 + z * Es#2 + Es#3;
   I = ideal(Ee*transpose Ee * Ee - (1/2) * trace(Ee * transpose Ee) * Ee) + ideal(det Ee);
   ET = eliminationTemplate(y, I);
   Mg = getTemplateMatrix(ET, Strategy => "Greedy");
-  assert(numRows Mg == 10 and numColumns Mg == 20)
+  assert(numRows Mg == 20 and numColumns Mg == 20)
 ///
 
 TEST /// -- getActionMatrix on MatrixHi / Greedy templates: 10x10 with deg I
@@ -808,8 +848,12 @@ TEST /// -- Greedy with action z on 5pt essential.
 ///
 
 TEST /// -- Cross-validation: on a 0-free-alpha problem (5pt essential),
--- Greedy's adjustParams is a no-op, so the MatrixHi and Greedy template
--- matrices must be identical.
+-- Greedy's adjustParams is a no-op, so the lifted greedy H0 equals the
+-- Default H0 and Greedy's graph-ideal template equals Default's. Action
+-- matrices from all three strategies (MatrixHi / Greedy / Default) represent
+-- the same linear map — MatrixHi uses the raw basis order from
+-- `basis(R/J)`, Default/Greedy use rsort, so matrices differ by a basis
+-- permutation but share eigenvalues (intrinsic spectrum of `a` on R/J).
   R = QQ[x,y,z]
   Es = apply(4, i -> random(QQ^3, QQ^3));
   Ee = x * Es#0 + y * Es#1 + z * Es#2 + Es#3;
@@ -818,35 +862,61 @@ TEST /// -- Cross-validation: on a 0-free-alpha problem (5pt essential),
   Mh = getTemplateMatrix(E1, Strategy => "MatrixHi");
   E2 = eliminationTemplate(y, I);
   Mg = getTemplateMatrix(E2, Strategy => "Greedy");
-  assert(Mh == Mg);
-  -- Action matrices also agree.
+  E3 = eliminationTemplate(y, I);
+  Md = getTemplateMatrix(E3);
   Ah = getActionMatrix(E1, Strategy => "MatrixHi");
   Ag = getActionMatrix(E2, Strategy => "Greedy");
-  assert(Ah == Ag);
+  Ad = getActionMatrix(E3);
+  -- Greedy (Route A) and Default share the graph-ideal pipeline; with 0
+  -- free alphas the H0 objects coincide, so the templates coincide.
+  assert(Mg == Md);
+  -- MatrixHi lives on a different pipeline (no graph extension), with
+  -- |B| fewer rows than Mg.
+  d = degree I;
+  assert(numRows Mh == numRows Mg - d);
+  -- Greedy and Default match exactly (same ordering, same pipeline).
+  assert(Ag == Ad);
+  -- MatrixHi's action matrix is similar to Greedy's via a basis permutation;
+  -- check spectrum equality up to ordering (as a multiset over CC).
+  evH = sort apply(toList eigenvalues sub(Ah, CC), z -> (realPart z, imaginaryPart z));
+  evG = sort apply(toList eigenvalues sub(Ag, CC), z -> (realPart z, imaginaryPart z));
+  assert(#evH == #evG);
+  assert(all(#evH, i -> abs(evH#i#0 - evG#i#0) < 1e-8 and abs(evH#i#1 - evG#i#1) < 1e-8));
 ///
 
-TEST /// -- Greedy on 6 Demazure cubics (no det): free alpha > 0, adjustParams
--- must actively commit alphas and produce a STRICTLY SMALLER template than
--- MatrixHi (alphas := 0). Both paths must solve to residual < 1e-6.
+TEST /// -- Greedy (Route A) on 6 Demazure cubics (no det): free alpha > 0,
+-- adjustParams commits alphas to cancel excessive monomials, producing a
+-- smaller H0 (fewer monomials per row) than Default's Groebner H0. Both
+-- flow through the graph-ideal pipeline, so the comparison that remains
+-- meaningful under Route A is Greedy vs Default: Greedy's template should
+-- have row count ≤ Default's (fewer shifts). Both paths solve to
+-- residual < 1e-6. MatrixHi is checked separately (it is on a different
+-- pipeline — not comparable row-for-row here).
   R = QQ[x,y,z]
   Es = apply(4, i -> random(QQ^3, QQ^3));
   Ee = x * Es#0 + y * Es#1 + z * Es#2 + Es#3;
-  -- 6 Demazure cubics only (no det). Still 0-dim with degree 10.
   I = ideal(2*Ee*transpose(Ee)*Ee - trace(Ee*transpose(Ee))*Ee);
   assert(dim I == 0);
   d = degree I;
+  -- Compute everything up front; defer the CC residual checks to the end,
+  -- because `CC[gens R]` rebinds the symbols x,y,z and breaks subsequent
+  -- calls like `eliminationTemplate(y, I)`.
   E1 = eliminationTemplate(y, I);
-  Mh = getTemplateMatrix(E1, Strategy => "MatrixHi");
+  Md = getTemplateMatrix(E1);                           -- Default
   E2 = eliminationTemplate(y, I);
   Mg = getTemplateMatrix(E2, Strategy => "Greedy");
-  -- adjustParams must shrink the template on this problem.
-  assert(numRows Mg < numRows Mh or numColumns Mg < numColumns Mh);
-  -- Both strategies must still solve correctly.
-  solsH = templateSolve(E1, Strategy => "MatrixHi");
+  E3 = eliminationTemplate(y, I);
+  solsH = templateSolve(E3, Strategy => "MatrixHi");
+  solsD = templateSolve(E1);
   solsG = templateSolve(E2, Strategy => "Greedy");
-  assert(#solsH == d and #solsG == d);
-  assert(all(solsH, s -> 1e-6 > norm sub(sub(gens I, CC[gens R]), matrix{s})));
-  assert(all(solsG, s -> 1e-6 > norm sub(sub(gens I, CC[gens R]), matrix{s})));
+  -- Route A invariant: Greedy ≤ Default in rows on problems with free alphas.
+  assert(numRows Mg <= numRows Md);
+  assert(#solsD == d and #solsG == d and #solsH == d);
+  Rc = CC[gens R];
+  gensC = sub(gens I, Rc);
+  assert(all(solsD, s -> 1e-6 > norm sub(gensC, matrix{s})));
+  assert(all(solsG, s -> 1e-6 > norm sub(gensC, matrix{s})));
+  assert(all(solsH, s -> 1e-6 > norm sub(gensC, matrix{s})));
 ///
 
 TEST /// -- MatrixHi/Greedy on the 3-variable docs system (different benchmark).
@@ -901,6 +971,26 @@ TEST /// -- change of ideals
   F = copyTemplate(E,J)
   sols = templateSolve(F)
   assert(all(sols, x -> 1e-6 > norm sub(sub(gens J, QQ[gens R]), matrix{x})))
+///
+
+TEST /// -- copyTemplate on a Greedy-built template (Route A).
+-- Greedy now populates the same graph-ideal cache as Default, so
+-- copyTemplate should transplant the structure into a perturbed ideal
+-- and Greedy solve on the copy should still hit tier-3 residual.
+  R = QQ[x,y]
+  I = ideal(x^2+y^2-1, x^2+y^3+x*y-2)
+  E = eliminationTemplate(x, I)
+  -- Populate the greedy cache (graphIdeal / shifts / monomialPartition).
+  getTemplateMatrix(E, Strategy => "Greedy");
+  getActionMatrix(E, Strategy => "Greedy");
+  -- getTemplate rebinds x, y to the graph-ring generators while building
+  -- Rs; restore R so that J is constructed over R (not over the graph
+  -- ring), which is what copyTemplate expects.
+  use R;
+  J = ideal(x^2+y^2-2, x^2+y^3+3*x*y-5)
+  F = copyTemplate(E, J)
+  sols = templateSolve(F, Strategy => "Greedy")
+  assert(all(sols, x -> 1e-6 > norm sub(sub(gens J, CC[gens R]), matrix{x})))
 ///
 
 TEST /// -- example used for section 3

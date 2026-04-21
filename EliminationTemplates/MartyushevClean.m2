@@ -379,6 +379,38 @@ adjustParams(List, Matrix, Ring, Sequence) := o -> (F, Hsym, Rext, pair) -> (
 );
 
 -- ============================================================================
+-- liftGreedyHToH0: reshape greedy's H (nG x nF, post-adjustParams, over R)
+-- into the mainline H0 shape (nF x nB) used by getTemplateHelper / getTemplate.
+--
+-- Contract of mainline H0 (see getH0 in EliminationTemplates.m2):
+--   gens J * H0 = V, where V is a 1 x nB row with V[k] = a*b_k - NF(a*b_k, J).
+--   Columns k with a*b_k in B are zero.
+--
+-- Greedy's H satisfies G_i = sum_j H[i,j] * F_j where G_i is the i-th gap
+-- polynomial and gap i corresponds to basis index sigma(i) via
+--   resMons[i] = a * b_{sigma(i)}  and  sigma = positions(aBlist, m -> m \notin B)
+-- (same ordering buildGapPolys uses). So H0[j, sigma(i)] = H[i, j]; all other
+-- columns of H0 are zero.
+-- ============================================================================
+liftGreedyHToH0 = method()
+liftGreedyHToH0(Matrix, RingElement, List, ZZ) := (Hfinal, aVar, Blist, nF) -> (
+    R := ring first Blist;
+    a := sub(aVar, R);
+    aBlist := apply(Blist, b -> a * b);
+    Bset := set Blist;
+    sigmaList := positions(aBlist, m -> not Bset#?m);
+    nB := #Blist;
+    nG := numRows Hfinal;
+    assert(nG == #sigmaList);
+    H0 := mutableMatrix(R, nF, nB);
+    for i from 0 to nG - 1 do (
+        k := sigmaList#i;
+        for j from 0 to nF - 1 do H0_(j, k) = sub(Hfinal_(i, j), R);
+    );
+    matrix H0
+);
+
+-- ============================================================================
 -- extractActionFromTemplate: read the action matrix off a MatrixHi-style
 -- template by RREF + pivot extraction.
 --
