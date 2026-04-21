@@ -374,24 +374,27 @@ getEigenMatrix(RingElement, Ideal) := o -> (a, J) -> (
 templateSolve = method(Options => {MonomialOrder => null, Strategy => null})
 templateSolve(EliminationTemplate) := o -> (E) -> (
     -- MatrixHi: read variable values straight off basis-indexed eigenvector
-    -- entries.
+    -- entries (no graph-ring structure populated for this strategy).
     --
-    -- Greedy (Route A): H0 and action matrix go through the shared graph-ring
-    -- pipeline, but the downstream recover is done via recoverSolutionsMatrixHi,
-    -- matching Greedy's pre-refactor correctness on multivariable QQ problems
-    -- where the graph-ring recoverSolutions has pre-existing numerical issues
-    -- (e.g. 5pt essential+det, 6 Demazure cubics). The action matrix Ma is
-    -- intrinsic to (a, J) up to basis permutation, so eigen-recovery gives
-    -- the right solutions regardless of which path produced Ma.
+    -- All other strategies (null / "Larsson" / "Greedy") go through the
+    -- shared graph-ring pipeline for getH0 -> getTemplate -> getActionMatrix.
+    -- For the final recover step, prefer recoverSolutionsMatrixHi whenever
+    -- every ring variable lies in the quotient basis: it reads each
+    -- variable's coordinate directly from its slot in basis-indexed
+    -- eigenvectors, which is numerically robust on multivariable QQ
+    -- problems where the graph-ring recoverSolutions degrades (e.g.
+    -- 5pt+det: res=1137 under graph-ring vs res=6e-10 under matrixHi;
+    -- 6 Demazure cubics similarly). The action matrix Ma is intrinsic
+    -- to (a, J) up to a basis permutation, so eigen-recovery gives the
+    -- right solutions regardless of which strategy produced Ma.
+    --
+    -- Fall back to graph-ring recoverSolutions when a ring variable is
+    -- eliminated from the basis (e.g. circle+line: basis = {1, y},
+    -- x is absent, so x's coordinate can't be read from an eigenvector
+    -- slot).
     if o.Strategy === "MatrixHi" then (
         recoverSolutionsMatrixHi(getActionMatrix(E, o), E.cache#"matrixHiBlist", ring ideal E)
-    ) else if o.Strategy === "Greedy" then (
-        -- recoverSolutionsMatrixHi reads a variable's coordinate directly
-        -- from its slot in the basis, so it only works when every ring
-        -- variable appears in the quotient basis. When that fails (e.g.
-        -- circle+line where the basis is {1, y} and x is eliminated), fall
-        -- back to the graph-ring recoverSolutions which reads coordinates
-        -- through the full monomial partition.
+    ) else (
         Ma := getActionMatrix(E, o);  -- populates monomialPartition cache
         R := ring ideal E;
         mp := E.cache#"monomialPartition";
@@ -406,10 +409,6 @@ templateSolve(EliminationTemplate) := o -> (E) -> (
             templateMat := getTemplateMatrix(E, o);
             recoverSolutions(Bmat, M, E, templateMat)
         )
-    ) else (
-        (Bmat2, M2) := getEigenMatrix(E, o);
-        templateMat2 := getTemplateMatrix(E, o);
-        recoverSolutions(Bmat2, M2, E, templateMat2)
     )
 )
 templateSolve(Ideal) := o -> (I) -> templateSolve(random(1,ring I), I, o)
@@ -1005,9 +1004,9 @@ TEST /// -- example used for section 3
 TEST ///
   R = QQ[x,y,z]
   J = ideal(x^3+y^3+z^3-4,x^2-y-z-1,x-y^2+z-3)
-  -- getActionMatrix is only defined on the graph-ideal pipeline (Default,
-  -- Larsson). MatrixHi / Greedy templates skip the graph extension, so the
-  -- action matrix must be recovered separately (see benchmarks/bench_5pt_all.m2).
+  -- Default / Larsson / Greedy share the graph-ideal pipeline after Route A
+  -- unification at getH0. MatrixHi is the only strategy that skips the graph
+  -- extension and recovers the action matrix via extractActionFromTemplate.
   E1 = eliminationTemplate(x, J);
   E2 = eliminationTemplate(x, J);
   -- Default Strategy
@@ -1029,15 +1028,24 @@ end
 --
 -- Expected sizes below are reproducible with `setRandomSeed 42` on QQ.
 --
--- Strategy semantics (post-2026-04-17 refactor):
+-- Strategy semantics (post-Route-A refactor):
 --   null (Default): H0 from Groebner change-of-basis; graph-ideal pipeline
 --   "Larsson":      H0 mod syz(F); graph-ideal pipeline (CVPR 2017)
---   "MatrixHi":     per-monomial alpha, alpha := 0 (Martyushev CVPR 2022 §3)
---   "Greedy":       MatrixHi + adjustParams (Martyushev CVPR 2022 §3-§4)
+--   "MatrixHi":     per-monomial alpha, alpha := 0 (Martyushev CVPR 2022 §3);
+--                   standalone pipeline, skips the graph-ideal extension
+--   "Greedy":       H0 via buildHSymbolic + adjustParams (Martyushev CVPR 2022 §4),
+--                   lifted to the mainline (nF x nB) H0 shape and fed into
+--                   the graph-ideal pipeline alongside Default / Larsson
+--
+-- For null / Larsson / Greedy, templateSolve picks recoverSolutionsMatrixHi
+-- when every ring variable lies in the quotient basis (numerically robust
+-- on 5pt+det, 6 Demazure, etc.) and falls back to graph-ring
+-- recoverSolutions otherwise (handles circle+line where x is eliminated).
 --------------------------------------------------------------------------
 
 -- Demo 1: 5-point essential matrix (Demazure trace identity + det)
--- deg I = 10; MatrixHi/Greedy match paper std size 10x20.
+-- deg I = 10; MatrixHi matches paper std size 10x20; Default / Larsson /
+-- Greedy share the graph-ideal pipeline and produce 20x20.
 restart
 path = prepend("./", path)
 needsPackage "EliminationTemplates"
@@ -1052,7 +1060,7 @@ ET = eliminationTemplate(y, I)
 getTemplateMatrix ET                          -- Default   : 20 x 20
 getTemplateMatrix(ET, Strategy => "Larsson")  -- Larsson   : 20 x 20
 getTemplateMatrix(ET, Strategy => "MatrixHi") -- MatrixHi  : 10 x 20  <- paper
-getTemplateMatrix(ET, Strategy => "Greedy")   -- Greedy    : 10 x 20  (0 free alphas)
+getTemplateMatrix(ET, Strategy => "Greedy")   -- Greedy    : 20 x 20  (0 free alphas; equals Default)
 
 -- End-to-end solve + tier-3 residual check via MatrixHi / Greedy.
 ET2 = eliminationTemplate(y, I)
@@ -1061,8 +1069,11 @@ assert(#sols == degree I)
 assert(all(sols, s -> 1e-6 > norm sub(sub(gens I, CC[gens R]), matrix{s})))
 
 
--- Demo 2: 6 Demazure cubics (no det) -- the one where GREEDY BEATS MATRIXHI.
--- 66 free alphas; adjustParams commits enough to shave a row and a column.
+-- Demo 2: 6 Demazure cubics (no det) -- adjustParams has leverage here.
+-- 66 free alphas; adjustParams commits some of them to cut shifts in H0.
+-- Under Route A, Greedy lives on the graph-ideal pipeline, so compare with
+-- Default (same pipeline): Default 37x34, Greedy 34x34 (-3 rows from shift
+-- reduction). MatrixHi on its own pipeline (no graph extension): 25x35.
 restart
 path = prepend("./", path)
 needsPackage "EliminationTemplates"
@@ -1074,10 +1085,12 @@ I  = ideal(2*Em*transpose(Em)*Em - trace(Em*transpose(Em))*Em)  -- no det
 degree I  -- still 10 (generic random coefficients)
 
 E1 = eliminationTemplate(y, I)
-Mh = getTemplateMatrix(E1, Strategy => "MatrixHi")  -- 25 x 35
+Md = getTemplateMatrix(E1)                          -- Default   : 37 x 34
 E2 = eliminationTemplate(y, I)
-Mg = getTemplateMatrix(E2, Strategy => "Greedy")    -- 24 x 34  <- strictly smaller
-assert(numRows Mg < numRows Mh or numColumns Mg < numColumns Mh)
+Mg = getTemplateMatrix(E2, Strategy => "Greedy")    -- Greedy    : 34 x 34  <- shift reduction
+assert(numRows Mg <= numRows Md)
+E3 = eliminationTemplate(y, I)
+Mh = getTemplateMatrix(E3, Strategy => "MatrixHi")  -- MatrixHi  : 25 x 35
 
 -- Both solve correctly to residual < 1e-6.
 solsG = templateSolve(E2, Strategy => "Greedy")
