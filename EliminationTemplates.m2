@@ -57,7 +57,10 @@ export {
     "actionVariable",
     "copyTemplate",
     -- Option symbol used by MartyushevClean.adjustParams (bounded greedy iterations).
-    "MaxIter"
+    "MaxIter",
+    -- Option symbols used by the basis-search infrastructure in MartyushevClean.
+    "RunGreedy",
+    "RunGreedyAll"
 }
 
 EliminationTemplate = new Type of HashTable

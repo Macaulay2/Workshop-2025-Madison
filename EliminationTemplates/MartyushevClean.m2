@@ -32,6 +32,218 @@ buildGapPolys(RingElement, Matrix, Ideal) := (aVar, B, J) -> (
     gapP := apply(resMons, r -> r - (r % J));
     (gapP, toList resMons, Blist)
 );
+-- Non-standard basis variant (Direction 4.1 / Larsson 2018). `Blist` is any
+-- list of |B| = deg(I) monomials forming a basis of R/J. We express the
+-- normal form of each residual in Blist via a change-of-basis through the
+-- Gröbner-determined standard basis: NF(r,J) = sum c_i b_i, solve for c_i,
+-- then the gap polynomial is r - sum c_i b_i (an element of J). Errors if
+-- Blist is linearly dependent mod J.
+buildGapPolys(RingElement, List, Ideal) := (aVar, Blist, J) -> (
+    R := ring J;
+    FF := coefficientRing R;
+    aVar2 := sub(aVar, R);
+    -- Accept Blist entries either in R or in R/J; lift to R uniformly.
+    Blist = apply(Blist, b -> sub(b, R));
+    stdB := basis(R/J);
+    stdBlist := flatten entries lift(stdB, R);
+    nB := #Blist;
+    if nB != #stdBlist then error ("buildGapPolys: basis size " | toString nB
+        | " != deg R/J = " | toString #stdBlist);
+    -- Columns = Blist reduced mod J expressed in stdB coords.
+    BmatStd := sub(last coefficients(matrix{apply(Blist, b -> b % J)},
+        Monomials => matrix{stdBlist}), FF);
+    if rank BmatStd < nB then error "buildGapPolys: Blist is not a basis of R/J";
+    BmatStdInv := inverse BmatStd;
+    Bset := set Blist;
+    aBlist := apply(Blist, b -> aVar2 * b);
+    resMons := select(aBlist, m -> not Bset#?m);
+    gapP := apply(resMons, r -> (
+        rNF := r % J;
+        rStd := sub(last coefficients(matrix{{rNF}},
+            Monomials => matrix{stdBlist}), FF);
+        cB := BmatStdInv * rStd;
+        reExpressInB := sum prepend(0_R, apply(nB, i -> sub(cB_(i,0), R) * Blist#i));
+        r - reExpressInB
+    ));
+    (gapP, toList resMons, Blist)
+);
+
+-- Validate a candidate basis: return true iff Blist is a basis of R/J.
+isValidBasis = method()
+isValidBasis(List, Ideal) := (Blist, J) -> (
+    R := ring J;
+    FF := coefficientRing R;
+    Blist = apply(Blist, b -> sub(b, R));
+    stdBlist := flatten entries lift(basis(R/J), R);
+    if #Blist != #stdBlist then return false;
+    BmatStd := sub(last coefficients(matrix{apply(Blist, b -> b % J)},
+        Monomials => matrix{stdBlist}), FF);
+    rank BmatStd == #stdBlist
+);
+
+-- Build a Greedy template (matrixHi + adjustParams + constructTemplate) on
+-- a specified basis Blist of R/J. Returns the template matrix directly over
+-- coefficientRing(ring J). Set `RunGreedy => false` to skip adjustParams
+-- (just MatrixHi's particular solution alpha=0) — ~100x faster, useful for
+-- coarse basis-search screening before re-running Greedy on the winner.
+buildGreedyTemplateWithBasis = method(Options => {Verbose => false, RunGreedy => true})
+buildGreedyTemplateWithBasis(RingElement, Ideal, List) := o -> (aVar, J, Blist) -> (
+    R := ring J;
+    FF := coefficientRing R;
+    Flist := flatten entries gens J;
+    (gp, resMons, B) := buildGapPolys(aVar, Blist, J);
+    if #gp == 0 then return map(FF^0, FF^(#B), 0);
+    RB := (toList resMons) | B;
+    (Hsym, Rext, alphaVars, perRow) := buildHSymbolic(Flist, gp, Verbose => o.Verbose);
+    Hfinal := if o.RunGreedy then (
+        adjustParams(Flist, Hsym, Rext, (alphaVars, RB), Verbose => o.Verbose)
+    ) else (
+        -- MatrixHi particular solution: substitute all alphas to 0.
+        if #alphaVars > 0 then (
+            finalSubst := map(R, Rext,
+                apply(numgens R, i -> R_i) | apply(#alphaVars, k -> 0_R));
+            matrix apply(numRows Hsym, i ->
+                apply(numColumns Hsym, j -> finalSubst(Hsym_(i,j))))
+        ) else Hsym
+    );
+    (sh, M, V, Eexcess) := buildTemplateFromH(Hfinal, Flist, RB, Verbose => o.Verbose);
+    M
+);
+
+-- Route (b), Martyushev CVPR 2022 §5: draw `n` random *standard* bases of
+-- R/J by choosing a random positive weight vector, computing the Gröbner
+-- basis of J under `Weights => w, GRevLex`, and taking the resulting
+-- quotient basis. Deduplicates by the monomial set. Returns a list of
+-- monomial lists in R (not in R/J); callers can pass any of these to
+-- `buildGreedyTemplateWithBasis` or `searchBases`.
+randomStandardBases = method()
+randomStandardBases(Ideal, ZZ) := (J, n) -> (
+    R := ring J;
+    nv := numgens R;
+    out := new MutableList;
+    seen := new MutableHashTable;
+    for i from 0 to n - 1 do (
+        w := apply(nv, k -> 1 + random 99);
+        ok := true;
+        local B;
+        try (
+            Rprime := newRing(R, MonomialOrder => {Weights => w, GRevLex});
+            Jprime := sub(J, Rprime);
+            Bprime := flatten entries lift(basis(Rprime / Jprime), Rprime);
+            phi := map(R, Rprime, apply(nv, k -> R_k));
+            B = apply(Bprime, b -> phi(b));
+        ) else ( ok = false; );
+        if not ok then continue;
+        key := set B;
+        if seen#?key then continue;
+        seen#key = true;
+        out#(#out) = B;
+    );
+    toList out
+);
+
+-- Route (c), Larsson 2018: sample `n` random *non-standard* bases by picking
+-- |B| = deg(R/J) random monomials from an extended monomial pool and keeping
+-- those that pass `isValidBasis`. The pool defaults to all monomials of
+-- degree up to twice the max degree of the standard basis, plus 1. Times
+-- out after `n * 20` attempts to avoid infinite loops on problems where
+-- valid non-standard bases are rare.
+randomNonstandardBases = method()
+randomNonstandardBases(Ideal, ZZ) := (J, n) -> (
+    R := ring J;
+    stdBlist := flatten entries lift(basis(R/J), R);
+    nB := #stdBlist;
+    maxDeg := max apply(stdBlist, b -> first degree b);
+    pool := flatten entries basis(0, 2 * maxDeg + 1, R);
+    out := new MutableList;
+    seen := new MutableHashTable;
+    attempts := 0;
+    while #out < n and attempts < 20 * n do (
+        attempts = attempts + 1;
+        shuffled := random pool;
+        cand := take(shuffled, nB);
+        if not isValidBasis(cand, J) then continue;
+        key := set cand;
+        if seen#?key then continue;
+        seen#key = true;
+        out#(#out) = cand;
+    );
+    toList out
+);
+
+-- Parse a Martyushev `_greedyAG/bases/b_<prob>` file into a list of monomial
+-- lists over the ring `R`. Each input line is of the form
+--     [mon1, mon2, ..., mon_d]
+-- and is evaluated in R. Lines that fail to parse (e.g. they use a variable
+-- not in R) are silently skipped; the caller gets whichever bases were
+-- readable. Intended use: run `buildGreedyTemplateWithBasis` on every parsed
+-- basis and keep the smallest template.
+parseMartyushevBases = method()
+parseMartyushevBases(String, Ring) := (path, R) -> (
+    content := get path;
+    use R;
+    out := {};
+    for line in lines content do (
+        if #line == 0 or first line != "[" then continue;
+        listStr := replace("\\[", "{", replace("\\]", "}", line));
+        ok := true;
+        local mons;
+        try ( mons = value listStr; ) else ( ok = false; );
+        if ok and instance(mons, List) then out = append(out, mons);
+    );
+    out
+);
+
+-- Basis-search loop. Default: screens each candidate with MatrixHi (fast,
+-- O(seconds per basis)), then re-runs Greedy on the winner. Pass
+-- `RunGreedyAll => true` to run full Greedy on every candidate (slow but may
+-- find bases where adjustParams strictly improves over MatrixHi).
+searchBases = method(Options => {Verbose => false, RunGreedyAll => false})
+searchBases(RingElement, Ideal, List) := o -> (aVar, J, candidates) -> (
+    bestRows := infinity;
+    bestCols := 0;
+    bestM := null;
+    bestB := null;
+    idx := 0;
+    for B in candidates do (
+        idx = idx + 1;
+        if not isValidBasis(B, J) then continue;
+        local M;
+        ok := true;
+        try (
+            M = buildGreedyTemplateWithBasis(aVar, J, B,
+                RunGreedy => o.RunGreedyAll, Verbose => false);
+        ) else ( ok = false; );
+        if not ok then continue;
+        if numRows M < bestRows or (numRows M == bestRows and numColumns M < bestCols) then (
+            bestRows = numRows M;
+            bestCols = numColumns M;
+            bestM = M;
+            bestB = B;
+            if o.Verbose then
+                << "  candidate #" << idx << ": " << bestRows << "x" << bestCols
+                   << " (new best)" << endl;
+        );
+    );
+    -- If we screened with MatrixHi only, re-run Greedy on the winner.
+    if bestB =!= null and not o.RunGreedyAll then (
+        local Mg;
+        okG := true;
+        try (
+            Mg = buildGreedyTemplateWithBasis(aVar, J, bestB,
+                RunGreedy => true, Verbose => false);
+        ) else ( okG = false; );
+        if okG and (numRows Mg < bestRows or
+                (numRows Mg == bestRows and numColumns Mg < bestCols)) then (
+            bestRows = numRows Mg;
+            bestCols = numColumns Mg;
+            bestM = Mg;
+            if o.Verbose then
+                << "  winner refined by Greedy: " << bestRows << "x" << bestCols << endl;
+        );
+    );
+    (bestB, bestM)
+);
 
 -- Build the symbolic H in a FLAT extended ring.
 -- Returns (Hsym, Rext, alphaVars, perRowData) where:
