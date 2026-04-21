@@ -441,19 +441,37 @@ adjustParams(List, Matrix, Ring, Sequence) := o -> (F, Hsym, Rext, pair) -> (
     iterations := 0;
     remainingExc := initialExcessive;
 
-    -- rm[e] is a LIST of unique (j, monomial m) pairs such that m appears in
-    -- some H[i,j] and m*F[j] contains e. (We use a list, not a set, because
-    -- M2's `for pos in set` doesn't iterate the set directly.)
-    rmOf := (HM, e) -> (
-        unique flatten apply(nF, j -> (
-            sh := unique flatten apply(nG, i -> (
+    -- Cache `supp(m * F[j])` as a set for reuse across outer iterations. The
+    -- support only depends on m and F[j]; α-commits don't invalidate it.
+    suppCache := new MutableHashTable;
+    suppOf := (j, m) -> (
+        key := (j, m);
+        if not suppCache#?key then
+            suppCache#key = set flatten entries monomials(m * Fext#j);
+        suppCache#key
+    );
+
+    -- Per-iteration cache of shift monomials per generator column. Rebuilt
+    -- once at the start of each outer iteration instead of re-extracted per
+    -- excessive.
+    currentShifts := null;
+    refreshShifts := HM -> (
+        currentShifts = apply(nF, j -> (
+            unique flatten apply(nG, i -> (
                 entry := HM_(i,j);
                 if entry == 0 then {} else (
                     (mm, cc) := coefficients(entry, Variables => baseVars);
                     flatten entries mm
                 )
-            ));
-            apply(select(sh, m -> coefficient(e, m * Fext#j) != 0_Rext), m -> (j, m))
+            ))
+        ));
+    );
+
+    -- rm[e]: list of (j, m) pairs with m in column j's shift set AND e in
+    -- supp(m * F[j]).
+    rmOf := e -> (
+        unique flatten apply(nF, j -> (
+            apply(select(currentShifts#j, m -> (suppOf(j, m))#?e), m -> (j, m))
         ))
     );
 
@@ -461,9 +479,11 @@ adjustParams(List, Matrix, Ring, Sequence) := o -> (F, Hsym, Rext, pair) -> (
         iterations = iterations + 1;
         improved := false;
 
-        -- Compute rm and np for every remaining excessive.
+        -- Compute rm and np for every remaining excessive, using cached
+        -- per-column shift lists and supp(m*F[j]) memoization.
         HcurMat := matrix Hcurrent;
-        rmTable := hashTable apply(remainingExc, e -> e => rmOf(HcurMat, e));
+        refreshShifts(HcurMat);
+        rmTable := hashTable apply(remainingExc, e -> e => rmOf(e));
         posCounts := new MutableHashTable;
         for e in remainingExc do (
             for pos in rmTable#e do (
