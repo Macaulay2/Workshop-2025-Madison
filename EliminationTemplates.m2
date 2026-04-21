@@ -875,12 +875,15 @@ TEST /// -- Cross-validation: on a 0-free-alpha problem (5pt essential),
   assert(numRows Mh == numRows Mg - d);
   -- Greedy and Default match exactly (same ordering, same pipeline).
   assert(Ag == Ad);
-  -- MatrixHi's action matrix is similar to Greedy's via a basis permutation;
-  -- check spectrum equality up to ordering (as a multiset over CC).
-  evH = sort apply(toList eigenvalues sub(Ah, CC), z -> (realPart z, imaginaryPart z));
-  evG = sort apply(toList eigenvalues sub(Ag, CC), z -> (realPart z, imaginaryPart z));
-  assert(#evH == #evG);
-  assert(all(#evH, i -> abs(evH#i#0 - evG#i#0) < 1e-8 and abs(evH#i#1 - evG#i#1) < 1e-8));
+  -- MatrixHi's action matrix is similar to Greedy's via a basis permutation.
+  -- Characteristic polynomial is invariant under similarity, so compare
+  -- chi_Ah and chi_Ag exactly in QQ[t] — more robust than sort-and-pair
+  -- over numerical eigenvalues, which can flip order when eigenvalues are
+  -- close across different random instances of the 5pt matrices.
+  Rt = QQ[t];
+  chiH = det(t * id_(Rt^(numRows Ah)) - sub(Ah, Rt));
+  chiG = det(t * id_(Rt^(numRows Ag)) - sub(Ag, Rt));
+  assert(chiH == chiG);
 ///
 
 TEST /// -- Greedy (Route A) on 6 Demazure cubics (no det): free alpha > 0,
