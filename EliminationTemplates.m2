@@ -72,6 +72,12 @@ EliminationTemplate = new Type of HashTable
 ShiftSet = new Type of List
 MonomialPartition = new Type of List
 
+-- True when `a` is a monomial (single term with unit coefficient), so `a * b_i`
+-- is a single monomial for every basis monomial `b_i`. Direction A uses this
+-- to skip the graph-ring extension for Default / Larsson / Greedy, saving |B|
+-- rows and matching the MatrixHi / paper template structure.
+isMonomialAction = a -> a == leadMonomial a
+
 eliminationTemplate = method(Options => {})
 eliminationTemplate (RingElement, Ideal) := o -> (aVar, J) -> (
     R := ring J;
@@ -210,6 +216,33 @@ getTemplate(EliminationTemplate) := o -> E -> (
 
         (shOrig, mpOrig) := getTemplateHelper(a, B, J, o);
 
+        -- Direction A: monomial action skips the graph-ring lift. The template
+        -- column layout becomes [excess | residual | basis] (MatrixHi style)
+        -- and the action matrix is read via extractActionFromTemplate, so the
+        -- (s - a) * b_k shifts that cost |B| rows are not needed.
+        if isMonomialAction a then (
+            BlistMono := flatten entries B;
+            BsetMono := set BlistMono;
+            resMonsMono := select(apply(BlistMono, b -> a * b), m -> not BsetMono#?m);
+            allMonsMono := union(set \ flatten \ entries \ monomials \ shiftPolynomials(shOrig, J));
+            monsBMono := BsetMono;
+            monsRMono := set resMonsMono;
+            monsEMono := allMonsMono - monsBMono - monsRMono;
+            mpMono := new MonomialPartition from rsort \ toList \ {monsEMono, monsRMono, monsBMono};
+
+            E.cache#basis = B;
+            E.cache#"shifts" = shOrig;
+            E.cache#"monomialPartition" = mpMono;
+            E.cache#"lastPartitionStrategy" = o.Strategy;
+            E.cache#"isMonomialAction" = true;
+            -- matrixHiBlist / matrixHiResMons MUST match the template's B- and R-column
+            -- ordering (mpMono#2 and mpMono#1 respectively), otherwise
+            -- extractActionFromTemplate reads the wrong columns.
+            E.cache#"matrixHiBlist" = mpMono#2;
+            E.cache#"matrixHiResMons" = mpMono#1;
+            return (shOrig, mpMono);
+        );
+
         K := coefficientRing R;
         ringVars := flatten entries vars R;
         MO := if not instance(o.MonomialOrder, Nothing) then o.MonomialOrder else (options R).MonomialOrder;
@@ -220,7 +253,7 @@ getTemplate(EliminationTemplate) := o -> E -> (
         aS := toRs(a);
         JsGens := toRs(gens J);
         actVar := Rs_0;
-        
+
         Is := ideal(JsGens | matrix{{actVar - aS}});
 
         Bs := toRs(B);
@@ -241,6 +274,7 @@ getTemplate(EliminationTemplate) := o -> E -> (
         E.cache#"shifts" = shiftsGraph;
         E.cache#"monomialPartition" = mpGraph;
         E.cache#"lastPartitionStrategy" = o.Strategy;
+        E.cache#"isMonomialAction" = false;
         (shiftsGraph, mpGraph)
     )
 )
@@ -251,7 +285,36 @@ copyTemplate(EliminationTemplate, Ideal) := o -> (E, J) -> (
     FFnew := coefficientRing Rnew;
     aNew := sub(actionVariable E, Rnew);
     Enew := eliminationTemplate(aNew, J);
-    
+
+    if E.cache#?"isMonomialAction" and E.cache#"isMonomialAction" then (
+        -- Direction A: transplant shifts + monomial partition over Rnew (no graph ring).
+        Enew.cache#"isMonomialAction" = true;
+        if E.cache#?basis then Enew.cache#basis = sub(E.cache#basis, Rnew);
+        if E.cache#?"shifts" then Enew.cache#"shifts" = new ShiftSet from apply(E.cache#"shifts", sh -> sub(sh, Rnew));
+        if E.cache#?"monomialPartition" then Enew.cache#"monomialPartition" =
+            new MonomialPartition from apply(E.cache#"monomialPartition",
+                mp -> apply(mp, m -> sub(m, Rnew)));
+        if E.cache#?"matrixHiBlist" then Enew.cache#"matrixHiBlist" =
+            apply(E.cache#"matrixHiBlist", b -> sub(b, Rnew));
+        if E.cache#?"matrixHiResMons" then Enew.cache#"matrixHiResMons" =
+            apply(E.cache#"matrixHiResMons", m -> sub(m, Rnew));
+        if E.cache#?"lastPartitionStrategy" then Enew.cache#"lastPartitionStrategy" = E.cache#"lastPartitionStrategy";
+        if E.cache#?"lastMatrixStrategy" then Enew.cache#"lastMatrixStrategy" = E.cache#"lastMatrixStrategy";
+        if E.cache#?"lastActionStrategy" then Enew.cache#"lastActionStrategy" = E.cache#"lastActionStrategy";
+        if E.cache#?"shifts" and E.cache#?"monomialPartition" then (
+            shiftsNew := Enew.cache#"shifts";
+            mpNew := Enew.cache#"monomialPartition";
+            allMonsMatNew := mpNew#0 | mpNew#1 | mpNew#2;
+            Enew.cache#"templateMatrix" = sub(
+                transpose fold(
+                    apply(shiftPolynomials(shiftsNew, J),
+                        m -> last coefficients(m, Monomials => allMonsMatNew)),
+                    (u, v) -> u | v),
+                coefficientRing Rnew);
+        );
+        return Enew;
+    );
+
     if E.cache#?"graphIdeal" then (
 	Rs := ring E.cache#"graphIdeal";
         Rsnew := FFnew[gens ring E.cache#"graphIdeal", MonomialOrder => (options Rs).MonomialOrder];
@@ -333,7 +396,19 @@ getTemplateMatrix(EliminationTemplate) := o -> E -> (
         E.cache#"templateMatrix"
     ) else (
         (shifts, monomialPartition) := getTemplate(E, o);
-        ret := getTemplateMatrix(shifts, monomialPartition, E.cache#"graphIdeal", o);
+        ret := if E.cache#?"isMonomialAction" and E.cache#"isMonomialAction" then (
+            -- Direction A monomial-action path: [excess | residual | basis] layout over R.
+            JforMono := ideal E;
+            allMonsMat := monomialPartition#0 | monomialPartition#1 | monomialPartition#2;
+            sub(
+                transpose fold(
+                    apply(shiftPolynomials(shifts, JforMono),
+                        m -> last coefficients(m, Monomials => allMonsMat)),
+                    (u, v) -> u | v),
+                coefficientRing ring JforMono)
+        ) else (
+            getTemplateMatrix(shifts, monomialPartition, E.cache#"graphIdeal", o)
+        );
         E.cache#"templateMatrix" = ret;
         E.cache#"lastMatrixStrategy" = o.Strategy;
         ret
@@ -378,10 +453,16 @@ getActionMatrix(EliminationTemplate) := o -> E -> (
         (sh, mp) := getTemplate(E, o);
         templateMatrix := getTemplateMatrix(E, o);
 
-        Rs := ring first first mp;
-        actVar := Rs_0;
-
-        ret := getActionMatrix(actVar, mp, templateMatrix, o);
+        ret := if E.cache#?"isMonomialAction" and E.cache#"isMonomialAction" then (
+            -- Direction A: read action matrix via RREF + pivot on the
+            -- [excess | residual | basis] template, reusing the MatrixHi extractor.
+            extractActionFromTemplate(templateMatrix, E.cache#"matrixHiResMons",
+                E.cache#"matrixHiBlist", actionVariable E)
+        ) else (
+            Rs := ring first first mp;
+            actVar := Rs_0;
+            getActionMatrix(actVar, mp, templateMatrix, o)
+        );
         E.cache#"actionMatrix" = ret;
         E.cache#"lastActionStrategy" = o.Strategy;
         ret
@@ -394,10 +475,11 @@ getActionMatrix(EliminationTemplate) := o -> E -> (
 getEigenMatrix = method(Options => {MonomialOrder => null, Strategy => null, AdjustParams => true})
 getEigenMatrix(EliminationTemplate) := o -> (E) -> (
     Ma := getActionMatrix(E, o);
-    -- MatrixHi: action matrix is over the base ring R (not the graph ring
-    -- Rs), so basis monomials are in R as well. Greedy uses the default
-    -- graph-ring branch below.
-    if o.Strategy === "Greedy" and not o.AdjustParams then (
+    -- MatrixHi-style recovery when: (a) explicit α:=0 mode
+    -- (Strategy => "Greedy", AdjustParams => false), or (b) monomial-action
+    -- short-circuit path, which also populates matrixHiBlist.
+    if (o.Strategy === "Greedy" and not o.AdjustParams)
+        or (E.cache#?"isMonomialAction" and E.cache#"isMonomialAction") then (
         (svals, P) := eigenvectors sub(Ma, CC);
         Blist := E.cache#"matrixHiBlist";
         (matrix{Blist}, P)
@@ -434,11 +516,12 @@ templateSolve(EliminationTemplate) := o -> (E) -> (
     -- eliminated from the basis (e.g. circle+line: basis = {1, y},
     -- x is absent, so x's coordinate can't be read from an eigenvector
     -- slot).
-    if o.Strategy === "Greedy" and not o.AdjustParams then (
-        recoverSolutionsMatrixHi(getActionMatrix(E, o), E.cache#"matrixHiBlist", ring ideal E)
+    Ma := getActionMatrix(E, o);  -- populates cache (incl. isMonomialAction)
+    R := ring ideal E;
+    if (o.Strategy === "Greedy" and not o.AdjustParams)
+        or (E.cache#?"isMonomialAction" and E.cache#"isMonomialAction") then (
+        recoverSolutionsMatrixHi(Ma, E.cache#"matrixHiBlist", R)
     ) else (
-        Ma := getActionMatrix(E, o);  -- populates monomialPartition cache
-        R := ring ideal E;
         mp := E.cache#"monomialPartition";
         Rs := ring first first mp;
         toR := map(R, Rs, {0_R} | apply(numgens R, i -> R_i));
@@ -789,11 +872,10 @@ TEST /// -- 5-point essential matrix (Demazure trace identity, deg I = 10).
   assert(all(sols, x -> 1e-6 > norm sub(sub(gens I, CC[gens R]), matrix{x})))
 ///
 
-TEST /// -- MatrixHi strategy: template size matches Martyushev CVPR 2022 reference.
--- The MatrixHi path bypasses the graph-ideal extension, so the template has
--- |B| fewer rows than Default / Larsson (and now Greedy, which under Route A
--- flows through the graph-ideal pipeline). On 5pt essential: 10×20 for
--- MatrixHi vs 20×20 for the graph-ideal strategies.
+TEST /// -- MatrixHi: paper-reference sizes.
+-- Under Direction A, all strategies skip the (s-a) graph lift on monomial
+-- actions, so Default / Larsson / Greedy also match paper-reference sizes
+-- on the 5pt essential problem; this test pins MatrixHi's own sizes.
   R = QQ[x,y,z]
   Es = apply(4, i -> random(QQ^3, QQ^3));
   Ee = x * Es#0 + y * Es#1 + z * Es#2 + Es#3;
@@ -805,19 +887,22 @@ TEST /// -- MatrixHi strategy: template size matches Martyushev CVPR 2022 refere
   J = ideal(x^3+y^3+z^3-4,x^2-y-z-1,x-y^2+z-3)
   ET2 = eliminationTemplate(x, J);
   N = getTemplateMatrix(ET2, Strategy => "Greedy", AdjustParams => false);
-  assert(numRows N <= numRows getTemplateMatrix(ET2))  -- strictly smaller on this system
+  -- MatrixHi-mode on this problem uses a min-degree buildHSymbolic H; size 20x33.
+  -- Default's GB H0 happens to have smaller monomial support here (16x28 under
+  -- Direction A), so the order between MatrixHi-mode and Default is problem-dependent.
+  assert(numRows N == 20 and numColumns N == 33)
 ///
 
-TEST /// -- Greedy (Route A): on 5pt essential (0 free alphas), adjustParams
--- is a no-op, so the lifted greedy H0 equals the Default H0, and Greedy's
--- graph-ideal template matches Default's (20x20).
+TEST /// -- Direction A: on 5pt essential (monomial action, 0 free alphas),
+-- Greedy flows through the unified getH0 but skips the (s-a) graph lift,
+-- so its template matches paper-reference 10x20 (not the old 20x20).
   R = QQ[x,y,z]
   Es = apply(4, i -> random(QQ^3, QQ^3));
   Ee = x * Es#0 + y * Es#1 + z * Es#2 + Es#3;
   I = ideal(Ee*transpose Ee * Ee - (1/2) * trace(Ee * transpose Ee) * Ee) + ideal(det Ee);
   ET = eliminationTemplate(y, I);
   Mg = getTemplateMatrix(ET, Strategy => "Greedy");
-  assert(numRows Mg == 20 and numColumns Mg == 20)
+  assert(numRows Mg == 10 and numColumns Mg == 20)
 ///
 
 TEST /// -- getActionMatrix on MatrixHi / Greedy templates: 10x10 with deg I
@@ -888,13 +973,14 @@ TEST /// -- Greedy with action z on 5pt essential.
   assert(all(sols, s -> 1e-6 > norm sub(sub(gens I, CC[gens R]), matrix{s})));
 ///
 
-TEST /// -- Cross-validation: on a 0-free-alpha problem (5pt essential),
--- Greedy's adjustParams is a no-op, so the lifted greedy H0 equals the
--- Default H0 and Greedy's graph-ideal template equals Default's. Action
--- matrices from all three strategies (MatrixHi / Greedy / Default) represent
--- the same linear map — MatrixHi uses the raw basis order from
--- `basis(R/J)`, Default/Greedy use rsort, so matrices differ by a basis
--- permutation but share eigenvalues (intrinsic spectrum of `a` on R/J).
+TEST /// -- Cross-validation under Direction A: on a 0-free-alpha problem
+-- (5pt essential), Greedy and Default both skip the (s-a) graph lift on
+-- monomial action and share the [excess|residual|basis] layout. Greedy's
+-- buildHSymbolic H and Default's GB H0 happen to produce the same shifts
+-- on this problem, so Mg == Md at 10x20. MatrixHi's internal pipeline
+-- uses basis(R/J) column order instead of the rsort order shared by
+-- Default/Larsson/Greedy, so Mh is the same logical template with
+-- permuted columns — char-polynomial of the action matrices agrees.
   R = QQ[x,y,z]
   Es = apply(4, i -> random(QQ^3, QQ^3));
   Ee = x * Es#0 + y * Es#1 + z * Es#2 + Es#3;
@@ -908,20 +994,14 @@ TEST /// -- Cross-validation: on a 0-free-alpha problem (5pt essential),
   Ah = getActionMatrix(E1, Strategy => "Greedy", AdjustParams => false);
   Ag = getActionMatrix(E2, Strategy => "Greedy");
   Ad = getActionMatrix(E3);
-  -- Greedy (Route A) and Default share the graph-ideal pipeline; with 0
-  -- free alphas the H0 objects coincide, so the templates coincide.
+  -- Greedy and Default share Direction A's downstream on monomial action
+  -- and produce identical templates on this 0-free-alpha problem.
   assert(Mg == Md);
-  -- MatrixHi lives on a different pipeline (no graph extension), with
-  -- |B| fewer rows than Mg.
-  d = degree I;
-  assert(numRows Mh == numRows Mg - d);
-  -- Greedy and Default match exactly (same ordering, same pipeline).
+  -- MatrixHi has the same row count under Direction A (all three go through
+  -- the [excess|residual|basis] layout).
+  assert(numRows Mh == numRows Mg);
   assert(Ag == Ad);
-  -- MatrixHi's action matrix is similar to Greedy's via a basis permutation.
-  -- Characteristic polynomial is invariant under similarity, so compare
-  -- chi_Ah and chi_Ag exactly in QQ[t] — more robust than sort-and-pair
-  -- over numerical eigenvalues, which can flip order when eigenvalues are
-  -- close across different random instances of the 5pt matrices.
+  -- Char polynomial of action is invariant under basis permutation.
   Rt = QQ[t];
   chiH = det(t * id_(Rt^(numRows Ah)) - sub(Ah, Rt));
   chiG = det(t * id_(Rt^(numRows Ag)) - sub(Ag, Rt));
