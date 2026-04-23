@@ -212,15 +212,19 @@ getTemplate(EliminationTemplate) := o -> E -> (
         J := ideal E;
         R := ring J;
         a := sub(actionVariable E, R);
-        B := lift(basis(R/J), R);
 
-        (shOrig, mpOrig) := getTemplateHelper(a, B, J, o);
-
-        -- Direction A: monomial action skips the graph-ring lift. The template
-        -- column layout becomes [excess | residual | basis] (MatrixHi style)
-        -- and the action matrix is read via extractActionFromTemplate, so the
-        -- (s - a) * b_k shifts that cost |B| rows are not needed.
+        -- Direction A: monomial action goes through [excess | residual | basis]
+        -- with extractActionFromTemplate. No graph-ring lift, no (s - a) * b_k
+        -- shifts, template matches Martyushev paper sizes.
+        --
+        -- Increment 3: polynomial action lifts to R_s = R[s] with the extra
+        -- generator s - a, so that s IS a ring variable on R_s/Is (monomial
+        -- action on Is in R_s). The same [excess | residual | basis] pipeline
+        -- then handles both cases uniformly.
         if isMonomialAction a then (
+            B := lift(basis(R/J), R);
+            (shOrig, mpHelper) := getTemplateHelper(a, B, J, o);
+
             BlistMono := flatten entries B;
             BsetMono := set BlistMono;
             resMonsMono := select(apply(BlistMono, b -> a * b), m -> not BsetMono#?m);
@@ -243,39 +247,53 @@ getTemplate(EliminationTemplate) := o -> E -> (
             return (shOrig, mpMono);
         );
 
+        -- Polynomial action: lift to R_s = R[s] / <s - a>, then drive the same
+        -- [excess | residual | basis] pipeline on (s, Is) in R_s. After the
+        -- lift s is a ring variable, so isMonomialAction(s) is true and the
+        -- Greedy pipeline (buildGapPolys etc.) works on R_s even when the
+        -- original action was polynomial on R.
+        --
+        -- Follow origin's shift construction: compute shifts from getH0 on the
+        -- ORIGINAL (R, J) and lift them into R_s, then append |B| shifts for
+        -- the (s - a) generator (one per basis monomial). Building shifts on
+        -- the LIFTED ideal directly yields a much larger template whose RREF
+        -- is numerically fragile during solution recovery.
+        B := lift(basis(R/J), R);
+        (shOrig, mpHelperOrig) := getTemplateHelper(a, B, J, o);
+
         K := coefficientRing R;
         ringVars := flatten entries vars R;
         MO := if not instance(o.MonomialOrder, Nothing) then o.MonomialOrder else (options R).MonomialOrder;
         Rs := K[prepend("s", ringVars), MonomialOrder => {Eliminate 1, MO}];
 
         toRs := map(Rs, R, apply(numgens R, i -> Rs_(i+1)));
-
         aS := toRs(a);
-        JsGens := toRs(gens J);
-        actVar := Rs_0;
-
-        Is := ideal(JsGens | matrix{{actVar - aS}});
-
+        actVarS := Rs_0;
+        Is := ideal(toRs(gens J) | matrix{{actVarS - aS}});
         Bs := toRs(B);
         sortedBs := rsort flatten entries Bs;
 
-        shiftsGraph := new ShiftSet from (
+        shLifted := new ShiftSet from (
             apply(shOrig, sh -> toRs(sh)) | {matrix {sortedBs}}
         );
 
-        allMons := union(set \ flatten \ entries \ monomials \ shiftPolynomials(shiftsGraph, Is));
-        monsB := set sortedBs;
-        monsR := set apply(sortedBs, b -> actVar * b);
-        monsE := allMons - union(monsR, monsB);
-        mpGraph := new MonomialPartition from rsort \ toList \ {monsE, monsR, monsB};
+        allMonsLifted := union(set \ flatten \ entries \ monomials \ shiftPolynomials(shLifted, Is));
+        monsBLifted := set sortedBs;
+        monsRLifted := set apply(sortedBs, b -> actVarS * b);
+        monsELifted := allMonsLifted - monsBLifted - monsRLifted;
+        mpLifted := new MonomialPartition from rsort \ toList \ {monsELifted, monsRLifted, monsBLifted};
 
         E.cache#basis = Bs;
         E.cache#"graphIdeal" = Is;
-        E.cache#"shifts" = shiftsGraph;
-        E.cache#"monomialPartition" = mpGraph;
+        E.cache#"shifts" = shLifted;
+        E.cache#"monomialPartition" = mpLifted;
         E.cache#"lastPartitionStrategy" = o.Strategy;
-        E.cache#"isMonomialAction" = false;
-        (shiftsGraph, mpGraph)
+        E.cache#"isMonomialAction" = true;
+        E.cache#"liftedToRs" = true;
+        E.cache#"liftedActionVar" = actVarS;
+        E.cache#"matrixHiBlist" = mpLifted#2;
+        E.cache#"matrixHiResMons" = mpLifted#1;
+        (shLifted, mpLifted)
     )
 )
 
@@ -286,8 +304,12 @@ copyTemplate(EliminationTemplate, Ideal) := o -> (E, J) -> (
     aNew := sub(actionVariable E, Rnew);
     Enew := eliminationTemplate(aNew, J);
 
-    if E.cache#?"isMonomialAction" and E.cache#"isMonomialAction" then (
-        -- Direction A: transplant shifts + monomial partition over Rnew (no graph ring).
+    -- Direction A monomial-direct (non-lifted): basis / shifts live in R,
+    -- transplant via sub(..., Rnew). Increment 3 lifted templates have
+    -- isMonomialAction = true too but their cache is in R_s, so they route
+    -- through the graph-ideal branch below (which handles R_s transplant).
+    if E.cache#?"isMonomialAction" and E.cache#"isMonomialAction"
+        and not (E.cache#?"liftedToRs" and E.cache#"liftedToRs") then (
         Enew.cache#"isMonomialAction" = true;
         if E.cache#?basis then Enew.cache#basis = sub(E.cache#basis, Rnew);
         if E.cache#?"shifts" then Enew.cache#"shifts" = new ShiftSet from apply(E.cache#"shifts", sh -> sub(sh, Rnew));
@@ -326,13 +348,44 @@ copyTemplate(EliminationTemplate, Ideal) := o -> (E, J) -> (
         if E.cache#?"lastMatrixStrategy" then Enew.cache#"lastMatrixStrategy" = E.cache#"lastMatrixStrategy";
 	if E.cache#?"lastActionStrategy" then Enew.cache#"lastActionStrategy" = E.cache#"lastActionStrategy";
 
+        -- Increment 3: propagate lifted-polynomial-action flags + matrixHi markers.
+        if E.cache#?"isMonomialAction" then Enew.cache#"isMonomialAction" = E.cache#"isMonomialAction";
+        if E.cache#?"liftedToRs" then Enew.cache#"liftedToRs" = E.cache#"liftedToRs";
+        if E.cache#?"liftedActionVar" then Enew.cache#"liftedActionVar" = sub(E.cache#"liftedActionVar", Rsnew);
+
 	toRsnew := map(Rsnew, Rnew, apply(numgens Rnew, i -> Rsnew_(i+1)));
         JsGens := toRsnew(gens J);
         aS := toRsnew(aNew);
         actVar := Rsnew_0;
-        
+
         Enew.cache#"graphIdeal" = ideal(JsGens | matrix{{actVar - aS}});
-	if E.cache#?"templateMatrix" then Enew.cache#"templateMatrix" = getTemplateMatrix(Enew.cache#"shifts", Enew.cache#"monomialPartition", Enew.cache#"graphIdeal");
+
+        if Enew.cache#?"monomialPartition" then (
+            mpNewCopy := Enew.cache#"monomialPartition";
+            Enew.cache#"matrixHiBlist" = mpNewCopy#2;
+            Enew.cache#"matrixHiResMons" = mpNewCopy#1;
+        );
+
+	if E.cache#?"templateMatrix" then (
+            isLifted := E.cache#?"liftedToRs" and E.cache#"liftedToRs";
+            shNew := Enew.cache#"shifts";
+            mpNew := Enew.cache#"monomialPartition";
+            IsNew := Enew.cache#"graphIdeal";
+            Enew.cache#"templateMatrix" = if isLifted then (
+                -- Increment 3 [E|R|B] layout: include residual block.
+                allMonsMatL := mpNew#0 | mpNew#1 | mpNew#2;
+                sub(
+                    transpose fold(
+                        apply(shiftPolynomials(shNew, IsNew),
+                            m -> last coefficients(m, Monomials => allMonsMatL)),
+                        (u, v) -> u | v),
+                    coefficientRing Rsnew)
+            ) else (
+                -- Origin's [E|B] layout (unreachable in current code path, kept
+                -- as the fallback target for a future LU-on-RREF-error guard).
+                getTemplateMatrix(shNew, mpNew, IsNew)
+            );
+        );
     );
     Enew
 )
@@ -397,8 +450,11 @@ getTemplateMatrix(EliminationTemplate) := o -> E -> (
     ) else (
         (shifts, monomialPartition) := getTemplate(E, o);
         ret := if E.cache#?"isMonomialAction" and E.cache#"isMonomialAction" then (
-            -- Direction A monomial-action path: [excess | residual | basis] layout over R.
-            JforMono := ideal E;
+            -- Direction A monomial-action path: [excess | residual | basis] layout.
+            -- Increment 3 lifted polynomial action: shifts + partition were built
+            -- against graphIdeal = J + <s - a> in R_s, so the fold must use that
+            -- ideal (not the user's original J in R) to match generator count.
+            JforMono := if E.cache#?"graphIdeal" then E.cache#"graphIdeal" else ideal E;
             allMonsMat := monomialPartition#0 | monomialPartition#1 | monomialPartition#2;
             sub(
                 transpose fold(
@@ -456,8 +512,14 @@ getActionMatrix(EliminationTemplate) := o -> E -> (
         ret := if E.cache#?"isMonomialAction" and E.cache#"isMonomialAction" then (
             -- Direction A: read action matrix via RREF + pivot on the
             -- [excess | residual | basis] template, reusing the MatrixHi extractor.
+            -- For Increment 3 polynomial-action lift, the internal action
+            -- variable is s in R_s (cached as liftedActionVar), not the user's
+            -- original polynomial a in R.
+            actVarForExtract := if E.cache#?"liftedToRs" and E.cache#"liftedToRs"
+                                then E.cache#"liftedActionVar"
+                                else actionVariable E;
             extractActionFromTemplate(templateMatrix, E.cache#"matrixHiResMons",
-                E.cache#"matrixHiBlist", actionVariable E)
+                E.cache#"matrixHiBlist", actVarForExtract)
         ) else (
             Rs := ring first first mp;
             actVar := Rs_0;
@@ -478,13 +540,17 @@ getEigenMatrix(EliminationTemplate) := o -> (E) -> (
     -- MatrixHi-style recovery when: (a) explicit α:=0 mode
     -- (Strategy => "Greedy", AdjustParams => false), or (b) monomial-action
     -- short-circuit path, which also populates matrixHiBlist.
+    -- Increment 3: lifted polynomial-action templates use normalized eigenvectors
+    -- + the lifted (R_s) basis, because downstream recoverSolutions needs the
+    -- eigenvectors normalized by the "1" slot to read true monomial values.
     if (o.Strategy === "Greedy" and not o.AdjustParams)
-        or (E.cache#?"isMonomialAction" and E.cache#"isMonomialAction") then (
+        or ((E.cache#?"isMonomialAction" and E.cache#"isMonomialAction")
+            and not (E.cache#?"liftedToRs" and E.cache#"liftedToRs")) then (
         (svals, P) := eigenvectors sub(Ma, CC);
         Blist := E.cache#"matrixHiBlist";
         (matrix{Blist}, P)
     ) else (
-        (svals2, P2) := eigenvectors Ma;
+        (svals2, P2) := eigenvectors sub(Ma, CC);
         cleanEvecs := clean_(1e-10) (P2 * inverse diagonalMatrix(P2^{numColumns P2 - 1}));
         (transpose rsort basis E, cleanEvecs)
     )
@@ -518,22 +584,33 @@ templateSolve(EliminationTemplate) := o -> (E) -> (
     -- slot).
     Ma := getActionMatrix(E, o);  -- populates cache (incl. isMonomialAction)
     R := ring ideal E;
-    if (o.Strategy === "Greedy" and not o.AdjustParams)
-        or (E.cache#?"isMonomialAction" and E.cache#"isMonomialAction") then (
-        recoverSolutionsMatrixHi(Ma, E.cache#"matrixHiBlist", R)
+
+    if o.Strategy === "Greedy" and not o.AdjustParams then (
+        return recoverSolutionsMatrixHi(Ma, E.cache#"matrixHiBlist", R);
+    );
+
+    -- Direction A monomial-direct path: matrixHiBlist is in R; all vars in basis
+    -- by construction (a is a ring variable, basis includes 1 and extends).
+    if (E.cache#?"isMonomialAction" and E.cache#"isMonomialAction")
+        and not (E.cache#?"liftedToRs" and E.cache#"liftedToRs") then (
+        return recoverSolutionsMatrixHi(Ma, E.cache#"matrixHiBlist", R);
+    );
+
+    -- Remaining paths: Increment 3 lifted polynomial-action, or legacy graph-ring
+    -- path. Map basis from R_s back to R (s -> 0), check whether every ring
+    -- variable has a direct basis slot — if so use the matrixHi extractor, else
+    -- fall back to recoverSolutions which handles missing vars via the E block.
+    mp := E.cache#"monomialPartition";
+    Rs := ring first first mp;
+    toR := map(R, Rs, {0_R} | apply(numgens R, i -> R_i));
+    Blist := apply(mp#2, b -> toR(b));
+    BlistSet := set Blist;
+    if all(numgens R, i -> BlistSet#?(R_i)) then (
+        recoverSolutionsMatrixHi(Ma, Blist, R)
     ) else (
-        mp := E.cache#"monomialPartition";
-        Rs := ring first first mp;
-        toR := map(R, Rs, {0_R} | apply(numgens R, i -> R_i));
-        Blist := apply(mp#2, b -> toR(b));
-        BlistSet := set Blist;
-        if all(numgens R, i -> BlistSet#?(R_i)) then (
-            recoverSolutionsMatrixHi(Ma, Blist, R)
-        ) else (
-            (Bmat, M) := getEigenMatrix(E, o);
-            templateMat := getTemplateMatrix(E, o);
-            recoverSolutions(Bmat, M, E, templateMat)
-        )
+        (Bmat, M) := getEigenMatrix(E, o);
+        templateMat := getTemplateMatrix(E, o);
+        recoverSolutions(Bmat, M, E, templateMat)
     )
 )
 templateSolve(Ideal) := o -> (I) -> templateSolve(random(1,ring I), I, o)
@@ -562,54 +639,90 @@ recoverSolutions(Matrix, Matrix, EliminationTemplate, Matrix) := (Bmat, M, E, te
     numE := length monsE;
     numR := length monsR;
     numB := length monsB;
-    numTop := numrows templateMat - numB;
-    
-    -- Pure linear algebra: solve only for the excessive block, skipping action variables
-    MtopE := templateMat_{0 .. numE-1}^{0..numTop-1};
-    MtopB := templateMat_{numE .. numcols templateMat -1}^{0..numTop-1};
-    
-    X := solve(MtopE, MtopB);
+
+    -- Use RREF on the full [E|R|B] template to express each excess monomial
+    -- in terms of B. This handles over-determined templates (numTop > |E|+|R|)
+    -- naturally, avoids QQ least-squares (not implemented), and matches the
+    -- approach extractActionFromTemplate uses for residual columns.
+    FF := coefficientRing Rnew;
+    Rref := reducedRowEchelonForm templateMat;
+    -- eReduction_(colIdx) = row in Rref whose pivot is at colIdx, or null.
+    pivotRowOfCol := new MutableHashTable;
+    for r from 0 to numRows Rref - 1 do (
+        pivCol := position(0..numColumns Rref - 1, c -> Rref_(r,c) != 0_FF);
+        if pivCol =!= null and not pivotRowOfCol#?pivCol then
+            pivotRowOfCol#pivCol = r;
+    );
+    -- readMonValFromRref(col, basisVals) returns the CC value of the monomial
+    -- in column `col` given the CC values of B monomials: row at `col` says
+    --   1 * m_col + sum_b Rref[row, numE+numR+b] * b = 0
+    -- so m_col = -sum_b Rref[row, numE+numR+b] * b_val.
+    readMonValFromRref := (col, bVals) -> (
+        if not pivotRowOfCol#?col then return null;
+        row := pivotRowOfCol#col;
+        val := 0_CC;
+        for k from 0 to numB - 1 do
+            val = val - sub(Rref_(row, numE + numR + k), CC) * bVals#k;
+        val
+    );
     
     solutions := {};
     varsList := flatten entries vars Rnew;
-    
+
+    -- Basis slot holding the monomial 1_Rnew. Eigenvectors normalize by this
+    -- slot (done upstream by getEigenMatrix), so when this slot is tiny the
+    -- eigenvector is spurious / numerically degenerate and must be skipped
+    -- rather than blown up by the normalization.
+    oneSlot := position(basisMonsRnew, b -> b == 1_Rnew);
+
     for rootIndex from 0 to numColumns M - 1 do (
+        if oneSlot =!= null and abs M_(oneSlot, rootIndex) < 1e-10 then continue;
+
         monomialValues := new MutableHashTable;
         for i from 0 to #basisMonsRnew - 1 do (
             monomialValues#(basisMonsRnew#i) = M_(i, rootIndex);
         );
 
+        -- Basis-monomial values as a vector aligned with monsB.
+        bVals := apply(numB, j -> monomialValues#(toRnew(monsB#j)));
+
         root := {};
         for v in varsList do (
             if monomialValues#?v then (
-		-- v is basic monomial
-              root = append(root, monomialValues#v);
+                -- v is a basis monomial; read directly.
+                root = append(root, monomialValues#v);
             )
             else (
-		-- v is an excessive monomial
+                -- v lives in E or R block; reduce via RREF pivot row.
                 vRs := toRs(v);
                 posInE := position(monsE, m -> m == vRs);
-                if posInE =!= null then (
-                    local val;
-                    val = 0;
-                    for j from 0 to numB - 1 do (
-                        bMapped := toRnew(monsB#j);
-                        val = val - sub(X_(posInE, j), CC) * monomialValues#bMapped;
+                posInR := if posInE === null then position(monsR, m -> m == vRs) else null;
+                colIdx := if posInE =!= null then posInE
+                          else if posInR =!= null then numE + posInR
+                          else null;
+                if colIdx =!= null then (
+                    val := readMonValFromRref(colIdx, bVals);
+                    if val === null then (
+                        -- RREF has no pivot at this column; shouldn't happen
+                        -- for a well-posed template but fall back to the
+                        -- polynomial normal form against the ideal.
+                        r := v % J;
+                        coeffs := last coefficients(r, Monomials => basisMonsRnew);
+                        val = 0_CC;
+                        for j from 0 to numB - 1 do
+                            if monomialValues#?(basisMonsRnew#j) then
+                                val = val + sub(coeffs_(j,0), CC) * monomialValues#(basisMonsRnew#j);
                     );
                     root = append(root, val);
                 )
                 else (
-		    -- failsafe in case v is neither a basic nor an excessive monomial
+                    -- Failsafe: v is neither in B nor in E nor in R.
                     r := v % J;
                     coeffs := last coefficients(r, Monomials => basisMonsRnew);
-                    local val;
-                    val = 0;
-                    for j from 0 to numB - 1 do (
-                        bMapped := basisMonsRnew#j;
-                        if monomialValues#?bMapped then (
-                          val = val + sub(coeffs_(j,0), coefficientRing Rnew) * monomialValues#bMapped;
-                        )
-                    );
+                    val := 0_CC;
+                    for j from 0 to numB - 1 do
+                        if monomialValues#?(basisMonsRnew#j) then
+                            val = val + sub(coeffs_(j,0), CC) * monomialValues#(basisMonsRnew#j);
                     root = append(root, val);
                 );
             );
