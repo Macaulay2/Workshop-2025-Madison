@@ -107,20 +107,54 @@ getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     FF := coefficientRing R;
 
     -- Greedy (Martyushev CVPR 2022) computes H via gap polynomials + α-commit,
-    -- then lifts to the mainline H0 shape (nF x nB). No Groebner detour needed.
-    -- Downstream (getTemplateHelper, getTemplate, getTemplateMatrix default,
-    -- getActionMatrix default, recoverSolutions) consumes this H0 unchanged.
+    -- then lifts to the mainline H0 shape (nF x nB). For QQ input with
+    -- AdjustParams => true, pin the whole computation (including adjustParams'
+    -- RREF on α's) to ZZ/p to avoid rational coefficient blowup; the result
+    -- is lifted back to R via per-coefficient ZZ→QQ. Shift monomial support
+    -- — all the downstream (getTemplateHelper, getTemplate) consumes — is
+    -- preserved by the lift, which is what matters for template construction.
+    -- Downstream reads only monomials(H0^{i}) per row, ignoring coefficients.
     if (o.Strategy === "Greedy") then (
-        BlistGr := flatten entries B;
-        (gp, resMons, BlistChk) := buildGapPolys(a, matrix{BlistGr}, J);
-        nFGr := numgens J;
+        pinToModP := (FF === QQ) and o.AdjustParams;
+        Rw := if pinToModP then (
+            (ZZ/32749)[gens R, MonomialOrder => (options R).MonomialOrder]
+        ) else R;
+        aw := if pinToModP then sub(a, Rw) else a;
+        Jw := if pinToModP then sub(J, Rw) else J;
+        Bw := if pinToModP then sub(B, Rw) else B;
+        BlistGr := flatten entries Bw;
+        (gp, resMons, BlistChk) := buildGapPolys(aw, matrix{BlistGr}, Jw);
+        nFGr := numgens Jw;
         nBGr := #BlistGr;
         if #gp == 0 then return map(R^nFGr, R^nBGr, 0);
-        FlistGr := flatten entries gens J;
+        FlistGr := flatten entries gens Jw;
         RB := (toList resMons) | BlistGr;
         (Hsym, Rext, alphaVars, perRow) := buildHSymbolic(FlistGr, gp);
-        Hfinal := adjustParams(FlistGr, Hsym, Rext, (alphaVars, RB));
-        return liftGreedyHToH0(Hfinal, a, BlistGr, nFGr);
+        Hfinal := if o.AdjustParams then (
+            adjustParams(FlistGr, Hsym, Rext, (alphaVars, RB))
+        ) else if #alphaVars > 0 then (
+            -- Particular α:=0 solution, projected back to Rw.
+            finalSubst := map(Rw, Rext,
+                apply(numgens Rw, i -> Rw_i) | apply(#alphaVars, k -> 0_Rw));
+            matrix apply(numRows Hsym, i ->
+                apply(numColumns Hsym, j -> finalSubst(Hsym_(i,j))))
+        ) else matrix Hsym;
+        H0w := liftGreedyHToH0(Hfinal, aw, BlistGr, nFGr);
+        if not pinToModP then return H0w;
+        -- Lift H0w from Rw (ZZ/p coefficients) back to R (QQ coefficients).
+        -- Coefficients map via ZZ/p → ZZ (representative in [0, p)) → QQ.
+        -- Monomials map via variable-to-variable.
+        liftEntry := p -> (
+            if p == 0_Rw then 0_R
+            else (
+                (mons, coeffs) := coefficients p;
+                monsR := sub(mons, R);
+                coeffsR := matrix apply(numRows coeffs, i -> apply(numColumns coeffs, j ->
+                    sub(lift(coeffs_(i, j), ZZ), QQ)));
+                first first entries (monsR * coeffsR)
+            )
+        );
+        return matrix apply(numRows H0w, i -> apply(numColumns H0w, j -> liftEntry (H0w_(i,j))));
     );
 
     MO := if not instance(o.MonomialOrder, Nothing) then o.MonomialOrder else (options R).MonomialOrder;
