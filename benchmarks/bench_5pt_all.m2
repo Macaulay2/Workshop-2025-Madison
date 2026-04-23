@@ -54,13 +54,15 @@ evalResid = (sols, I) -> (
     mx
 )
 
-runStrategy = strategyName -> (
-    << "---- " << strategyName << " ----" << endl;
+-- Label, Strategy, AdjustParams.
+runStrategy = spec -> (
+    (label, stratVal, adjust) := toSequence spec;
+    << "---- " << label << " ----" << endl;
     ET := eliminationTemplate(aVar, I5);
     t0 := cpuTime();
-    M := getTemplateMatrix(ET, Strategy => strategyName);
-    Ma := getActionMatrix(ET, Strategy => strategyName);
-    sols := templateSolve(ET, Strategy => strategyName);
+    M := getTemplateMatrix(ET, Strategy => stratVal, AdjustParams => adjust);
+    Ma := getActionMatrix(ET, Strategy => stratVal, AdjustParams => adjust);
+    sols := templateSolve(ET, Strategy => stratVal, AdjustParams => adjust);
     elapsed := cpuTime() - t0;
     nev := #eigenvalues sub(Ma, CC);
     res := evalResid(sols, I5);
@@ -73,11 +75,15 @@ runStrategy = strategyName -> (
     << "   max |F(x*)|:   " << toString res << endl;
     << "   tier-2:        " << (if t2 then "PASS" else "FAIL") << endl;
     << "   tier-3:        " << (if t3 then "PASS" else "FAIL") << endl << endl;
-    {strategyName, sizeStr, toString elapsed, toString nev, toString res,
+    {label, sizeStr, toString elapsed, toString nev, toString res,
      if t2 then "PASS" else "FAIL", if t3 then "PASS" else "FAIL"}
 )
 
-results = apply({"Larsson", "MatrixHi", "Greedy"}, runStrategy)
+results = apply({
+    ("Larsson",  "Larsson", true),
+    ("MatrixHi", "Greedy",  false),
+    ("Greedy",   "Greedy",  true)
+}, runStrategy)
 
 -- ========== Summary table ==========
 << "========================================================================" << endl

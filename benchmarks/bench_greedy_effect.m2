@@ -49,13 +49,15 @@ evalResid = (sols, I) -> (
     mx
 )
 
-runStrategy = strategyName -> (
-    << "---- " << strategyName << " ----" << endl;
+-- Label, Strategy, AdjustParams.
+runStrategy = spec -> (
+    (label, stratVal, adjust) := toSequence spec;
+    << "---- " << label << " ----" << endl;
     ET := eliminationTemplate(aVar, I5);
     t0 := cpuTime();
-    M := getTemplateMatrix(ET, Strategy => strategyName);
-    Ma := getActionMatrix(ET, Strategy => strategyName);
-    sols := templateSolve(ET, Strategy => strategyName);
+    M := getTemplateMatrix(ET, Strategy => stratVal, AdjustParams => adjust);
+    Ma := getActionMatrix(ET, Strategy => stratVal, AdjustParams => adjust);
+    sols := templateSolve(ET, Strategy => stratVal, AdjustParams => adjust);
     elapsed := cpuTime() - t0;
     nev := #eigenvalues sub(Ma, CC);
     res := evalResid(sols, I5);
@@ -70,8 +72,8 @@ runStrategy = strategyName -> (
     (numRows M, numColumns M, elapsed, nev, res, t2, t3)
 )
 
-(rH, cH, tH, evH, resH, t2H, t3H) = runStrategy "MatrixHi";
-(rG, cG, tG, evG, resG, t2G, t3G) = runStrategy "Greedy";
+(rH, cH, tH, evH, resH, t2H, t3H) = runStrategy ("MatrixHi", "Greedy", false);
+(rG, cG, tG, evG, resG, t2G, t3G) = runStrategy ("Greedy",   "Greedy", true);
 
 << "========================================================================" << endl
 << "Delta (MatrixHi - Greedy): " << (rH - rG) << " rows, " << (cH - cG) << " cols" << endl

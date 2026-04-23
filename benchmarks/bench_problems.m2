@@ -142,20 +142,23 @@ evalResid = (sols, I) -> (
     max apply(sols, s -> norm sub(gensC, matrix{apply(s, v -> sub(v, CC))}))
 )
 
-runStrategy = (name, R, I, aVar, strat, overQQ) -> (
-    -- Per-strategy runner. Catches any error and reports.
+-- A "strategy spec" is (label, Strategy, AdjustParams). This lets us run the
+-- α := 0 particular-solution mode (old "MatrixHi") alongside full Greedy
+-- (adjustParams), both under Strategy => "Greedy".
+runStrategy = (name, R, I, aVar, spec, overQQ) -> (
+    (label, stratVal, adjust) := toSequence spec;
     ET := eliminationTemplate(aVar, I);
     t0 := cpuTime();
     ok := true;
     local M;
-    try ( M = getTemplateMatrix(ET, Strategy => strat); ) else ( ok = false; );
+    try ( M = getTemplateMatrix(ET, Strategy => stratVal, AdjustParams => adjust); ) else ( ok = false; );
     elapsed := cpuTime() - t0;
-    if not ok then return {strat, "ERR", "-", "-", "-"};
+    if not ok then return {label, "ERR", "-", "-", "-"};
     sizeStr := toString numRows M | "x" | toString numColumns M;
     tierInfo := "";
     if overQQ then (
         try (
-            sols := templateSolve(ET, Strategy => strat);
+            sols := templateSolve(ET, Strategy => stratVal, AdjustParams => adjust);
             res := evalResid(sols, I);
             tierInfo = "res=" | toString res | if res < 1e-6 then " PASS" else " FAIL";
         ) else (
@@ -164,7 +167,7 @@ runStrategy = (name, R, I, aVar, strat, overQQ) -> (
     ) else (
         tierInfo = "(ZZ/p — no tier-3)";
     );
-    {strat, sizeStr, toString round(3, elapsed), tierInfo}
+    {label, sizeStr, toString round(3, elapsed), tierInfo}
 )
 
 runProblem = prob -> (
@@ -173,11 +176,15 @@ runProblem = prob -> (
     << name << "   (deg I = " << degree I << ", action = " << aVar
        << ", target = " << target << ")" << endl;
     << "========================================================================" << endl;
-    -- Graph-ideal strategies — may be slow on larger problems; still run.
-    for strat in {null, "Larsson", "MatrixHi", "Greedy"} do (
-        row := runStrategy(name, R, I, aVar, strat, overQQ);
-        stratName := if strat === null then "Default" else strat;
-        << "   " << pad(stratName, 10) << " | size " << pad(row#1, 14)
+    specs := {
+        ("Default",  null,      true),
+        ("Larsson",  "Larsson", true),
+        ("MatrixHi", "Greedy",  false),
+        ("Greedy",   "Greedy",  true)
+    };
+    for spec in specs do (
+        row := runStrategy(name, R, I, aVar, spec, overQQ);
+        << "   " << pad(row#0, 10) << " | size " << pad(row#1, 14)
            << " | " << pad(row#2, 8) << "s | " << row#3 << endl;
     );
     << endl

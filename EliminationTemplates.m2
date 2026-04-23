@@ -58,6 +58,11 @@ export {
     "copyTemplate",
     -- Option symbol used by MartyushevClean.adjustParams (bounded greedy iterations).
     "MaxIter",
+    -- Option symbol on pipeline methods: `AdjustParams => false` runs Greedy
+    -- up to the buildHSymbolic particular solution (α := 0) and skips the
+    -- adjustParams optimization step — the fast "MatrixHi mode" of the
+    -- Greedy strategy. Default true.
+    "AdjustParams",
     -- Option symbols used by the basis-search infrastructure in MartyushevClean.
     "RunGreedy",
     "RunGreedyAll"
@@ -89,7 +94,7 @@ actionVariable EliminationTemplate := E -> E#"actionVariable"
 ideal EliminationTemplate := E -> E#ideal
 basis EliminationTemplate := o -> E -> E.cache#basis
 
-getH0 = method(Options => {MonomialOrder => null, Strategy => null})
+getH0 = method(Options => {MonomialOrder => null, Strategy => null, AdjustParams => true})
 getH0 (RingElement, Ideal) := o -> (a, J) -> (
     R := ring J;
     B := basis(R/J);
@@ -141,7 +146,7 @@ getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
         H0res := H0 % image(syz(gens(J)));
         sub(H0res, ring J)
     )
-    else (error "Strategy not supported here. getH0 accepts null / \"Larsson\" / \"Greedy\". MatrixHi bypasses getH0 — call getTemplateMatrix directly.")
+    else (error "Strategy not supported. getH0 accepts null (Default) / \"Larsson\" / \"Greedy\". For the particular-α:=0 mode (formerly Strategy => \"MatrixHi\") pass Strategy => \"Greedy\", AdjustParams => false.")
 )
 
 shiftPolynomials = (shifts, J) -> (
@@ -159,7 +164,7 @@ getTemplateHelper = (a, B, J, o) -> (
     (shifts, new MonomialPartition from rsort \ toList \ {monsE, monsR, monsB})
 )
 
-getTemplate = method(Options => {MonomialOrder => null, Strategy => null})
+getTemplate = method(Options => {MonomialOrder => null, Strategy => null, AdjustParams => true})
 getTemplate(EliminationTemplate) := o -> E -> (
     if E.cache#?"monomialPartition" and (o.Strategy === null or (E.cache#?"lastPartitionStrategy" and E.cache#"lastPartitionStrategy" === o.Strategy)) then (
         (E.cache#"shifts", E.cache#"monomialPartition")
@@ -235,7 +240,7 @@ copyTemplate(EliminationTemplate, Ideal) := o -> (E, J) -> (
     Enew
 )
 
-getTemplateMatrix = method(Options => {MonomialOrder => null, Strategy => null})
+getTemplateMatrix = method(Options => {MonomialOrder => null, Strategy => null, AdjustParams => true})
 getTemplateMatrix(RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
     getTemplateMatrix(eliminationTemplate(a, J), o)
 )
@@ -266,7 +271,7 @@ getTemplateMatrix(EliminationTemplate) := o -> E -> (
     -- is a single monomial. Polynomial actions like `x + y + z` make every
     -- `a * b_i` a polynomial; residual detection degenerates and
     -- buildTemplateFromH errors in `coefficient`.
-    if o.Strategy === "MatrixHi" then (
+    if o.Strategy === "Greedy" and not o.AdjustParams then (
         cacheKey := "templateMatrixMatrixHi";
         if E.cache#?cacheKey then return E.cache#cacheKey;
         J := ideal E;
@@ -301,7 +306,7 @@ getTemplateMatrix(EliminationTemplate) := o -> E -> (
     )
 )
 
-getActionMatrix = method(Options => {MonomialOrder => null, Strategy => null})
+getActionMatrix = method(Options => {MonomialOrder => null, Strategy => null, AdjustParams => true})
 getActionMatrix(RingElement, MonomialPartition, Matrix) := o -> (actVar, mp, M) -> (
     numE := length mp#0;
     numB := length mp#2;
@@ -323,8 +328,8 @@ getActionMatrix(EliminationTemplate) := o -> E -> (
     -- Greedy now flows through the default branch (Route A): its H0 is
     -- greedy-computed in getH0, but the downstream is the shared graph
     -- linear-solve path below.
-    if o.Strategy === "MatrixHi" then (
-        cacheKey := "actionMatrix_" | toString o.Strategy;
+    if o.Strategy === "Greedy" and not o.AdjustParams then (
+        cacheKey := "actionMatrixMatrixHi";
         if E.cache#?cacheKey then return E.cache#cacheKey;
         M := getTemplateMatrix(E, o);  -- populates matrixHiBlist / matrixHiResMons
         Blist := E.cache#"matrixHiBlist";
@@ -352,13 +357,13 @@ getActionMatrix(EliminationTemplate) := o -> E -> (
 -*
 
 *-
-getEigenMatrix = method(Options => {MonomialOrder => null, Strategy => null})
+getEigenMatrix = method(Options => {MonomialOrder => null, Strategy => null, AdjustParams => true})
 getEigenMatrix(EliminationTemplate) := o -> (E) -> (
     Ma := getActionMatrix(E, o);
     -- MatrixHi: action matrix is over the base ring R (not the graph ring
     -- Rs), so basis monomials are in R as well. Greedy uses the default
     -- graph-ring branch below.
-    if o.Strategy === "MatrixHi" then (
+    if o.Strategy === "Greedy" and not o.AdjustParams then (
         (svals, P) := eigenvectors sub(Ma, CC);
         Blist := E.cache#"matrixHiBlist";
         (matrix{Blist}, P)
@@ -374,7 +379,7 @@ getEigenMatrix(RingElement, Ideal) := o -> (a, J) -> (
     getEigenMatrix(E, o)
 )
 
-templateSolve = method(Options => {MonomialOrder => null, Strategy => null})
+templateSolve = method(Options => {MonomialOrder => null, Strategy => null, AdjustParams => true})
 templateSolve(EliminationTemplate) := o -> (E) -> (
     -- MatrixHi: read variable values straight off basis-indexed eigenvector
     -- entries (no graph-ring structure populated for this strategy).
@@ -395,7 +400,7 @@ templateSolve(EliminationTemplate) := o -> (E) -> (
     -- eliminated from the basis (e.g. circle+line: basis = {1, y},
     -- x is absent, so x's coordinate can't be read from an eigenvector
     -- slot).
-    if o.Strategy === "MatrixHi" then (
+    if o.Strategy === "Greedy" and not o.AdjustParams then (
         recoverSolutionsMatrixHi(getActionMatrix(E, o), E.cache#"matrixHiBlist", ring ideal E)
     ) else (
         Ma := getActionMatrix(E, o);  -- populates monomialPartition cache
@@ -760,12 +765,12 @@ TEST /// -- MatrixHi strategy: template size matches Martyushev CVPR 2022 refere
   Ee = x * Es#0 + y * Es#1 + z * Es#2 + Es#3;
   I = ideal(Ee*transpose Ee * Ee - (1/2) * trace(Ee * transpose Ee) * Ee) + ideal(det Ee);
   ET = eliminationTemplate(y, I);
-  M = getTemplateMatrix(ET, Strategy => "MatrixHi");
+  M = getTemplateMatrix(ET, Strategy => "Greedy", AdjustParams => false);
   assert(numRows M == 10 and numColumns M == 20)
 
   J = ideal(x^3+y^3+z^3-4,x^2-y-z-1,x-y^2+z-3)
   ET2 = eliminationTemplate(x, J);
-  N = getTemplateMatrix(ET2, Strategy => "MatrixHi");
+  N = getTemplateMatrix(ET2, Strategy => "Greedy", AdjustParams => false);
   assert(numRows N <= numRows getTemplateMatrix(ET2))  -- strictly smaller on this system
 ///
 
@@ -789,7 +794,7 @@ TEST /// -- getActionMatrix on MatrixHi / Greedy templates: 10x10 with deg I
   I = ideal(Ee*transpose Ee * Ee - (1/2) * trace(Ee * transpose Ee) * Ee) + ideal(det Ee);
   d = degree I;
   E1 = eliminationTemplate(y, I);
-  Ma1 = getActionMatrix(E1, Strategy => "MatrixHi");
+  Ma1 = getActionMatrix(E1, Strategy => "Greedy", AdjustParams => false);
   assert(numRows Ma1 == d and numColumns Ma1 == d);
   assert(#eigenvalues sub(Ma1, CC) == d);
   E2 = eliminationTemplate(y, I);
@@ -805,7 +810,7 @@ TEST /// -- templateSolve via MatrixHi on 5pt essential
   I = ideal(Ee*transpose Ee * Ee - (1/2) * trace(Ee * transpose Ee) * Ee) + ideal(det Ee);
   d = degree I;
   E1 = eliminationTemplate(y, I);
-  sols1 = templateSolve(E1, Strategy => "MatrixHi");
+  sols1 = templateSolve(E1, Strategy => "Greedy", AdjustParams => false);
   assert(#sols1 == d);
   assert(all(sols1, s -> 1e-6 > norm sub(sub(gens I, CC[gens R]), matrix{s})));
 ///
@@ -832,7 +837,7 @@ TEST /// -- MatrixHi with action variable x on 5pt essential.
   I = ideal(Ee*transpose Ee * Ee - (1/2) * trace(Ee * transpose Ee) * Ee) + ideal(det Ee);
   d = degree I;
   E = eliminationTemplate(x, I);
-  sols = templateSolve(E, Strategy => "MatrixHi");
+  sols = templateSolve(E, Strategy => "Greedy", AdjustParams => false);
   assert(#sols == d);
   assert(all(sols, s -> 1e-6 > norm sub(sub(gens I, CC[gens R]), matrix{s})));
 ///
@@ -861,12 +866,12 @@ TEST /// -- Cross-validation: on a 0-free-alpha problem (5pt essential),
   Ee = x * Es#0 + y * Es#1 + z * Es#2 + Es#3;
   I = ideal(Ee*transpose Ee * Ee - (1/2) * trace(Ee * transpose Ee) * Ee) + ideal(det Ee);
   E1 = eliminationTemplate(y, I);
-  Mh = getTemplateMatrix(E1, Strategy => "MatrixHi");
+  Mh = getTemplateMatrix(E1, Strategy => "Greedy", AdjustParams => false);
   E2 = eliminationTemplate(y, I);
   Mg = getTemplateMatrix(E2, Strategy => "Greedy");
   E3 = eliminationTemplate(y, I);
   Md = getTemplateMatrix(E3);
-  Ah = getActionMatrix(E1, Strategy => "MatrixHi");
+  Ah = getActionMatrix(E1, Strategy => "Greedy", AdjustParams => false);
   Ag = getActionMatrix(E2, Strategy => "Greedy");
   Ad = getActionMatrix(E3);
   -- Greedy (Route A) and Default share the graph-ideal pipeline; with 0
@@ -911,7 +916,7 @@ TEST /// -- Greedy (Route A) on 6 Demazure cubics (no det): free alpha > 0,
   E2 = eliminationTemplate(y, I);
   Mg = getTemplateMatrix(E2, Strategy => "Greedy");
   E3 = eliminationTemplate(y, I);
-  solsH = templateSolve(E3, Strategy => "MatrixHi");
+  solsH = templateSolve(E3, Strategy => "Greedy", AdjustParams => false);
   solsD = templateSolve(E1);
   solsG = templateSolve(E2, Strategy => "Greedy");
   -- Route A invariant: Greedy ≤ Default in rows on problems with free alphas.
@@ -929,7 +934,7 @@ TEST /// -- MatrixHi/Greedy on the 3-variable docs system (different benchmark).
   J = ideal(x^3+y^3+z^3-4, x^2-y-z-1, x-y^2+z-3)
   d = degree J;
   E1 = eliminationTemplate(x, J);
-  solsH = templateSolve(E1, Strategy => "MatrixHi");
+  solsH = templateSolve(E1, Strategy => "Greedy", AdjustParams => false);
   assert(#solsH == d);
   assert(all(solsH, s -> 1e-6 > norm sub(sub(gens J, CC[gens R]), matrix{s})));
 ///
@@ -940,10 +945,10 @@ TEST /// -- Paper §3 small example on a 2-var system (deg I = 12): MatrixHi
   I = ideal(x^4+y^2+x*y-3, x^2*y+y^3-2)
   d = degree I;
   E = eliminationTemplate(x, I);
-  M = getTemplateMatrix(E, Strategy => "MatrixHi");
+  M = getTemplateMatrix(E, Strategy => "Greedy", AdjustParams => false);
   assert(numColumns M == 19);
   assert(numRows M < 19);  -- strictly smaller than Default's 19×19
-  sols = templateSolve(E, Strategy => "MatrixHi");
+  sols = templateSolve(E, Strategy => "Greedy", AdjustParams => false);
   assert(#sols == d);
   assert(all(sols, s -> 1e-6 > norm sub(sub(gens I, CC[gens R]), matrix{s})));
 ///
@@ -961,7 +966,7 @@ TEST /// -- #1 F+λ 8pt from Martyushev CVPR 2022 Table 1 over ZZ/32749.
                 {fv_(2,0), x,        1_R}};
   I = ideal(det Fmat, y*fv_(2,0) - fv_(7,0));
   E = eliminationTemplate(x, I);
-  M = getTemplateMatrix(E, Strategy => "MatrixHi");
+  M = getTemplateMatrix(E, Strategy => "Greedy", AdjustParams => false);
   assert(numRows M == 11 and numColumns M == 20);
 ///
 
@@ -1065,7 +1070,7 @@ degree I  -- 10
 ET = eliminationTemplate(y, I)
 getTemplateMatrix ET                          -- Default   : 20 x 20
 getTemplateMatrix(ET, Strategy => "Larsson")  -- Larsson   : 20 x 20
-getTemplateMatrix(ET, Strategy => "MatrixHi") -- MatrixHi  : 10 x 20  <- paper
+getTemplateMatrix(ET, Strategy => "Greedy", AdjustParams => false) -- MatrixHi  : 10 x 20  <- paper
 getTemplateMatrix(ET, Strategy => "Greedy")   -- Greedy    : 20 x 20  (0 free alphas; equals Default)
 
 -- End-to-end solve + tier-3 residual check via MatrixHi / Greedy.
@@ -1096,7 +1101,7 @@ E2 = eliminationTemplate(y, I)
 Mg = getTemplateMatrix(E2, Strategy => "Greedy")    -- Greedy    : 34 x 34  <- shift reduction
 assert(numRows Mg <= numRows Md)
 E3 = eliminationTemplate(y, I)
-Mh = getTemplateMatrix(E3, Strategy => "MatrixHi")  -- MatrixHi  : 25 x 35
+Mh = getTemplateMatrix(E3, Strategy => "Greedy", AdjustParams => false)  -- MatrixHi  : 25 x 35
 
 -- Both solve correctly to residual < 1e-6.
 solsG = templateSolve(E2, Strategy => "Greedy")
@@ -1115,13 +1120,13 @@ degree I  -- 12
 
 E = eliminationTemplate(x, I)
 getTemplateMatrix E                               -- Default  : 19 x 19
-getTemplateMatrix(E, Strategy => "MatrixHi")      -- MatrixHi :  7 x 19
-sols = templateSolve(E, Strategy => "MatrixHi")
+getTemplateMatrix(E, Strategy => "Greedy", AdjustParams => false)      -- MatrixHi :  7 x 19
+sols = templateSolve(E, Strategy => "Greedy", AdjustParams => false)
 assert(#sols == degree I)
 assert(all(sols, s -> 1e-6 > norm sub(sub(gens I, CC[gens R]), matrix{s})))
 
 -- Cross-check: eigenvalues of the action matrix == x-coordinates of solutions.
-Ma = getActionMatrix(E, Strategy => "MatrixHi")
+Ma = getActionMatrix(E, Strategy => "Greedy", AdjustParams => false)
 evals = eigenvalues sub(Ma, CC)
 assert(#evals == degree I)
 
@@ -1141,7 +1146,7 @@ Fmat = matrix{{fv_(0,0), fv_(3,0), fv_(5,0)},
               {fv_(2,0), x,        1_R}}
 I = ideal(det Fmat, y*fv_(2,0) - fv_(7,0))
 E = eliminationTemplate(x, I)
-getTemplateMatrix(E, Strategy => "MatrixHi")  -- 11 x 20 (paper std: 11 x 19)
+getTemplateMatrix(E, Strategy => "Greedy", AdjustParams => false)  -- 11 x 20 (paper std: 11 x 19)
 
 
 
