@@ -203,55 +203,54 @@ Theta := genericMatrix(ThetaExt, ..., numcols H0, numrows H1);
 H := H0e + Theta * H1e;                   -- H = H0 + Θ·H1
 ```
 
-This is **exactly `matrixHsyz`** — the variant the paper's author dropped. All the engineering layers (shortlisting, lookahead, transaction rollback, seed restarts) were refinements of a search over $\theta$ for a parameterization that is structurally incapable of matching paper sizes on any problem with nontrivial syzygy coupling. No improvement in the *search* part would have closed the gap. The fix is to switch parameterization — which is what the current `"MatrixHi"` / `"Greedy"` strategies do (both built on `buildHSymbolic`).
+This is **exactly `matrixHsyz`** — the variant the paper's author dropped. All the engineering layers (shortlisting, lookahead, transaction rollback, seed restarts) were refinements of a search over $\theta$ for a parameterization that is structurally incapable of matching paper sizes on any problem with nontrivial syzygy coupling. No improvement in the *search* part would have closed the gap. The fix is to switch parameterization — which is what the current `"Greedy"` strategy does (built on `buildHSymbolic`, with `AdjustParams => false` exposing the plain α:=0 particular solution as "MatrixHi-mode").
 
 ---
 
-## 6. What the M2 port has correct, and what's missing
+## 6. What the M2 port has correct, and what's missing (post-Increment 3)
 
 ### Correct (matches the paper)
 
 - **`buildHSymbolic` in `MartyushevClean.m2`** ports `matrixHi` with a flat extended ring, the degree-bumping loop, and the per-monomial α linear system. Returns `(Hsym, Rext, alphaVars, perRowData)` with free α's retained as ring variables.
-- **`adjustParams` in `MartyushevClean.m2`** commits free α's to zero excessive monomials (Martyushev CVPR 2022 §4). Empirically eliminates ~10× more excessive monomials than the earlier Maple-faithful `adjustParams` port.
-- **`buildTemplateFromH` in `MartyushevClean.m2`** assembles the template matrix over $\KK$ from an $H$ matrix and the shift monomials — the "constructTemplate" step of the paper.
-- **Solve-side extraction** (RREF pivots per residual column → action matrix → eigendecompose) is in `benchmarks/bench_5pt_all.m2:buildMatrixHiLike`. Verified on 5pt essential over $\mathbb{Q}$.
+- **`adjustParams` in `MartyushevClean.m2`** commits free α's to zero excessive monomials (Martyushev CVPR 2022 §4). Includes the 3.3b DESC sort + early break (commit `cac2990`) and the 3.3c per-monomial contribution cache across outer iterations (commit `19ab0f2`). On QQ input runs over ZZ/p with per-coefficient lift back (Increment 2, commit `e5e4e4d`).
+- **`buildTemplateFromH`** builds the `[E | R | B]` template over $\KK$; the fold is identical to what `getTemplateMatrix(EliminationTemplate)` now runs for every strategy via Direction A (commits `cd8ecff`, `62087d9`, `44173f8`).
+- **Solve-side extraction** (`extractActionFromTemplate`) is unified: `getActionMatrix(EliminationTemplate)` runs RREF + pivot on the `[E | R | B]` template for every strategy and every action type. Polynomial actions are lifted to `R_s = R[s] / ⟨s − a⟩` inside `getTemplate` so the same path handles monomial and polynomial actions uniformly.
 
-### Missing / broken
+### Still missing vs paper target
 
-- **`getActionMatrix` / `templateSolve` do not support the MatrixHi / Greedy cached templates.** Those paths bypass the graph-ideal extension that the Default / Larsson pipeline relies on to read the action matrix off the template. Users must extract the action matrix separately (see `bench_5pt_all.m2`).
-- **`adjustParams` under-eliminates on large problems.** On P4P+fr (target 52×68), we get 339×332 — the 1095 free α's are correctly exposed but the greedy's sort heuristic or `msolve`-equivalent pivot choice misses most of them. Narrowing this gap is the main remaining algorithmic task.
-
-### Plumbing fix (does not require new math)
-
-To make `templateSolve(E, Strategy => "MatrixHi")` work end-to-end:
-
-1. Add a MatrixHi / Greedy branch to `getActionMatrix(EliminationTemplate)` that calls `getTemplateMatrix` and then runs the RREF extractor in `bench_5pt_all.m2` to produce the action matrix.
-2. Add a matching branch to `getEigenMatrix` / `templateSolve` that skips `getH0` / `getTemplate` for this family (those extend with the graph ideal, which MatrixHi deliberately avoids).
+- **Basis-search driver.** We have the primitives (`buildGreedyTemplateWithBasis`, `searchBases`, `randomStandardBases`, `randomNonstandardBases`, `parseMartyushevBases`), but not a driver that wires them into Martyushev's std / nstd columns per benchmark. This is the dominant residual gap on the hard ZZ/p problems (`#2 E+f 6pt`, `#3 f+E+f 6pt`). See `matrixhi_scaling_gap.md §3.1`.
+- **Polynomial-action support inside `buildGreedyTemplateWithBasis`.** The main `getTemplate` lifts actions as of Increment 3, but the basis-search primitive still requires a monomial action (`buildGapPolys` assumes `a * b_i` is a single monomial). `matrixhi_scaling_gap.md §3.2`.
+- **CRT-lift from ZZ/p for RREF numerical safety across the pipeline.** We already have a ZZ/p pin inside `getH0`'s Greedy branch (Increment 2) and an LU split-solve fallback in `getActionMatrix` (commit `44173f8`); multi-prime CRT across every RREF would be the stronger fix. Deferred. `matrixhi_scaling_gap.md §3.3`.
 
 ---
 
-## 7. The shape/size difference in one picture
+## 7. The shape/size picture after Direction A + Increment 3
 
-On the 5-point essential problem ($|B| = 10$, $\deg J = 10$):
+On the 5-point essential problem ($|B| = 10$, $\deg J = 10$) with monomial
+action variable `y`:
 
 ```
-Default pipeline:
-  getH0 → (10×10 matrix, trivial cols are zero)
-      → shifts (from non-trivial cols only)
-      → graph-ideal extension: adds |B|=10 rows for (s-a)·b
-      → template 20×20
-
-MatrixHi pipeline:
-  matrixHi → (1 row per gap polynomial, here 10 × nGens = 10×3)
-      → shifts (direct from H)
-      → NO graph-ideal extension
-      → template 10×20
+Direction A unified pipeline (every strategy):
+  getH0       → per-strategy H (Default: GB change-of-basis;
+                 Larsson: H0 mod syz F; Greedy: buildHSymbolic +
+                 adjustParams or α:=0)
+  getTemplate → shifts from H; partition [E | R | B]
+                monomial action: no graph-ring lift (Direction A)
+                polynomial action: lift to R_s, same partition on s
+  fold         → template [E | R | B], 10×20 (paper target)
+  RREF + pivot → action matrix (extractActionFromTemplate)
+  eigen        → solutions (recoverSolutionsMatrixHi / recoverSolutions)
 ```
 
-The $|B|$-row difference is exactly the graph-ideal extension. It exists in Default because `getActionMatrix` reads the action from the $(s-a)\cdot b$ rows via one linear solve; MatrixHi requires a different action-matrix extraction (`extractAction`), which is why `templateSolve` can't be routed through the same pipeline.
+The $|B|$-row reduction from 20×20 (origin) to 10×20 (paper std) is the
+Direction A short-circuit: the `(s − a) · b_k` shifts that cost `|B|`
+rows are no longer added for monomial actions, and the action matrix is
+read off the `[E | R | B]` template via RREF + pivot instead of via the
+graph-ring LU split-solve. Polynomial actions get the same $|B|$-row
+savings by lifting to a ring where the action is monomial.
 
 ---
 
 ## 8. One-sentence summary
 
-> **The paper's production algorithm is `matrixHi + adjustParams` — undetermined scalar α per (entry, monomial) pair, solved row-by-row via modular linear algebra, then a per-excessive-monomial greedy that commits α assignments via `msolve`; the syzygy-based variant exists in the same source file but is never called, presumably because scalar Θ cannot decouple a polynomial syzygy module. Our M2 port replicates this faithfully in `MatrixHi.m2` / `MartyushevClean.m2`, but the package wiring routes `templateSolve` through `getH0` — which has no MatrixHi branch — so the working primitive is not yet user-facing via `templateSolve`.**
+> **The paper's production algorithm is `matrixHi + adjustParams` — undetermined scalar α per (entry, monomial) pair, solved row-by-row via modular linear algebra, then a per-excessive-monomial greedy that commits α assignments via `msolve`; the syzygy-based variant exists in the same source file but is never called, presumably because scalar Θ cannot decouple a polynomial syzygy module. Our M2 port replicates this in `MartyushevClean.m2` and (as of Increment 3) exposes the full pipeline through the package's canonical methods — `getTemplate`, `getTemplateMatrix`, `getActionMatrix`, `templateSolve`, `copyTemplate` — for every strategy and both monomial and polynomial actions, with the remaining gap to paper sizes on the hard problems sitting in the basis-search driver (§3.1 of `matrixhi_scaling_gap.md`).**
