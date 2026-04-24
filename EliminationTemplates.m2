@@ -37,12 +37,15 @@ newPackage(
     AuxiliaryFiles => true
 )
 
--- Symbolic H via gap polynomials + adjustParams (Martyushev CVPR 2022 §3–§4).
--- Provides: buildGapPolys, buildHSymbolic, adjustParams, liftGreedyHToH0,
---           extractActionFromTemplate, recoverSolutionsMatrixHi, plus
---           basis-search primitives (buildGreedyTemplateWithBasis,
---           searchBases, randomStandardBases, randomNonstandardBases,
---           parseMartyushevBases, isValidBasis, buildTemplateFromH).
+-- Martyushev's matrixHi + greedy parameter commit (CVPR 2022 §3–§4). The
+-- Martyushev file provides the paper's algorithmic core (buildGapPolys,
+-- buildHSymbolic, adjustParams) and a basis-search cluster for future
+-- non-standard basis exploration (buildGreedyTemplateWithBasis, searchBases,
+-- randomStandardBases, randomNonstandardBases, parseMartyushevBases,
+-- isValidBasis, buildTemplateFromH). Helpers specific to the main pipeline
+-- (reshapeGreedyToH0, extractActionFromTemplate,
+-- recoverSolutionsFromEigenvectors) live in this file, directly above
+-- getH0 / getActionMatrix / templateSolve.
 load "./EliminationTemplates/Martyushev.m2"
 
 export {
@@ -71,9 +74,9 @@ ShiftSet = new Type of List
 MonomialPartition = new Type of List
 
 -- True when `a` is a monomial (single term with unit coefficient), so `a * b_i`
--- is a single monomial for every basis monomial `b_i`. Direction A uses this
+-- is a single monomial for every basis monomial `b_i`. The monomial-action short-circuit uses this
 -- to skip the graph-ring extension for Default / Larsson / Greedy, saving |B|
--- rows and matching the MatrixHi / paper template structure.
+-- rows and matching the paper template structure.
 isMonomialAction = a -> a == leadMonomial a
 
 eliminationTemplate = method(Options => {})
@@ -97,6 +100,125 @@ actionVariable = method()
 actionVariable EliminationTemplate := E -> E#"actionVariable"
 ideal EliminationTemplate := E -> E#ideal
 basis EliminationTemplate := o -> E -> E.cache#basis
+
+-- ============================================================================
+-- reshapeGreedyToH0: reshape Greedy's H (nG x nF, post-adjustParams) into the
+-- mainline H0 shape (nF x nB) used by getTemplateHelper / getTemplate.
+--
+-- Mainline contract: H0[j, k] encodes the shift data for basis monomial b_k
+-- via generator F_j; columns k with `a * b_k` already in B are zero.
+--
+-- Greedy produces H in a different natural shape: H[i, j] encodes the
+-- cofactor of generator F_j for gap polynomial G_i, where G_i corresponds to
+-- the i-th residual a * b_{sigma(i)}. The reshape is a permutation +
+-- zero-pad: H0[j, sigma(i)] = H[i, j], all other H0 columns zero.
+-- ============================================================================
+reshapeGreedyToH0 = method()
+reshapeGreedyToH0(Matrix, RingElement, List, ZZ) := (Hfinal, aVar, Blist, nF) -> (
+    R := ring first Blist;
+    a := sub(aVar, R);
+    aBlist := apply(Blist, b -> a * b);
+    Bset := set Blist;
+    sigmaList := positions(aBlist, m -> not Bset#?m);
+    nB := #Blist;
+    nG := numRows Hfinal;
+    assert(nG == #sigmaList);
+    H0 := mutableMatrix(R, nF, nB);
+    for i from 0 to nG - 1 do (
+        k := sigmaList#i;
+        for j from 0 to nF - 1 do H0_(j, k) = sub(Hfinal_(i, j), R);
+    );
+    matrix H0
+);
+
+-- ============================================================================
+-- extractActionFromTemplate: read the action matrix off the [E | R | B]
+-- template by RREF + pivot extraction.
+--
+-- Inputs:
+--   M           — template matrix over the base field, with column blocks
+--                 [excess | residual | basis].
+--   resMonsList — residual monomials (a*b_i not in B), in the same column
+--                 order as the residual block of M.
+--   Blist       — quotient basis monomials, in R, in the same column order
+--                 as the basis block of M.
+--   aVar        — action variable.
+--
+-- Output: |B| x |B| matrix Ma over coefficientRing(R) such that, modulo I,
+--   a * b_i = sum_k Ma_(k,i) * b_k.
+--
+-- For each b_i in B compute a*b_i. If a*b_i is in B, the i-th column of Ma
+-- is the standard basis vector e_k. Otherwise a*b_i is some residual r_j;
+-- find the RREF pivot row for the j-th residual column and read off the
+-- B-block of that row (negated, since the RREF row says 1*r_j + sum (...) b_k
+-- + ... = 0, so r_j = -sum (...) b_k modulo I).
+-- ============================================================================
+extractActionFromTemplate = method()
+extractActionFromTemplate(Matrix, List, List, RingElement) := (M, resMonsList, Blist, aVar) -> (
+    R := ring first Blist;
+    FF := coefficientRing R;
+    a := sub(aVar, R);
+    nR := #resMonsList;
+    nB := #Blist;
+    nE := numColumns M - nR - nB;
+    Rref := reducedRowEchelonForm M;
+    matrix(FF, apply(nB, i -> (
+        bi := Blist#i;
+        abi := a * bi;
+        kInB := position(Blist, b -> b == abi);
+        if kInB =!= null then (
+            apply(nB, k -> if k == kInB then 1_FF else 0_FF)
+        ) else (
+            jInR := position(resMonsList, r -> r == abi);
+            if jInR === null then
+                error("extractActionFromTemplate: a*b_i not in R or B: " | toString abi);
+            colR := nE + jInR;
+            pivRow := null;
+            for r from 0 to numRows Rref - 1 do (
+                leading := position(0..numColumns Rref - 1, c -> Rref_(r,c) != 0_FF);
+                if leading === colR then (pivRow = r; break);
+            );
+            if pivRow === null then
+                error("extractActionFromTemplate: no pivot for residual col " | toString colR);
+            apply(nB, k -> -Rref_(pivRow, nE + nR + k))
+        )
+    )))
+)
+
+-- ============================================================================
+-- recoverSolutionsFromEigenvectors: given an action matrix Ma (entries in
+-- coefficientRing R) and the basis monomials Blist (in R), eigendecompose
+-- over CC and return the list of complex solutions, one per eigenvector.
+--
+-- Each eigenvector v is a vector of length |B|. Modulo I, v_k corresponds to
+-- the value of b_k at one solution point (up to scale). We rescale so the
+-- slot for the monomial 1 equals 1, then read each variable's coordinate
+-- from its position in Blist.
+--
+-- Output: a List of solutions; each solution is a List of CC values, one
+-- per variable of R in declaration order. Variables not present in Blist
+-- (e.g. eliminated in the quotient) get 0_CC; callers who need them should
+-- use the RREF-based recoverSolutions fallback.
+-- ============================================================================
+recoverSolutionsFromEigenvectors = method()
+recoverSolutionsFromEigenvectors(Matrix, List, Ring) := (Ma, Blist, R) -> (
+    TC := sub(Ma, CC);
+    (evals, P) := eigenvectors TC;
+    oneIdx := position(Blist, b -> b == 1_R);
+    if oneIdx === null then
+        error("recoverSolutionsFromEigenvectors: 1 not found in basis Blist");
+    varPos := apply(numgens R, i -> position(Blist, b -> b == (gens R)#i));
+    sols := {};
+    for k from 0 to numColumns P - 1 do (
+        v := P_{k};
+        sc := v_(oneIdx, 0);
+        if abs sc < 1e-12 then continue;
+        v = (1/sc) * v;
+        coords := apply(varPos, p -> if p =!= null then v_(p,0) else 0_CC);
+        sols = append(sols, coords);
+    );
+    sols
+)
 
 getH0 = method(Options => {MonomialOrder => null, Strategy => null, AdjustParams => true})
 getH0 (RingElement, Ideal) := o -> (a, J) -> (
@@ -143,7 +265,7 @@ getH0 (RingElement, Matrix, Ideal) := o -> (a, B, J) -> (
             matrix apply(numRows Hsym, i ->
                 apply(numColumns Hsym, j -> finalSubst(Hsym_(i,j))))
         ) else matrix Hsym;
-        H0w := liftGreedyHToH0(Hfinal, aw, BlistGr, nFGr);
+        H0w := reshapeGreedyToH0(Hfinal, aw, BlistGr, nFGr);
         if not pinToModP then return H0w;
         -- Lift H0w from Rw (ZZ/p coefficients) back to R (QQ coefficients).
         -- Coefficients map via ZZ/p → ZZ (representative in [0, p)) → QQ.
@@ -211,7 +333,7 @@ getTemplate(EliminationTemplate) := o -> E -> (
         R := ring J;
         a := sub(actionVariable E, R);
 
-        -- Direction A: monomial action goes through [excess | residual | basis]
+        -- Monomial action goes through [excess | residual | basis]
         -- with extractActionFromTemplate. No graph-ring lift, no (s - a) * b_k
         -- shifts, template matches Martyushev paper sizes.
         --
@@ -302,7 +424,7 @@ copyTemplate(EliminationTemplate, Ideal) := o -> (E, J) -> (
     aNew := sub(actionVariable E, Rnew);
     Enew := eliminationTemplate(aNew, J);
 
-    -- Direction A monomial-direct (non-lifted): basis / shifts live in R,
+    -- Monomial-direct (non-lifted): basis / shifts live in R,
     -- transplant via sub(..., Rnew). Increment 3 lifted templates have
     -- isMonomialAction = true too but their cache is in R_s, so they route
     -- through the graph-ideal branch below (which handles R_s transplant).
@@ -481,7 +603,7 @@ getActionMatrix(EliminationTemplate) := o -> E -> (
 getEigenMatrix = method(Options => {MonomialOrder => null, Strategy => null, AdjustParams => true})
 getEigenMatrix(EliminationTemplate) := o -> (E) -> (
     Ma := getActionMatrix(E, o);
-    -- Monomial-direct templates let downstream recoverSolutionsMatrixHi do
+    -- Monomial-direct templates let downstream recoverSolutionsFromEigenvectors do
     -- its own normalization by the "1" slot, so return raw eigenvectors
     -- against the cached basis list. Polynomial-lifted templates (and any
     -- path that falls through to recoverSolutions) need eigenvectors
@@ -507,7 +629,7 @@ templateSolve(EliminationTemplate) := o -> (E) -> (
     -- Unified solve post-Increment-3. Compute the action matrix Ma (RREF
     -- + pivot on [E | R | B]), eigendecompose over CC. If every ring
     -- variable appears in the basis, read coordinates directly from
-    -- basis-indexed eigenvector slots (recoverSolutionsMatrixHi). Otherwise
+    -- basis-indexed eigenvector slots (recoverSolutionsFromEigenvectors). Otherwise
     -- fall back to recoverSolutions, which uses RREF on the template to
     -- express excess / residual monomials in terms of B.
     Ma := getActionMatrix(E, o);
@@ -517,12 +639,12 @@ templateSolve(EliminationTemplate) := o -> (E) -> (
     -- (action is a ring variable, basis includes 1 and extends).
     if (E.cache#?"isMonomialAction" and E.cache#"isMonomialAction")
         and not (E.cache#?"liftedToRs" and E.cache#"liftedToRs") then (
-        return recoverSolutionsMatrixHi(Ma, E.cache#"basisList", R);
+        return recoverSolutionsFromEigenvectors(Ma, E.cache#"basisList", R);
     );
 
     -- Polynomial-lifted case: basis is in R_s, map back via s -> 0 to
     -- get a basis in R. If every ring variable is a basis monomial,
-    -- recoverSolutionsMatrixHi works. Otherwise recoverSolutions reads
+    -- recoverSolutionsFromEigenvectors works. Otherwise recoverSolutions reads
     -- missing vars from the template's E / R blocks.
     mp := E.cache#"monomialPartition";
     Rs := ring first first mp;
@@ -530,7 +652,7 @@ templateSolve(EliminationTemplate) := o -> (E) -> (
     Blist := apply(mp#2, b -> toR(b));
     BlistSet := set Blist;
     if all(numgens R, i -> BlistSet#?(R_i)) then (
-        recoverSolutionsMatrixHi(Ma, Blist, R)
+        recoverSolutionsFromEigenvectors(Ma, Blist, R)
     ) else (
         (Bmat, M) := getEigenMatrix(E, o);
         templateMat := getTemplateMatrix(E, o);
@@ -929,7 +1051,7 @@ TEST /// -- 5-point essential matrix (Demazure trace identity, deg I = 10).
 ///
 
 TEST /// -- Greedy + AdjustParams=>false (alpha := 0 particular solution):
--- paper-reference sizes. Under Direction A all strategies already match
+-- paper-reference sizes. Under the monomial-action short-circuit, all strategies already match
 -- paper-reference sizes on monomial-action problems; this test pins the
 -- alpha:=0 sizes specifically.
   R = QQ[x,y,z]
@@ -945,12 +1067,12 @@ TEST /// -- Greedy + AdjustParams=>false (alpha := 0 particular solution):
   N = getTemplateMatrix(ET2, Strategy => "Greedy", AdjustParams => false);
   -- Greedy + AdjustParams=>false on this problem uses a min-degree
   -- buildHSymbolic H, size 20x33. Default's GB H0 happens to have smaller
-  -- monomial support here (16x28 under Direction A); which mode wins is
+  -- monomial support here (16x28 in the unified path); which mode wins is
   -- problem-dependent.
   assert(numRows N == 20 and numColumns N == 33)
 ///
 
-TEST /// -- Direction A: on 5pt essential (monomial action, 0 free alphas),
+TEST /// -- on 5pt essential (monomial action, 0 free alphas),
 -- Greedy flows through the unified getH0 but skips the (s-a) graph lift,
 -- so its template matches paper-reference 10x20 (not the old 20x20).
   R = QQ[x,y,z]
@@ -1004,8 +1126,8 @@ TEST /// -- templateSolve via Greedy on 5pt essential
 ///
 
 TEST /// -- Greedy + AdjustParams=>false with action variable x on 5pt
--- essential. Direction A handles the monomial action via the unified
--- [E|R|B] pipeline + recoverSolutionsMatrixHi; the legacy graph-ring
+-- essential. The monomial-action short-circuit handles via the unified
+-- [E|R|B] pipeline + recoverSolutionsFromEigenvectors; the legacy graph-ring
 -- templateSolve path used to fail on 3-var systems with non-random actions.
   R = QQ[x,y,z]
   Es = apply(4, i -> random(QQ^3, QQ^3));
@@ -1030,7 +1152,7 @@ TEST /// -- Greedy with action z on 5pt essential.
   assert(all(sols, s -> 1e-6 > norm sub(sub(gens I, CC[gens R]), matrix{s})));
 ///
 
-TEST /// -- Cross-validation under Direction A: on a 0-free-alpha problem
+TEST /// -- Cross-validation: on a 0-free-alpha problem
 -- (5pt essential), every strategy skips the (s-a) graph lift on monomial
 -- actions and uses the shared [excess|residual|basis] layout. Greedy's
 -- buildHSymbolic H and Default's GB H0 happen to produce the same shifts
@@ -1050,7 +1172,7 @@ TEST /// -- Cross-validation under Direction A: on a 0-free-alpha problem
   Ah = getActionMatrix(E1, Strategy => "Greedy", AdjustParams => false);
   Ag = getActionMatrix(E2, Strategy => "Greedy");
   Ad = getActionMatrix(E3);
-  -- Every strategy uses Direction A's downstream on monomial action
+  -- Every strategy uses the same downstream on monomial action
   -- and produces identical templates on this 0-free-alpha problem.
   assert(Mg == Md);
   assert(numRows Mh == numRows Mg);
@@ -1065,7 +1187,7 @@ TEST /// -- Cross-validation under Direction A: on a 0-free-alpha problem
 TEST /// -- Greedy on 6 Demazure cubics (no det): free alpha > 0,
 -- adjustParams commits alphas to cancel excessive monomials, producing a
 -- smaller H0 (fewer monomials per row) than Default's Groebner H0. Both
--- flow through the shared Direction A pipeline: Greedy's template should
+-- flow through the shared pipeline: Greedy's template should
 -- have row count <= Default's (fewer shifts) and both solve to residual
 -- < 1e-6.
   R = QQ[x,y,z]
@@ -1447,7 +1569,7 @@ getTemplateMatrix(ET, Strategy => "Greedy")    -- Greedy   :  31 x  50
 -- Expected sizes below are reproducible with `setRandomSeed 42` on QQ.
 --
 -- Strategy semantics (post-Increment-3 unified pipeline):
---   Every strategy flows through Direction A's [E|R|B] + RREF+pivot
+--    Every strategy flows through the [E|R|B] + RREF+pivot
 --   extraction. Choice of Strategy only changes how H0 is computed inside
 --   getH0:
 --     null (Default)                    : H0 from Groebner change-of-basis
@@ -1461,14 +1583,14 @@ getTemplateMatrix(ET, Strategy => "Greedy")    -- Greedy   :  31 x  50
 -- Polynomial actions lift to R_s = R[s] / <s - a> and run the same
 -- pipeline on (s, J_s) in R_s.
 --
--- templateSolve picks recoverSolutionsMatrixHi when every ring variable is
+-- templateSolve picks recoverSolutionsFromEigenvectors when every ring variable is
 -- a basis monomial (monomial-direct, or lifted problems whose basis happens
 -- to contain all original vars) and falls back to recoverSolutions (RREF +
 -- pivot) otherwise.
 --------------------------------------------------------------------------
 
 -- Demo 1: 5-point essential matrix (Demazure trace identity + det)
--- deg I = 10. Under Direction A, every strategy reaches paper std size
+-- deg I = 10. Every strategy reaches paper std size
 -- 10x20 on this monomial-action problem.
 restart
 path = prepend("./", path)
@@ -1495,7 +1617,7 @@ assert(all(sols, s -> 1e-6 > norm sub(sub(gens I, CC[gens R]), matrix{s})))
 
 -- Demo 2: 6 Demazure cubics (no det) -- adjustParams has leverage here.
 -- 66 free alphas; adjustParams commits some of them to cut shifts in H0.
--- Every strategy shares Direction A's [E|R|B] pipeline. Default 27x34,
+-- Every strategy shares the [E|R|B] pipeline. Default 27x34,
 -- Larsson / Greedy 24x34 (cut via adjustParams or syzygy reduction),
 -- Greedy + AdjustParams=>false (alpha:=0) 25x35.
 restart
@@ -1523,7 +1645,7 @@ assert(all(solsG, s -> 1e-6 > norm sub(sub(gens I, CC[gens R]), matrix{s})))
 
 
 -- Demo 3: paper §3 example (2-var system, deg I = 12).
--- Direction A + Greedy + AdjustParams=>false reaches 7x19 (paper target).
+-- Greedy + AdjustParams=>false reaches 7x19 (paper target).
 restart
 path = prepend("./", path)
 needsPackage "EliminationTemplates"
