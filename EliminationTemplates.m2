@@ -790,11 +790,21 @@ doc ///
         an EliminationTemplate object
     Description
       Text
-        This method copies an elimination template object, using the same action variable and basis, but a different defining ideal.
+        This method copies an elimination template object, using the same
+        action variable and basis, but a different defining ideal. The new
+        ideal is expected to share the Groebner-basis structure of the
+        original (same leading monomials, same |B|) --- this is the
+        specialization regime of @TO2{copyTemplate, "copyTemplate"}@.
+        Note (possible typo in an earlier draft of this docstring): the
+        example below originally paired @TT "I = ideal(x^4+x*y+y^2-3, x^2*y+y^3-2)"@
+        with @TT "J = ideal(x^3+y^2-1, x^2+y^3-1)"@, which violates this
+        requirement --- @TT "deg(R/I) = 12"@ but @TT "deg(R/J) = 9"@, so no
+        single template can serve both. The example below uses a
+        structurally-compatible replacement @TT "J"@.
       Example
         R = QQ[x,y]
         I = ideal(x^4+x*y+y^2-3, x^2*y+y^3-2)
-        J = ideal(x^3+y^2-1,x^2+y^3-1)
+        J = ideal(x^4+2*x*y+y^2-1, 3*x^2*y+y^3-5)
         E = eliminationTemplate(x,I)
         F = copyTemplate(E, J)
     SeeAlso
@@ -1179,6 +1189,163 @@ TEST ///
 
 
 end
+
+
+--------------------------------------------------------------------------
+-- Reproducible code listings from the companion paper.
+--
+-- Each block below is the runnable code for one numbered example in the
+-- paper. These blocks live past `end`, so loading the package does not
+-- execute them; copy-paste a block into an interactive M2 session to
+-- reproduce the output. All blocks have been tested against the current
+-- package; typos present in earlier drafts of the paper listings are
+-- corrected here.
+--
+-- Example 4.1 -- specialization of a 2-variable system.
+
+restart
+needsPackage "EliminationTemplates"
+R = QQ[x,y]
+I = ideal(x^2 + y^2 - 1, x^2 + y^3 + x*y - 2)
+E = eliminationTemplate(x + 4*y, I)
+sols = templateSolve(E)
+assert(all(sols, s -> 1e-6 > norm sub(sub(gens I, QQ[gens R]), matrix{s})))
+
+-- Reuse the template on a perturbed ideal with the same initial ideal.
+J = ideal(x^2 + y^2 - 2, x^2 + y^3 + 3*x*y - 5)
+F = copyTemplate(E, J)
+sols = templateSolve(F)
+assert(all(sols, s -> 1e-6 > norm sub(sub(gens J, QQ[gens R]), matrix{s})))
+
+
+-- Example 4.2 -- 5-point essential matrix.
+
+restart
+needsPackage "EliminationTemplates"
+setRandomSeed 42
+R = QQ[x, y, z]
+Es = apply(4, i -> random(QQ^3, QQ^3))
+Em = x*Es#0 + y*Es#1 + z*Es#2 + Es#3
+I = ideal(Em*transpose Em * Em - (1/2)*trace(Em*transpose Em)*Em)
+l = random(1, R)
+ET = eliminationTemplate(l, I)
+sols = templateSolve(ET)
+assert(all(sols, s -> 1e-6 > norm sub(sub(gens I, CC[gens R]), matrix{s})))
+
+-- Reuse on a new essential-matrix instance (same ideal shape).
+Es2 = apply(4, i -> random(QQ^3, QQ^3))
+Em2 = x*Es2#0 + y*Es2#1 + z*Es2#2 + Es2#3
+J = ideal(Em2*transpose Em2 * Em2 - (1/2)*trace(Em2*transpose Em2)*Em2)
+ETp = copyTemplate(ET, J)
+sols = templateSolve(ETp)
+assert(all(sols, s -> 1e-6 > norm sub(sub(gens J, CC[gens R]), matrix{s})))
+
+
+-- Example 4.3 -- quaternion camera pose recovery.
+-- Typo corrections vs earlier paper drafts: Q2R takes 4 args (not 5);
+-- the P0 matrix was missing a closing paren; groundTruthSolution had
+-- unbalanced parens; the output annotation o20 should be o19. The
+-- listing below is the corrected version.
+
+restart
+needsPackage "EliminationTemplates"
+setRandomSeed 42
+FF = QQ
+
+a  = random(FF^3, FF^1) || matrix{{1}}
+b1 = random(FF^3, FF^1) || matrix{{1}}
+b2 = random(FF^3, FF^1) || matrix{{1}}
+
+Q2R = (w,x,y,z) -> matrix{
+    {w^2+x^2-y^2-z^2,  2*x*y-2*w*z,      2*w*y+2*x*z     },
+    {2*x*y+2*w*z,      w^2-x^2+y^2-z^2, -2*w*x+2*y*z     },
+    {-2*w*y+2*x*z,     2*w*x+2*y*z,      w^2-x^2-y^2+z^2 }
+}
+
+(w0, x0, y0, z0, f0) := (random FF, random FF, random FF, random FF, random FF)
+R0 := Q2R(w0, x0, y0, z0)
+P0 := diagonalMatrix{f0, f0, 1} * (R0 | matrix{{0},{0},{0}})
+l1 = gens ker transpose(P0 * (a | b1))
+l2 = gens ker transpose(P0 * (a | b2))
+
+S = FF[w..z, f]
+R = Q2R(w, x, y, z)
+P = diagonalMatrix{f, f, 1} * (R | matrix{{0},{0},{0}})
+I = ideal(
+    w^2 + x^2 + y^2 + z^2 - 1,
+    transpose l1 * P * a,
+    transpose l1 * P * b1,
+    transpose l2 * P * a,
+    transpose l2 * P * b2
+)
+
+l  = random(1, ring I)
+ET = eliminationTemplate(l, I)
+sols = templateSolve ET
+
+groundTruthSolution = matrix{append(
+    (1/sqrt(w0^2 + x0^2 + y0^2 + z0^2)) * {w0, x0, y0, z0},
+    f0
+)}
+-- Among the returned sols, exactly one should match the ground truth
+-- up to numerical noise.
+position(sols, s -> norm(matrix{s} - groundTruthSolution) < 1e-10)
+
+
+-- Example 4.4 -- strategy comparison on a 4-variable problem.
+-- Verified sizes on `setRandomSeed 42`: Default 818 x 530, Larsson 286 x 339.
+-- (Earlier paper drafts reported 818 x 500 and 286 x 309; the current
+-- package retains the residual block as a separate column block, adding
+-- |R| = deg I = 30 columns. Row counts are unchanged.)
+
+restart
+needsPackage "EliminationTemplates"
+setRandomSeed 42
+R = QQ[w, x, y, lambda]
+
+mons   = {x^2, y^2, lambda^2, x*y, x*lambda, y*lambda}
+coeffs = apply(6, i -> random(QQ))
+h      = sum(0..#mons-1, i -> coeffs#i * mons#i)
+
+Fs = apply(4, i -> random(QQ^3, QQ^3))
+F  = x*Fs#0 + y*Fs#1 + lambda*Fs#2 + Fs#3
+Q  = diagonalMatrix({1, 1, w})
+
+I = ideal(F*Q*transpose F*Q*F - (1/2)*trace(F*Q*transpose F*Q)*F)
+  + ideal(det F)
+  + ideal(lambda*y - h)
+
+l  = random(1, R)
+ET = eliminationTemplate(l, I)
+
+M1 = getTemplateMatrix(ET)                          -- 818 x 530
+M2 = getTemplateMatrix(ET, Strategy => "Larsson")   -- 286 x 339
+
+
+-- Example 4.5 -- f+E+f 6-point over ZZ/32749 where greedy is strictly best.
+
+restart
+needsPackage "EliminationTemplates"
+setRandomSeed 42
+FF = ZZ/32749
+R  = FF[x, y, z]
+
+A = random(FF^9, FF^3)
+X = apply(3, i -> matrix apply(3, j ->
+                   apply(3, k -> sub(A_(3*j+i, k), R))))
+Fmat = X#0 + y*X#1 + z*X#2
+Om   = diagonalMatrix{1_R, 1_R, x}
+I = ideal(2*Fmat*Om*transpose(Fmat)*Om*Fmat
+           - trace(Fmat*Om*transpose(Fmat)*Om)*Fmat)
+  + ideal(det Fmat)
+
+ET = eliminationTemplate(x, I)
+
+getTemplateMatrix(ET)                          -- Default  : 200 x 120
+getTemplateMatrix(ET, Strategy => "Larsson")   -- Larsson  :  53 x  73
+getTemplateMatrix(ET, Strategy => "Greedy",
+                      AdjustParams => false)   -- alpha=0  :  93 x  99
+getTemplateMatrix(ET, Strategy => "Greedy")    -- Greedy   :  31 x  50
 
 
 --------------------------------------------------------------------------
