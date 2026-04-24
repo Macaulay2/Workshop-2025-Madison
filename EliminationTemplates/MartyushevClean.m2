@@ -116,16 +116,21 @@ buildGreedyTemplateWithBasis(RingElement, Ideal, List) := o -> (aVar, J, Blist) 
 -- quotient basis. Deduplicates by the monomial set. Returns a list of
 -- monomial lists in R (not in R/J); callers can pass any of these to
 -- `buildGreedyTemplateWithBasis` or `searchBases`.
-randomStandardBases = method()
-randomStandardBases(Ideal, ZZ) := (J, n) -> (
+randomStandardBases = method(Options => {"Budget" => 5})
+randomStandardBases(Ideal, ZZ) := o -> (J, n) -> (
     R := ring J;
     nv := numgens R;
+    budget := o#"Budget";
     out := new MutableList;
     seen := new MutableHashTable;
     for i from 0 to n - 1 do (
         w := apply(nv, k -> 1 + random 99);
         ok := true;
         local B;
+        -- alarm budget guards against pathological weight vectors that make
+        -- basis(R/J) run indefinitely; try/else catches both the resulting
+        -- AlarmInterrupt and any other runtime error.
+        alarm budget;
         try (
             Rprime := newRing(R, MonomialOrder => {Weights => w, GRevLex});
             Jprime := sub(J, Rprime);
@@ -133,6 +138,7 @@ randomStandardBases(Ideal, ZZ) := (J, n) -> (
             phi := map(R, Rprime, apply(nv, k -> R_k));
             B = apply(Bprime, b -> phi(b));
         ) else ( ok = false; );
+        alarm 0;
         if not ok then continue;
         key := set B;
         if seen#?key then continue;
