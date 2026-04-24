@@ -1,17 +1,16 @@
--- MartyushevClean.m2: Fresh, minimal port of Martyushev's matrixHi + adjustParams.
--- Rewritten from scratch to avoid accumulated bugs from MartyushevExact.m2.
+-- Martyushev.m2: port of Martyushev's matrixHi + adjustParams (CVPR 2022).
 --
 -- Design:
--- - Work in flat ring R = FF[vars..., alphas...] from the start
--- - Use mutable hash table for alpha values (0 = unassigned)
--- - adjustParams substitutes into H directly without intermediate decompositions
--- - All operations use explicit lists (avoid Sequence bugs)
+-- - Work in a flat extended ring R = FF[vars..., alphas...] from the start.
+-- - Free alpha parameters are ring variables; adjustParams substitutes
+--   concrete field values into H directly, without intermediate
+--   decompositions.
 --
 -- Loaded two ways:
 -- (a) from inside EliminationTemplates.m2 newPackage (no needsPackage — that
 --     would be a circular dep).
 -- (b) by external tests that `debug needsPackage "EliminationTemplates"`
---     first, then `load "EliminationTemplates/MartyushevClean.m2"`.
+--     first, then `load "EliminationTemplates/Martyushev.m2"`.
 
 -- ============================================================================
 -- buildH: main function combining matrixHi + adjustParams + constructTemplate
@@ -83,10 +82,10 @@ isValidBasis(List, Ideal) := (Blist, J) -> (
 
 -- Build a Greedy template (matrixHi + adjustParams + constructTemplate) on
 -- a specified basis Blist of R/J. Returns the template matrix directly over
--- coefficientRing(ring J). Set `RunGreedy => false` to skip adjustParams
+-- coefficientRing(ring J). Set `"RunGreedy" => false` to skip adjustParams
 -- (just MatrixHi's particular solution alpha=0) — ~100x faster, useful for
 -- coarse basis-search screening before re-running Greedy on the winner.
-buildGreedyTemplateWithBasis = method(Options => {Verbose => false, RunGreedy => true})
+buildGreedyTemplateWithBasis = method(Options => {Verbose => false, "RunGreedy" => true})
 buildGreedyTemplateWithBasis(RingElement, Ideal, List) := o -> (aVar, J, Blist) -> (
     R := ring J;
     FF := coefficientRing R;
@@ -95,7 +94,7 @@ buildGreedyTemplateWithBasis(RingElement, Ideal, List) := o -> (aVar, J, Blist) 
     if #gp == 0 then return map(FF^0, FF^(#B), 0);
     RB := (toList resMons) | B;
     (Hsym, Rext, alphaVars, perRow) := buildHSymbolic(Flist, gp, Verbose => o.Verbose);
-    Hfinal := if o.RunGreedy then (
+    Hfinal := if o#"RunGreedy" then (
         adjustParams(Flist, Hsym, Rext, (alphaVars, RB), Verbose => o.Verbose)
     ) else (
         -- MatrixHi particular solution: substitute all alphas to 0.
@@ -202,9 +201,9 @@ parseMartyushevBases(String, Ring) := (path, R) -> (
 
 -- Basis-search loop. Default: screens each candidate with MatrixHi (fast,
 -- O(seconds per basis)), then re-runs Greedy on the winner. Pass
--- `RunGreedyAll => true` to run full Greedy on every candidate (slow but may
+-- `"RunGreedyAll" => true` to run full Greedy on every candidate (slow but may
 -- find bases where adjustParams strictly improves over MatrixHi).
-searchBases = method(Options => {Verbose => false, RunGreedyAll => false})
+searchBases = method(Options => {Verbose => false, "RunGreedyAll" => false})
 searchBases(RingElement, Ideal, List) := o -> (aVar, J, candidates) -> (
     bestRows := infinity;
     bestCols := 0;
@@ -218,7 +217,7 @@ searchBases(RingElement, Ideal, List) := o -> (aVar, J, candidates) -> (
         ok := true;
         try (
             M = buildGreedyTemplateWithBasis(aVar, J, B,
-                RunGreedy => o.RunGreedyAll, Verbose => false);
+                "RunGreedy" => o#"RunGreedyAll", Verbose => false);
         ) else ( ok = false; );
         if not ok then continue;
         if numRows M < bestRows or (numRows M == bestRows and numColumns M < bestCols) then (
@@ -232,12 +231,12 @@ searchBases(RingElement, Ideal, List) := o -> (aVar, J, candidates) -> (
         );
     );
     -- If we screened with MatrixHi only, re-run Greedy on the winner.
-    if bestB =!= null and not o.RunGreedyAll then (
+    if bestB =!= null and not o#"RunGreedyAll" then (
         local Mg;
         okG := true;
         try (
             Mg = buildGreedyTemplateWithBasis(aVar, J, bestB,
-                RunGreedy => true, Verbose => false);
+                "RunGreedy" => true, Verbose => false);
         ) else ( okG = false; );
         if okG and (numRows Mg < bestRows or
                 (numRows Mg == bestRows and numColumns Mg < bestCols)) then (
@@ -397,7 +396,7 @@ buildHSymbolic(List, List) := o -> (F, gapPolys) -> (
 -- solve, and substitute into Hsym.
 -- ============================================================================
 -- Note: 5-arg method bundled as (F, Hsym, Rext, (alphaVars, RB))
-adjustParams = method(Options => {Verbose => false, MaxIter => 1000})
+adjustParams = method(Options => {Verbose => false, "MaxIter" => 1000})
 adjustParams(List, Matrix, Ring, Sequence) := o -> (F, Hsym, Rext, pair) -> (
     (alphaVars, RB) := pair;
     R := ring first F;
@@ -481,7 +480,7 @@ adjustParams(List, Matrix, Ring, Sequence) := o -> (F, Hsym, Rext, pair) -> (
         ))
     );
 
-    while iterations < o.MaxIter and #remainingExc > 0 do (
+    while iterations < o#"MaxIter" and #remainingExc > 0 do (
         iterations = iterations + 1;
         improved := false;
 

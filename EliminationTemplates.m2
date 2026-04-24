@@ -38,8 +38,12 @@ newPackage(
 )
 
 -- Symbolic H via gap polynomials + adjustParams (Martyushev CVPR 2022 §3–§4).
--- Provides: buildGapPolys, buildHSymbolic, adjustParams, buildTemplateFromH.
-load "./EliminationTemplates/MartyushevClean.m2"
+-- Provides: buildGapPolys, buildHSymbolic, adjustParams, liftGreedyHToH0,
+--           extractActionFromTemplate, recoverSolutionsMatrixHi, plus
+--           basis-search primitives (buildGreedyTemplateWithBasis,
+--           searchBases, randomStandardBases, randomNonstandardBases,
+--           parseMartyushevBases, isValidBasis, buildTemplateFromH).
+load "./EliminationTemplates/Martyushev.m2"
 
 export {
     "getH0",
@@ -56,16 +60,10 @@ export {
     "templateMatrix",
     "actionVariable",
     "copyTemplate",
-    -- Option symbol used by MartyushevClean.adjustParams (bounded greedy iterations).
-    "MaxIter",
-    -- Option symbol on pipeline methods: `AdjustParams => false` runs Greedy
-    -- up to the buildHSymbolic particular solution (α := 0) and skips the
-    -- adjustParams optimization step — the fast "MatrixHi mode" of the
-    -- Greedy strategy. Default true.
-    "AdjustParams",
-    -- Option symbols used by the basis-search infrastructure in MartyushevClean.
-    "RunGreedy",
-    "RunGreedyAll"
+    -- Option on pipeline methods. `AdjustParams => false` runs the Greedy
+    -- strategy up to the `buildHSymbolic` particular solution (α := 0),
+    -- skipping the greedy parameter-commit step. Default `true`.
+    "AdjustParams"
 }
 
 EliminationTemplate = new Type of HashTable
@@ -742,9 +740,9 @@ doc ///
   Headline
     polynomial system solver using elimination templates
   Usage
-    (B, ev) = templateSolve(et)
-    (B, ev) = templateSolve(J)
-    (B, ev) = templateSolve(a, J)
+    sols = templateSolve(et)
+    sols = templateSolve(J)
+    sols = templateSolve(a, J)
   Inputs
     a:RingElement
       the action polynomial defining a multiplication matrix
@@ -754,16 +752,25 @@ doc ///
       the elimination template for this problem
     MonomialOrder=>Thing
       the monomial order used on the ambient ring
+    Strategy=>Thing
+      @TT "null"@ (default), @TT "\"Larsson\""@, or @TT "\"Greedy\""@
+    AdjustParams=>Boolean
+      @TT "true"@ (default) runs the full Greedy commit; @TT "false"@
+      stops at the particular solution α := 0 ("MatrixHi mode")
   Outputs
-    B:Matrix
-      a column matrix containing the basis for R/J used
-    ev:Matrix
-      a matrix whose columns are the eigenvectors of the action matrix
+    sols:List
+      a list of solutions; each solution is itself a list of complex
+      numbers, one per ring variable of the ambient ring, in
+      declaration order
   Description
    Text
-      In the example below, the ideal $J$ defines a zero-dimensional variety with four points.
-      This method finds numerical approximations to these four points by solving an eigenvalue problem, much like the package @TO EigenSolver@.
-      The main difference between this package and ours is that, for ours, the internal template matrix may be reused for problems of a "similar structure."
+      In the example below, the ideal $J$ defines a zero-dimensional
+      variety with four points. This method finds numerical
+      approximations to these four points by solving an eigenvalue
+      problem, much like the package @TO EigenSolver@. The main
+      advantage of elimination templates is that the internal template
+      matrix may be reused for problems of a "similar structure" (see
+      @TO copyTemplate@).
    Example
       R = QQ[x,y]
       J = ideal(x^2+y^2-1,x^2+x*y+y^2-1)
@@ -1174,9 +1181,8 @@ TEST /// -- example used for section 3
 TEST ///
   R = QQ[x,y,z]
   J = ideal(x^3+y^3+z^3-4,x^2-y-z-1,x-y^2+z-3)
-  -- Default / Larsson / Greedy all flow through the shared Direction A
-  -- [E|R|B] pipeline; only the H0 computation inside getH0 differs per
-  -- strategy.
+  -- Every strategy flows through the same [E|R|B] pipeline; only the H0
+  -- computation inside getH0 differs per strategy.
   E1 = eliminationTemplate(x, J);
   E2 = eliminationTemplate(x, J);
   -- Default Strategy
@@ -1185,6 +1191,91 @@ TEST ///
   -- Larsson Strategy
   M2 = getActionMatrix(E2, Strategy => "Larsson");
   assert(#eigenvalues M2 == 12)
+///
+
+TEST /// -- End-to-end: every strategy on 5pt essential + det. Asserts
+-- tier-1 (action matrix is d x d), tier-2 (#eigenvalues == d), tier-3
+-- (residual < 1e-6).
+  setRandomSeed 42
+  R = QQ[x,y,z];
+  Es = apply(4, i -> random(QQ^3, QQ^3));
+  Em = x*Es#0 + y*Es#1 + z*Es#2 + Es#3;
+  I = ideal(Em*transpose Em * Em - (1/2)*trace(Em*transpose Em)*Em) + ideal(det Em);
+  d = degree I;
+  -- Build all four EliminationTemplates up front, before any ring
+  -- rebinding from building CC[gens R].
+  E1 = eliminationTemplate(y, I);
+  E2 = eliminationTemplate(y, I);
+  E3 = eliminationTemplate(y, I);
+  E4 = eliminationTemplate(y, I);
+  Rc = CC[gens R];
+  gensIc = sub(gens I, Rc);
+  -- Default.
+  Ma1 = getActionMatrix E1;
+  assert(numRows Ma1 == d and numColumns Ma1 == d);
+  assert(#eigenvalues sub(Ma1, CC) == d);
+  sols1 = templateSolve E1;
+  assert(#sols1 > 0);
+  assert(all(sols1, p -> 1e-6 > norm sub(gensIc, matrix{p})));
+  -- Larsson.
+  Ma2 = getActionMatrix(E2, Strategy => "Larsson");
+  assert(numRows Ma2 == d and numColumns Ma2 == d);
+  assert(#eigenvalues sub(Ma2, CC) == d);
+  sols2 = templateSolve(E2, Strategy => "Larsson");
+  assert(all(sols2, p -> 1e-6 > norm sub(gensIc, matrix{p})));
+  -- MatrixHi mode (Greedy + AdjustParams => false).
+  Ma3 = getActionMatrix(E3, Strategy => "Greedy", AdjustParams => false);
+  assert(numRows Ma3 == d and numColumns Ma3 == d);
+  assert(#eigenvalues sub(Ma3, CC) == d);
+  sols3 = templateSolve(E3, Strategy => "Greedy", AdjustParams => false);
+  assert(all(sols3, p -> 1e-6 > norm sub(gensIc, matrix{p})));
+  -- Greedy (default AdjustParams => true).
+  Ma4 = getActionMatrix(E4, Strategy => "Greedy");
+  assert(numRows Ma4 == d and numColumns Ma4 == d);
+  assert(#eigenvalues sub(Ma4, CC) == d);
+  sols4 = templateSolve(E4, Strategy => "Greedy");
+  assert(all(sols4, p -> 1e-6 > norm sub(gensIc, matrix{p})));
+///
+
+TEST /// -- Polynomial action lift: action x+4y on 2-var system, end to end.
+  R = QQ[x,y];
+  I = ideal(x^2+y^2-1, x^2+y^3+x*y-2);
+  d = degree I;
+  E = eliminationTemplate(x + 4*y, I);
+  -- Tier 1: template matrix builds.
+  M = getTemplateMatrix E;
+  assert(numRows M > 0 and numColumns M > 0);
+  -- Tier 2: action matrix has deg I distinct eigenvalues.
+  Ma = getActionMatrix E;
+  assert(numRows Ma == d and numColumns Ma == d);
+  assert(#eigenvalues sub(Ma, CC) == d);
+  -- Tier 3: recovered solutions satisfy the ideal.
+  sols = templateSolve E;
+  assert(all(sols, p -> 1e-6 > norm sub(sub(gens I, CC[gens R]), matrix{p})));
+///
+
+TEST /// -- Accessors and copyTemplate on a structurally-compatible specialization.
+  R = QQ[x,y];
+  I = ideal(x^4+x*y+y^2-3, x^2*y+y^3-2);
+  J = ideal(x^4+2*x*y+y^2-1, 3*x^2*y+y^3-5);
+  Rc = QQ[gens R];
+  gensIc = sub(gens I, Rc);
+  gensJc = sub(gens J, Rc);
+  -- Build the template objects up front.
+  E = eliminationTemplate(x, I);
+  Ecopy = eliminationTemplate(x, I);
+  -- Accessor smoke.
+  assert(actionVariable E == x);
+  assert(ideal E == I);
+  -- templateSolve on (RingElement, Ideal).
+  solsA = templateSolve(x, I);
+  assert(all(solsA, p -> 1e-6 > norm sub(gensIc, matrix{p})));
+  -- copyTemplate on a J that shares I's leading-term structure.
+  getTemplateMatrix Ecopy;
+  F = copyTemplate(Ecopy, J);
+  solsF = templateSolve F;
+  assert(#solsF == degree I);
+  assert(all(solsF, p -> 1e-6 > norm sub(gensJc, matrix{p})));
 ///
 
 
