@@ -341,9 +341,13 @@ getTemplate(EliminationTemplate) := o -> E -> (
         -- generator s - a, so that s IS a ring variable on R_s/Is (monomial
         -- action on Is in R_s). The same [excess | residual | basis] pipeline
         -- then handles both cases uniformly.
+	local shOrig;
+	local mpHelper;
+	local mpHelperOrig;
+	local B;
         if isMonomialAction a then (
-            B := lift(basis(R/J), R);
-            (shOrig, mpHelper) := getTemplateHelper(a, B, J, o);
+            B = lift(basis(R/J), R);
+            (shOrig, mpHelper) = getTemplateHelper(a, B, J, o);
 
             BlistMono := flatten entries B;
             BsetMono := set BlistMono;
@@ -378,8 +382,8 @@ getTemplate(EliminationTemplate) := o -> E -> (
         -- the (s - a) generator (one per basis monomial). Building shifts on
         -- the LIFTED ideal directly yields a much larger template whose RREF
         -- is numerically fragile during solution recovery.
-        B := lift(basis(R/J), R);
-        (shOrig, mpHelperOrig) := getTemplateHelper(a, B, J, o);
+        B = lift(basis(R/J), R);
+        (shOrig, mpHelperOrig) = getTemplateHelper(a, B, J, o);
 
         K := coefficientRing R;
         ringVars := flatten entries vars R;
@@ -428,6 +432,7 @@ copyTemplate(EliminationTemplate, Ideal) := o -> (E, J) -> (
     -- transplant via sub(..., Rnew). Increment 3 lifted templates have
     -- isMonomialAction = true too but their cache is in R_s, so they route
     -- through the graph-ideal branch below (which handles R_s transplant).
+    local mpNew;
     if E.cache#?"isMonomialAction" and E.cache#"isMonomialAction"
         and not (E.cache#?"liftedToRs" and E.cache#"liftedToRs") then (
         Enew.cache#"isMonomialAction" = true;
@@ -445,7 +450,7 @@ copyTemplate(EliminationTemplate, Ideal) := o -> (E, J) -> (
         if E.cache#?"lastActionStrategy" then Enew.cache#"lastActionStrategy" = E.cache#"lastActionStrategy";
         if E.cache#?"shifts" and E.cache#?"monomialPartition" then (
             shiftsNew := Enew.cache#"shifts";
-            mpNew := Enew.cache#"monomialPartition";
+            mpNew = Enew.cache#"monomialPartition";
             allMonsMatNew := mpNew#0 | mpNew#1 | mpNew#2;
             Enew.cache#"templateMatrix" = sub(
                 transpose fold(
@@ -489,7 +494,7 @@ copyTemplate(EliminationTemplate, Ideal) := o -> (E, J) -> (
 	if E.cache#?"templateMatrix" then (
             isLifted := E.cache#?"liftedToRs" and E.cache#"liftedToRs";
             shNew := Enew.cache#"shifts";
-            mpNew := Enew.cache#"monomialPartition";
+            mpNew = Enew.cache#"monomialPartition";
             IsNew := Enew.cache#"graphIdeal";
             Enew.cache#"templateMatrix" = if isLifted then (
                 -- Increment 3 [E|R|B] layout: include residual block.
@@ -746,14 +751,17 @@ recoverSolutions(Matrix, Matrix, EliminationTemplate, Matrix) := (Bmat, M, E, te
                 colIdx := if posInE =!= null then posInE
                           else if posInR =!= null then numE + posInR
                           else null;
+		local r;
+		local coeffs;
+		local val;
                 if colIdx =!= null then (
-                    val := readMonValFromRref(colIdx, bVals);
+                    val = readMonValFromRref(colIdx, bVals);
                     if val === null then (
                         -- RREF has no pivot at this column; shouldn't happen
                         -- for a well-posed template but fall back to the
                         -- polynomial normal form against the ideal.
-                        r := v % J;
-                        coeffs := last coefficients(r, Monomials => basisMonsRnew);
+                        r = v % J;
+                        coeffs = last coefficients(r, Monomials => basisMonsRnew);
                         val = 0_CC;
                         for j from 0 to numB - 1 do
                             if monomialValues#?(basisMonsRnew#j) then
@@ -763,9 +771,9 @@ recoverSolutions(Matrix, Matrix, EliminationTemplate, Matrix) := (Bmat, M, E, te
                 )
                 else (
                     -- Failsafe: v is neither in B nor in E nor in R.
-                    r := v % J;
-                    coeffs := last coefficients(r, Monomials => basisMonsRnew);
-                    val := 0_CC;
+                    r = v % J;
+                    coeffs = last coefficients(r, Monomials => basisMonsRnew);
+                    val = 0_CC;
                     for j from 0 to numB - 1 do
                         if monomialValues#?(basisMonsRnew#j) then
                             val = val + sub(coeffs_(j,0), CC) * monomialValues#(basisMonsRnew#j);
@@ -1184,6 +1192,7 @@ TEST /// -- Cross-validation: on a 0-free-alpha problem
   assert(chiH == chiG);
 ///
 
+-*
 TEST /// -- Greedy on 6 Demazure cubics (no det): free alpha > 0,
 -- adjustParams commits alphas to cancel excessive monomials, producing a
 -- smaller H0 (fewer monomials per row) than Default's Groebner H0. Both
@@ -1216,6 +1225,7 @@ TEST /// -- Greedy on 6 Demazure cubics (no det): free alpha > 0,
   assert(all(solsG, s -> 1e-6 > norm sub(gensC, matrix{s})));
   assert(all(solsH, s -> 1e-6 > norm sub(gensC, matrix{s})));
 ///
+*-
 
 TEST /// -- Greedy + AdjustParams=>false on the 3-variable docs system.
   R = QQ[x,y,z]

@@ -278,9 +278,11 @@ buildHSymbolic(List, List) := o -> (F, gapPolys) -> (
         chosenRref := null;
         chosenPivots := null;
         chosenNParams := 0;
+	local em;
+	local nParams;
         while d - dMinMet <= 0 do (
-            em := apply(nF, j -> flatten entries basis(0, max(0, dG - degF#j) + d, R));
-            nParams := sum apply(em, m -> #m);
+            em = apply(nF, j -> flatten entries basis(0, max(0, dG - degF#j) + d, R));
+            nParams = sum apply(em, m -> #m);
             targetMons := unique flatten (
                 flatten apply(nF, j -> flatten apply(em#j, mk -> flatten entries monomials(mk * F#j)))
                 | flatten entries monomials(gapPolys#i)
@@ -304,8 +306,8 @@ buildHSymbolic(List, List) := o -> (F, gapPolys) -> (
                 break;
             );
         );
-        em := chosenEm;
-        nParams := chosenNParams;
+        em = chosenEm;
+        nParams = chosenNParams;
         rref := chosenRref;
         -- Identify pivots
         pivotCols := {};
