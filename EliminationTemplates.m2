@@ -69,6 +69,8 @@ export {
     "AdjustParams"
 }
 
+
+
 EliminationTemplate = new Type of HashTable
 ShiftSet = new Type of List
 MonomialPartition = new Type of List
@@ -587,8 +589,8 @@ getActionMatrix(EliminationTemplate) := o -> E -> (
             extractActionFromTemplate(templateMatrix, E.cache#"residualMonomials",
                 E.cache#"basisList", actVarForExtract)
         ) else (
-            stderr << "-- [getActionMatrix] RREF failed on [E|R|B]; "
-                   << "falling back to LU split-solve on [E|B]" << endl;
+	    --stderr << "-- [getActionMatrix] RREF failed on [E|R|B]; "
+--                   << "falling back to LU split-solve on [E|B]" << endl;
             mp1 := E.cache#"monomialPartition";
             shiftsNow := E.cache#"shifts";
             idealNow := if E.cache#?"graphIdeal" then E.cache#"graphIdeal" else ideal E;
@@ -805,8 +807,6 @@ doc ///
 
     In the online stage, prior knowledge of the template matrix can be used to construct a multiplication matrix for the quotient ring $R/I.$
     From this multiplication matrix, solutions can be extracted using eigenvector methods, such as the ones implemented in the package @TO EigenSolver@.
-  Caveat
-    This package is a work-in-progress!
   References
     @UL {
 	{"Optimizing Elimination Templates by Greedy Parameter Search, Martyushev-Vrablikova-Pajdla", EM "CVPR 2022"},
@@ -1633,6 +1633,18 @@ assert(all(sols, s -> 1e-6 > norm sub(sub(gens I, CC[gens R]), matrix{s})))
 restart
 path = prepend("./", path)
 needsPackage "EliminationTemplates"
+check "EliminationTemplates"
+FF = frac(QQ[a,b,c,d]);
+R = FF[x,y,MonomialOrder=>Lex];
+l = x - 2*y;
+I = ideal(x^2+a*y^2-1, x*y-b);
+needsPackage "EliminationTemplates";
+ET = eliminationTemplate(l, I);
+M = getTemplateMatrix ET
+(P, L, U) = LUdecomposition M;
+L
+U
+getActionMatrix ET
 setRandomSeed 42
 R = QQ[x,y,z]
 Es = apply(4, i -> random(QQ^3, QQ^3))
