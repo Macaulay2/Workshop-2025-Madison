@@ -299,7 +299,7 @@ hStarPolynomial(Polyhedron, Ring) := RingElement => opts -> (P, R) -> (
             )
         else error("unknown Strategy option: " | toString opts.Strategy | "; allowable options are Normaliz (default), M2");
         );
-      
+
     if opts.ReturnDenominator then (
         P#cache#"ehrhartSeriesNumerator",
         P#cache#"ehrhartSeriesDenominator"
@@ -307,15 +307,33 @@ hStarPolynomial(Polyhedron, Ring) := RingElement => opts -> (P, R) -> (
     else P#cache#"ehrhartSeriesNumerator"
     )
 
-hStarPolynomial(Polyhedron) := RingElement => opts -> P -> (
-    if P#cache#?"ehrhartSeriesNumerator" then (
-        P#cache#"ehrhartSeriesNumerator"
+hStarPolynomial Polyhedron := RingElement => opts -> P -> (
+    if P#cache#?"ehrhartSeriesNumerator" and P#cache#?"ehrhartSeriesDenominator" then (
+        if opts.ReturnDenominator then (
+            P#cache#"ehrhartSeriesNumerator",
+            P#cache#"ehrhartSeriesDenominator"
+            )
+        else P#cache#"ehrhartSeriesNumerator"
     )
     else (
         R:=QQ[getSymbol "T"]; -- potentially redundant if hStarPolynomial has already been computed
         hStarPolynomial(P, R, opts)
     )
     )
+
+------------------------------------------------
+-- Note on hStar computation storage in cache --
+--                                            --
+-- Once the Ehrhart series has been computed, --
+-- the result is a rational function N/D      --
+-- which should be stored in P#cache with:    --
+--                                            --
+-- P#cache#"ehrhartSeriesNumerator"   = N     --
+-- P#cache#"ehrhartSeriesDenominator" = D     --
+--                                            --
+-- Both or neither entry should be present.   --
+------------------------------------------------
+
 
 -- M2 version of hStarPolynomial polynomial
 -- once computed, it updates the cache
