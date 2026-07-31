@@ -413,45 +413,6 @@ ehrhartSeries Polyhedron := opts -> P -> (
     )
     )
 
----------------------------------------
----------------------------------------
--- Temporary version of Normaliz
--- to use with computing rational polytopes
---------------------------------------
---
--- Update: Pull request in merged into development
--- Update: Opened a pull request for this code in Normaliz package
--- https://github.com/Macaulay2/M2/pull/4039
--- WHEN DOING PULL REQUEST DELETE THIS --
-
-
-debug Normaliz
-
--- writes the given data in a normaliz input file
--- doWriteNmzData = method()
--- writes several matrices in a normaliz input file
-doWriteNmzData List := matrices -> (
-    checkNmzFile("doWriteNmzData");
-    outf := nmzFile | ".in" << "";
-    for p in matrices do (
-        sgr := p#0;
-        nmzMode := p#1;
-        outf << numRows sgr << endl;
-        outf << numColumns sgr << endl;
-        if ring sgr =!= ZZ and ring sgr =!= QQ then error("matrix with non-rational entries");
-        for i from 0 to numRows sgr - 1 do (
-            s:= "";
-            for j from 0 to numColumns sgr - 1
-            do s = s | toString(sgr_(i,j)) | " "; -- MODIFIED: this handles ZZ and QQ entries
-            outf << s << endl;
-            );
-        --Until version 3.9.4, input type normal_toric_ideal was called lattice_ideal
-        if normalizProgram#"version" < "3.10" and nmzMode == "normal_toric_ideal" then nmzMode = "lattice_ideal";
-        outf << nmzMode << endl);
-    outf << close
-    )
-
-
 
 ---------------------------------------
 -* Documentation section *-
