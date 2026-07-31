@@ -43,7 +43,6 @@ export {
     "orbitPolytope",
     "representationRing",
     -- options
-    "OnlyListRepresentatives",
     "ReturnHStarList",
     "ReturnTable",
     "ReturnClassReps",
