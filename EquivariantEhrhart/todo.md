@@ -1,9 +1,7 @@
 # Current TODOs
 
-    1. Fix ReturnDenominator bug (fix tests 6 and 8) in RationalPolytopes [Done]
-    2. Check Author / Contributor details from workshop participants
-    3. Remove the Normaliz patch [Done]
-    4. Resolve generateGroup problem
+    2. ** Ollie ** Check Author / Contributor details from workshop participants
+    4. ** Oll & Vic ** Resolve generateGroup problem
     
     We have a function called `generateGroup` in `EquivariantEhrhart` that takes a list of
     matrices and outputs the group (as a list of elements) that they generate (under
@@ -16,21 +14,42 @@
     tables of general finite groups.
     
     
-    5. We should add a test to make sure that the cycleRepresentatives and SymmetricGroupTable
+    5. ** O **
+    (EE) We should add a test to make sure that the cycleRepresentatives and SymmetricGroupTable
     from BettiCharacters has compatible ordering AND make a note of it in the docs
     
-    6. Add M2Version minimum requirement because of the link to the Permutations package (EE)
+    6. ** Vic ** Add M2Version minimum requirement because of the link to the Permutations package (EE)
     and the Normaliz fix (RP)
     
-    7. Protect against non-cycle group inputs in `equivariantEhrhartSeries`
+    7. ** Vic ** Protect against non-cycle group inputs in `equivariantEhrhartSeries`
     
-    8. In doc for `ehrhartSeries`, the return type is not in `frac(QQ[t])`, it's of class
+    8. ** Vic ** In doc for `ehrhartSeries`, the return type is not in `frac(QQ[t])`, it's of class
     `Divide` if `R` is unspecified
     
-    9. Tidy up unnecessary files. An example / demo file is good to have at the base level of
+    9. ** Ollie **
+    [Ollie: move all the working files to MY FORK and give push access to Victoria and Vincenzo]
+    Tidy up unnecessary files. An example / demo file is good to have at the base level of
     the repo. But the test files and todos can be moved into another folder. We should also
-    move the `RationalPolytopes.m2` up to the base level. 
+    move the `RationalPolytopes.m2` up to the base level.
 
+    To incorpate the packages into M2:
+
+    Create Fork -> Add packages to the Fork -> Pull Request
+
+    Always be checking the examples and other files for things that we may want in the final packages
+    and move them over to the included files.
+
+    10. Get Vincenzo and Alex into M2 org to be able to push changes OR use PullRequests
+    [consequence of 9.]
+
+    11. ** Vin **
+    Get the tests (hStarVector, ehrhartQP) from Vincenzo incorporated into the package
+
+    12. ** Vin ** Make sure the tests cover enough cases and fill in any missing doc nodes
+
+    13. ** Everyone ** Read the docs of all packages
+    
+    
 
 # Long Term / Future TODOs
 
@@ -41,6 +60,11 @@
     2. Add hypersimplex and permutohedron into Polyhedra package as standard constructions 
     
     
+# DONE
+
+
+    1. Fix ReturnDenominator bug (fix tests 6 and 8) in RationalPolytopes [Done]
+    3. Remove the Normaliz patch [Done]
 
 
 
